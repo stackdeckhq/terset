@@ -1,6 +1,6 @@
 name: Format or spec problem
 description: The format is ambiguous, the spec is unclear, or a round trip loses data.
-labels: ['spec']
+labels: ['spec', 'needs-triage']
 body:
   - type: textarea
     id: problem

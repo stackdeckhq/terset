@@ -1,6 +1,6 @@
 name: Bug report
 description: The package or the site does something wrong.
-labels: ['bug']
+labels: ['bug', 'needs-triage']
 body:
   - type: input
     id: version
