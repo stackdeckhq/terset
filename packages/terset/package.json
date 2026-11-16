@@ -1,0 +1,42 @@
+{
+  "name": "@stackdeck/terset",
+  "version": "0.2.1",
+  "description": "TERse SETs. It writes a set of records as one terse table, so a model reads the same data with fewer tokens.",
+  "type": "module",
+  "license": "MIT",
+  "author": "StackDeck",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "homepage": "https://terset.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stackdeckhq/terset.git",
+    "directory": "packages/terset"
+  },
+  "bugs": "https://github.com/stackdeckhq/terset/issues",
+  "keywords": ["json", "llm", "prompt", "tokens", "table", "encoding"],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    },
+    "types": "./dist/index.d.ts"
+  },
+  "files": ["dist", "SPEC.md", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "test": "node --test tests/*.test.ts",
+    "prepublishOnly": "pnpm build && pnpm test"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

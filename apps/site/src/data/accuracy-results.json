@@ -1,0 +1,492 @@
+{
+  "publishedRuns": [
+    {
+      "runId": "p4-2026-11-12",
+      "runOn": "2026-11-12",
+      "publishedPath": "bench/published/2026-11-12",
+      "formats": [
+        "json-compact",
+        "json-pretty",
+        "toon"
+      ]
+    },
+    {
+      "runId": "v2-final-2026-11-13",
+      "runOn": "2026-11-13",
+      "publishedPath": "bench/published/2026-11-13",
+      "formats": [
+        "terset"
+      ]
+    }
+  ],
+  "upstreamSha": "22caca377f08d737789a2ca60ab02c425a3aa947",
+  "questions": 244,
+  "datasets": 13,
+  "calls": 1952,
+  "failedCalls": 0,
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "name": "Claude Opus 5.5",
+      "inputTokensFrom": "anthropic-token-count",
+      "inputPerMillion": 4,
+      "outputPerMillion": 20,
+      "priceSource": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "priceReadOn": "2026-11-12",
+      "rows": [
+        {
+          "format": "terset",
+          "runOn": "2026-11-13",
+          "correct": 243,
+          "total": 244,
+          "low": 0.9771544911855791,
+          "high": 0.9992761719952722,
+          "inputTokens": 1200640,
+          "outputTokens": 44414,
+          "totalCost": 5.69084
+        },
+        {
+          "format": "json-compact",
+          "runOn": "2026-11-12",
+          "correct": 241,
+          "total": 244,
+          "low": 0.964481398748853,
+          "high": 0.9958099146273562,
+          "inputTokens": 1766161,
+          "outputTokens": 48732,
+          "totalCost": 8.039284
+        },
+        {
+          "format": "json-pretty",
+          "runOn": "2026-11-12",
+          "correct": 239,
+          "total": 244,
+          "low": 0.9529358324479501,
+          "high": 0.9912161311236168,
+          "inputTokens": 2303845,
+          "outputTokens": 49069,
+          "totalCost": 10.19676
+        },
+        {
+          "format": "toon",
+          "runOn": "2026-11-12",
+          "correct": 242,
+          "total": 244,
+          "low": 0.9706117105007331,
+          "high": 0.9977492777777971,
+          "inputTokens": 1369764,
+          "outputTokens": 43579,
+          "totalCost": 6.350636
+        }
+      ]
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "name": "GPT 6.1 Sol",
+      "inputTokensFrom": "model-report",
+      "inputPerMillion": 2,
+      "outputPerMillion": 10,
+      "priceSource": "https://developers.openai.com/api/docs/pricing",
+      "priceReadOn": "2026-11-12",
+      "rows": [
+        {
+          "format": "terset",
+          "runOn": "2026-11-13",
+          "correct": 241,
+          "total": 244,
+          "low": 0.964481398748853,
+          "high": 0.9958099146273562,
+          "inputTokens": 848844,
+          "outputTokens": 15460,
+          "totalCost": 1.852288
+        },
+        {
+          "format": "json-compact",
+          "runOn": "2026-11-12",
+          "correct": 236,
+          "total": 244,
+          "low": 0.9366484070383405,
+          "high": 0.9832945318262631,
+          "inputTokens": 1158229,
+          "outputTokens": 17981,
+          "totalCost": 2.496268
+        },
+        {
+          "format": "json-pretty",
+          "runOn": "2026-11-12",
+          "correct": 237,
+          "total": 244,
+          "low": 0.94197743468984,
+          "high": 0.9860351790770849,
+          "inputTokens": 1696152,
+          "outputTokens": 16762,
+          "totalCost": 3.559924
+        },
+        {
+          "format": "toon",
+          "runOn": "2026-11-12",
+          "correct": 239,
+          "total": 244,
+          "low": 0.9529358324479501,
+          "high": 0.9912161311236168,
+          "inputTokens": 1020628,
+          "outputTokens": 15077,
+          "totalCost": 2.192026
+        }
+      ]
+    }
+  ],
+  "kinds": [
+    {
+      "kind": "tabular",
+      "datasets": [
+        "tabular"
+      ],
+      "questions": 41,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 163544,
+            "json-compact": 275433,
+            "json-pretty": 374284,
+            "toon": 169612
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 98801,
+            "json-compact": 165713,
+            "json-pretty": 264400,
+            "toon": 109256
+          }
+        }
+      ]
+    },
+    {
+      "kind": "analytics",
+      "datasets": [
+        "analytics"
+      ],
+      "questions": 30,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 48704,
+            "json-compact": 98774,
+            "json-pretty": 138704,
+            "toon": 52004
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 46151,
+            "json-compact": 73721,
+            "json-pretty": 113531,
+            "toon": 51011
+          }
+        }
+      ]
+    },
+    {
+      "kind": "github",
+      "datasets": [
+        "github"
+      ],
+      "questions": 33,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 373299,
+            "json-compact": 557967,
+            "json-pretty": 677295,
+            "toon": 381153
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 289885,
+            "json-compact": 387862,
+            "json-pretty": 509962,
+            "toon": 300940
+          }
+        }
+      ]
+    },
+    {
+      "kind": "event-logs",
+      "datasets": [
+        "event-logs"
+      ],
+      "questions": 30,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 146099,
+            "json-compact": 217409,
+            "json-pretty": 278759,
+            "toon": 232559
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 109453,
+            "json-compact": 147793,
+            "json-pretty": 206773,
+            "toon": 178393
+          }
+        }
+      ]
+    },
+    {
+      "kind": "nested",
+      "datasets": [
+        "nested"
+      ],
+      "questions": 41,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 364109,
+            "json-compact": 466404,
+            "json-pretty": 632249,
+            "toon": 426675
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 238087,
+            "json-compact": 291387,
+            "json-pretty": 456781,
+            "toon": 309632
+          }
+        }
+      ]
+    },
+    {
+      "kind": "nested-group",
+      "datasets": [
+        "nested-group"
+      ],
+      "questions": 18,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 45599,
+            "json-compact": 74669,
+            "json-pretty": 103667,
+            "toon": 47093
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 26510,
+            "json-compact": 44726,
+            "json-pretty": 74552,
+            "toon": 28112
+          }
+        }
+      ]
+    },
+    {
+      "kind": "keyed",
+      "datasets": [
+        "keyed"
+      ],
+      "questions": 17,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 21507,
+            "json-compact": 36892,
+            "json-pretty": 46582,
+            "toon": 22578
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 16125,
+            "json-compact": 23401,
+            "json-pretty": 33754,
+            "toon": 17757
+          }
+        }
+      ]
+    },
+    {
+      "kind": "nested-config",
+      "datasets": [
+        "nested-config"
+      ],
+      "questions": 29,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 32903,
+            "json-compact": 31308,
+            "json-pretty": 42560,
+            "toon": 32874
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 20852,
+            "json-compact": 19170,
+            "json-pretty": 29523,
+            "toon": 22128
+          }
+        }
+      ]
+    },
+    {
+      "kind": "structure-control",
+      "datasets": [
+        "structural-validation-control"
+      ],
+      "questions": 1,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 985,
+            "json-compact": 1474,
+            "json-pretty": 1965,
+            "toon": 1053
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 601,
+            "json-compact": 898,
+            "json-pretty": 1385,
+            "toon": 685
+          }
+        }
+      ]
+    },
+    {
+      "kind": "structure-truncated",
+      "datasets": [
+        "structural-validation-truncated"
+      ],
+      "questions": 1,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 879,
+            "json-compact": 1284,
+            "json-pretty": 1703,
+            "toon": 944
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 538,
+            "json-compact": 785,
+            "json-pretty": 1200,
+            "toon": 615
+          }
+        }
+      ]
+    },
+    {
+      "kind": "structure-extra-rows",
+      "datasets": [
+        "structural-validation-extra-rows"
+      ],
+      "questions": 1,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 1101,
+            "json-compact": 1674,
+            "json-pretty": 2237,
+            "toon": 1172
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 671,
+            "json-compact": 1019,
+            "json-pretty": 1578,
+            "toon": 761
+          }
+        }
+      ]
+    },
+    {
+      "kind": "structure-width-mismatch",
+      "datasets": [
+        "structural-validation-width-mismatch"
+      ],
+      "questions": 1,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 982,
+            "json-compact": 1467,
+            "json-pretty": 1955,
+            "toon": 1050
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 598,
+            "json-compact": 893,
+            "json-pretty": 1377,
+            "toon": 682
+          }
+        }
+      ]
+    },
+    {
+      "kind": "structure-missing-fields",
+      "datasets": [
+        "structural-validation-missing-fields"
+      ],
+      "questions": 1,
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "inputTokens": {
+            "terset": 929,
+            "json-compact": 1406,
+            "json-pretty": 1885,
+            "toon": 997
+          }
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "inputTokens": {
+            "terset": 572,
+            "json-compact": 861,
+            "json-pretty": 1336,
+            "toon": 656
+          }
+        }
+      ]
+    }
+  ]
+}

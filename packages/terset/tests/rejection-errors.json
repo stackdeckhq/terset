@@ -1,0 +1,21 @@
+[
+  { "name": "duplicate dotted header with absent cells", "text": "[2]\na.b\ta.b\n\t\n\t", "error": "Duplicate or conflicting header." },
+  { "name": "parent header before child", "text": "[2]\na\ta.b\n\t\n\t", "error": "Duplicate or conflicting header." },
+  { "name": "child header before parent", "text": "[2]\na.b\ta\n\t\n\t", "error": "Duplicate or conflicting header." },
+  { "name": "quoted duplicate literal header", "text": "[2]\n\"a.b\"\t\"a.b\"\n\t\n\t", "error": "Duplicate or conflicting header." },
+  { "name": "extra root table line", "text": "[2]\nlong_field\none\ntwo\nextra", "error": "Row count mismatch." },
+  { "name": "zero row count", "text": "[0]\nlong_field", "error": "Invalid table count." },
+  { "name": "one row count", "text": "[1]\nlong_field\none", "error": "Invalid table count." },
+  { "name": "one keyed entry count", "text": "rows{1}:\n@key\tlong_field\na\tone", "error": "Invalid table count." },
+  { "name": "empty entry key", "text": "rows{2}:\n@key\tlong_field\n\tone\nb\ttwo", "error": "Invalid entry key." },
+  { "name": "entry key with edge whitespace", "text": "rows{2}:\n@key\tlong_field\n a\tone\nb\ttwo", "error": "Invalid entry key." },
+  { "name": "entry key resembling root field", "text": "rows{2}:\n@key\tlong_field\na: x\tone\nb\ttwo", "error": "Invalid entry key." },
+  { "name": "duplicate root field", "text": "x: one\nx: two", "error": "Duplicate key x." },
+  { "name": "duplicate keyed entry", "text": "rows{2}:\n@key\tlong_field\na\tone\na\ttwo", "error": "Duplicate key a." },
+  { "name": "extra cell", "text": "[2]\nlong_field\none\textra\ntwo", "error": "Wrong cell count." },
+  { "name": "missing cell", "text": "[2]\nfirst\tsecond\none\ntwo\tthree", "error": "Wrong cell count." },
+  { "name": "missing row", "text": "[2]\nlong_field\none", "error": "Row count mismatch." },
+  { "name": "missing named table row", "text": "rows[2]:\nlong_field\none", "error": "Row count mismatch." },
+  { "name": "missing keyed marker", "text": "rows{2}:\nentry\tlong_field\na\tone\nb\ttwo", "error": "Missing @key marker." },
+  { "name": "quoted keyed marker", "text": "rows{2}:\n\"@key\"\tlong_field\na\tone\nb\ttwo", "error": "Missing @key marker." }
+]

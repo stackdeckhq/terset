@@ -1,0 +1,20 @@
+# Terset
+
+> TERse SETs. It writes a set of records as one terse table, so a model reads the same data with fewer tokens.
+
+{{RELEASE}}. Install it with `{{PNPMADD}}`.
+
+## Start here
+
+- [Agent guide](https://terset.dev/agents.md): Everything an agent needs in one read. When to use Terset, the encode call, the rules sentence and how to read a table.
+
+## Reference
+
+- [Docs](https://terset.dev/docs.md): Install, a quick start, a cheat sheet and the full API for JavaScript and Python, with every error and limit.
+- [Specification](https://terset.dev/spec.md): Every rule of the format.
+- [Benchmark](https://terset.dev/benchmark.md): Token counts for Terset, JSON, TOON and CSV on every case, with the method and the limits.
+
+## Optional
+
+- [Skill](https://terset.dev/skill/SKILL.md): A skill file any agent harness can load to read and write Terset.
+- [Full text](https://terset.dev/llms-full.txt): The agent guide, the docs, the specification and the benchmark in one file.

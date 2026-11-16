@@ -1,0 +1,237 @@
+/* The bench chart and table. Used on the home page and on /benchmark.
+   Four bars per case, each case scaled to its own largest count. */
+.chart { margin: var(--s-7) 0 0; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r-xl); padding: var(--s-5) var(--s-4) var(--s-4); box-shadow: var(--sh-1); min-width: 0; }
+.chart.flat { margin-top: 0; }
+@media (min-width: 768px) { .chart { padding: var(--s-6) var(--s-6) var(--s-5); } }
+.chart-top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s-3) var(--s-5); flex-wrap: wrap; }
+.chart-top > div { min-width: 0; }
+.chart h3 { font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.01em; }
+/* No cap: the note takes the chart's width, and the legend moves under it when both do not fit. */
+.chart-sub { margin-top: var(--s-1); font-size: 13px; color: var(--fg-2); }
+.legend { display: flex; gap: var(--s-2) var(--s-4); flex-wrap: wrap; font-size: 13px; color: var(--fg-2); font-weight: 500; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
+.legend i.other { background: var(--c-other-bar); }
+.legend i.terset { background: linear-gradient(90deg, var(--blue-1), var(--blue-2)); }
+.bars { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-1); }
+.bar { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-2); padding: var(--s-3) var(--s-2); border-radius: 12px; transition: background .15s; }
+@media (min-width: 760px) { .bar { grid-template-columns: 200px minmax(0, 1fr) 150px; align-items: center; gap: var(--s-4); } }
+.bar:hover { background: var(--hover-row); }
+/* A straight hairline in the gap between rows, not a shadow that follows the rounded corners. */
+.bar + .bar::before { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--s-1) / -2 - .5px); height: 1px; background: var(--line); pointer-events: none; }
+.bar-l { font-size: 14px; font-weight: 700; min-width: 0; line-height: 1.35; }
+.bar-t { display: grid; gap: 3px; min-width: 0; }
+.brow { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: center; gap: var(--s-2); height: 16px; }
+.bname { font-size: 11.5px; font-weight: 700; color: var(--fg-2); line-height: 1; }
+.brow.terset .bname { color: var(--accent); }
+.btrack { display: flex; align-items: center; gap: 6px; min-width: 0; height: 100%; }
+.btrack i { display: block; flex: none; width: calc((100% - 52px) * var(--f)); min-width: 2px; height: 12px; border-radius: 0 4px 4px 0; transform-origin: left; transition: transform .8s var(--ease); transition-delay: calc(var(--i, 0) * 24ms); }
+.btrack em { font-style: normal; font-size: 11.5px; font-weight: 400; color: var(--fg-2); font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1; }
+/* Color says who, weight says who won. Every format but Terset is one gray; the fewest
+   tokens in a case get a bold number and, for another format, a stronger gray. */
+.brow i { background: var(--c-other-bar); }
+.brow.min i { background: var(--c-other-bar-strong); }
+.brow.min em { font-weight: 700; color: var(--fg); }
+.brow.terset i { background: linear-gradient(90deg, var(--blue-1), var(--blue-2)); }
+.brow.terset em { color: var(--accent); }
+.brow.terset.min em { color: var(--accent); font-weight: 700; }
+.js .chart.pre .btrack i { transform: scaleX(0); }
+/* Deltas: fewer tokens in the accent and bold; more stays plain, never a warning color. */
+.bar-v { font-size: 14px; font-weight: 650; color: var(--fg-2); font-variant-numeric: tabular-nums; line-height: 1.35; }
+@media (min-width: 760px) { .bar-v { text-align: right; } }
+.bar-v small { display: block; font-size: 12px; font-weight: 650; color: var(--muted-fg); }
+.bar-v .fewer { color: var(--accent); font-weight: 700; }
+.bar-v small.fewer { font-weight: 700; }
+.eleven { margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--line); font-size: 13.5px; color: var(--fg-2); font-weight: 600; }
+.eleven b { color: var(--fg); }
+
+/* The change view on home: Terset's change in tokens per case, against TOON and against
+   compact JSON. One shared scale, one zero line per column. Fewer tokens grow left of zero
+   in the accent; more tokens grow right of zero in gray. The sign on each label carries the
+   direction too, so color is never the only cue. Each label sits on the empty side of zero,
+   so it never collides with its own bar. */
+.cg { margin-top: var(--s-5); }
+.cg-head, .cg-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--s-5); }
+.cg-head > span:first-child { display: none; }
+.cg-head span { font-size: 12.5px; font-weight: 600; color: var(--muted-fg); padding-bottom: var(--s-2); }
+.cg-rows { list-style: none; margin: 0; padding: 0; }
+.cg-row { padding: var(--s-2) 0; border-top: 1px solid var(--line); align-items: center; }
+.cg-name { grid-column: 1 / -1; font-size: 13.5px; font-weight: 600; line-height: 1.35; padding-bottom: var(--s-1); min-width: 0; }
+@media (min-width: 760px) {
+  .cg-head, .cg-row { grid-template-columns: minmax(0, 220px) repeat(2, minmax(0, 1fr)); gap: 0 var(--s-6); }
+  .cg-head > span:first-child { display: block; }
+  .cg-name { grid-column: auto; padding-bottom: 0; }
+}
+.cg-cell { position: relative; display: block; height: 24px; min-width: 0; }
+.cg-cell::before { content: ""; position: absolute; top: -9px; bottom: -9px; left: calc(var(--z) * 100%); width: 1px; background: var(--border-strong); }
+.cg-cell i { position: absolute; top: 6px; height: 12px; width: calc(var(--w) * 100%); min-width: 2px; transition: transform .7s var(--ease); transition-delay: calc(var(--i, 0) * 30ms); }
+.cg-cell.fewer i { right: calc((1 - var(--z)) * 100%); border-radius: 4px 0 0 4px; background: linear-gradient(270deg, var(--blue-1), var(--blue-2)); transform-origin: right; }
+.cg-cell.more i { left: calc(var(--z) * 100%); border-radius: 0 4px 4px 0; background: var(--c-other-bar-strong); transform-origin: left; }
+.cg-cell em { position: absolute; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 12.5px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cg-cell.fewer em { left: calc(var(--z) * 100% + 6px); color: var(--accent); font-weight: 700; }
+.cg-cell.more em { right: calc((1 - var(--z)) * 100% + 6px); color: var(--fg-2); font-weight: 500; }
+.js .chart.pre .cg-cell i { transform: scaleX(0); }
+.chart.change .legend i.other { background: var(--c-other-bar-strong); }
+details.tbl { margin-top: var(--s-3); }
+details.tbl summary { display: inline-flex; align-items: center; min-height: var(--ctl-sm); cursor: pointer; font-size: 14px; font-weight: 650; color: var(--link); border-radius: 8px; }
+details.tbl summary:hover { text-decoration: underline; text-underline-offset: 3px; }
+details.tbl[open] .tbl-show, details.tbl:not([open]) .tbl-hide { display: none; }
+.tablewrap { margin-top: var(--s-1); }
+table.bt { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+.bt th, .bt td { text-align: right; padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--line); white-space: nowrap; }
+.bt th:first-child, .bt td:first-child { text-align: left; }
+.bt thead th { color: var(--muted-fg); font-weight: 700; }
+.bt tbody th { font-weight: 650; }
+.bt tfoot th, .bt tfoot td { font-weight: var(--w-strong); border-top: 1.5px solid var(--border-strong); border-bottom: 0; }
+.tbl-note { margin: var(--s-2) 0 0; font-size: 12.5px; color: var(--muted-fg); }
+.tbl-h { margin: var(--s-5) 0 0; font-size: 14px; font-weight: var(--w-strong); color: var(--fg); }
+
+/* Answer accuracy on /benchmark: one card, one table per model, Terset row marked. */
+.acc { display: grid; gap: var(--s-6); background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--sh-1); padding: var(--s-5) var(--s-4) var(--s-4); min-width: 0; }
+@media (min-width: 768px) { .acc { padding: var(--s-6) var(--s-6) var(--s-5); } }
+.acc-model { min-width: 0; }
+.acc h3 { font-size: 17px; font-weight: var(--w-head); letter-spacing: -.01em; }
+.acc .tablewrap { margin-top: var(--s-2); }
+.acc .bt tbody tr:last-child th, .acc .bt tbody tr:last-child td { border-bottom: 0; }
+.acc .bt tr.is-terset th { color: var(--accent); font-weight: 700; }
+/* The result lines under the card use the card's width. */
+.acc-lines { margin-top: var(--s-5); }
+.acc-lines .steps-list { max-width: none; }
+/* By kind of data: two column groups, each split by model. Minus cells, where Terset used fewer tokens, in the savings tone of the token chart. Plus cells stay plain and muted. */
+.bt-kind thead tr:first-child th { border-bottom: 0; padding-bottom: 0; }
+.bt-kind thead th.grp { text-align: center; color: var(--fg-2); }
+.bt-kind .grp, .bt-kind .grp-start { border-left: 1px solid var(--line); }
+.bt-kind thead tr + tr th:first-child { text-align: right; }
+/* Signed marks in the kind table, and the lowest input tokens and cost in the per-model tables. */
+.acc .bt td.is-less { color: var(--accent); font-weight: 700; }
+.acc .bt td.is-more { color: var(--muted-fg); }
+/* "Costs more than Terset": a plus is a Terset win, in the accent tone; a format cheaper than Terset stays plain and muted. */
+.acc .bt td.terset-cheaper { color: var(--accent); font-weight: 700; }
+.acc .bt td.terset-pricier { color: var(--muted-fg); }
+/* The upstream commit is 40 characters with no break point; let it wrap on phones. */
+.acc-method code { overflow-wrap: anywhere; }
+
+/* Proof charts on /benchmark and home: big numbers, cost bars, data sets. Bars start at zero.
+   Wins in the accent and bold; losses plain and visible; ties carry the word. */
+.tok { display: inline-flex; align-items: center; vertical-align: middle; margin-left: var(--s-2); padding: 0 8px; min-height: 22px; border: 1px solid var(--line); border-radius: 99px; background: var(--tint-soft); color: var(--fg-2); font-size: 12px; font-weight: 700; letter-spacing: 0; white-space: nowrap; }
+h2.with-tag { text-wrap: balance; }
+.proof-first { margin-top: 0; }
+.doc-section > p { text-wrap: pretty; }
+
+.big-row { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-4); grid-template-columns: minmax(0, 1fr); }
+/* Each card: the metric named first, then one column per model split by a thin line, the model above its number. */
+@media (min-width: 900px) { .big-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); } }
+.big-n { display: grid; align-content: start; gap: var(--s-4); padding: var(--s-4) var(--s-5) var(--s-5); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--sh-1); min-width: 0; }
+.big-l { font-size: 13.5px; font-weight: var(--w-strong); color: var(--fg-2); line-height: 1.35; text-wrap: pretty; }
+.big-v { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.big-c { display: grid; align-content: start; gap: var(--s-2); min-width: 0; }
+.big-c:first-child { padding-right: var(--s-4); }
+.big-c + .big-c { padding-left: var(--s-4); border-left: 1px solid var(--line); }
+.big-c small { font-size: 12.5px; font-weight: var(--w-strong); color: var(--muted-fg); line-height: 1.2; }
+.big-c b { font-size: clamp(28px, 2.6vw, 38px); font-weight: var(--w-head); letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--fg); white-space: nowrap; }
+.big-n.win .big-c b { color: var(--accent); }
+.big-t { margin-left: 2px; font-size: .5em; font-weight: var(--w-strong); letter-spacing: 0; color: var(--muted-fg); }
+.big .tbl-note { margin-top: var(--s-3); text-wrap: pretty; }
+
+.cost { margin: 0; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--sh-1); padding: var(--s-5) var(--s-4) var(--s-4); min-width: 0; }
+@media (min-width: 768px) { .cost { padding: var(--s-6) var(--s-6) var(--s-5); } }
+.cost-grid { display: grid; gap: var(--s-6); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .cost-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cost-model { min-width: 0; }
+.cost-model h3, .ds-model h3 { font-size: 16px; font-weight: var(--w-head); letter-spacing: -.01em; }
+.cost-bars { list-style: none; margin: var(--s-3) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+.cost-bar { display: grid; grid-template-columns: 104px minmax(0, 1fr) 92px; align-items: center; gap: var(--s-3); min-height: 30px; }
+.cost-l { font-size: 13.5px; font-weight: 650; color: var(--fg-2); }
+.cost-t { display: block; height: 14px; min-width: 0; }
+.cost-t i { display: block; height: 100%; width: calc(100% * var(--f)); min-width: 2px; border-radius: 0 4px 4px 0; background: var(--c-other-bar); }
+.cost-v { display: grid; justify-items: end; gap: 1px; font-variant-numeric: tabular-nums; }
+.cost-v b { font-size: 14px; font-weight: 400; color: var(--fg); }
+.cost-v small { font-size: 11.5px; font-weight: 600; color: var(--muted-fg); white-space: nowrap; }
+/* As in the token chart: the lowest cost per model is bold, and a gray bar one step stronger. */
+.cost-bar.min .cost-t i { background: var(--c-other-bar-strong); }
+.cost-bar.min .cost-v b { font-weight: 700; }
+.cost-bar.terset .cost-l { color: var(--accent); font-weight: 700; }
+.cost-bar.terset .cost-v b { color: var(--accent); }
+.cost-bar.terset .cost-t i { background: linear-gradient(90deg, var(--blue-1), var(--blue-2)); }
+.cost .tbl-note { margin-top: var(--s-4); text-wrap: pretty; }
+.cost-h { font-size: 17px; font-weight: var(--w-head); letter-spacing: -.01em; margin-bottom: var(--s-4); text-wrap: balance; }
+
+.ds { margin: 0; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--sh-1); padding: var(--s-5) var(--s-4) var(--s-4); min-width: 0; }
+@media (min-width: 768px) { .ds { padding: var(--s-6) var(--s-6) var(--s-5); } }
+.ds-grid { display: grid; gap: var(--s-7) var(--s-6); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) { .ds-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ds-model { min-width: 0; }
+.ds-model h3 { display: flex; flex-wrap: wrap; align-items: center; row-gap: var(--s-1); }
+.ds-model h3 .tok { margin-left: var(--s-2); }
+.ds-sum { margin-top: var(--s-2); font-size: 13.5px; font-weight: 600; color: var(--fg-2); text-wrap: pretty; }
+/* One row per data set: the name, then a TOON bar and a JSON bar from the shared zero line. */
+.ds-rows { list-style: none; margin: var(--s-1) 0 0; padding: 0; display: grid; }
+.ds-row, .ds-axis { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-1); }
+.ds-row { padding: var(--s-2) 0; border-top: 1px solid var(--line); }
+@media (min-width: 560px) { .ds-row, .ds-axis { grid-template-columns: 168px minmax(0, 1fr); gap: var(--s-3); align-items: center; } }
+.ds-l { font-size: 13.5px; font-weight: 650; line-height: 1.3; }
+.ds-b { display: grid; gap: 3px; min-width: 0; }
+.dv { display: grid; grid-template-columns: 40px minmax(0, 1fr) 58px; align-items: center; gap: var(--s-2); height: 16px; }
+.dv-n { font-size: 11px; font-weight: 700; color: var(--muted-fg); }
+.dv-t { position: relative; height: 100%; min-width: 0; }
+.dv-t::before { content: ""; position: absolute; top: -2px; bottom: -2px; left: calc(100% * var(--z)); width: 1px; background: var(--border-strong); }
+.dv-t i { position: absolute; top: 2px; height: 12px; width: calc(100% * var(--w)); }
+.dv.fewer .dv-t i { right: calc(100% * (1 - var(--z))); border-radius: 4px 0 0 4px; background: linear-gradient(270deg, var(--blue-1), var(--blue-2)); }
+.dv.more .dv-t i { left: calc(100% * var(--z)); border-radius: 0 4px 4px 0; background: var(--c-other-bar); }
+.dv-v { font-size: 12.5px; font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--fg-2); }
+.dv.fewer .dv-v { color: var(--accent); font-weight: 700; }
+.dv.tie .dv-v { color: var(--muted-fg); }
+.dv.more .dv-v { color: var(--fg); }
+/* The scale above the rows: the saving limit, zero and the loss limit, over the bar column only. */
+.ds-axis { margin-top: var(--s-3); }
+.ds-axis::before { content: ""; }
+@media (max-width: 559.98px) { .ds-axis::before { display: none; } }
+.ds-axis-t { position: relative; display: block; height: 16px; margin: 0 calc(58px + var(--s-2)) 0 calc(40px + var(--s-2)); font-size: 11px; font-weight: 650; color: var(--muted-fg); font-variant-numeric: tabular-nums; }
+.ds-axis-t span { position: absolute; top: 0; white-space: nowrap; }
+.ds-axis-t .lo { left: 0; }
+.ds-axis-t .zero { left: calc(100% * var(--z)); transform: translateX(-50%); }
+.ds-axis-t .hi { right: 0; }
+/* On a phone the gain side is too short for two labels; the zero line and each row's value still show it. */
+@media (max-width: 559.98px) { .ds-axis-t .hi { display: none; } }
+.ds .tbl-note { margin-top: var(--s-4); text-wrap: pretty; }
+
+/* "Show full tables": every table on the page behind one toggle. */
+details.tbl.full { margin-top: 0; }
+details.tbl.full > summary { font-size: 15px; }
+.full-body { display: grid; gap: var(--s-5); margin-top: var(--s-4); }
+.full-bench .tbl-h { margin-top: var(--s-4); }
+
+/* Counter switch: picks which counts the bars and tables show. Two buttons, one pressed. */
+.ctr { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-top: var(--s-4); padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--tint-soft); max-width: 100%; }
+.ctr button { position: relative; min-height: var(--ctl-xs); padding: 0 var(--s-3); border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--fg-2); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.ctr button::after { content: ""; position: absolute; left: 0; right: 0; top: calc(50% - var(--hit) / 2); bottom: calc(50% - var(--hit) / 2); }
+.ctr button:hover { color: var(--fg); }
+.ctr button[aria-pressed="true"] { background: var(--surface); border-color: var(--line); color: var(--fg); box-shadow: var(--sh-1); }
+.ctr button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+/* Pending: no bars, a clear label instead */
+.chart.pending .legend { display: none; }
+.chart-pending { display: grid; justify-items: start; gap: var(--s-2); margin-top: var(--s-4); padding: var(--s-5) var(--s-4); border: 1.5px dashed var(--line); border-radius: 12px; background: var(--tint-soft); }
+.chart-pending b { font-size: 18px; font-weight: var(--w-head); letter-spacing: -.015em; }
+.chart-pending p { margin: 0; font-size: 14px; color: var(--fg-2); }
+.pill { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); }
+
+/* Short handles demo on /agents. Each block sits one step below the last, the tables
+   and code share the raw file list's width, and the measured result starts a clear break. */
+/* Two classes, so the shared .steps-list margin reset in docs.css does not undo the gap. */
+.doc-section.handles > * + * { margin-top: var(--s-5); }
+.handles > .tablewrap, .handles > .code { max-width: 1000px; }
+.handles > .tablewrap { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.handles .bt tbody tr:last-child > * { border-bottom: 0; }
+/* Headers and row labels may wrap, so the results table fits a phone without scrolling sideways.
+   The demo table keeps one line per cell: its long ids scroll inside the frame on purpose. */
+.handles .bt:not(.hd-demo) th { white-space: normal; }
+.handles .bt:not(.hd-demo) thead th { vertical-align: bottom; }
+.doc-section.handles > h3 { margin-top: var(--s-7); font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.015em; }
+.doc-section.handles > h3 + p { margin-top: var(--s-2); }
+/* Ids and names are text, so they line up on the left like any text column. */
+.hd-demo th, .hd-demo td { text-align: left; }
+.hd-demo td code { font-size: 12.5px; }
+.hd-demo tbody th { font-family: var(--mono); color: var(--accent); font-weight: 700; }
+.hd-answer code + code { margin-left: 8px; }
+.hd-answer code { font-size: .88em; overflow-wrap: anywhere; }

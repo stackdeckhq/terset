@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+<rect width="1200" height="630" fill="#0b0c0f"/>
+<svg x="79.64" y="114.64" width="104.73" height="104.73" viewBox="0 0 32 32" color="#eceef2"><g fill="currentColor"><rect x="5" y="5" width="22" height="6" rx="1.2"/><rect x="13" y="13" width="6" height="6" rx="1.2"/><rect x="13" y="21" width="6" height="6" rx="1.2"/><g opacity="0.22"><rect x="5" y="13" width="6" height="6" rx="1.2"/><rect x="21" y="13" width="6" height="6" rx="1.2"/><rect x="5" y="21" width="6" height="6" rx="1.2"/><rect x="21" y="21" width="6" height="6" rx="1.2"/></g></g></svg>
+<text x="188" y="185" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="52" font-weight="700" letter-spacing="-1.5" fill="#eceef2">terset</text>
+<text x="96" y="352" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="70" font-weight="780" letter-spacing="-2.5" fill="#eceef2">Same data.</text>
+<text x="96" y="432" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="70" font-weight="780" letter-spacing="-2.5" fill="#5cb4ff">Fewer tokens.</text>
+<text x="96" y="492" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="500" fill="#8b919e">Open source. On npm and PyPI.</text>
+<line x1="630" y1="131" x2="630" y2="499" stroke="#343945" stroke-width="2"/>
+<text x="743" y="180" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="68" font-weight="780" letter-spacing="-2" fill="#5cb4ff">21.7%</text>
+<text x="743" y="220" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="600" fill="#8b919e">fewer tokens than JSON</text>
+<text x="743" y="316" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="68" font-weight="780" letter-spacing="-2" fill="#5cb4ff">11 of 11</text>
+<text x="743" y="356" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="600" fill="#8b919e">cases smaller than TOON</text>
+<text x="743" y="452" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="68" font-weight="780" letter-spacing="-2" fill="#eceef2">243 of 244</text>
+<text x="743" y="492" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="600" fill="#8b919e">right answers. A tie with JSON.</text>
+</svg>

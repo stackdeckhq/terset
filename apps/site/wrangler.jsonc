@@ -1,0 +1,19 @@
+// Cloudflare Workers config for terset.dev. The Cloudflare Vite plugin reads this file at
+// build time and writes the deploy config under dist. The account id and API token come
+// from CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN in the environment, never this file.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "terset-site",
+  // The newest date the pinned workerd runtime supports.
+  "compatibility_date": "2026-11-01",
+  // The TanStack Start server bundle imports node:async_hooks and node:stream.
+  "compatibility_flags": ["nodejs_compat"],
+  // A custom entry that adds the security headers around the TanStack Start handler.
+  "main": "src/server.ts",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "terset.dev", "custom_domain": true }],
+  "observability": { "enabled": true },
+  // No usage telemetry from wrangler runs.
+  "send_metrics": false
+}

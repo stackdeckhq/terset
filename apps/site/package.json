@@ -1,0 +1,43 @@
+{
+  "name": "@terset/site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "count:claude": "node scripts/count-claude.ts",
+    "generate": "node scripts/generate-samples.ts",
+    "docs": "node scripts/build-llms.ts",
+    "dev": "node scripts/generate-samples.ts && node scripts/build-llms.ts && vite dev",
+    "build": "node scripts/generate-samples.ts && node scripts/build-llms.ts && vite build && node scripts/check-build.ts",
+    "preview": "vite preview",
+    "deploy:check": "WRANGLER_SEND_METRICS=false WRANGLER_SEND_ERROR_REPORTS=false WRANGLER_NO_SKILLS_UPDATE_PROMPTS=true wrangler deploy --dry-run",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@stackdeck/terset": "workspace:*",
+    "@tanstack/react-router": "1.170.46",
+    "@tanstack/react-start": "1.169.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.67.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@toon-format/toon": "4.4.0",
+    "@types/node": "24.10.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "gpt-tokenizer": "4.1.2",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vite": "8.3.5",
+    "wrangler": "4.156.1",
+    "yaml": "2.9.1"
+  }
+}

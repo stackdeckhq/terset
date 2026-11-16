@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ideas and features
+    url: https://github.com/stackdeckhq/terset/discussions
+    about: Start a discussion before writing code for a new feature.
+  - name: Security problem
+    url: https://github.com/stackdeckhq/terset/security/policy
+    about: Report it privately. Do not open a public issue.

@@ -1,0 +1,35 @@
+{
+  "name": "terset-workspace",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "bench": "pnpm --dir bench start",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p apps/site && tsc --noEmit -p bench",
+    "lint": "eslint . --max-warnings=0",
+    "test": "pnpm --dir packages/terset test && pnpm test:py && vitest run --maxWorkers=2 && pnpm check:docs",
+    "test:py": "python3 -B -m unittest discover -s packages/terset-py/tests -v",
+    "check:docs": "node apps/site/scripts/check-agent-docs.ts",
+    "numbers": "node apps/site/scripts/update-numbers.ts",
+    "accuracy": "node apps/site/scripts/update-accuracy.ts",
+    "bytes": "node apps/site/scripts/update-bytes.ts",
+    "docs:readme": "node apps/site/scripts/update-readmes.ts",
+    "build": "pnpm --dir packages/terset build && pnpm --dir apps/site build",
+    "deploy:check": "pnpm --dir apps/site run deploy:check",
+    "deploy": "pnpm build && pnpm --dir apps/site run deploy",
+    "generate": "pnpm --dir apps/site run generate && pnpm --dir apps/site run docs",
+    "gate": "pnpm generate && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm deploy:check"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@types/node": "24.10.1",
+    "eslint": "9.39.1",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.0",
+    "vitest": "4.1.12"
+  }
+}

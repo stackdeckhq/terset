@@ -1,0 +1,10 @@
+{
+  "id": "fake",
+  "api": "openai",
+  "price": {
+    "inputPerMillion": 2,
+    "outputPerMillion": 10,
+    "sourceUrl": "https://example.invalid/fixture-pricing",
+    "dateRead": "2026-11-12"
+  }
+}

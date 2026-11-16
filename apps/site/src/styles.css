@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-2);
+  --color-faint: var(--muted-fg);
+}
+
+@import './styles/tokens.css';
+@import './styles/base.css';
+@import './styles/home.css';
+@import './styles/bench.css';
+@import './styles/docs.css';
+@import './styles/docs-page.css';

@@ -1,0 +1,368 @@
+export type JsonValue = null | boolean | number | string | JsonValue[] | JsonObject;
+export type JsonObject = { [key: string]: JsonValue };
+export type JsonRoot = JsonObject | JsonValue[];
+
+const MAX_JSON_DEPTH = 500;
+const MAX_HEADER_SEGMENTS = 8;
+const DEPTH_ERROR = "Maximum JSON depth is 500.";
+
+/** The one rules line a model needs to read Terset text. Put it once, before the data. */
+export const RULES ="Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.";
+
+const sentences = RULES.split(". ");
+const BASE_RULES = `${sentences.slice(0, 5).join(". ")}.`;
+type RuleFeature = "keyed" | "nested";
+const addedRules: readonly [feature: RuleFeature, sentence: string][] = [
+  ["keyed", `${sentences[5]}.`],
+  ["nested", sentences[6]!],
+];
+
+/** The rules needed by this canonical text. Rejects the same text as decode. */
+export function rulesFor(text: string): string {
+  const features = new Set<RuleFeature>();
+  parseDocument(text, features);
+  return [BASE_RULES, ...addedRules.flatMap(([feature, sentence]) =>
+    features.has(feature) ? [sentence] : [])].join(" ");
+}
+
+function object(value: unknown): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+const KEY = /^[A-Za-z_$][A-Za-z0-9_$.-]*$/;
+// Each digit run has one way to match, so a failed match costs linear time.
+const NUMBER_LIKE = /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$/;
+const ENTRY_KEY = /^[A-Za-z_$][A-Za-z0-9_$.-]*/;
+const ENTRY_TAIL = /^(?:\[(\d+)\]|\{(\d+)\})?:([\s\S]*)$/;
+
+interface Entry { key: string; listCount: string | undefined; keyedCount: string | undefined; rest: string }
+
+// Scan quoted keys without the regex engine's stack limit on long strings.
+function matchEntry(text: string): Entry | null {
+  let end = 0;
+  if (text.startsWith('"')) {
+    end = 1;
+    while (end < text.length && text[end] !== '"') {
+      if (text[end] === "\\") {
+        end++;
+        if (end === text.length || "\n\r\u2028\u2029".includes(text[end]!)) return null;
+      }
+      end++;
+    }
+    if (end === text.length) return null;
+    end++;
+  } else {
+    const key = ENTRY_KEY.exec(text);
+    if (!key) return null;
+    end = key[0].length;
+  }
+  const tail = ENTRY_TAIL.exec(text.slice(end));
+  return tail ? { key: text.slice(0, end), listCount: tail[1], keyedCount: tail[2], rest: tail[3]! } : null;
+}
+// Under /u, this surrogate range matches only unpaired code units. Paired
+// astral text stays bare; lone surrogates need JSON escapes for UTF-8 safety.
+const TROUBLE = /[\u0000-\u001f\u007f\u0085\u2028\u2029\ud800-\udfff]/u;
+
+function bare(text: string): boolean {
+  return text.length > 0 && text.trim() === text && !TROUBLE.test(text)
+    && !/^["{[]/.test(text) && !NUMBER_LIKE.test(text)
+    && !["true", "false", "null", "undefined", "NaN", "Infinity", "-Infinity"].includes(text);
+}
+
+function keyText(key: string): string {
+  return KEY.test(key) ? key : JSON.stringify(key);
+}
+
+function cell(value: JsonValue): string {
+  if (typeof value === "string" && bare(value)) return value;
+  // JSON normalizes -0. Reject it up front instead of silently losing its sign.
+  return JSON.stringify(value);
+}
+
+function validate(value: unknown, depth = 0, ancestors = new Set<object>()): asserts value is JsonValue {
+  if (depth > MAX_JSON_DEPTH) throw new TypeError(DEPTH_ERROR);
+  if (value === null || typeof value === "string" || typeof value === "boolean") return;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value) || Object.is(value, -0)) throw new TypeError("Numbers must be finite and must not be negative zero.");
+    return;
+  }
+  if (typeof value !== "object") throw new TypeError("Expected JSON data.");
+  if (ancestors.has(value)) throw new TypeError("Cyclic JSON data.");
+  if (!Array.isArray(value) && Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) {
+    throw new TypeError("Expected a plain JSON object.");
+  }
+  if (Object.getOwnPropertySymbols(value).length) throw new TypeError("JSON has no symbol keys.");
+  ancestors.add(value);
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      if (!Object.hasOwn(value, i)) throw new TypeError("Sparse arrays are not JSON.");
+      validate(value[i], depth + 1, ancestors);
+    }
+  } else {
+    for (const entry of Object.values(value)) validate(entry, depth + 1, ancestors);
+  }
+  ancestors.delete(value);
+}
+
+/** One append-only header, in the original key order of every row. */
+function header(value: JsonValue): string[] | null {
+  if (!Array.isArray(value) || value.length < 2 || !value.every(object)) return null;
+  const fields: string[] = [];
+  const positions = new Map<string, number>();
+  for (const row of value) {
+    if (!object(row)) return null;
+    const keys = Object.keys(row);
+    let previous = -1;
+    for (const key of keys) {
+      let index = positions.get(key);
+      if (index === undefined) {
+        // Appending only keeps every prior row's key order intact.
+        index = fields.length;
+        fields.push(key);
+        positions.set(key, index);
+      }
+      if (index <= previous) return null;
+      previous = index;
+    }
+  }
+  return fields.length ? fields : null;
+}
+
+function safeId(text: string): boolean {
+  return text.length > 0 && text.trim() === text && !TROUBLE.test(text);
+}
+
+const utf8 = new TextEncoder();
+
+function simpleSegment(key: string): boolean {
+  return KEY.test(key) && !key.includes(".");
+}
+
+interface Column { path: string[]; values: (JsonValue | undefined)[] }
+
+function flatten(column: Column): Column[] {
+  const first = column.values[0];
+  if (column.path.length >= MAX_HEADER_SEGMENTS || !column.path.every(simpleSegment) || !object(first)) return [column];
+  const keys = Object.keys(first);
+  if (!keys.length || !keys.every(simpleSegment) || !column.values.every(value => object(value)
+    && JSON.stringify(Object.keys(value)) === JSON.stringify(keys))) return [column];
+  return keys.flatMap(key => flatten({
+    path: [...column.path, key],
+    values: column.values.map(value => object(value) ? value[key] : undefined),
+  }));
+}
+
+function table(rows: JsonObject[], keyed: boolean, entryKeys: string[] = [], maxBytes = Infinity): string | null {
+  const fields = header(rows);
+  if (!fields) return null;
+  // Flattening can only add columns. Tabs alone rule out wide sparse tables.
+  if (rows.length * (fields.length - 1) >= maxBytes) return null;
+  const columns = fields.flatMap(field => flatten({ path: [field], values: rows.map(row => Object.hasOwn(row, field) ? row[field] : undefined) }));
+  const ids = !keyed && columns[0]?.path.length === 1 && fields[0] === "id"
+    && rows.every(row => Object.keys(row)[0] === "id" && typeof row.id === "string"
+      && safeId(row.id) && (columns.length !== 1 || !matchEntry(row.id)));
+  const headings = columns.map((column, index) => {
+    const field = column.path[0]!;
+    if (column.path.length > 1) return column.path.join(".");
+    if (field.includes(".") || (index === 0 && field === "id" && !ids && !keyed)) return JSON.stringify(field);
+    return keyText(field);
+  });
+  if (keyed) headings.unshift("@key");
+  const lines = [headings.join("\t")];
+  for (let index = 0; index < rows.length; index++) {
+    const cells = columns.map((column, position) => {
+      const value = column.values[index];
+      if (value === undefined) return "";
+      if (position === 0 && ids && typeof value === "string") return value;
+      if (!keyed && columns.length === 1 && typeof value === "string" && matchEntry(value)) return JSON.stringify(value);
+      return cell(value);
+    });
+    if (keyed) cells.unshift(entryKeys[index]!);
+    lines.push(cells.join("\t"));
+  }
+  return lines.join("\n");
+}
+
+function listTable(value: JsonValue): string | null {
+  if (!Array.isArray(value) || !value.every(object)) return null;
+  const bytes = utf8.encode(JSON.stringify(value)).length;
+  const text = table(value, false, [], bytes);
+  return text !== null && utf8.encode(text).length < bytes ? text : null;
+}
+
+/** Encode a JSON object or array as Terset text. */
+export function encode(value: JsonRoot): string {
+  validate(value);
+  if (Array.isArray(value)) {
+    const text = listTable(value);
+    return text === null ? JSON.stringify(value) : `[${value.length}]\n${text}`;
+  }
+  if (!object(value)) throw new TypeError("Terset requires a root object or array.");
+  if (!Object.keys(value).length) return "{}";
+  return Object.entries(value).map(([key, entry]) => {
+    const name = keyText(key);
+    const list = listTable(entry);
+    if (list !== null && Array.isArray(entry)) return `${name}[${entry.length}]:\n${list}`;
+    const fallback = `${name}: ${cell(entry)}`;
+    if (!object(entry)) return fallback;
+    const keys = Object.keys(entry);
+    const rows = Object.values(entry);
+    if (keys.length < 2 || !keys.every(key => safeId(key) && !matchEntry(key)) || !rows.every(object)) return fallback;
+    const body = table(rows, true, keys, utf8.encode(fallback).length);
+    if (body === null) return fallback;
+    const keyed = `${name}{${keys.length}}:\n${body}`;
+    return utf8.encode(keyed).length < utf8.encode(fallback).length ? keyed : fallback;
+  }).join("\n");
+}
+
+function readCell(text: string): JsonValue {
+  if (!text) throw new SyntaxError("Empty values are allowed only as absent table cells.");
+  if (/^["{[]/.test(text) || /^(?:true|false|null)$/.test(text) || NUMBER_LIKE.test(text)) {
+    const value: unknown = JSON.parse(text);
+    validate(value);
+    return value;
+  }
+  if (!bare(text)) throw new SyntaxError("Invalid bare text.");
+  return text;
+}
+
+function readKey(text: string): string {
+  if (KEY.test(text)) return text;
+  const value: unknown = JSON.parse(text);
+  if (typeof value !== "string") throw new SyntaxError("Invalid field name.");
+  return value;
+}
+
+function set(target: JsonObject, key: string, value: JsonValue): void {
+  if (Object.hasOwn(target, key)) throw new SyntaxError(`Duplicate key ${key}.`);
+  Object.defineProperty(target, key, { value, enumerable: true, configurable: true, writable: true });
+}
+
+function setPath(target: JsonObject, path: string[], value: JsonValue): void {
+  if (!path.length) throw new SyntaxError("Empty column path.");
+  for (let index = 0; index < path.length; index++) {
+    const key = path[index]!;
+    if (index === path.length - 1) { set(target, key, value); return; }
+    if (!Object.hasOwn(target, key)) set(target, key, {});
+    const nested = target[key];
+    if (!object(nested)) throw new SyntaxError("Conflicting column paths.");
+    target = nested;
+  }
+}
+
+type HeaderTrie = Map<string, HeaderTrie | null>;
+
+function readTable(lines: string[], start: number, count: number, keyed: boolean, rowDepth: number, features?: Set<RuleFeature>): JsonRoot {
+  const rawHeader = lines[start];
+  if (rawHeader === undefined) throw new SyntaxError("Missing table header.");
+  const fields = rawHeader.split("\t");
+  if (keyed && fields.shift() !== "@key") throw new SyntaxError("Missing @key marker.");
+  if (!fields.length) throw new SyntaxError("Missing table fields.");
+  const paths = fields.map(field => {
+    const path = field.startsWith('"') ? [readKey(field)] : field.split(".", MAX_HEADER_SEGMENTS + 1);
+    if (path.length > MAX_HEADER_SEGMENTS) throw new SyntaxError("Maximum header path is 8 segments.");
+    if (rowDepth + path.length > MAX_JSON_DEPTH) throw new SyntaxError(DEPTH_ERROR);
+    return path;
+  });
+  if (keyed) features?.add("keyed");
+  if (paths.some(path => path.length > 1)) features?.add("nested");
+  const trie: HeaderTrie = new Map();
+  for (let index = 0; index < paths.length; index++) {
+    const path = paths[index]!;
+    if (!fields[index]!.startsWith('"') && !path.every(simpleSegment)) throw new SyntaxError("Invalid header.");
+    let node = trie;
+    for (const [position, segment] of path.entries()) {
+      const child = node.get(segment);
+      if (position === path.length - 1) {
+        if (child !== undefined) throw new SyntaxError("Duplicate or conflicting header.");
+        node.set(segment, null);
+      } else {
+        if (child === null) throw new SyntaxError("Duplicate or conflicting header.");
+        const next: HeaderTrie = child ?? new Map<string, HeaderTrie | null>();
+        if (child === undefined) node.set(segment, next);
+        node = next;
+      }
+    }
+  }
+  const ids = !keyed && fields[0] === "id";
+  const result: JsonRoot = keyed ? {} : [];
+  for (let index = 0; index < count; index++) {
+    const line = lines[start + 1 + index];
+    if (line === undefined) throw new SyntaxError("Row count mismatch.");
+    const cells = line.split("\t");
+    if (cells.length !== fields.length + (keyed ? 1 : 0)) throw new SyntaxError("Wrong cell count.");
+    const entryKey = keyed ? cells.shift() : undefined;
+    const row: JsonObject = {};
+    for (let column = 0; column < paths.length; column++) {
+      const raw = cells[column]!;
+      if (column === 0 && ids && !raw) throw new SyntaxError("Missing string id.");
+      if (raw !== "") setPath(row, paths[column]!, column === 0 && ids ? raw : readCell(raw));
+    }
+    if (Array.isArray(result)) result.push(row);
+    else {
+      if (entryKey === undefined || !safeId(entryKey) || matchEntry(entryKey)) throw new SyntaxError("Invalid entry key.");
+      set(result, entryKey, row);
+    }
+  }
+  return result;
+}
+
+function readCount(text: string): number {
+  const count = Number(text);
+  if (!Number.isSafeInteger(count) || count < 2) throw new SyntaxError("Invalid table count.");
+  return count;
+}
+
+function readDocument(text: string, features?: Set<RuleFeature>): JsonRoot {
+  const lines = text.split("\n");
+  const rootCount = lines.length > 1 ? /^\[(\d+)\]$/.exec(lines[0]!) : null;
+  let result: JsonRoot;
+  if (rootCount) {
+    const count = readCount(rootCount[1]!);
+    result = readTable(lines, 1, count, false, 1, features);
+    if (lines.length !== count + 2) throw new SyntaxError("Row count mismatch.");
+  } else if (text === "{}") result = {};
+  else if (text.startsWith("[")) {
+    const parsed: unknown = JSON.parse(text);
+    validate(parsed);
+    if (!Array.isArray(parsed)) throw new SyntaxError("Expected a JSON array.");
+    result = parsed;
+  } else {
+    result = {};
+    let index = 0;
+    while (index < lines.length) {
+      const match = matchEntry(lines[index++]!);
+      if (!match) throw new SyntaxError("Expected root field.");
+      const key = readKey(match.key);
+      const rest = match.rest;
+      if (match.listCount !== undefined || match.keyedCount !== undefined) {
+        if (rest !== "") throw new SyntaxError("Expected table header.");
+        const count = readCount((match.listCount ?? match.keyedCount)!);
+        set(result, key, readTable(lines, index, count, match.keyedCount !== undefined, 2, features));
+        index += count + 1;
+      } else {
+        if (!rest.startsWith(" ")) throw new SyntaxError("Expected scalar field.");
+        set(result, key, readCell(rest.slice(1)));
+      }
+    }
+  }
+  if (encode(result) !== text) throw new SyntaxError("Noncanonical Terset text.");
+  return result;
+}
+
+/** Strict canonical decoder. Rejected text always raises SyntaxError. */
+export function decode(text: string): JsonRoot {
+  return parseDocument(text);
+}
+
+function parseDocument(text: string, features?: Set<RuleFeature>): JsonRoot {
+  if (typeof text !== "string") throw new TypeError("Expected Terset text.");
+  try {
+    return readDocument(text, features);
+  } catch (error) {
+    if (error instanceof TypeError || error instanceof RangeError) {
+      throw new SyntaxError(error.message, { cause: error });
+    }
+    throw error;
+  }
+}

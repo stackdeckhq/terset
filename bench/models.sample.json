@@ -1,0 +1,24 @@
+{
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "api": "anthropic",
+      "price": {
+        "inputPerMillion": 4,
+        "outputPerMillion": 20,
+        "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "dateRead": "2026-11-12"
+      }
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "api": "openai",
+      "price": {
+        "inputPerMillion": 2,
+        "outputPerMillion": 10,
+        "sourceUrl": "https://developers.openai.com/api/docs/pricing",
+        "dateRead": "2026-11-12"
+      }
+    }
+  ]
+}

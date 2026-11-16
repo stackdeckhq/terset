@@ -1,0 +1,20 @@
+node_modules
+bench/results/
+.output/
+.env*
+!.env.example
+*.log
+.DS_Store
+dist/
+.wrangler/
+.dev.vars*
+.tanstack/
+apps/site/src/generated/
+# The local banned-name list. It stays on the machine; the public repo holds no such names.
+.banned.local.json
+.banned-agent-files.local.json
+# Python package outputs.
+packages/terset-py/**/__pycache__/
+packages/terset-py/**/*.egg-info/
+packages/terset-py/build/
+packages/terset-py/dist/

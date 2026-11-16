@@ -1,0 +1,124 @@
+/* Doc pages: format, benchmark, agents and the 404 page. */
+.doc { padding: clamp(48px, 7vw, 96px) var(--side) 0; }
+.doc-head { max-width: 720px; }
+.doc-head .kicker { font-size: var(--t-small); font-weight: 600; color: var(--accent); }
+.doc-head h1 { font-size: clamp(36px, 4.6vw, 56px); font-weight: var(--w-head); letter-spacing: -.035em; line-height: 1.05; margin-top: var(--s-3); text-wrap: balance; }
+.doc-head .lead { font-size: var(--t-lead); line-height: 1.55; color: var(--fg-2); margin-top: var(--s-4); text-wrap: pretty; }
+.doc-actions { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-5); align-items: center; }
+.doc-body { display: grid; gap: 40px; margin-top: clamp(48px, 6vw, 80px); }
+.doc-body > * { min-width: 0; }
+@media (min-width: 1100px) { .doc-body.with-toc { grid-template-columns: 220px minmax(0, 1fr); gap: 56px; } }
+
+.toc { display: none; }
+@media (min-width: 1100px) {
+  .toc { display: block; position: sticky; top: calc(var(--hdr) + 24px); align-self: start; max-height: calc(100vh - var(--hdr) - 48px); overflow: auto; }
+}
+.toc h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-fg); font-weight: 700; }
+.toc ol { list-style: none; margin: 10px 0 0; padding: 0; border-left: 1px solid var(--border); }
+.toc a { display: flex; align-items: center; min-height: 36px; padding: 0 0 0 14px; color: var(--fg-2); text-decoration: none; font-size: 14px; font-weight: 550; }
+.toc a:hover { color: var(--fg); }
+
+/* Markdown */
+.prose { max-width: 780px; font-size: 16px; line-height: 1.65; color: var(--fg); }
+.prose > * + *, .prose-part > * + * { margin-top: var(--s-4); }
+.prose h1 { display: none; }
+/* The same section rhythm as the other doc pages: one hairline, equal space on both sides. */
+.prose h2 { font-size: clamp(24px, 2.6vw, 30px); font-weight: var(--w-head); letter-spacing: -.025em; line-height: 1.2; margin-top: clamp(48px, 6vw, 80px); padding-top: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); }
+.prose > .prose-part:first-child > h2:first-child, .prose > .prose-part:first-child > h1 + h2 { margin-top: 0; padding-top: 0; border-top: 0; }
+.prose h3 { font-size: 19px; font-weight: var(--w-head); letter-spacing: -.015em; margin-top: 32px; }
+.prose h4 { font-size: 16px; font-weight: var(--w-strong); margin: 24px 0 0; }
+.prose p, .prose li { color: var(--fg-2); }
+.prose ul, .prose ol { padding-left: 22px; margin-bottom: 0; }
+.prose li + li { margin-top: 6px; }
+.prose a { font-weight: 600; overflow-wrap: anywhere; }
+.prose :not(pre) > code { font-size: .88em; background: var(--tint); color: var(--fg); border-radius: 5px; padding: 1px 5px; overflow-wrap: anywhere; }
+.prose strong { color: var(--fg); }
+.prose blockquote { margin-inline: 0; padding: var(--s-1) 0 var(--s-1) var(--s-4); border-left: 2px solid var(--border-strong); }
+.prose blockquote p { color: var(--fg); }
+.prose hr { border: 0; border-top: 1px solid var(--border); margin: 40px 0; }
+.prose .code { margin-top: 20px; }
+.prose .code pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.prose .code pre.scroll-x { white-space: pre; overflow-wrap: normal; }
+.prose .tablewrap { margin-top: 20px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.prose table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.prose th, .prose td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+/* The last row's header cell too, so no line ends short of the frame's rounded corner. */
+.prose tr:last-child > * { border-bottom: 0; }
+.prose thead th { font-size: 12.5px; color: var(--muted-fg); font-weight: 700; white-space: nowrap; }
+.prose td code { white-space: nowrap; }
+.prose .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.note { margin-top: 24px; padding: 16px 18px; border-radius: var(--r-md); background: var(--tint); color: var(--fg-2); font-size: 14.5px; max-width: 780px; }
+.note b { color: var(--fg); }
+.note code { font-size: 13px; background: var(--surface); border-radius: 5px; padding: 1px 5px; }
+
+/* Agents page: raw files as one scannable list. Name, purpose, size, then the tools.
+   Wide screens line the rows up under a header; small screens stack each row. */
+.raw-list, .raw-head { max-width: 1000px; }
+.raw-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.raw-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name size" "about about" "tools tools"; gap: 6px 12px; align-items: center; padding: 12px 16px; }
+.raw-list li + li { border-top: 1px solid var(--line); }
+.raw-name { grid-area: name; font-size: 14.5px; font-weight: 700; color: var(--fg); overflow-wrap: anywhere; }
+.raw-about { grid-area: about; font-size: 14px; color: var(--fg-2); line-height: 1.45; }
+.raw-size { grid-area: size; font-size: 13px; font-weight: 650; color: var(--muted-fg); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+/* The tools use the shared .card-actions row, so they sit on the right at every width. */
+.raw-tools { grid-area: tools; gap: var(--s-2); margin-top: 4px; }
+.raw-head { display: none; }
+@media (min-width: 900px) {
+  .raw-list li, .raw-head { grid-template-columns: 9.5rem minmax(0, 1fr) 6.5rem 13.5rem; grid-template-areas: "name about size tools"; gap: 16px; }
+  .raw-head { display: grid; padding: 0 17px 8px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-fg); }
+  .raw-head span:nth-child(3) { text-align: right; }
+  .raw-tools { margin-top: 0; flex-wrap: nowrap; }
+}
+/* One row on wide screens. The 8 px padding still holds the buttons' 44 px hit areas. */
+@media (min-width: 900px) { .raw-list li { padding-block: 8px; } }
+a.mini-btn { text-decoration: none; }
+
+/* Skill */
+.skill-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 16px; max-width: 1000px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+/* The card has no named areas, so the tools drop the "tools" area they use in the list. */
+.skill-card .raw-tools { grid-area: auto; grid-column: 1 / -1; margin-top: 0; }
+@media (min-width: 700px) { .skill-card { grid-template-columns: auto minmax(0, 1fr) auto; } .skill-card .raw-tools { grid-column: auto; } }
+.skill-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--tint); color: var(--primary); }
+.skill-t p:first-child { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.skill-t code { font-size: 15px; font-weight: 700; color: var(--fg); }
+.skill-t p + p { margin-top: 4px; font-size: 14px; color: var(--fg-2); }
+/* Markdown inside a section: code on the same 1000 px column as the cards, text at a reading measure. */
+.doc-section .prose { max-width: 1000px; }
+.doc-section .prose > p, .doc-section .prose > .prose-part > p { max-width: 72ch; }
+/* Sections follow home's rhythm: one hairline above each, the same space on both sides of it. */
+.doc-section { margin-top: clamp(48px, 6vw, 80px); }
+/* The page body already sits one section gap below the header. */
+.doc-section:first-child { margin-top: 0; }
+.doc-section + .doc-section { padding-top: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); }
+/* A section that only adds to the one above it, such as a toggle for its tables, sits close with no hairline. */
+.doc-section + .doc-section.follow { margin-top: var(--s-5); padding-top: 0; border-top: 0; }
+.doc-section > h2 { font-size: clamp(24px, 2.6vw, 30px); font-weight: var(--w-head); letter-spacing: -.025em; line-height: 1.2; margin-bottom: var(--s-4); }
+/* A section's intro line takes the width of the card or table it sits with. */
+.doc-section > p { color: var(--fg-2); margin-bottom: var(--s-5); max-width: 72ch; }
+/* Paragraphs in a row keep normal paragraph spacing; the larger gap is only before a card or table. */
+.doc-section > p:has(+ p) { margin-bottom: var(--s-3); }
+/* Findings and notes: one plain column on the heading's edge, no bullets. */
+.steps-list { margin: 0; padding-left: 0; list-style: none; max-width: 72ch; color: var(--fg-2); }
+.steps-list li + li { margin-top: var(--s-3); }
+.steps-list b { color: var(--fg); }
+.doc-section > figure + .steps-list { margin-top: var(--s-6); }
+/* The byte sizes follow a findings list: same text edge and width, with the list's own spacing. */
+.bytes-line { margin-top: var(--s-3); padding-left: 0; max-width: 72ch; color: var(--fg-2); text-wrap: pretty; }
+/* Method notes on /benchmark: the heading in a narrow column beside the notes on wide screens,
+   in smaller type, so the reference text reads as a quiet appendix. */
+.doc-section.notes > h2 { font-size: var(--t-h3); }
+.doc-section.notes .steps-list { font-size: 15px; line-height: 1.6; }
+@media (min-width: 1000px) {
+  .doc-section.notes { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--s-6); align-items: start; }
+  .doc-section.notes > h2 { margin-bottom: 0; }
+}
+.bytes-line b { color: var(--fg); }
+.doc-body .pcard { max-width: 1000px; }
+
+/* 404 */
+.lost { padding: clamp(64px, 10vw, 140px) var(--side); text-align: left; }
+.lost .code-n { font: 700 14px/1 var(--mono); color: var(--link); }
+.lost h1 { font-size: clamp(34px, 4.4vw, 52px); font-weight: var(--w-head); letter-spacing: -.035em; margin-top: 12px; }
+.lost p { font-size: 18px; color: var(--fg-2); margin-top: 14px; }
+.lost .actions { margin-top: 28px; }

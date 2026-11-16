@@ -1,0 +1,135 @@
+{
+  "status": "ready",
+  "tokenizer": "o200k_base",
+  "rulesTokens": 73,
+  "yamlVersion": "2.9.1",
+  "cases": [
+    {
+      "name": "UI text, uneven rows",
+      "json": 695,
+      "jsonPretty": 1190,
+      "yaml": 802,
+      "toon": 846,
+      "csv": 473,
+      "csvExact": false,
+      "terset": 507
+    },
+    {
+      "name": "UI text, uniform rows",
+      "json": 742,
+      "jsonPretty": 1261,
+      "yaml": 857,
+      "toon": 539,
+      "csv": 503,
+      "csvExact": true,
+      "terset": 537
+    },
+    {
+      "name": "Translation batch",
+      "json": 1450,
+      "jsonPretty": 2396,
+      "yaml": 1623,
+      "toon": 1660,
+      "csv": 1402,
+      "csvExact": false,
+      "terset": 1228
+    },
+    {
+      "name": "File list, short",
+      "json": 12806,
+      "jsonPretty": 16771,
+      "yaml": 14453,
+      "toon": 10643,
+      "csv": null,
+      "csvExact": null,
+      "terset": 9661
+    },
+    {
+      "name": "File list, long",
+      "json": 19627,
+      "jsonPretty": 23595,
+      "yaml": 22129,
+      "toon": 17476,
+      "csv": null,
+      "csvExact": null,
+      "terset": 16487
+    },
+    {
+      "name": "200 users",
+      "json": 6811,
+      "jsonPretty": 10610,
+      "yaml": 7983,
+      "toon": 5081,
+      "csv": 4677,
+      "csvExact": true,
+      "terset": 4721
+    },
+    {
+      "name": "Metrics, numbers and booleans",
+      "json": 4797,
+      "jsonPretty": 7557,
+      "yaml": 6115,
+      "toon": 2654,
+      "csv": 2530,
+      "csvExact": true,
+      "terset": 2572
+    },
+    {
+      "name": "Deep nested config",
+      "json": 371,
+      "jsonPretty": 653,
+      "yaml": 456,
+      "toon": 442,
+      "csv": null,
+      "csvExact": null,
+      "terset": 432
+    },
+    {
+      "name": "Mixed-type array",
+      "json": 85,
+      "jsonPretty": 170,
+      "yaml": 131,
+      "toon": 160,
+      "csv": null,
+      "csvExact": null,
+      "terset": 125
+    },
+    {
+      "name": "Reviews, long text",
+      "json": 4279,
+      "jsonPretty": 5119,
+      "yaml": 4787,
+      "toon": 3833,
+      "csv": 3768,
+      "csvExact": true,
+      "terset": 3804
+    },
+    {
+      "name": "Orders with line items",
+      "json": 4585,
+      "jsonPretty": 7749,
+      "yaml": 5673,
+      "toon": 4419,
+      "csv": 4951,
+      "csvExact": false,
+      "terset": 3971
+    }
+  ],
+  "samples": {
+    "orders": {
+      "json": 356,
+      "toon": 405,
+      "terset": 327
+    },
+    "servers": {
+      "json": 420,
+      "toon": 541,
+      "terset": 297
+    },
+    "config": {
+      "json": 99,
+      "toon": 118,
+      "terset": 139
+    }
+  }
+}

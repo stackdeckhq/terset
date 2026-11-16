@@ -1,0 +1,27 @@
+{
+  "datasets": [
+    "tabular",
+    "nested",
+    "analytics",
+    "github",
+    "event-logs",
+    "nested-config",
+    "keyed",
+    "nested-group"
+  ],
+  "gzipLevel": 9,
+  "totals": {
+    "terset": {
+      "raw": 62036,
+      "gzip": 25823
+    },
+    "toon": {
+      "raw": 75238,
+      "gzip": 26488
+    },
+    "json-compact": {
+      "raw": 104007,
+      "gzip": 28142
+    }
+  }
+}

@@ -1,0 +1,4093 @@
+[
+  {
+    "name": "nested columns at depth 8",
+    "input": [
+      {
+        "a": {
+          "a": {
+            "a": {
+              "a": {
+                "a": {
+                  "a": {
+                    "a": {
+                      "a": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "a": {
+          "a": {
+            "a": {
+              "a": {
+                "a": {
+                  "a": {
+                    "a": {
+                      "a": 2
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "encoded": "[2]\na.a.a.a.a.a.a.a\n1\n2"
+  },
+  {
+    "name": "nested columns at depth 9",
+    "input": [
+      {
+        "a": {
+          "a": {
+            "a": {
+              "a": {
+                "a": {
+                  "a": {
+                    "a": {
+                      "a": {
+                        "a": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "a": {
+          "a": {
+            "a": {
+              "a": {
+                "a": {
+                  "a": {
+                    "a": {
+                      "a": {
+                        "a": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "encoded": "[2]\na.a.a.a.a.a.a.a\n{\"a\":1}\n{\"a\":2}"
+  },
+  {
+    "name": "nested columns at depth 30",
+    "input": [
+      {
+        "a": {
+          "a": {
+            "a": {
+              "a": {
+                "a": {
+                  "a": {
+                    "a": {
+                      "a": {
+                        "a": {
+                          "a": {
+                            "a": {
+                              "a": {
+                                "a": {
+                                  "a": {
+                                    "a": {
+                                      "a": {
+                                        "a": {
+                                          "a": {
+                                            "a": {
+                                              "a": {
+                                                "a": {
+                                                  "a": {
+                                                    "a": {
+                                                      "a": {
+                                                        "a": {
+                                                          "a": {
+                                                            "a": {
+                                                              "a": {
+                                                                "a": {
+                                                                  "a": 1
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "a": {
+          "a": {
+            "a": {
+              "a": {
+                "a": {
+                  "a": {
+                    "a": {
+                      "a": {
+                        "a": {
+                          "a": {
+                            "a": {
+                              "a": {
+                                "a": {
+                                  "a": {
+                                    "a": {
+                                      "a": {
+                                        "a": {
+                                          "a": {
+                                            "a": {
+                                              "a": {
+                                                "a": {
+                                                  "a": {
+                                                    "a": {
+                                                      "a": {
+                                                        "a": {
+                                                          "a": {
+                                                            "a": {
+                                                              "a": {
+                                                                "a": {
+                                                                  "a": 2
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "encoded": "[2]\na.a.a.a.a.a.a.a\n{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":1}}}}}}}}}}}}}}}}}}}}}}\n{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":2}}}}}}}}}}}}}}}}}}}}}}"
+  },
+  {
+    "name": "emoji, astral, ZWJ, flags, skin tones",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "😀𝄞",
+          "summary": "😀𝄞"
+        },
+        {
+          "id": "2",
+          "name": "👩🏽‍💻👨‍👩‍👧‍👦🇪🇸",
+          "summary": "👩🏽‍💻👨‍👩‍👧‍👦🇪🇸"
+        }
+      ],
+      "text": "😀𝄞 | 👩🏽‍💻👨‍👩‍👧‍👦🇪🇸"
+    },
+    "encoded": "items[2]:\nid\tname\tsummary\n1\t😀𝄞\t😀𝄞\n2\t👩🏽‍💻👨‍👩‍👧‍👦🇪🇸\t👩🏽‍💻👨‍👩‍👧‍👦🇪🇸\ntext: 😀𝄞 | 👩🏽‍💻👨‍👩‍👧‍👦🇪🇸"
+  },
+  {
+    "name": "lone high and low surrogates",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "\ud800",
+          "summary": "\ud800"
+        },
+        {
+          "id": "2",
+          "name": "\udfff",
+          "summary": "\udfff"
+        }
+      ],
+      "text": "\ud800 | \udfff"
+    },
+    "encoded": "items[2]:\nid\tname\tsummary\n1\t\"\\ud800\"\t\"\\ud800\"\n2\t\"\\udfff\"\t\"\\udfff\"\ntext: \"\\ud800 | \\udfff\""
+  },
+  {
+    "name": "lone surrogate ids and keys",
+    "input": {
+      "\ud800": [
+        {
+          "id": "\udfff",
+          "\udfff": "\ud800"
+        }
+      ]
+    },
+    "encoded": "\"\\ud800\": [{\"id\":\"\\udfff\",\"\\udfff\":\"\\ud800\"}]"
+  },
+  {
+    "name": "combining marks, NFC and NFD",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "café",
+          "summary": "café"
+        },
+        {
+          "id": "2",
+          "name": "café",
+          "summary": "café"
+        },
+        {
+          "id": "3",
+          "name": "ạ̈",
+          "summary": "ạ̈"
+        }
+      ],
+      "text": "café | café | ạ̈"
+    },
+    "encoded": "items[3]:\nid\tname\tsummary\n1\tcafé\tcafé\n2\tcafé\tcafé\n3\tạ̈\tạ̈\ntext: café | café | ạ̈"
+  },
+  {
+    "name": "Turkish, German and Greek case traps",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "İ",
+          "summary": "İ"
+        },
+        {
+          "id": "2",
+          "name": "ı",
+          "summary": "ı"
+        },
+        {
+          "id": "3",
+          "name": "I",
+          "summary": "I"
+        },
+        {
+          "id": "4",
+          "name": "i",
+          "summary": "i"
+        },
+        {
+          "id": "5",
+          "name": "ß",
+          "summary": "ß"
+        },
+        {
+          "id": "6",
+          "name": "SS",
+          "summary": "SS"
+        },
+        {
+          "id": "7",
+          "name": "Σ",
+          "summary": "Σ"
+        },
+        {
+          "id": "8",
+          "name": "σ",
+          "summary": "σ"
+        },
+        {
+          "id": "9",
+          "name": "ς",
+          "summary": "ς"
+        }
+      ],
+      "text": "İ | ı | I | i | ß | SS | Σ | σ | ς"
+    },
+    "encoded": "items[9]:\nid\tname\tsummary\n1\tİ\tİ\n2\tı\tı\n3\tI\tI\n4\ti\ti\n5\tß\tß\n6\tSS\tSS\n7\tΣ\tΣ\n8\tσ\tσ\n9\tς\tς\ntext: İ | ı | I | i | ß | SS | Σ | σ | ς"
+  },
+  {
+    "name": "Arabic, Hebrew and bidi controls",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "العربية",
+          "summary": "العربية"
+        },
+        {
+          "id": "2",
+          "name": "עברית",
+          "summary": "עברית"
+        },
+        {
+          "id": "3",
+          "name": "‪A‫B‬C‭D‮E",
+          "summary": "‪A‫B‬C‭D‮E"
+        },
+        {
+          "id": "4",
+          "name": "⁦A⁧B⁨C⁩D",
+          "summary": "⁦A⁧B⁨C⁩D"
+        }
+      ],
+      "text": "العربية | עברית | ‪A‫B‬C‭D‮E | ⁦A⁧B⁨C⁩D"
+    },
+    "encoded": "items[4]:\nid\tname\tsummary\n1\tالعربية\tالعربية\n2\tעברית\tעברית\n3\t‪A‫B‬C‭D‮E\t‪A‫B‬C‭D‮E\n4\t⁦A⁧B⁨C⁩D\t⁦A⁧B⁨C⁩D\ntext: العربية | עברית | ‪A‫B‬C‭D‮E | ⁦A⁧B⁨C⁩D"
+  },
+  {
+    "name": "invisible characters and Unicode edge spaces",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "x​y‌z‍",
+          "summary": "x​y‌z‍"
+        },
+        {
+          "id": "2",
+          "name": "﻿start",
+          "summary": "﻿start"
+        },
+        {
+          "id": "3",
+          "name": "mid﻿dle",
+          "summary": "mid﻿dle"
+        },
+        {
+          "id": "4",
+          "name": "soft­hyphen",
+          "summary": "soft­hyphen"
+        },
+        {
+          "id": "5",
+          "name": " edge ",
+          "summary": " edge "
+        },
+        {
+          "id": "6",
+          "name": "     　edge　",
+          "summary": "     　edge　"
+        }
+      ],
+      "text": "x​y‌z‍ | ﻿start | mid﻿dle | soft­hyphen |  edge  |      　edge　"
+    },
+    "encoded": "items[6]:\nid\tname\tsummary\n1\tx​y‌z‍\tx​y‌z‍\n2\t\"﻿start\"\t\"﻿start\"\n3\tmid﻿dle\tmid﻿dle\n4\tsoft­hyphen\tsoft­hyphen\n5\t\" edge \"\t\" edge \"\n6\t\"     　edge　\"\t\"     　edge　\"\ntext: \"x​y‌z‍ | ﻿start | mid﻿dle | soft­hyphen |  edge  |      　edge　\""
+  },
+  {
+    "name": "tab, LF, CR, CRLF and Unicode line breaks",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "a\tb",
+          "summary": "a\tb"
+        },
+        {
+          "id": "2",
+          "name": "a\nb",
+          "summary": "a\nb"
+        },
+        {
+          "id": "3",
+          "name": "a\rb",
+          "summary": "a\rb"
+        },
+        {
+          "id": "4",
+          "name": "a\r\nb",
+          "summary": "a\r\nb"
+        },
+        {
+          "id": "5",
+          "name": "a b",
+          "summary": "a b"
+        },
+        {
+          "id": "6",
+          "name": "a b",
+          "summary": "a b"
+        },
+        {
+          "id": "7",
+          "name": "ab",
+          "summary": "ab"
+        }
+      ],
+      "text": "a\tb | a\nb | a\rb | a\r\nb | a b | a b | ab"
+    },
+    "encoded": "items[7]:\nid\tname\tsummary\n1\t\"a\\tb\"\t\"a\\tb\"\n2\t\"a\\nb\"\t\"a\\nb\"\n3\t\"a\\rb\"\t\"a\\rb\"\n4\t\"a\\r\\nb\"\t\"a\\r\\nb\"\n5\t\"a b\"\t\"a b\"\n6\t\"a b\"\t\"a b\"\n7\t\"ab\"\t\"ab\"\ntext: \"a\\tb | a\\nb | a\\rb | a\\r\\nb | a b | a b | ab\""
+  },
+  {
+    "name": "NUL, C0 controls and DEL",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "a\u0000b",
+          "summary": "a\u0000b"
+        },
+        {
+          "id": "2",
+          "name": "\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\u000b\f\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f",
+          "summary": "\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\u000b\f\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f"
+        }
+      ],
+      "text": "a\u0000b | \u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\u000b\f\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f"
+    },
+    "encoded": "items[2]:\nid\tname\tsummary\n1\t\"a\\u0000b\"\t\"a\\u0000b\"\n2\t\"\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\b\\u000b\\f\\u000e\\u000f\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f\"\t\"\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\b\\u000b\\f\\u000e\\u000f\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f\"\ntext: \"a\\u0000b | \\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\b\\u000b\\f\\u000e\\u000f\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f\""
+  },
+  {
+    "name": "quotes, delimiters, header and list lookalikes",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "\"",
+          "summary": "\""
+        },
+        {
+          "id": "2",
+          "name": "quotes \" and \\ slash",
+          "summary": "quotes \" and \\ slash"
+        },
+        {
+          "id": "3",
+          "name": "{start",
+          "summary": "{start"
+        },
+        {
+          "id": "4",
+          "name": "[start",
+          "summary": "[start"
+        },
+        {
+          "id": "5",
+          "name": "- item",
+          "summary": "- item"
+        },
+        {
+          "id": "6",
+          "name": "# comment",
+          "summary": "# comment"
+        },
+        {
+          "id": "7",
+          "name": ":",
+          "summary": ":"
+        },
+        {
+          "id": "8",
+          "name": "a: b",
+          "summary": "a: b"
+        },
+        {
+          "id": "9",
+          "name": "id\tname",
+          "summary": "id\tname"
+        },
+        {
+          "id": "10",
+          "name": "items:",
+          "summary": "items:"
+        }
+      ],
+      "text": "\" | quotes \" and \\ slash | {start | [start | - item | # comment | : | a: b | id\tname | items:"
+    },
+    "encoded": "items[10]:\nid\tname\tsummary\n1\t\"\\\"\"\t\"\\\"\"\n2\tquotes \" and \\ slash\tquotes \" and \\ slash\n3\t\"{start\"\t\"{start\"\n4\t\"[start\"\t\"[start\"\n5\t- item\t- item\n6\t# comment\t# comment\n7\t:\t:\n8\ta: b\ta: b\n9\t\"id\\tname\"\t\"id\\tname\"\n10\titems:\titems:\ntext: \"\\\" | quotes \\\" and \\\\ slash | {start | [start | - item | # comment | : | a: b | id\\tname | items:\""
+  },
+  {
+    "name": "text that looks like scalar types",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "true",
+          "summary": "true"
+        },
+        {
+          "id": "2",
+          "name": "false",
+          "summary": "false"
+        },
+        {
+          "id": "3",
+          "name": "null",
+          "summary": "null"
+        },
+        {
+          "id": "4",
+          "name": "007",
+          "summary": "007"
+        },
+        {
+          "id": "5",
+          "name": "+5",
+          "summary": "+5"
+        },
+        {
+          "id": "6",
+          "name": "1e5",
+          "summary": "1e5"
+        },
+        {
+          "id": "7",
+          "name": ".5",
+          "summary": ".5"
+        },
+        {
+          "id": "8",
+          "name": "-0",
+          "summary": "-0"
+        },
+        {
+          "id": "9",
+          "name": "NaN",
+          "summary": "NaN"
+        },
+        {
+          "id": "10",
+          "name": "Infinity",
+          "summary": "Infinity"
+        },
+        {
+          "id": "11",
+          "name": "undefined",
+          "summary": "undefined"
+        },
+        {
+          "id": "12",
+          "name": "",
+          "summary": ""
+        },
+        {
+          "id": "13",
+          "name": "12",
+          "summary": "12"
+        },
+        {
+          "id": "14",
+          "name": "c3",
+          "summary": "c3"
+        }
+      ],
+      "text": "true | false | null | 007 | +5 | 1e5 | .5 | -0 | NaN | Infinity | undefined |  | 12 | c3"
+    },
+    "encoded": "items[14]:\nid\tname\tsummary\n1\t\"true\"\t\"true\"\n2\t\"false\"\t\"false\"\n3\t\"null\"\t\"null\"\n4\t\"007\"\t\"007\"\n5\t\"+5\"\t\"+5\"\n6\t\"1e5\"\t\"1e5\"\n7\t\".5\"\t\".5\"\n8\t\"-0\"\t\"-0\"\n9\t\"NaN\"\t\"NaN\"\n10\t\"Infinity\"\t\"Infinity\"\n11\t\"undefined\"\t\"undefined\"\n12\t\"\"\t\"\"\n13\t\"12\"\t\"12\"\n14\tc3\tc3\ntext: true | false | null | 007 | +5 | 1e5 | .5 | -0 | NaN | Infinity | undefined |  | 12 | c3"
+  },
+  {
+    "name": "handle-looking text",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "12",
+          "summary": "12"
+        },
+        {
+          "id": "2",
+          "name": "c3",
+          "summary": "c3"
+        },
+        {
+          "id": "3",
+          "name": "move 4 to c2",
+          "summary": "move 4 to c2"
+        },
+        {
+          "id": "4",
+          "name": "1",
+          "summary": "1"
+        },
+        {
+          "id": "5",
+          "name": "c1",
+          "summary": "c1"
+        }
+      ],
+      "text": "12 | c3 | move 4 to c2 | 1 | c1"
+    },
+    "encoded": "items[5]:\nid\tname\tsummary\n1\t\"12\"\t\"12\"\n2\tc3\tc3\n3\tmove 4 to c2\tmove 4 to c2\n4\t\"1\"\t\"1\"\n5\tc1\tc1\ntext: 12 | c3 | move 4 to c2 | 1 | c1"
+  },
+  {
+    "name": "dangerous, empty, Unicode and normalized keys",
+    "input": {
+      "__proto__": {
+        "__proto__": "value"
+      },
+      "constructor": {
+        "constructor": "value"
+      },
+      "toString": {
+        "toString": "value"
+      },
+      "": {
+        "": "value"
+      },
+      "a b": {
+        "a b": "value"
+      },
+      "a\tb": {
+        "a\tb": "value"
+      },
+      "中文": {
+        "中文": "value"
+      },
+      "é": {
+        "é": "value"
+      },
+      "é": {
+        "é": "value"
+      }
+    },
+    "encoded": "__proto__: {\"__proto__\":\"value\"}\nconstructor: {\"constructor\":\"value\"}\ntoString: {\"toString\":\"value\"}\n\"\": {\"\":\"value\"}\n\"a b\": {\"a b\":\"value\"}\n\"a\\tb\": {\"a\\tb\":\"value\"}\n\"中文\": {\"中文\":\"value\"}\n\"é\": {\"é\":\"value\"}\n\"é\": {\"é\":\"value\"}"
+  },
+  {
+    "name": "empty text, absent field and null",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "text": "",
+          "other": null
+        },
+        {
+          "id": "2",
+          "other": "null"
+        }
+      ],
+      "empty": "",
+      "nil": null
+    },
+    "encoded": "items[2]:\nid\ttext\tother\n1\t\"\"\tnull\n2\t\t\"null\"\nempty: \"\"\nnil: null"
+  },
+  {
+    "name": "large, small and imprecise finite numbers",
+    "input": {
+      "values": [
+        1e+21,
+        1e-7,
+        9007199254740991,
+        9007199254740992,
+        0.30000000000000004
+      ]
+    },
+    "encoded": "values: [1e+21,1e-7,9007199254740991,9007199254740992,0.30000000000000004]"
+  },
+  {
+    "name": "empty and irregular shapes",
+    "input": {
+      "empty": [],
+      "object": {},
+      "one": [
+        {
+          "id": "1"
+        }
+      ],
+      "uneven": [
+        {
+          "id": "1",
+          "a": 2
+        },
+        {
+          "id": "2",
+          "b": 3,
+          "a": 4
+        }
+      ],
+      "nested": [
+        [
+          1,
+          [
+            2,
+            []
+          ]
+        ]
+      ],
+      "mixed": [
+        null,
+        "a",
+        {
+          "id": "3"
+        },
+        []
+      ]
+    },
+    "encoded": "empty: []\nobject: {}\none: [{\"id\":\"1\"}]\nuneven: [{\"id\":\"1\",\"a\":2},{\"id\":\"2\",\"b\":3,\"a\":4}]\nnested: [[1,[2,[]]]]\nmixed: [null,\"a\",{\"id\":\"3\"},[]]"
+  },
+  {
+    "name": "depth 500 boundary",
+    "recipe": {
+      "kind": "depth",
+      "depth": 499,
+      "leaf": "底"
+    }
+  },
+  {
+    "name": "100 kB text",
+    "recipe": {
+      "kind": "repeat-text",
+      "text": "ñ",
+      "count": 50000
+    }
+  },
+  {
+    "name": "5,000 rows",
+    "recipe": {
+      "kind": "rows",
+      "count": 5000,
+      "prefix": "資料 ",
+      "suffix": " 😀"
+    }
+  },
+  {
+    "name": "Spanish and CJK",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "España, año, pingüino",
+          "summary": "España, año, pingüino"
+        },
+        {
+          "id": "2",
+          "name": "日本語 中文 한국어",
+          "summary": "日本語 中文 한국어"
+        }
+      ],
+      "text": "España, año, pingüino | 日本語 中文 한국어"
+    },
+    "encoded": "items[2]:\nid\tname\tsummary\n1\tEspaña, año, pingüino\tEspaña, año, pingüino\n2\t日本語 中文 한국어\t日本語 中文 한국어\ntext: España, año, pingüino | 日本語 中文 한국어"
+  },
+  {
+    "name": "mixed-case extensions, multiple dots, dot-files and Unicode suffixes",
+    "input": {
+      "items": [
+        {
+          "id": "1",
+          "name": "scan.PdF",
+          "summary": "scan.PdF"
+        },
+        {
+          "id": "2",
+          "name": "Receta",
+          "summary": "Receta"
+        },
+        {
+          "id": "3",
+          "name": "scan.PdF",
+          "summary": "scan.PdF"
+        },
+        {
+          "id": "4",
+          "name": "Receta.PDF",
+          "summary": "Receta.PDF"
+        },
+        {
+          "id": "5",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "6",
+          "name": "Receta.txt",
+          "summary": "Receta.txt"
+        },
+        {
+          "id": "7",
+          "name": "archive.tar.GZ",
+          "summary": "archive.tar.GZ"
+        },
+        {
+          "id": "8",
+          "name": "Archivo",
+          "summary": "Archivo"
+        },
+        {
+          "id": "9",
+          "name": "archive.tar.GZ",
+          "summary": "archive.tar.GZ"
+        },
+        {
+          "id": "10",
+          "name": "Archivo.tar",
+          "summary": "Archivo.tar"
+        },
+        {
+          "id": "11",
+          "name": "report.final.PDF",
+          "summary": "report.final.PDF"
+        },
+        {
+          "id": "12",
+          "name": "Nuevo",
+          "summary": "Nuevo"
+        },
+        {
+          "id": "13",
+          "name": ".env",
+          "summary": ".env"
+        },
+        {
+          "id": "14",
+          "name": "Configuración",
+          "summary": "Configuración"
+        },
+        {
+          "id": "15",
+          "name": ".gitignore",
+          "summary": ".gitignore"
+        },
+        {
+          "id": "16",
+          "name": "Configuración",
+          "summary": "Configuración"
+        },
+        {
+          "id": "17",
+          "name": "name.",
+          "summary": "name."
+        },
+        {
+          "id": "18",
+          "name": "Nuevo",
+          "summary": "Nuevo"
+        },
+        {
+          "id": "19",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "20",
+          "name": "Nuevo.",
+          "summary": "Nuevo."
+        },
+        {
+          "id": "21",
+          "name": "東京.報告.PDF",
+          "summary": "東京.報告.PDF"
+        },
+        {
+          "id": "22",
+          "name": "東京の報告",
+          "summary": "東京の報告"
+        },
+        {
+          "id": "23",
+          "name": "café.PDF",
+          "summary": "café.PDF"
+        },
+        {
+          "id": "24",
+          "name": "café",
+          "summary": "café"
+        },
+        {
+          "id": "25",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "26",
+          "name": "  Nuevo  ",
+          "summary": "  Nuevo  "
+        },
+        {
+          "id": "27",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "28",
+          "name": "Nuevo.txt ",
+          "summary": "Nuevo.txt "
+        },
+        {
+          "id": "29",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "30",
+          "name": "",
+          "summary": ""
+        },
+        {
+          "id": "31",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "32",
+          "name": "   ",
+          "summary": "   "
+        },
+        {
+          "id": "33",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "34",
+          "name": "Nuevo.2024",
+          "summary": "Nuevo.2024"
+        },
+        {
+          "id": "35",
+          "name": "scan.pdf",
+          "summary": "scan.pdf"
+        },
+        {
+          "id": "36",
+          "name": "Nuevo.é",
+          "summary": "Nuevo.é"
+        },
+        {
+          "id": "37",
+          "name": "scan.pdf ",
+          "summary": "scan.pdf "
+        },
+        {
+          "id": "38",
+          "name": "Nuevo",
+          "summary": "Nuevo"
+        }
+      ],
+      "text": "scan.PdF | Receta | scan.PdF | Receta.PDF | scan.pdf | Receta.txt | archive.tar.GZ | Archivo | archive.tar.GZ | Archivo.tar | report.final.PDF | Nuevo | .env | Configuración | .gitignore | Configuración | name. | Nuevo | scan.pdf | Nuevo. | 東京.報告.PDF | 東京の報告 | café.PDF | café | scan.pdf |   Nuevo   | scan.pdf | Nuevo.txt  | scan.pdf |  | scan.pdf |     | scan.pdf | Nuevo.2024 | scan.pdf | Nuevo.é | scan.pdf  | Nuevo"
+    },
+    "encoded": "items[38]:\nid\tname\tsummary\n1\tscan.PdF\tscan.PdF\n2\tReceta\tReceta\n3\tscan.PdF\tscan.PdF\n4\tReceta.PDF\tReceta.PDF\n5\tscan.pdf\tscan.pdf\n6\tReceta.txt\tReceta.txt\n7\tarchive.tar.GZ\tarchive.tar.GZ\n8\tArchivo\tArchivo\n9\tarchive.tar.GZ\tarchive.tar.GZ\n10\tArchivo.tar\tArchivo.tar\n11\treport.final.PDF\treport.final.PDF\n12\tNuevo\tNuevo\n13\t.env\t.env\n14\tConfiguración\tConfiguración\n15\t.gitignore\t.gitignore\n16\tConfiguración\tConfiguración\n17\tname.\tname.\n18\tNuevo\tNuevo\n19\tscan.pdf\tscan.pdf\n20\tNuevo.\tNuevo.\n21\t東京.報告.PDF\t東京.報告.PDF\n22\t東京の報告\t東京の報告\n23\tcafé.PDF\tcafé.PDF\n24\tcafé\tcafé\n25\tscan.pdf\tscan.pdf\n26\t\"  Nuevo  \"\t\"  Nuevo  \"\n27\tscan.pdf\tscan.pdf\n28\t\"Nuevo.txt \"\t\"Nuevo.txt \"\n29\tscan.pdf\tscan.pdf\n30\t\"\"\t\"\"\n31\tscan.pdf\tscan.pdf\n32\t\"   \"\t\"   \"\n33\tscan.pdf\tscan.pdf\n34\tNuevo.2024\tNuevo.2024\n35\tscan.pdf\tscan.pdf\n36\tNuevo.é\tNuevo.é\n37\t\"scan.pdf \"\t\"scan.pdf \"\n38\tNuevo\tNuevo\ntext: scan.PdF | Receta | scan.PdF | Receta.PDF | scan.pdf | Receta.txt | archive.tar.GZ | Archivo | archive.tar.GZ | Archivo.tar | report.final.PDF | Nuevo | .env | Configuración | .gitignore | Configuración | name. | Nuevo | scan.pdf | Nuevo. | 東京.報告.PDF | 東京の報告 | café.PDF | café | scan.pdf |   Nuevo   | scan.pdf | Nuevo.txt  | scan.pdf |  | scan.pdf |     | scan.pdf | Nuevo.2024 | scan.pdf | Nuevo.é | scan.pdf  | Nuevo"
+  },
+  {
+    "name": "numeric ids in a root table",
+    "input": [
+      {
+        "id": 12,
+        "label": "12"
+      },
+      {
+        "id": 34,
+        "label": "true"
+      },
+      {
+        "id": 56,
+        "label": "null"
+      }
+    ],
+    "encoded": "[3]\n\"id\"\tlabel\n12\t\"12\"\n34\t\"true\"\n56\t\"null\""
+  },
+  {
+    "name": "no id, boolean/null and mixed scalar columns",
+    "input": {
+      "rows": [
+        {
+          "value": true,
+          "label": "same column"
+        },
+        {
+          "value": "true",
+          "label": "same column"
+        },
+        {
+          "value": 12,
+          "label": "same column"
+        },
+        {
+          "value": "12",
+          "label": "same column"
+        },
+        {
+          "value": null,
+          "label": "same column"
+        },
+        {
+          "value": "null",
+          "label": "same column"
+        },
+        {
+          "value": false,
+          "label": "same column"
+        },
+        {
+          "value": "",
+          "label": "same column"
+        }
+      ]
+    },
+    "encoded": "rows[8]:\nvalue\tlabel\ntrue\tsame column\n\"true\"\tsame column\n12\tsame column\n\"12\"\tsame column\nnull\tsame column\n\"null\"\tsame column\nfalse\tsame column\n\"\"\tsame column"
+  },
+  {
+    "name": "one field, absent first field and empty rows",
+    "input": [
+      {
+        "long_field": ""
+      },
+      {},
+      {
+        "long_field": null
+      },
+      {
+        "long_field": "null"
+      }
+    ],
+    "encoded": "[4]\nlong_field\n\"\"\n\nnull\n\"null\""
+  },
+  {
+    "name": "root table with tab and newline cells",
+    "input": [
+      {
+        "text": "a\tb",
+        "n": 1
+      },
+      {
+        "text": "a\nb",
+        "n": 2
+      },
+      {
+        "text": "a\r\nb",
+        "n": 3
+      }
+    ],
+    "encoded": "[3]\ntext\tn\n\"a\\tb\"\t1\n\"a\\nb\"\t2\n\"a\\r\\nb\"\t3"
+  },
+  {
+    "name": "mixed root array stays compact JSON",
+    "input": [
+      12,
+      "12",
+      true,
+      "true",
+      null,
+      "null",
+      [
+        1,
+        2
+      ],
+      {
+        "no_id": false
+      }
+    ],
+    "encoded": "[12,\"12\",true,\"true\",null,\"null\",[1,2],{\"no_id\":false}]"
+  },
+  {
+    "name": "typed id column versus bare string-id column",
+    "input": {
+      "typed": [
+        {
+          "id": 12
+        },
+        {
+          "id": "12"
+        },
+        {
+          "id": true
+        },
+        {
+          "id": "true"
+        },
+        {
+          "id": null
+        },
+        {
+          "id": "null"
+        }
+      ],
+      "strings": [
+        {
+          "id": "12"
+        },
+        {
+          "id": "true"
+        },
+        {
+          "id": "null"
+        }
+      ]
+    },
+    "encoded": "typed[6]:\n\"id\"\n12\n\"12\"\ntrue\n\"true\"\nnull\n\"null\"\nstrings[3]:\nid\n12\ntrue\nnull"
+  },
+  {
+    "name": "empty object",
+    "input": {},
+    "encoded": "{}"
+  },
+  {
+    "name": "empty array",
+    "input": [],
+    "encoded": "[]"
+  },
+  {
+    "name": "empty rows fallback",
+    "input": [
+      {},
+      {}
+    ],
+    "encoded": "[{},{}]"
+  },
+  {
+    "name": "single row fallback",
+    "input": [
+      {
+        "a": 1
+      }
+    ],
+    "encoded": "[{\"a\":1}]"
+  },
+  {
+    "name": "incompatible key order fallback",
+    "input": [
+      {
+        "a": 1,
+        "b": 2
+      },
+      {
+        "b": 3,
+        "a": 4
+      }
+    ],
+    "encoded": "[{\"a\":1,\"b\":2},{\"b\":3,\"a\":4}]"
+  },
+  {
+    "name": "wide sparse fallback",
+    "input": [
+      {
+        "field_0": 0
+      },
+      {
+        "field_1": 1
+      },
+      {
+        "field_2": 2
+      },
+      {
+        "field_3": 3
+      },
+      {
+        "field_4": 4
+      },
+      {
+        "field_5": 5
+      },
+      {
+        "field_6": 6
+      },
+      {
+        "field_7": 7
+      },
+      {
+        "field_8": 8
+      },
+      {
+        "field_9": 9
+      },
+      {
+        "field_10": 10
+      },
+      {
+        "field_11": 11
+      },
+      {
+        "field_12": 12
+      },
+      {
+        "field_13": 13
+      },
+      {
+        "field_14": 14
+      },
+      {
+        "field_15": 15
+      },
+      {
+        "field_16": 16
+      },
+      {
+        "field_17": 17
+      },
+      {
+        "field_18": 18
+      },
+      {
+        "field_19": 19
+      },
+      {
+        "field_20": 20
+      },
+      {
+        "field_21": 21
+      },
+      {
+        "field_22": 22
+      },
+      {
+        "field_23": 23
+      },
+      {
+        "field_24": 24
+      },
+      {
+        "field_25": 25
+      },
+      {
+        "field_26": 26
+      },
+      {
+        "field_27": 27
+      },
+      {
+        "field_28": 28
+      },
+      {
+        "field_29": 29
+      }
+    ],
+    "encoded": "[{\"field_0\":0},{\"field_1\":1},{\"field_2\":2},{\"field_3\":3},{\"field_4\":4},{\"field_5\":5},{\"field_6\":6},{\"field_7\":7},{\"field_8\":8},{\"field_9\":9},{\"field_10\":10},{\"field_11\":11},{\"field_12\":12},{\"field_13\":13},{\"field_14\":14},{\"field_15\":15},{\"field_16\":16},{\"field_17\":17},{\"field_18\":18},{\"field_19\":19},{\"field_20\":20},{\"field_21\":21},{\"field_22\":22},{\"field_23\":23},{\"field_24\":24},{\"field_25\":25},{\"field_26\":26},{\"field_27\":27},{\"field_28\":28},{\"field_29\":29}]"
+  },
+  {
+    "name": "integer key order",
+    "input": {
+      "2": 2,
+      "10": 10,
+      "z": {
+        "1": 1,
+        "4": 4,
+        "a": 3
+      },
+      "01": 0
+    },
+    "encoded": "\"2\": 2\n\"10\": 10\nz: {\"1\":1,\"4\":4,\"a\":3}\n\"01\": 0"
+  },
+  {
+    "name": "nested table cells",
+    "input": [
+      {
+        "order": "A",
+        "lines": [
+          {
+            "sku": "X"
+          }
+        ],
+        "info": {
+          "a": 1
+        }
+      },
+      {
+        "order": "B",
+        "lines": [],
+        "info": {}
+      }
+    ],
+    "encoded": "[2]\norder\tlines\tinfo\nA\t[{\"sku\":\"X\"}]\t{\"a\":1}\nB\t[]\t{}"
+  },
+  {
+    "name": "missing final cell",
+    "input": [
+      {
+        "long_field": ""
+      },
+      {}
+    ],
+    "encoded": "[2]\nlong_field\n\"\"\n"
+  },
+  {
+    "name": "missing first field",
+    "input": [
+      {},
+      {
+        "long_field": null
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\nnull"
+  },
+  {
+    "name": "nonleading id",
+    "input": [
+      {
+        "name": "Ada",
+        "id": "12"
+      },
+      {
+        "name": "Ben",
+        "id": 34
+      }
+    ],
+    "encoded": "[2]\nname\tid\nAda\t\"12\"\nBen\t34"
+  },
+  {
+    "name": "UTF-8 size selection",
+    "input": [
+      {
+        "中中0": 1,
+        "中中1": 1
+      },
+      {
+        "中中1": 1,
+        "中中2": 1
+      },
+      {
+        "中中2": 1,
+        "中中3": 1
+      },
+      {
+        "中中3": 1,
+        "中中4": 1
+      },
+      {
+        "中中4": 1,
+        "中中5": 1
+      },
+      {
+        "中中5": 1,
+        "中中6": 1
+      },
+      {
+        "中中6": 1,
+        "中中7": 1
+      },
+      {
+        "中中7": 1,
+        "中中8": 1
+      },
+      {
+        "中中8": 1,
+        "中中9": 1
+      }
+    ],
+    "encoded": "[9]\n\"中中0\"\t\"中中1\"\t\"中中2\"\t\"中中3\"\t\"中中4\"\t\"中中5\"\t\"中中6\"\t\"中中7\"\t\"中中8\"\t\"中中9\"\n1\t1\t\t\t\t\t\t\t\t\n\t1\t1\t\t\t\t\t\t\t\n\t\t1\t1\t\t\t\t\t\t\n\t\t\t1\t1\t\t\t\t\t\n\t\t\t\t1\t1\t\t\t\t\n\t\t\t\t\t1\t1\t\t\t\n\t\t\t\t\t\t1\t1\t\t\n\t\t\t\t\t\t\t1\t1\t\n\t\t\t\t\t\t\t\t1\t1"
+  },
+  {
+    "name": "number formatting boundaries",
+    "input": {
+      "values": [
+        1,
+        0.000001,
+        1e-7,
+        100000000000000000000,
+        1e+21,
+        1e+23,
+        5e-324,
+        1.7976931348623157e+308,
+        1000000000000000100,
+        0.10000000000000002,
+        2.2250738585072014e-308
+      ]
+    },
+    "encoded": "values: [1,0.000001,1e-7,100000000000000000000,1e+21,1e+23,5e-324,1.7976931348623157e+308,1000000000000000100,0.10000000000000002,2.2250738585072014e-308]"
+  },
+  {
+    "name": "array-index boundary keys",
+    "input": {
+      "4294967294": "index",
+      "4294967295": "ordinary",
+      "label": "middle"
+    },
+    "encoded": "\"4294967294\": index\n\"4294967295\": ordinary\nlabel: middle"
+  },
+  {
+    "name": "integer-like table keys",
+    "input": [
+      {
+        "2": 2,
+        "10": 10,
+        "4294967294": 4,
+        "4294967295": 5,
+        "label": "first",
+        "02": "02"
+      },
+      {
+        "2": 1,
+        "10": 20,
+        "4294967294": 3,
+        "4294967295": 6,
+        "label": "second",
+        "02": "03"
+      }
+    ],
+    "encoded": "[2]\n\"2\"\t\"10\"\t\"4294967294\"\t\"4294967295\"\tlabel\t\"02\"\n2\t10\t4\t5\tfirst\t\"02\"\n1\t20\t3\t6\tsecond\t\"03\""
+  },
+  {
+    "name": "signed root numbers",
+    "input": {
+      "negative": -7,
+      "fraction": -0.5,
+      "small": -1e-7,
+      "tiny": -5e-324,
+      "large": -1e+21,
+      "positive": 1.5e-7
+    },
+    "encoded": "negative: -7\nfraction: -0.5\nsmall: -1e-7\ntiny: -5e-324\nlarge: -1e+21\npositive: 1.5e-7"
+  },
+  {
+    "name": "signed table numbers",
+    "input": [
+      {
+        "negative": -7,
+        "small": -1e-7,
+        "positive": 1.5e-7
+      },
+      {
+        "negative": -0.5,
+        "small": -5e-324,
+        "positive": 0.000001
+      }
+    ],
+    "encoded": "[2]\nnegative\tsmall\tpositive\n-7\t-1e-7\t1.5e-7\n-0.5\t-5e-324\t0.000001"
+  },
+  {
+    "name": "equal-size table fallback",
+    "input": [
+      {
+        "a": 1
+      },
+      {
+        "b": 1
+      },
+      {
+        "c": 1
+      },
+      {
+        "d": 1
+      },
+      {
+        "e": 1
+      },
+      {}
+    ],
+    "encoded": "[{\"a\":1},{\"b\":1},{\"c\":1},{\"d\":1},{\"e\":1},{}]"
+  },
+  {
+    "name": "counted list next to fields",
+    "input": {
+      "before": true,
+      "rows": [
+        {
+          "name": "Ada"
+        },
+        {
+          "name": "Lin"
+        }
+      ],
+      "after": false
+    },
+    "encoded": "before: true\nrows[2]:\nname\nAda\nLin\nafter: false"
+  },
+  {
+    "name": "compact count lookalike",
+    "input": [
+      409
+    ],
+    "encoded": "[409]"
+  },
+  {
+    "name": "keyed table",
+    "input": {
+      "people": {
+        "ada": {
+          "name": "Ada",
+          "age": 32
+        },
+        "lin": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people{2}:\n@key\tname\tage\nada\tAda\t32\nlin\tLin\t29"
+  },
+  {
+    "name": "keyed empty rows and typed ids",
+    "input": {
+      "people": {
+        "007": {
+          "id": "true",
+          "name": "Ada",
+          "age": 32
+        },
+        "true": {
+          "id": 4,
+          "age": 29
+        },
+        "two words": {}
+      }
+    },
+    "encoded": "people{3}:\n@key\tid\tname\tage\n007\t\"true\"\tAda\t32\ntrue\t4\t\t29\ntwo words\t\t\t"
+  },
+  {
+    "name": "keyed size tie fallback",
+    "input": {
+      "map": {
+        "k0": {
+          "a": 1
+        },
+        "k1": {
+          "b": 1
+        },
+        "k2": {
+          "c": 1
+        },
+        "k3": {
+          "d": 1
+        },
+        "k4": {
+          "e": 1
+        },
+        "k5": {
+          "f": 1
+        }
+      }
+    },
+    "encoded": "map: {\"k0\":{\"a\":1},\"k1\":{\"b\":1},\"k2\":{\"c\":1},\"k3\":{\"d\":1},\"k4\":{\"e\":1},\"k5\":{\"f\":1}}"
+  },
+  {
+    "name": "keyed strictly smaller boundary",
+    "input": {
+      "map": {
+        "k0": {
+          "a": 1,
+          "b": 1
+        },
+        "k1": {
+          "b": 1
+        },
+        "k2": {
+          "c": 1
+        },
+        "k3": {
+          "d": 1
+        },
+        "k4": {
+          "e": 1
+        },
+        "k5": {
+          "f": 1
+        }
+      }
+    },
+    "encoded": "map{6}:\n@key\ta\tb\tc\td\te\tf\nk0\t1\t1\t\t\t\t\nk1\t\t1\t\t\t\t\nk2\t\t\t1\t\t\t\nk3\t\t\t\t1\t\t\nk4\t\t\t\t\t1\t\nk5\t\t\t\t\t\t1"
+  },
+  {
+    "name": "root map stays fields",
+    "input": {
+      "ada": {
+        "name": "Ada",
+        "age": 32
+      },
+      "lin": {
+        "name": "Lin",
+        "age": 29
+      }
+    },
+    "encoded": "ada: {\"name\":\"Ada\",\"age\":32}\nlin: {\"name\":\"Lin\",\"age\":29}"
+  },
+  {
+    "name": "recursive nested columns",
+    "input": [
+      {
+        "address": {
+          "city": "Paris",
+          "stats": {
+            "n": 1
+          }
+        }
+      },
+      {
+        "address": {
+          "city": "Rome",
+          "stats": {
+            "n": 2
+          }
+        }
+      }
+    ],
+    "encoded": "[2]\naddress.city\taddress.stats.n\nParis\t1\nRome\t2"
+  },
+  {
+    "name": "keyed nested columns and literal dotted fields",
+    "input": {
+      "rows": {
+        "first": {
+          "@key": "one",
+          "a.b": 1,
+          "a": {
+            "b": 2
+          }
+        },
+        "second": {
+          "@key": "two",
+          "a.b": 3,
+          "a": {
+            "b": 4
+          }
+        }
+      }
+    },
+    "encoded": "rows{2}:\n@key\t\"@key\"\t\"a.b\"\ta.b\nfirst\tone\t1\t2\nsecond\ttwo\t3\t4"
+  },
+  {
+    "name": "unsafe entry key \"\"",
+    "input": {
+      "people": {
+        "": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\"\":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "unsafe entry key \" edge\"",
+    "input": {
+      "people": {
+        " edge": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\" edge\":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "unsafe entry key \"edge \"",
+    "input": {
+      "people": {
+        "edge ": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\"edge \":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "unsafe entry key \"two\\twords\"",
+    "input": {
+      "people": {
+        "two\twords": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\"two\\twords\":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "unsafe entry key \"name:\"",
+    "input": {
+      "people": {
+        "name:": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\"name:\":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "unsafe entry key \"name[2]:\"",
+    "input": {
+      "people": {
+        "name[2]:": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\"name[2]:\":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "unsafe entry key \"name{2}:\"",
+    "input": {
+      "people": {
+        "name{2}:": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\"name{2}:\":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "unsafe entry key \"\\\"odd key\\\":\"",
+    "input": {
+      "people": {
+        "\"odd key\":": {
+          "name": "Ada",
+          "age": 32
+        },
+        "other": {
+          "name": "Lin",
+          "age": 29
+        }
+      }
+    },
+    "encoded": "people: {\"\\\"odd key\\\":\":{\"name\":\"Ada\",\"age\":32},\"other\":{\"name\":\"Lin\",\"age\":29}}"
+  },
+  {
+    "name": "nested column fallback 0",
+    "input": [
+      {
+        "address": {
+          "city": "Paris"
+        }
+      },
+      {}
+    ],
+    "encoded": "[2]\naddress\n{\"city\":\"Paris\"}\n"
+  },
+  {
+    "name": "nested column fallback 1",
+    "input": [
+      {
+        "address": {
+          "city": "Paris",
+          "country": "FR"
+        }
+      },
+      {
+        "address": {
+          "country": "IT",
+          "city": "Rome"
+        }
+      }
+    ],
+    "encoded": "[2]\naddress\n{\"city\":\"Paris\",\"country\":\"FR\"}\n{\"country\":\"IT\",\"city\":\"Rome\"}"
+  },
+  {
+    "name": "nested column fallback 2",
+    "input": [
+      {
+        "address": {}
+      },
+      {
+        "address": {}
+      }
+    ],
+    "encoded": "[2]\naddress\n{}\n{}"
+  },
+  {
+    "name": "nested column fallback 3",
+    "input": [
+      {
+        "address": {
+          "a.b": 1
+        }
+      },
+      {
+        "address": {
+          "a.b": 2
+        }
+      }
+    ],
+    "encoded": "[2]\naddress\n{\"a.b\":1}\n{\"a.b\":2}"
+  },
+  {
+    "name": "nested column fallback 4",
+    "input": [
+      {
+        "a.b": {
+          "city": "Paris"
+        }
+      },
+      {
+        "a.b": {
+          "city": "Rome"
+        }
+      }
+    ],
+    "encoded": "[2]\n\"a.b\"\n{\"city\":\"Paris\"}\n{\"city\":\"Rome\"}"
+  },
+  {
+    "name": "counted line lookalike name[2]:",
+    "input": {
+      "rows": [
+        {
+          "id": "name[2]:"
+        },
+        {
+          "id": "safe"
+        }
+      ],
+      "after": true
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"name[2]:\"\nsafe\nafter: true"
+  },
+  {
+    "name": "counted line lookalike name{2}:",
+    "input": {
+      "rows": [
+        {
+          "id": "name{2}:"
+        },
+        {
+          "id": "safe"
+        }
+      ],
+      "after": true
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"name{2}:\"\nsafe\nafter: true"
+  },
+  {
+    "name": "counted line lookalike \"odd key\"[2]:",
+    "input": {
+      "rows": [
+        {
+          "id": "\"odd key\"[2]:"
+        },
+        {
+          "id": "safe"
+        }
+      ],
+      "after": true
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\\"odd key\\\"[2]:\"\nsafe\nafter: true"
+  },
+  {
+    "name": "string 0 in ordinary column",
+    "input": [
+      {
+        "long_field": "😀𝄞"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n😀𝄞\nok"
+  },
+  {
+    "name": "string 0 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "😀𝄞"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n😀𝄞\nok\nnext: end"
+  },
+  {
+    "name": "string 1 in ordinary column",
+    "input": [
+      {
+        "long_field": "👩🏽‍💻👨‍👩‍👧‍👦🇪🇸"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n👩🏽‍💻👨‍👩‍👧‍👦🇪🇸\nok"
+  },
+  {
+    "name": "string 1 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "👩🏽‍💻👨‍👩‍👧‍👦🇪🇸"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n👩🏽‍💻👨‍👩‍👧‍👦🇪🇸\nok\nnext: end"
+  },
+  {
+    "name": "string 2 in ordinary column",
+    "input": [
+      {
+        "long_field": "\ud800"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\ud800\"\nok"
+  },
+  {
+    "name": "string 2 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "\ud800"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\ud800\"\nok\nnext: end"
+  },
+  {
+    "name": "string 3 in ordinary column",
+    "input": [
+      {
+        "long_field": "\udfff"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\udfff\"\nok"
+  },
+  {
+    "name": "string 3 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "\udfff"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\udfff\"\nok\nnext: end"
+  },
+  {
+    "name": "string 4 in ordinary column",
+    "input": [
+      {
+        "long_field": "café"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\ncafé\nok"
+  },
+  {
+    "name": "string 4 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "café"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\ncafé\nok\nnext: end"
+  },
+  {
+    "name": "string 5 in ordinary column",
+    "input": [
+      {
+        "long_field": "café"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\ncafé\nok"
+  },
+  {
+    "name": "string 5 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "café"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\ncafé\nok\nnext: end"
+  },
+  {
+    "name": "string 6 in ordinary column",
+    "input": [
+      {
+        "long_field": "ạ̈"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nạ̈\nok"
+  },
+  {
+    "name": "string 6 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "ạ̈"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nạ̈\nok\nnext: end"
+  },
+  {
+    "name": "string 7 in ordinary column",
+    "input": [
+      {
+        "long_field": "İ"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nİ\nok"
+  },
+  {
+    "name": "string 7 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "İ"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nİ\nok\nnext: end"
+  },
+  {
+    "name": "string 8 in ordinary column",
+    "input": [
+      {
+        "long_field": "ı"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nı\nok"
+  },
+  {
+    "name": "string 8 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "ı"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nı\nok\nnext: end"
+  },
+  {
+    "name": "string 9 in ordinary column",
+    "input": [
+      {
+        "long_field": "I"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nI\nok"
+  },
+  {
+    "name": "string 9 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "I"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nI\nok\nnext: end"
+  },
+  {
+    "name": "string 10 in ordinary column",
+    "input": [
+      {
+        "long_field": "i"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\ni\nok"
+  },
+  {
+    "name": "string 10 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "i"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\ni\nok\nnext: end"
+  },
+  {
+    "name": "string 11 in ordinary column",
+    "input": [
+      {
+        "long_field": "ß"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nß\nok"
+  },
+  {
+    "name": "string 11 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "ß"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nß\nok\nnext: end"
+  },
+  {
+    "name": "string 12 in ordinary column",
+    "input": [
+      {
+        "long_field": "SS"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nSS\nok"
+  },
+  {
+    "name": "string 12 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "SS"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nSS\nok\nnext: end"
+  },
+  {
+    "name": "string 13 in ordinary column",
+    "input": [
+      {
+        "long_field": "Σ"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nΣ\nok"
+  },
+  {
+    "name": "string 13 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "Σ"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nΣ\nok\nnext: end"
+  },
+  {
+    "name": "string 14 in ordinary column",
+    "input": [
+      {
+        "long_field": "σ"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nσ\nok"
+  },
+  {
+    "name": "string 14 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "σ"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nσ\nok\nnext: end"
+  },
+  {
+    "name": "string 15 in ordinary column",
+    "input": [
+      {
+        "long_field": "ς"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nς\nok"
+  },
+  {
+    "name": "string 15 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "ς"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nς\nok\nnext: end"
+  },
+  {
+    "name": "string 16 in ordinary column",
+    "input": [
+      {
+        "long_field": "العربية"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nالعربية\nok"
+  },
+  {
+    "name": "string 16 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "العربية"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nالعربية\nok\nnext: end"
+  },
+  {
+    "name": "string 17 in ordinary column",
+    "input": [
+      {
+        "long_field": "עברית"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nעברית\nok"
+  },
+  {
+    "name": "string 17 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "עברית"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nעברית\nok\nnext: end"
+  },
+  {
+    "name": "string 18 in ordinary column",
+    "input": [
+      {
+        "long_field": "‪A‫B‬C‭D‮E"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n‪A‫B‬C‭D‮E\nok"
+  },
+  {
+    "name": "string 18 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "‪A‫B‬C‭D‮E"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n‪A‫B‬C‭D‮E\nok\nnext: end"
+  },
+  {
+    "name": "string 19 in ordinary column",
+    "input": [
+      {
+        "long_field": "⁦A⁧B⁨C⁩D"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n⁦A⁧B⁨C⁩D\nok"
+  },
+  {
+    "name": "string 19 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "⁦A⁧B⁨C⁩D"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n⁦A⁧B⁨C⁩D\nok\nnext: end"
+  },
+  {
+    "name": "string 20 in ordinary column",
+    "input": [
+      {
+        "long_field": "x​y‌z‍"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nx​y‌z‍\nok"
+  },
+  {
+    "name": "string 20 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "x​y‌z‍"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nx​y‌z‍\nok\nnext: end"
+  },
+  {
+    "name": "string 21 in ordinary column",
+    "input": [
+      {
+        "long_field": "﻿start"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"﻿start\"\nok"
+  },
+  {
+    "name": "string 21 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "﻿start"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"﻿start\"\nok\nnext: end"
+  },
+  {
+    "name": "string 22 in ordinary column",
+    "input": [
+      {
+        "long_field": "mid﻿dle"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nmid﻿dle\nok"
+  },
+  {
+    "name": "string 22 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "mid﻿dle"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nmid﻿dle\nok\nnext: end"
+  },
+  {
+    "name": "string 23 in ordinary column",
+    "input": [
+      {
+        "long_field": "soft­hyphen"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nsoft­hyphen\nok"
+  },
+  {
+    "name": "string 23 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "soft­hyphen"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nsoft­hyphen\nok\nnext: end"
+  },
+  {
+    "name": "string 24 in ordinary column",
+    "input": [
+      {
+        "long_field": " edge "
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\" edge \"\nok"
+  },
+  {
+    "name": "string 24 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": " edge "
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\" edge \"\nok\nnext: end"
+  },
+  {
+    "name": "string 25 in ordinary column",
+    "input": [
+      {
+        "long_field": "     　edge　"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"     　edge　\"\nok"
+  },
+  {
+    "name": "string 25 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "     　edge　"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"     　edge　\"\nok\nnext: end"
+  },
+  {
+    "name": "string 26 in ordinary column",
+    "input": [
+      {
+        "long_field": "a\tb"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a\\tb\"\nok"
+  },
+  {
+    "name": "string 26 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a\tb"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a\\tb\"\nok\nnext: end"
+  },
+  {
+    "name": "string 27 in ordinary column",
+    "input": [
+      {
+        "long_field": "a\nb"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a\\nb\"\nok"
+  },
+  {
+    "name": "string 27 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a\nb"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a\\nb\"\nok\nnext: end"
+  },
+  {
+    "name": "string 28 in ordinary column",
+    "input": [
+      {
+        "long_field": "a\rb"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a\\rb\"\nok"
+  },
+  {
+    "name": "string 28 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a\rb"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a\\rb\"\nok\nnext: end"
+  },
+  {
+    "name": "string 29 in ordinary column",
+    "input": [
+      {
+        "long_field": "a\r\nb"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a\\r\\nb\"\nok"
+  },
+  {
+    "name": "string 29 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a\r\nb"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a\\r\\nb\"\nok\nnext: end"
+  },
+  {
+    "name": "string 30 in ordinary column",
+    "input": [
+      {
+        "long_field": "a b"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a b\"\nok"
+  },
+  {
+    "name": "string 30 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a b"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a b\"\nok\nnext: end"
+  },
+  {
+    "name": "string 31 in ordinary column",
+    "input": [
+      {
+        "long_field": "a b"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a b\"\nok"
+  },
+  {
+    "name": "string 31 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a b"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a b\"\nok\nnext: end"
+  },
+  {
+    "name": "string 32 in ordinary column",
+    "input": [
+      {
+        "long_field": "ab"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"ab\"\nok"
+  },
+  {
+    "name": "string 32 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "ab"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"ab\"\nok\nnext: end"
+  },
+  {
+    "name": "string 33 in ordinary column",
+    "input": [
+      {
+        "long_field": "a\u0000b"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a\\u0000b\"\nok"
+  },
+  {
+    "name": "string 33 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a\u0000b"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a\\u0000b\"\nok\nnext: end"
+  },
+  {
+    "name": "string 34 in ordinary column",
+    "input": [
+      {
+        "long_field": "\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\u000b\f\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\b\\u000b\\f\\u000e\\u000f\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f\"\nok"
+  },
+  {
+    "name": "string 34 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\u000b\f\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\b\\u000b\\f\\u000e\\u000f\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f\"\nok\nnext: end"
+  },
+  {
+    "name": "string 35 in ordinary column",
+    "input": [
+      {
+        "long_field": "\""
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\\"\"\nok"
+  },
+  {
+    "name": "string 35 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "\""
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n\"\nok\nnext: end"
+  },
+  {
+    "name": "string 36 in ordinary column",
+    "input": [
+      {
+        "long_field": "quotes \" and \\ slash"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nquotes \" and \\ slash\nok"
+  },
+  {
+    "name": "string 36 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "quotes \" and \\ slash"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nquotes \" and \\ slash\nok\nnext: end"
+  },
+  {
+    "name": "string 37 in ordinary column",
+    "input": [
+      {
+        "long_field": "{start"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"{start\"\nok"
+  },
+  {
+    "name": "string 37 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "{start"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n{start\nok\nnext: end"
+  },
+  {
+    "name": "string 38 in ordinary column",
+    "input": [
+      {
+        "long_field": "[start"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"[start\"\nok"
+  },
+  {
+    "name": "string 38 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "[start"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n[start\nok\nnext: end"
+  },
+  {
+    "name": "string 39 in ordinary column",
+    "input": [
+      {
+        "long_field": "- item"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n- item\nok"
+  },
+  {
+    "name": "string 39 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "- item"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n- item\nok\nnext: end"
+  },
+  {
+    "name": "string 40 in ordinary column",
+    "input": [
+      {
+        "long_field": "# comment"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n# comment\nok"
+  },
+  {
+    "name": "string 40 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "# comment"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n# comment\nok\nnext: end"
+  },
+  {
+    "name": "string 41 in ordinary column",
+    "input": [
+      {
+        "long_field": ":"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n:\nok"
+  },
+  {
+    "name": "string 41 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": ":"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n:\nok\nnext: end"
+  },
+  {
+    "name": "string 42 in ordinary column",
+    "input": [
+      {
+        "long_field": "a: b"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"a: b\"\nok"
+  },
+  {
+    "name": "string 42 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "a: b"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"a: b\"\nok\nnext: end"
+  },
+  {
+    "name": "string 43 in ordinary column",
+    "input": [
+      {
+        "long_field": "id\tname"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"id\\tname\"\nok"
+  },
+  {
+    "name": "string 43 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "id\tname"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"id\\tname\"\nok\nnext: end"
+  },
+  {
+    "name": "string 44 in ordinary column",
+    "input": [
+      {
+        "long_field": "items:"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"items:\"\nok"
+  },
+  {
+    "name": "string 44 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "items:"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"items:\"\nok\nnext: end"
+  },
+  {
+    "name": "string 45 in ordinary column",
+    "input": [
+      {
+        "long_field": "true"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"true\"\nok"
+  },
+  {
+    "name": "string 45 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "true"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\ntrue\nok\nnext: end"
+  },
+  {
+    "name": "string 46 in ordinary column",
+    "input": [
+      {
+        "long_field": "false"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"false\"\nok"
+  },
+  {
+    "name": "string 46 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "false"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nfalse\nok\nnext: end"
+  },
+  {
+    "name": "string 47 in ordinary column",
+    "input": [
+      {
+        "long_field": "null"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"null\"\nok"
+  },
+  {
+    "name": "string 47 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "null"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nnull\nok\nnext: end"
+  },
+  {
+    "name": "string 48 in ordinary column",
+    "input": [
+      {
+        "long_field": "007"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"007\"\nok"
+  },
+  {
+    "name": "string 48 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "007"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n007\nok\nnext: end"
+  },
+  {
+    "name": "string 49 in ordinary column",
+    "input": [
+      {
+        "long_field": "+5"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"+5\"\nok"
+  },
+  {
+    "name": "string 49 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "+5"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n+5\nok\nnext: end"
+  },
+  {
+    "name": "string 50 in ordinary column",
+    "input": [
+      {
+        "long_field": "1e5"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"1e5\"\nok"
+  },
+  {
+    "name": "string 50 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "1e5"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n1e5\nok\nnext: end"
+  },
+  {
+    "name": "string 51 in ordinary column",
+    "input": [
+      {
+        "long_field": ".5"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\".5\"\nok"
+  },
+  {
+    "name": "string 51 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": ".5"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n.5\nok\nnext: end"
+  },
+  {
+    "name": "string 52 in ordinary column",
+    "input": [
+      {
+        "long_field": "-0"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"-0\"\nok"
+  },
+  {
+    "name": "string 52 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "-0"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n-0\nok\nnext: end"
+  },
+  {
+    "name": "string 53 in ordinary column",
+    "input": [
+      {
+        "long_field": "NaN"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"NaN\"\nok"
+  },
+  {
+    "name": "string 53 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "NaN"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nNaN\nok\nnext: end"
+  },
+  {
+    "name": "string 54 in ordinary column",
+    "input": [
+      {
+        "long_field": "Infinity"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"Infinity\"\nok"
+  },
+  {
+    "name": "string 54 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "Infinity"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nInfinity\nok\nnext: end"
+  },
+  {
+    "name": "string 55 in ordinary column",
+    "input": [
+      {
+        "long_field": "undefined"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"undefined\"\nok"
+  },
+  {
+    "name": "string 55 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "undefined"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nundefined\nok\nnext: end"
+  },
+  {
+    "name": "string 56 in ordinary column",
+    "input": [
+      {
+        "long_field": ""
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\"\nok"
+  },
+  {
+    "name": "string 56 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": ""
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\"\nok\nnext: end"
+  },
+  {
+    "name": "string 57 in ordinary column",
+    "input": [
+      {
+        "long_field": "12"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"12\"\nok"
+  },
+  {
+    "name": "string 57 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "12"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n12\nok\nnext: end"
+  },
+  {
+    "name": "string 58 in ordinary column",
+    "input": [
+      {
+        "long_field": "c3"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nc3\nok"
+  },
+  {
+    "name": "string 58 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "c3"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nc3\nok\nnext: end"
+  },
+  {
+    "name": "string 59 in ordinary column",
+    "input": [
+      {
+        "long_field": "move 4 to c2"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nmove 4 to c2\nok"
+  },
+  {
+    "name": "string 59 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "move 4 to c2"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nmove 4 to c2\nok\nnext: end"
+  },
+  {
+    "name": "string 60 in ordinary column",
+    "input": [
+      {
+        "long_field": "__proto__"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n__proto__\nok"
+  },
+  {
+    "name": "string 60 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "__proto__"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n__proto__\nok\nnext: end"
+  },
+  {
+    "name": "string 61 in ordinary column",
+    "input": [
+      {
+        "long_field": "constructor"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nconstructor\nok"
+  },
+  {
+    "name": "string 61 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "constructor"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nconstructor\nok\nnext: end"
+  },
+  {
+    "name": "string 62 in ordinary column",
+    "input": [
+      {
+        "long_field": "toString"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\ntoString\nok"
+  },
+  {
+    "name": "string 62 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "toString"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\ntoString\nok\nnext: end"
+  },
+  {
+    "name": "string 63 in ordinary column",
+    "input": [
+      {
+        "long_field": "key with spaces"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nkey with spaces\nok"
+  },
+  {
+    "name": "string 63 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "key with spaces"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nkey with spaces\nok\nnext: end"
+  },
+  {
+    "name": "string 64 in ordinary column",
+    "input": [
+      {
+        "long_field": "key\twith tab"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"key\\twith tab\"\nok"
+  },
+  {
+    "name": "string 64 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "key\twith tab"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"key\\twith tab\"\nok\nnext: end"
+  },
+  {
+    "name": "string 65 in ordinary column",
+    "input": [
+      {
+        "long_field": "日本語 中文 한국어"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n日本語 中文 한국어\nok"
+  },
+  {
+    "name": "string 65 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "日本語 中文 한국어"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n日本語 中文 한국어\nok\nnext: end"
+  },
+  {
+    "name": "string 66 in ordinary column",
+    "input": [
+      {
+        "long_field": "España, año, pingüino"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nEspaña, año, pingüino\nok"
+  },
+  {
+    "name": "string 66 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "España, año, pingüino"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nEspaña, año, pingüino\nok\nnext: end"
+  },
+  {
+    "name": "string 67 in ordinary column",
+    "input": [
+      {
+        "long_field": "scan.PdF"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nscan.PdF\nok"
+  },
+  {
+    "name": "string 67 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "scan.PdF"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nscan.PdF\nok\nnext: end"
+  },
+  {
+    "name": "string 68 in ordinary column",
+    "input": [
+      {
+        "long_field": "archive.tar.GZ"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\narchive.tar.GZ\nok"
+  },
+  {
+    "name": "string 68 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "archive.tar.GZ"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\narchive.tar.GZ\nok\nnext: end"
+  },
+  {
+    "name": "string 69 in ordinary column",
+    "input": [
+      {
+        "long_field": ".env"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n.env\nok"
+  },
+  {
+    "name": "string 69 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": ".env"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n.env\nok\nnext: end"
+  },
+  {
+    "name": "string 70 in ordinary column",
+    "input": [
+      {
+        "long_field": ".gitignore"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n.gitignore\nok"
+  },
+  {
+    "name": "string 70 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": ".gitignore"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n.gitignore\nok\nnext: end"
+  },
+  {
+    "name": "string 71 in ordinary column",
+    "input": [
+      {
+        "long_field": "name."
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nname.\nok"
+  },
+  {
+    "name": "string 71 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "name."
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nname.\nok\nnext: end"
+  },
+  {
+    "name": "string 72 in ordinary column",
+    "input": [
+      {
+        "long_field": "東京.報告.PDF"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n東京.報告.PDF\nok"
+  },
+  {
+    "name": "string 72 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "東京.報告.PDF"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n東京.報告.PDF\nok\nnext: end"
+  },
+  {
+    "name": "string 73 in ordinary column",
+    "input": [
+      {
+        "long_field": "new..pdf"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\nnew..pdf\nok"
+  },
+  {
+    "name": "string 73 in id column",
+    "input": {
+      "rows": [
+        {
+          "id": "new..pdf"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\nnew..pdf\nok\nnext: end"
+  },
+  {
+    "name": "root line lookalike 0",
+    "input": [
+      {
+        "long_field": "\"\\q\": x"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\\"\\\\q\\\": x\"\nok"
+  },
+  {
+    "name": "id line lookalike 0",
+    "input": {
+      "rows": [
+        {
+          "id": "\"\\q\": x"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\\"\\\\q\\\": x\"\nok\nnext: end"
+  },
+  {
+    "name": "root line lookalike 1",
+    "input": [
+      {
+        "long_field": "\"\\u12\": x"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\\"\\\\u12\\\": x\"\nok"
+  },
+  {
+    "name": "id line lookalike 1",
+    "input": {
+      "rows": [
+        {
+          "id": "\"\\u12\": x"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\\"\\\\u12\\\": x\"\nok\nnext: end"
+  },
+  {
+    "name": "root line lookalike 2",
+    "input": [
+      {
+        "long_field": "\"\": x"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\\"\\\": x\"\nok"
+  },
+  {
+    "name": "id line lookalike 2",
+    "input": {
+      "rows": [
+        {
+          "id": "\"\": x"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\\"\\\": x\"\nok\nnext: end"
+  },
+  {
+    "name": "root line lookalike 3",
+    "input": [
+      {
+        "long_field": "\"\\\": x"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\\"\\\\\\\": x\"\nok"
+  },
+  {
+    "name": "id line lookalike 3",
+    "input": {
+      "rows": [
+        {
+          "id": "\"\\\": x"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\nid\n\"\\\": x\nok\nnext: end"
+  },
+  {
+    "name": "root line lookalike 4",
+    "input": [
+      {
+        "long_field": "foo: bar"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"foo: bar\"\nok"
+  },
+  {
+    "name": "id line lookalike 4",
+    "input": {
+      "rows": [
+        {
+          "id": "foo: bar"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"foo: bar\"\nok\nnext: end"
+  },
+  {
+    "name": "root line lookalike 5",
+    "input": [
+      {
+        "long_field": "foo:"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"foo:\"\nok"
+  },
+  {
+    "name": "id line lookalike 5",
+    "input": {
+      "rows": [
+        {
+          "id": "foo:"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"foo:\"\nok\nnext: end"
+  },
+  {
+    "name": "root line lookalike 6",
+    "input": [
+      {
+        "long_field": "\"foo\": bar"
+      },
+      {
+        "long_field": "ok"
+      }
+    ],
+    "encoded": "[2]\nlong_field\n\"\\\"foo\\\": bar\"\nok"
+  },
+  {
+    "name": "id line lookalike 6",
+    "input": {
+      "rows": [
+        {
+          "id": "\"foo\": bar"
+        },
+        {
+          "id": "ok"
+        }
+      ],
+      "next": "end"
+    },
+    "encoded": "rows[2]:\n\"id\"\n\"\\\"foo\\\": bar\"\nok\nnext: end"
+  }
+]

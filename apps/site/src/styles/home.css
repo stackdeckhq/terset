@@ -1,0 +1,397 @@
+/* The home page: hero, eight steps, keep JSON and the closing section. Colors come from tokens.css only.
+   Layout rule for this page: a state change never changes a box size. Texts that change are
+   stacked in one grid cell (.stack), and panels have fixed heights that scroll inside. */
+
+/* Mobile step strip below 1100. It overlays the page under the sticky header, so the header
+   stays one height and nothing below it moves when the strip shows. */
+.stepbar { display: none; }
+@media (max-width: 1099px) {
+  .stepbar { display: block; position: absolute; top: 100%; left: 0; right: 0; height: 48px; background: var(--bg); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .2s, transform .25s var(--ease), visibility 0s linear .25s; }
+  .hdr.in-journey .stepbar { opacity: 1; visibility: visible; transform: none; transition: opacity .2s, transform .25s var(--ease), visibility 0s; }
+  .stepbar ol { list-style: none; margin: 0 auto; padding: 7px var(--gutter); display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; max-width: var(--max); scroll-snap-type: x proximity; }
+  .stepbar ol::-webkit-scrollbar { display: none; }
+  .stepbar a { display: inline-flex; align-items: center; gap: 7px; min-height: var(--ctl-sm); padding: 0 12px 0 5px; border-radius: 999px; text-decoration: none; color: var(--fg-2); font-size: 14px; font-weight: 600; white-space: nowrap; background: var(--surface); border: 1px solid var(--border); scroll-snap-align: center; }
+  .stepbar a b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--tint); color: var(--link); font-size: 12px; }
+  .stepbar a[aria-current="step"] { background: var(--fg); border-color: var(--fg); color: var(--fg-inv); }
+  .stepbar a[aria-current="step"] b { background: var(--primary); color: var(--fg-inv); }
+  html:has(.journey) { scroll-padding-top: calc(var(--hdr) + 48px); }
+}
+/* A step jump lands flush under the opaque header, with the section's own top space above the headline. */
+@media (min-width: 1100px) { html:has(.journey) { scroll-padding-top: var(--hdr); } }
+
+/* Page rhythm: every section sits on the page ground. Space separates them, and a hairline
+   at the top of each section starts at the content column, so it never runs under the rail. */
+.step { position: relative; padding: var(--pad-sec) var(--side); padding-left: calc(var(--side) + var(--rail, 0px)); }
+.step::before { content: ""; position: absolute; top: 0; left: calc(var(--side) + var(--rail, 0px)); right: var(--side); height: 1px; background: var(--line); }
+@media (min-width: 1100px) { .journey { --rail: 256px; } }
+
+/* Hero */
+.hero { display: grid; gap: var(--s-8); align-items: center; padding: clamp(48px, 7vw, 112px) var(--side) var(--pad-sec); }
+@media (min-width: 1040px) { .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--s-9); } }
+.hero-copy { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.owner { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--muted-fg); letter-spacing: .01em; }
+.owner b { color: var(--fg); font-weight: 700; }
+.hero h1 { font-size: var(--t-display); font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-top: var(--s-4); }
+.hero h1 .grad { color: var(--accent); }
+.hero .lead { font-size: var(--t-lead); line-height: 1.55; color: var(--fg-2); margin-top: var(--s-5); max-width: 38ch; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: var(--s-7); }
+@media (max-width: 519px) {
+  .hero h1 { margin-top: 12px; }
+  .hero .lead { margin-top: 14px; }
+  .hero .actions { gap: 8px; margin-top: 20px; flex-wrap: nowrap; }
+  .hero .actions .btn { padding: 0 13px; font-size: 14.5px; flex: 1 1 auto; }
+  .hero .install { margin-top: 16px; }
+}
+@media (max-width: 359px) { .hero .actions { flex-wrap: wrap; } }
+
+.stage { position: relative; margin: 0; min-width: 0; }
+.win { background: var(--code-bg); color: var(--code-fg); border-radius: var(--r-xl); box-shadow: var(--sh-2), 0 0 0 1px var(--code-ring); overflow: hidden; }
+.win-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 10px; border-bottom: 1px solid var(--code-line); }
+.seg-d { display: inline-flex; background: var(--code-well); border: 1px solid var(--code-line); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg-d button { min-height: var(--ctl-xs); min-width: 40px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--code-dim); font-size: 13px; font-weight: 650; cursor: pointer; transition: background .2s, color .2s; position: relative; }
+.seg-d button:hover { color: var(--code-hi); }
+.seg-d button[aria-pressed="true"] { background: var(--code-sel); color: var(--code-hi); box-shadow: 0 1px 0 color-mix(in srgb, var(--code-hi) 12%, transparent) inset; }
+.seg-d button:focus-visible { outline-color: var(--code-hi); outline-offset: -1px; }
+/* The counter has a fixed width in ch (set inline) and tabular digits, so ticking moves nothing. */
+.count { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; padding-right: 4px; flex: none; }
+.count-n { display: inline-block; font-size: 28px; font-weight: 700; letter-spacing: -.03em; color: var(--code-hi); line-height: 1; text-align: right; }
+.count-l { font-size: 12px; color: var(--code-dim); font-weight: 600; }
+/* The three views share one grid cell, so the body is always as tall as the tallest one.
+   TOON adds no height (contain: size) and scrolls inside. */
+.win-b { display: grid; grid-template-columns: minmax(0, 1fr); }
+.view { grid-area: 1 / 1; min-width: 0; font-family: var(--mono); margin: 0; padding: 14px 14px 16px; font-size: 11.5px; line-height: 1.62; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .45s var(--ease), transform .55s var(--ease), visibility 0s linear .55s; }
+@media (min-width: 768px) { .view { font-size: 12.5px; padding: 16px 18px 18px; } }
+.win-b[data-view="json"] .v-json, .win-b[data-view="toon"] .v-toon, .win-b[data-view="terset"] .v-terset { opacity: 1; visibility: visible; transform: none; transition: opacity .45s var(--ease), transform .55s var(--ease), visibility 0s; }
+.win-b:not([data-view="json"]) .v-json { transform: scale(.985); }
+.v-json { white-space: pre-wrap; word-break: break-all; color: var(--code-soft); }
+.v-json .jk { color: var(--code-key); border-radius: 3px; transition: background-color .3s, color .3s, opacity .5s var(--ease); transition-delay: calc(var(--i, 0) * 9ms); }
+.v-json .jv { color: var(--code-fg); }
+.stage.mark .v-json .jk { background: color-mix(in srgb, var(--c-count) 22%, transparent); color: var(--c-count-hi); }
+.stage.fade .v-json .jk { opacity: .14; }
+.stage.fade .v-json .jv { color: var(--code-hi); }
+.v-toon { contain: size; white-space: pre; color: var(--code-fg); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--code-scroll) transparent; }
+.v-toon .ok { color: var(--code-key); }
+.v-toon .od { color: var(--code-punct); }
+.view:focus-visible, .view .xs:focus-visible { outline-color: var(--code-hi); outline-offset: -3px; }
+/* Terset: lines never wrap. The rows scroll sideways together, with the line numbers pinned. */
+.v-terset { --cue-bg: var(--code-bg); }
+.tl { display: grid; grid-template-columns: 2ch auto; gap: 10px; white-space: pre; transition: opacity .4s var(--ease), transform .5s var(--ease); transition-delay: calc(var(--i, 0) * 110ms + 120ms); }
+.tl > span:first-child { color: var(--code-punct); text-align: right; user-select: none; }
+.tl-rows .tl > span:first-child { position: sticky; left: 0; z-index: 1; background: var(--code-bg); box-shadow: 10px 0 0 var(--code-bg); }
+.stage:not(.show-t) .tl { opacity: 0; transform: translateX(-6px); }
+.tl.lgl { grid-template-columns: auto minmax(0, 1fr); align-items: center; margin-bottom: 6px; padding-bottom: 8px; border-bottom: 1px dashed var(--code-line); }
+.tl.lgl > .fade-x { color: var(--code-dim); }
+.tl-rows { display: grid; width: max-content; min-width: 100%; }
+.tag { display: inline-flex; align-items: center; font-family: var(--sans); font-size: 11px; font-weight: 700; color: var(--code-tag); background: var(--code-hover); border-radius: 6px; padding: 0 6px; line-height: 18px; text-align: left !important; user-select: none; }
+.hs { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 0; margin: var(--s-6) 0 0; padding: 0; list-style: none; }
+.hs li { display: flex; flex-direction: column; gap: 2px; font-size: 13px; font-weight: 500; color: var(--muted-fg); padding: 0 28px; }
+.hs li:first-child { padding-left: 0; }
+.hs b { font-size: 28px; font-weight: 650; letter-spacing: -.03em; color: var(--fg-2); line-height: 1.15; }
+.hs li + li { border-left: 1px solid var(--line); }
+.hs li.on > span { display: inline-flex; align-items: center; gap: 7px; color: var(--fg); font-weight: 600; }
+.hs li.on b { color: var(--accent); font-weight: 700; }
+.sw { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 2px; background: var(--blue-1); }
+.hs-pct { margin-top: var(--s-3); font-size: var(--t-small); color: var(--fg-2); }
+.hs-pct b { color: var(--fg); font-weight: var(--w-strong); }
+@media (max-width: 519px) { .seg-d button { padding: 0 11px; } .win-h { padding-left: 10px; } .count-n { font-size: 26px; } .hs li { padding: 0 14px; } .hs b { font-size: 26px; } .hs li span { font-size: 12px; } }
+@media (max-width: 359px) { .seg-d button { padding: 0 8px; } .count-n { font-size: 22px; } .hs li { padding: 0 10px; } .hs b { font-size: 22px; } }
+.stage .cap { font-size: var(--t-tiny); color: var(--muted-fg); margin-top: var(--s-3); }
+
+/* Journey: the rail sits in the left gutter like a table of contents. */
+.journey { position: relative; }
+.rail-lane { display: none; }
+@media (min-width: 1100px) {
+  .rail-lane { display: block; position: absolute; top: 0; bottom: 0; left: var(--side); width: 184px; padding-top: var(--pad-sec); z-index: 2; }
+  .rail { position: sticky; top: calc(var(--hdr) + 48px); }
+}
+.rail-h { font-size: 13px; color: var(--fg); font-weight: 600; letter-spacing: 0; padding: 0 0 var(--s-3); }
+.rail ol { list-style: none; margin: 0; padding: 0; position: relative; }
+.rail ol::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--line); }
+.rail ol::after { content: ""; position: absolute; left: 0; top: 0; width: 1px; height: var(--prog, 0px); background: var(--border-strong); transition: height .3s var(--ease); }
+.rail a { position: relative; display: flex; gap: 10px; align-items: center; text-decoration: none; color: var(--muted-fg); font-size: 14px; font-weight: 500; padding: 0 0 0 16px; min-height: 40px; transition: color .15s; }
+.rail a b { flex: none; width: 1.2em; font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted-fg); }
+.rail a:hover { color: var(--fg); }
+/* The current step keeps the same weight, so its label never reflows. */
+.rail a[aria-current="step"] { color: var(--fg); }
+.rail a[aria-current="step"] b { color: var(--fg); }
+.rail a[aria-current="step"]::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px; margin-left: -.5px; border-radius: 2px; background: var(--primary); }
+
+/* Sections */
+.step h2 { font-size: var(--t-h2); font-weight: var(--w-head); letter-spacing: -.025em; line-height: 1.12; max-width: 22ch; text-wrap: balance; }
+.step .line { margin-top: var(--s-3); font-size: var(--t-lead); color: var(--fg-2); }
+.vis { margin-top: var(--s-8); }
+.split { display: grid; gap: var(--s-7); }
+.split > * { min-width: 0; }
+@media (min-width: 900px) { .split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--s-8); align-items: start; } }
+.foot-note { font-size: var(--t-tiny); color: var(--muted-fg); margin-top: var(--s-4); max-width: 80ch; }
+/* Step 6: the answer accuracy line under the chart. */
+.acc-home { margin-top: var(--s-6); font-size: var(--t-body); color: var(--fg-2); line-height: 1.5; }
+.acc-home a { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+
+/* Step 1: key tally. Two numbers and the header strip; the full tally sits behind a disclosure. */
+.s1-tot { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); max-width: 640px; }
+.tot { padding-top: var(--s-4); border-top: 1px solid var(--border); }
+.tot b { display: block; font-size: clamp(48px, 6vw, 72px); font-weight: 650; letter-spacing: -.04em; line-height: 1; color: var(--fg-2); }
+.tot span { display: block; margin-top: var(--s-2); font-size: var(--t-small); color: var(--muted-fg); line-height: 1.4; }
+.tot.best { border-top: 2px solid var(--primary); padding-top: calc(var(--s-4) - 1px); }
+.tot.best b { color: var(--accent); font-weight: 700; }
+.s1-head { margin: var(--s-7) 0 0; max-width: 900px; background: var(--code-bg); color: var(--code-fg); border-radius: var(--r-lg); padding: var(--s-4) 18px; font: 12.5px/1.7 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; box-shadow: 0 0 0 1px var(--code-ring); }
+.s1-head small { display: block; margin-bottom: 6px; font: 600 12px/1.3 var(--sans); color: var(--code-dim); }
+.s1 .more { max-width: 900px; }
+.tally-wrap { min-width: 0; }
+.tally { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tally th, .tally td { padding: 0 14px; height: 36px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tally tr:last-child td { border-bottom: 0; }
+.tally thead th { font-size: 12px; font-weight: 700; color: var(--muted-fg); letter-spacing: .04em; text-transform: uppercase; border-bottom-color: var(--border); }
+.tally td:first-child { font-family: var(--mono); font-size: 13px; font-weight: 650; color: var(--json-key); }
+.tally td.n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; width: 3ch; padding-left: 0; }
+.tally .blk { display: flex; gap: 3px; align-items: center; }
+.tally .blk i { width: 12px; height: 12px; border-radius: 3px; background: var(--c-cell); transition: transform .18s var(--ease), opacity .18s; transition-delay: calc(var(--i, 0) * 10ms); }
+.tally .blk.t i { background: var(--blue-1); }
+.js .tally.pre .blk i { transform: scale(0); opacity: 0; }
+.tally tbody tr { transition: background .15s; }
+.tally tbody tr:hover { background: var(--hover-row); }
+.tally tfoot td { font-weight: 700; border-top: 1px solid var(--border-strong); border-bottom: 0; height: 44px; }
+.tally tfoot td:first-child { font-family: var(--sans); color: var(--fg); }
+@media (max-width: 520px) { .tally th, .tally td { padding: 0 8px; } .tally .blk { gap: 2px; } .tally .blk i { width: 9px; height: 9px; border-radius: 2px; } }
+@media (max-width: 359px) { .tally th, .tally td { padding: 0 5px; } .tally thead th { font-size: 11px; letter-spacing: .02em; } .tally .blk i { width: 7px; height: 7px; } }
+
+/* Step 2: converter. Both panes have one fixed height and scroll inside, the status pill
+   and the token line are stacked, so picking a sample or typing moves nothing. */
+.conv { --pane-h: 300px; }
+@media (min-width: 900px) { .conv { --pane-h: 380px; } }
+.ctl { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.seg { display: inline-flex; background: var(--tint); border-radius: 10px; padding: 3px; gap: 2px; border: 1px solid var(--line); margin: 0; }
+.seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.seg label { display: inline-flex; align-items: center; min-height: var(--ctl-xs); font-size: 14px; font-weight: 650; color: var(--fg-2); padding: 0 12px; border-radius: 7px; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; position: relative; white-space: nowrap; }
+.seg label:hover { color: var(--fg); }
+.seg input:checked + label { background: var(--raised); color: var(--fg); box-shadow: 0 1px 3px color-mix(in srgb, var(--shadow) 16%, transparent), inset 0 0 0 1px var(--border); }
+.seg input:focus-visible + label { outline: 3px solid var(--primary); outline-offset: 1px; }
+@media (max-width: 359px) { .seg label { padding: 0 10px; font-size: 13px; } }
+.rt { display: inline-flex; align-items: center; gap: 7px; min-height: var(--ctl-xs); font-size: 13px; font-weight: 650; color: var(--ok-fg); background: var(--ok-bg); border-radius: 999px; padding: 0 12px; transition: background .2s, color .2s; }
+.rt.bad { color: var(--bad-fg); background: var(--bad-bg); }
+.rt-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pane2 { display: grid; gap: 16px; }
+.pane2 > * { min-width: 0; }
+@media (min-width: 900px) { .pane2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); } }
+.ed { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+.ed:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 14%, transparent); }
+.ed-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8px 0 16px; min-height: 48px; border-bottom: 1px solid var(--line); font-size: 12.5px; font-weight: 650; color: var(--fg-2); }
+.ed-h .fn::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--c-json); margin-right: 8px; vertical-align: 1px; }
+.ed textarea { width: 100%; height: var(--pane-h); resize: none; border: 0; outline: 0; padding: 14px 16px; font-size: 12.5px; line-height: 1.6; color: var(--fg); background: transparent; white-space: pre; overflow: auto; tab-size: 2; display: block; scrollbar-width: thin; scrollbar-color: var(--scroll-light) transparent; }
+.out-wrap { display: flex; flex-direction: column; }
+.out { margin: 0; height: var(--pane-h); overflow: auto; padding: 14px 16px; font-size: 12.5px; line-height: 1.7; white-space: pre; }
+.code pre.out { padding: 14px 36px 14px 16px; }
+.out .lgd { display: block; white-space: pre-wrap; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--code-line); }
+.out .err { color: var(--code-err); white-space: pre-wrap; }
+.out .err b { display: block; color: var(--code-hi); margin-bottom: 4px; font-family: var(--sans); }
+.out:focus-visible { outline-color: var(--code-hi); outline-offset: -3px; }
+.meter { display: grid; gap: 12px; margin-top: 32px; max-width: 760px; }
+.mrow { display: grid; grid-template-columns: 130px minmax(0, 1fr) 84px; align-items: center; gap: 12px; font-size: 14px; }
+@media (max-width: 520px) { .mrow { grid-template-columns: 108px minmax(0, 1fr) 66px; gap: 8px; font-size: 13px; } }
+.mrow .lbl { color: var(--fg-2); font-weight: 650; }
+.mrow .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 750; white-space: nowrap; }
+.track { display: block; height: 12px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.fill { display: block; width: 0; height: 100%; border-radius: 99px; transition: width .5s var(--ease); }
+.fill.j { background: var(--c-other-bar); }
+.fill.t { background: linear-gradient(90deg, var(--blue-1), var(--blue-2)); }
+.tokline { font-size: 13px; color: var(--fg-2); padding-top: 2px; }
+.tokline .stack { display: grid; }
+.tokline b { color: var(--fg); font-variant-numeric: tabular-nums; }
+.tokline .tok-c { display: block; }
+
+/* Step 3: anatomy */
+/* The tall line height leaves room between lines, so each numbered marker sits in that gap and never covers text. */
+.anat pre { font-size: 13px; line-height: 2.6; }
+/* On small screens the table scrolls sideways like the other tables, so its columns stay lined up. The top padding keeps the first markers in view. */
+@media (max-width: 899px) { .anat pre, .anat .fade-x > .xs { font-size: 12px; padding-top: 20px; } }
+@media (min-width: 768px) { .anat pre { font-size: 13.5px; } }
+/* The side margin cancels the side padding, so a mark never moves its text and the columns stay lined up. */
+.mk { position: relative; border-radius: 5px; padding: 2px; margin: 0 -2px; box-shadow: inset 0 -2px 0 currentColor; }
+.mk::after { content: attr(data-n); position: absolute; top: -13px; right: -7px; display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--marker-bg); color: var(--marker-fg); font: 800 9px/1 var(--sans); box-shadow: 0 2px 6px color-mix(in srgb, var(--shadow-deep) 40%, transparent); }
+.mk.cn, .mk.rk { background: color-mix(in srgb, var(--c-count) 14%, transparent); color: var(--c-count); }
+.mk.cs, .mk.id { background: color-mix(in srgb, var(--c-const) 14%, transparent); color: var(--c-const); }
+.mk.sh, .mk.shl, .mk.js { background: color-mix(in srgb, var(--c-shape) 12%, transparent); color: var(--c-shape); }
+.mk.ab { color: var(--code-dim); box-shadow: none; padding: 0; margin: 0; }
+/* The empty-cell box rides higher than the text, so its marker starts lower to stay in the gap between lines. */
+.mk.ab::after { top: -8px; }
+.mk.hd { background: color-mix(in srgb, var(--c-field) 12%, transparent); color: var(--c-field); }
+.mk.qt { background: color-mix(in srgb, var(--c-quote) 12%, transparent); color: var(--c-quote); }
+.keys li code .json { color: var(--c-shape); }
+.keys { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 28px 32px; grid-template-columns: 1fr; }
+@media (min-width: 600px) { .keys { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1000px) { .keys { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.anat + .anat { margin-top: 16px; }
+.keys li { position: relative; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; color: var(--fg-2); line-height: 1.5; }
+.keys li code { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 6px; }
+.keys li code i { display: grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--marker-bg); color: var(--marker-fg); font: 800 11px/1 var(--sans); }
+
+/* Step 4: uneven rows */
+.cases { display: grid; gap: 48px 40px; }
+@media (min-width: 700px) { .cases { grid-template-columns: 1fr 1fr; } }
+.case { display: flex; flex-direction: column; min-width: 0; }
+.case h3 { display: flex; align-items: baseline; gap: 10px; font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.015em; }
+.case h3 i { font: 600 13px/1 var(--sans); font-style: normal; color: var(--muted-fg); }
+.case .j { margin: 12px 0 0; font-size: 12.5px; line-height: 1.6; color: var(--fg-2); white-space: pre-wrap; word-break: break-all; font-family: var(--mono); }
+.case .j .k { color: var(--json-key); }
+.case .j em { font-style: normal; background: var(--hl-bg); box-shadow: inset 0 -2px 0 var(--hl-line); border-radius: 3px; color: var(--hl-fg); padding: 0 1px; }
+.case .arrow { display: flex; align-items: center; gap: 8px; margin: 10px 0; font-size: 12px; font-weight: 600; color: var(--muted-fg); }
+.case .arrow::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+.case .t { margin: 0; background: var(--code-bg); color: var(--code-fg); padding: 14px 16px; border-radius: var(--r-md); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; font-family: var(--mono); word-break: normal; overflow-wrap: anywhere; box-shadow: 0 0 0 1px var(--code-ring); }
+.case .t em { font-style: normal; background: color-mix(in srgb, var(--c-count) 20%, transparent); box-shadow: inset 0 -2px 0 var(--c-count); border-radius: 3px; color: var(--c-count-hi); padding: 0 1px; }
+.case .t em.ab { background: color-mix(in srgb, var(--code-dim) 10%, transparent); box-shadow: none; padding: 0; }
+/* A visible tab mark between cells, so the split reads without real tab characters. */
+.case .t .cell { white-space: nowrap; }
+.case .t .tb { display: inline-block; width: 2.4ch; text-align: center; color: var(--code-punct); }
+.case .t .tb::before { content: "\21E5"; }
+.lines-vs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-7); margin-top: var(--s-8); padding-top: var(--s-6); border-top: 1px solid var(--line); max-width: 760px; }
+.lv { display: flex; flex-direction: column; min-width: 0; }
+.lv b { font-size: clamp(44px, 5vw, 64px); font-weight: 650; letter-spacing: -.04em; line-height: 1; color: var(--fg-2); }
+.lv.ter b { color: var(--accent); font-weight: 700; }
+.lv span { font-size: var(--t-small); margin-top: var(--s-2); color: var(--muted-fg); }
+.sil { margin-top: 20px; display: flex; flex-direction: column; gap: 2px; max-width: 320px; }
+.sil i { display: block; height: 3px; border-radius: 2px; background: var(--c-other-bar); transform-origin: left; transition: transform .5s var(--ease); transition-delay: calc(var(--i, 0) * 12ms); }
+.lv.ter .sil { gap: 6px; }
+.lv.ter .sil i { height: 6px; background: linear-gradient(90deg, var(--blue-1), var(--blue-2)); }
+.lv.ter .sil i:first-child { background: var(--hl-line); }
+.js .pre .sil i { transform: scaleX(0); }
+
+/* Step 5: round trip pipeline. Two panels of one height, sized so the whole Terset table
+   shows (--rows lines). From 860 up the nodes share three subgrid rows (title, panel, meta),
+   so titles, panels and meta lines line up, and the arrow sits centered on the panels.
+   Below 860 the panels stack and the arrow points down. */
+.pipe { --panel-fs: 12px; --panel-lh: 1.6; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+@media (min-width: 860px) {
+  .pipe { grid-template-columns: minmax(0, 3fr) 88px minmax(0, 2fr); grid-template-rows: auto auto auto; gap: 12px 8px; }
+  .pipe > .node { display: grid; grid-template-rows: subgrid; grid-row: 1 / span 3; }
+  .pipe > :nth-child(1) { grid-column: 1; }
+  .pipe > :nth-child(2) { grid-column: 2; }
+  .pipe > :nth-child(3) { grid-column: 3; }
+  .pipe > .edge { grid-row: 2; flex-direction: column; }
+}
+.node { display: grid; gap: 12px; min-width: 0; }
+.node-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--fg); white-space: nowrap; }
+.node-h code { font-size: 12px; font-weight: 500; color: var(--muted-fg); }
+.panel { position: relative; min-width: 0; height: calc(var(--rows, 8) * var(--panel-fs) * var(--panel-lh) + 40px); font-size: var(--panel-fs); line-height: var(--panel-lh); border-radius: var(--r-md); overflow: hidden; background: var(--code-bg); color: var(--code-fg); box-shadow: 0 0 0 1px var(--code-ring); transition: box-shadow .3s; --cue-bg: var(--code-bg); }
+.panel pre { margin: 0; height: 100%; padding: 12px 14px; font-size: inherit; line-height: inherit; white-space: pre; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--code-scroll) transparent; }
+.panel.fade-x > pre.xs { overflow-x: auto; overflow-y: hidden; padding-right: 36px; }
+.panel.light { background: var(--surface); color: var(--fg-2); box-shadow: inset 0 0 0 1px var(--border); --cue-bg: var(--surface); }
+.panel.light pre { scrollbar-color: var(--scroll-light) transparent; padding-bottom: 28px; }
+.panel pre:focus-visible { outline-offset: -3px; }
+.panel:not(.light) pre:focus-visible { outline-color: var(--code-hi); }
+/* Before the run: a deliberate empty state in the same box, not a blank panel. */
+.panel.empty { display: grid; place-items: center; padding: 16px; text-align: center; background: var(--tint-soft); box-shadow: none; border: 1.5px dashed var(--border-strong); }
+.panel.empty p { display: grid; gap: 6px; max-width: 24ch; font-family: var(--sans); }
+.panel.empty b { font: 700 13px/1.4 var(--mono); color: var(--fg); }
+.node.on .panel { box-shadow: 0 0 0 1px var(--primary), 0 0 0 4px color-mix(in srgb, var(--primary) 14%, transparent); }
+.node.on .panel.empty { border-color: transparent; }
+.node .meta { font-size: 13px; line-height: 20px; color: var(--muted-fg); font-variant-numeric: tabular-nums; }
+.node .meta .stack { display: grid; }
+.node .meta .ok { color: var(--ok-fg); }
+.edge { display: flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--muted-fg); padding: 2px 0; transition: color .2s; }
+.edge svg { flex: none; transition: transform .3s var(--ease); }
+@media (max-width: 859px) { .edge svg { transform: rotate(90deg); } }
+.edge.on { color: var(--accent); }
+/* The run row uses the shared .card-actions row: result on the left, the button on the right. */
+.rt-row { margin-top: var(--s-6); }
+.rt-row .btn .stack { justify-items: center; }
+.rt-res { font-size: 14px; font-weight: 500; color: var(--fg-2); }
+.rt-res .stack { display: grid; }
+.rt-res.ok { color: var(--ok-fg); }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-6); margin-top: var(--s-8); max-width: 640px; }
+.fact { padding-top: var(--s-4); border-top: 1px solid var(--line); }
+.fact b { display: block; font-size: clamp(26px, 3vw, 32px); font-weight: 650; letter-spacing: -.03em; line-height: 1.05; }
+.fact span { display: block; font-size: 13px; color: var(--muted-fg); margin-top: var(--s-1); line-height: 1.4; }
+
+/* Step 6: benchmark trio (the chart lives in bench.css) */
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); margin-top: var(--s-8); max-width: 760px; }
+.trio div { padding-top: var(--s-4); border-top: 1px solid var(--border); min-width: 0; }
+.trio b { display: block; font-size: clamp(36px, 4.6vw, 56px); font-weight: 650; letter-spacing: -.04em; line-height: 1; color: var(--fg-2); }
+/* Only the label under each number; the numbers hold .swap spans of their own. */
+.trio div > span { display: block; font-size: var(--t-small); color: var(--muted-fg); margin-top: var(--s-2); line-height: 1.35; }
+.trio .best { border-top: 2px solid var(--primary); padding-top: calc(var(--s-4) - 1px); }
+.trio .best b { color: var(--accent); font-weight: 700; }
+.trio .best small { display: block; margin-top: var(--s-1); font-size: 13px; font-weight: 600; color: var(--fg-2); }
+@media (max-width: 519px) { .trio { gap: var(--s-4); } .trio div > span { font-size: 12.5px; } }
+.trio + .chart { margin-top: var(--s-8); }
+
+/* Text that follows the chart tab: every version sits in one grid cell, so the box keeps
+   the size of the longest and a tab switch moves nothing. Hidden versions are hidden from
+   screen readers too. */
+.swap { display: inline-grid; }
+.swap > span { grid-area: 1 / 1; }
+.swap > .swap-off { visibility: hidden; }
+
+/* Step 7: prompt */
+.composer { background: var(--code-bg-2); border: 1px solid var(--code-edge); border-radius: var(--r-xl); overflow: hidden; min-width: 0; }
+.composer .code-h { border-color: var(--code-edge); padding-right: 16px; }
+.msg { padding: 16px; font-family: var(--mono); font-size: 12px; line-height: 1.7; color: var(--code-fg); }
+.msg .blk { display: block; position: relative; padding: 4px 0 4px 16px; margin-bottom: 16px; white-space: pre-wrap; word-break: break-word; }
+.msg .blk::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px; border-radius: 2px; }
+.msg .b-l::before { background: var(--c-count); }
+.msg .b-t { word-break: normal; --cue-bg: var(--code-bg-2); }
+.msg .b-t .fade-x { display: block; }
+.msg .b-t::before { background: var(--blue-1); }
+.msg .b-q { margin-bottom: 0; color: var(--c-shape); }
+.msg .b-q::before { background: var(--c-shape); }
+.msg .lab { display: block; font-family: var(--sans); font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.b-l .lab { color: var(--c-count); } .b-t .lab { color: var(--c-field); } .b-q .lab { color: var(--c-shape); }
+.split-bar { display: flex; height: 10px; border-radius: 99px; overflow: hidden; gap: 2px; margin: 0 16px 4px; }
+.split-bar i { display: block; height: 100%; }
+.split-key { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 6px 16px 16px; font-size: 12px; color: var(--code-soft); font-weight: 500; font-variant-numeric: tabular-nums; }
+.split-key b { color: var(--code-hi); font-weight: 600; }
+.side { display: grid; gap: var(--s-4); align-content: start; min-width: 0; }
+@media (min-width: 900px) { .split.r7 { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
+.side .code pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.side-link { font-size: var(--t-small); }
+.side-link a { display: inline-flex; align-items: center; min-height: var(--hit); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Step 8: agent. The prompt card lives in base.css; these are the file cards under it, in
+   the prompt card's colors. Three cards share a row when the list is 840 px or wider and
+   stack below that, never two plus one: each basis is 0 above the line and huge below it.
+   A card: icon, file name and Copy URL on top, the one-line description under the name.
+   The name's link covers the whole card; the copy button sits above that link. */
+.files { list-style: none; margin: var(--s-6) 0 0; padding: 0; max-width: 900px; display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-4); }
+.files li { flex: 1 1 calc((840px - 100%) * 999); min-width: 0; position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "icon name copy" ". about about"; gap: 2px var(--s-3); align-items: center; padding: var(--s-3) var(--s-3) var(--s-3) var(--s-4); border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); transition: border-color .15s; }
+.files li:hover { border-color: var(--border-strong); }
+.files li > svg { grid-area: icon; color: var(--muted-fg); }
+.files a { grid-area: name; font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--fg); text-decoration: none; overflow-wrap: anywhere; }
+.files a::after { content: ""; position: absolute; inset: -1px; border-radius: var(--r-md); }
+.files a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.files a:focus-visible { outline: none; }
+.files a:focus-visible::after { outline: 3px solid var(--primary); outline-offset: 2px; }
+.files .mini-btn { grid-area: copy; z-index: 1; }
+.files p { grid-area: about; font-size: 13px; line-height: 1.4; color: var(--muted-fg); text-wrap: pretty; }
+
+/* Keep JSON */
+.klist { list-style: none; margin: var(--s-8) 0 0; padding: 0; display: grid; gap: var(--s-6) var(--s-8); }
+@media (min-width: 760px) { .klist { grid-template-columns: 1fr 1fr; } }
+.klist li { display: flex; gap: var(--s-4); align-items: flex-start; padding-top: var(--s-4); border-top: 1px solid var(--line); }
+.klist b { display: block; font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.015em; }
+.klist span { display: block; font-size: var(--t-body); color: var(--fg-2); margin-top: var(--s-1); }
+.klist code { display: block; margin-top: var(--s-2); font-size: 13px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+.keep .more { margin-top: var(--s-8); }
+/* The limits heading lives inside the disclosure's summary, so it keeps the summary's size. */
+.limits-h { display: inline; font: inherit; color: inherit; letter-spacing: inherit; }
+.limits { margin: 0; padding-left: 22px; max-width: 72ch; display: grid; gap: var(--s-2); font-size: var(--t-body); color: var(--fg-2); }
+
+/* Pending numbers: the same slots, a quieter label, nothing that looks like a count */
+.count.pending .count-l { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.hs.pending b, .trio.pending b { font-size: clamp(18px, 2vw, 22px); letter-spacing: -.01em; font-weight: 600; opacity: .75; }
+.tokline.pending { font-weight: 600; }
+.split-note { margin: 0; padding: 0 16px 16px; font-size: 12.5px; line-height: 1.5; color: var(--code-soft); }
+.s1-note { margin: var(--s-4) 0 0; font-size: var(--t-small); color: var(--fg-2); }
+/* The link to /agents sits right under the cards: link color, underline and an arrow. */
+.files-more { margin-top: var(--s-2); font-size: 14px; font-weight: 600; }
+.files-more a { display: inline-flex; align-items: center; gap: 6px; min-height: var(--hit); color: var(--link); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.files-more a:hover { color: var(--fg); }
+.files-more svg { flex: none; transition: transform .2s var(--ease); }
+.files-more a:hover svg { transform: translateX(2px); }
+
+/* Closing section: the headline, the install line and two actions, centered. */
+.end { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: var(--pad-sec); padding-bottom: calc(var(--pad-sec) * 1.25); }
+.end > * { min-width: 0; max-width: 100%; }
+.end h2 { max-width: 18ch; font-size: var(--t-h2); }
+.end .install { margin-top: var(--s-6); }
+.end .actions { justify-content: center; margin-top: var(--s-5); }

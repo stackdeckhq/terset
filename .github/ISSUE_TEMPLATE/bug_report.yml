@@ -1,0 +1,33 @@
+name: Bug report
+description: The package or the site does something wrong.
+labels: ['bug']
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The @stackdeck/terset version, and your Node version.
+      placeholder: '0.1.1, Node 24.11'
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Input
+      description: The smallest input that shows the problem, and the code you ran.
+      render: js
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: The output or the error.
+    validations:
+      required: true

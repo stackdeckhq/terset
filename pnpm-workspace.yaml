@@ -1,0 +1,9 @@
+packages:
+  - bench
+  - packages/*
+  - apps/*
+
+# minimatch 10 has a slow-pattern advisory fixed only in 11.0.1. It is a lint
+# tool dependency and never ships. Remove once typescript-eslint moves to 11.
+overrides:
+  '@typescript-eslint/typescript-estree>minimatch': 11.0.1

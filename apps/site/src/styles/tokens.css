@@ -1,0 +1,119 @@
+/* Color tokens. Every color on the site comes from here, as light-dark(light, dark).
+   With no choice saved, color-scheme "light dark" follows the system and reacts live.
+   A saved choice sets data-theme on <html>, which pins one scheme.
+   The palette is neutral with one accent. Grounds and text are cool grays with no blue
+   cast. Blue means Terset: its numbers, its bars, the primary button and links. Every
+   other format is gray. Code panels are graphite in both themes, the only dark surface
+   on a light page, and sit darker than the page with a ring on a dark one.
+   Other style files hold no color literals; a test checks that. */
+:root {
+  color-scheme: light dark;
+
+  /* Layers: ground, card, raised */
+  --bg: light-dark(#f7f8fa, #0b0c0f);
+  --surface: light-dark(#fff, #131519);
+  --raised: light-dark(#fff, #1a1d23);
+  --tint: light-dark(#eef0f3, #1b1e24);
+  --tint-soft: light-dark(#f5f6f8, #0f1114);
+  --hover-row: light-dark(#f5f6f8, #181b20);
+
+  /* Text */
+  --fg: light-dark(#0e1116, #eceef2);
+  --fg-2: light-dark(#3a404b, #b9bec9);
+  --muted-fg: light-dark(#5a616d, #8b919e);
+  /* Text on a surface in the opposite tone, like the current step pill */
+  --fg-inv: light-dark(#fff, #0b0c0f);
+
+  /* Lines */
+  --border: light-dark(#dfe2e7, #262a33);
+  --border-strong: light-dark(#c9ced6, #343945);
+  --line: light-dark(#e8eaee, #1c1f26);
+
+  /* Blue: the one accent */
+  --primary: light-dark(#0b6fd3, #5aa8ff);
+  --link: light-dark(#0a62bd, #84bfff);
+  /* Big numbers and the Terset label */
+  --accent: light-dark(#0a62bd, #84bfff);
+  /* Fills: bars and the Terset swatch */
+  --blue-1: light-dark(#1478e0, #4ea0f8);
+  --blue-2: light-dark(#0b6fd3, #3f8ff0);
+  --selection: light-dark(#cfe3fb, #1f4a85);
+
+  /* The primary button */
+  --btn-1: light-dark(#0b6fd3, #1d6acb);
+  --btn-2: light-dark(#095fb6, #175db4);
+  --btn-fg: light-dark(#fff, #fff);
+
+  /* Code panels: graphite in both themes, darker than the page in the dark theme */
+  --code-bg: light-dark(#14161b, #08090b);
+  --code-bg-2: light-dark(#1b1e24, #111317);
+  --code-well: light-dark(#0e1013, #050607);
+  --code-line: light-dark(#2a2e36, #1f232b);
+  --code-edge: light-dark(#323741, #2a2f39);
+  --code-ring: light-dark(#ffffff0d, #262a33);
+  --code-hover: light-dark(#262a32, #20242c);
+  --code-hover-line: light-dark(#3a404b, #343945);
+  --code-sel: light-dark(#2d323c, #2b303b);
+  --code-scroll: light-dark(#454b57, #3a404c);
+  --code-fg: light-dark(#e6e8ec, #e6e8ec);
+  --code-hi: light-dark(#fff, #fff);
+  --code-head: light-dark(#c3c8d2, #c3c8d2);
+  --code-soft: light-dark(#ccd0d8, #ccd0d8);
+  --code-key: light-dark(#9cc4ee, #9cc4ee);
+  --code-dim: light-dark(#a2a8b4, #a2a8b4);
+  --code-punct: light-dark(#8f96a3, #8d94a1);
+  --code-err: light-dark(#ffc0c0, #ffc0c0);
+  --code-tag: light-dark(#d8dce4, #d8dce4);
+
+  /* Terset syntax, on code panels */
+  --c-count: light-dark(#f5c27a, #f5c27a);
+  --c-count-hi: light-dark(#ffd79a, #ffd79a);
+  --c-field: light-dark(#8fc8f5, #8fc8f5);
+  --c-const: light-dark(#cbbcf5, #cbbcf5);
+  --c-shape: light-dark(#a6dfbc, #a6dfbc);
+  --c-null: light-dark(#f5a8c0, #f5a8c0);
+  --c-num: light-dark(#f2d4a8, #f2d4a8);
+  --c-quote: light-dark(#8ad9d6, #8ad9d6);
+  --c-kw: light-dark(#c2b0f5, #c2b0f5);
+  /* Numbered markers on the anatomy code */
+  --marker-bg: light-dark(#fff, #fff);
+  --marker-fg: light-dark(#0e1116, #0e1116);
+
+  /* JSON on a page-colored panel */
+  --json-key: light-dark(#0a62bd, #84bfff);
+  --json-str: light-dark(#0b6a45, #84dcae);
+  --json-num: light-dark(#8a3d00, #ffb784);
+  --json-punct: light-dark(#5a616d, #8d939f);
+
+  /* The JSON file dot and the JSON key cells */
+  --c-json: light-dark(#767d89, #7a808c);
+  --c-cell: light-dark(#b87500, #e5a948);
+  /* Chart bars of every format but Terset: one quiet gray, 3:1 on the card in both themes.
+     The strong step marks a format with the fewest tokens in its case. */
+  --c-other-bar: light-dark(#8c939e, #6b717c);
+  --c-other-bar-strong: light-dark(#4a505b, #b4b9c2);
+
+  /* Highlight of an uneven cell in JSON */
+  --hl-bg: light-dark(#fff0d6, #3a2a10);
+  --hl-line: light-dark(#e59a1a, #e59a1a);
+  --hl-fg: light-dark(#7a4300, #ffd59a);
+
+  /* Status: good and bad */
+  --ok-bg: light-dark(#e2f5ea, #0e3a29);
+  --ok-fg: light-dark(#0b5a37, #8ee6b8);
+  --bad-bg: light-dark(#fde6ea, #4a1520);
+  --bad-fg: light-dark(#8a1a30, #ffb6c4);
+
+  /* Scrollbars on page-colored panels */
+  --scroll-light: light-dark(#c3c8d0, #343945);
+
+  /* The mark: a neutral dark tile in both themes, one step lighter on dark pages so it still shows. */
+  --mark-tile: light-dark(#16181d, #22252c);
+  --mark-fg: light-dark(#f7f8fa, #f7f8fa);
+
+  /* The color shadows are mixed from */
+  --shadow: light-dark(#0e1116, #000);
+  --shadow-deep: light-dark(#0e1116, #000);
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
