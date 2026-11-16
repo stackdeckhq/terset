@@ -36,7 +36,7 @@ jobs:
           package-manager-cache: false
 
       - name: Set up Python for version metadata
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.14'
 
@@ -85,7 +85,7 @@ jobs:
           pnpm --dir packages/terset pack --pack-destination "$RUNNER_TEMP/pack"
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.10'
 
@@ -187,7 +187,7 @@ jobs:
 
       # The shared checks require this exact commit on main and matching versions.
       - name: Set up Python 3.10
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.10'
 
@@ -195,7 +195,7 @@ jobs:
         run: bash .github/scripts/check-python-release.sh
 
       - name: Publish with trusted publishing
-        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           packages-dir: ${{ runner.temp }}/terset-python/dist/
           attestations: true
