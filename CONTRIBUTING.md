@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping with Terset.
+Thanks for helping with Terset. Everyone who takes part follows the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## What we welcome
 
@@ -30,6 +30,7 @@ The gate runs the type check, lint, the tests, the package build, the site build
 
 ## Pull requests
 
+- Link the issue or discussion where we agreed on the change. A pull request with no linked issue or agreed discussion may be closed without review.
 - Fix one problem per pull request.
 - Say how you found the problem and how you checked the fix. "Tests pass" alone is not enough.
 - Add a test for any bug you fix. A change to round trips or token counts needs a test.
