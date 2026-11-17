@@ -1,6 +1,6 @@
 {
   "model": "claude-opus-5-5",
-  "countedAt": "2026-11-16T18:53:47Z",
+  "countedAt": "2026-11-17T16:32:33Z",
   "endpoint": "/v1/messages/count_tokens",
   "baseline": {
     "text": "a",
@@ -5133,1712 +5133,1712 @@
       "inputTokens": 997
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q1",
-      "inputTokens": 3993
+      "inputTokens": 3934
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q2",
-      "inputTokens": 3987
+      "inputTokens": 3928
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q3",
-      "inputTokens": 3989
+      "inputTokens": 3930
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q4",
-      "inputTokens": 3991
+      "inputTokens": 3932
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q5",
-      "inputTokens": 3993
+      "inputTokens": 3934
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q6",
-      "inputTokens": 3990
+      "inputTokens": 3931
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q7",
-      "inputTokens": 3988
+      "inputTokens": 3929
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q8",
-      "inputTokens": 3987
+      "inputTokens": 3928
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q9",
-      "inputTokens": 3991
+      "inputTokens": 3932
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q10",
-      "inputTokens": 3990
+      "inputTokens": 3931
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q11",
-      "inputTokens": 3988
+      "inputTokens": 3929
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q12",
-      "inputTokens": 3988
+      "inputTokens": 3929
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q13",
-      "inputTokens": 3985
+      "inputTokens": 3926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q14",
-      "inputTokens": 3984
+      "inputTokens": 3925
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q15",
-      "inputTokens": 3985
+      "inputTokens": 3926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q16",
-      "inputTokens": 3989
+      "inputTokens": 3930
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q17",
-      "inputTokens": 3989
+      "inputTokens": 3930
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q18",
-      "inputTokens": 3989
+      "inputTokens": 3930
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q19",
-      "inputTokens": 3985
+      "inputTokens": 3926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q20",
-      "inputTokens": 3985
+      "inputTokens": 3926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q21",
-      "inputTokens": 3981
+      "inputTokens": 3922
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q22",
-      "inputTokens": 3983
+      "inputTokens": 3924
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q23",
-      "inputTokens": 3994
+      "inputTokens": 3935
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q24",
-      "inputTokens": 3993
+      "inputTokens": 3934
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q25",
-      "inputTokens": 3994
+      "inputTokens": 3935
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q26",
-      "inputTokens": 3992
+      "inputTokens": 3933
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q27",
-      "inputTokens": 3993
+      "inputTokens": 3934
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q28",
-      "inputTokens": 3990
+      "inputTokens": 3931
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q29",
-      "inputTokens": 3990
+      "inputTokens": 3931
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q30",
-      "inputTokens": 3990
+      "inputTokens": 3931
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q31",
-      "inputTokens": 3994
+      "inputTokens": 3935
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q32",
-      "inputTokens": 3993
+      "inputTokens": 3934
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q33",
-      "inputTokens": 3994
+      "inputTokens": 3935
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q34",
-      "inputTokens": 3986
+      "inputTokens": 3927
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q35",
-      "inputTokens": 3985
+      "inputTokens": 3926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q36",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q37",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q38",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q39",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q40",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q41",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q42",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q43",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q44",
-      "inputTokens": 8881
+      "inputTokens": 8832
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q45",
-      "inputTokens": 8881
+      "inputTokens": 8832
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q46",
-      "inputTokens": 8880
+      "inputTokens": 8831
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q47",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q48",
-      "inputTokens": 8881
+      "inputTokens": 8832
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q49",
-      "inputTokens": 8881
+      "inputTokens": 8832
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q50",
-      "inputTokens": 8880
+      "inputTokens": 8831
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q51",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q52",
-      "inputTokens": 8877
+      "inputTokens": 8828
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q53",
-      "inputTokens": 8877
+      "inputTokens": 8828
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q54",
-      "inputTokens": 8878
+      "inputTokens": 8829
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q55",
-      "inputTokens": 8878
+      "inputTokens": 8829
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q56",
-      "inputTokens": 8873
+      "inputTokens": 8824
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q57",
-      "inputTokens": 8877
+      "inputTokens": 8828
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q58",
-      "inputTokens": 8874
+      "inputTokens": 8825
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q59",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q60",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q61",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q62",
-      "inputTokens": 8884
+      "inputTokens": 8835
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q63",
-      "inputTokens": 8884
+      "inputTokens": 8835
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q64",
-      "inputTokens": 8885
+      "inputTokens": 8836
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q65",
-      "inputTokens": 8885
+      "inputTokens": 8836
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q66",
-      "inputTokens": 8884
+      "inputTokens": 8835
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q67",
-      "inputTokens": 8884
+      "inputTokens": 8835
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q68",
-      "inputTokens": 8885
+      "inputTokens": 8836
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q69",
-      "inputTokens": 8887
+      "inputTokens": 8838
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q70",
-      "inputTokens": 8887
+      "inputTokens": 8838
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q71",
-      "inputTokens": 1620
+      "inputTokens": 1561
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q72",
-      "inputTokens": 1622
+      "inputTokens": 1563
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q73",
-      "inputTokens": 1624
+      "inputTokens": 1565
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q74",
-      "inputTokens": 1623
+      "inputTokens": 1564
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q75",
-      "inputTokens": 1620
+      "inputTokens": 1561
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q76",
-      "inputTokens": 1622
+      "inputTokens": 1563
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q77",
-      "inputTokens": 1624
+      "inputTokens": 1565
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q78",
-      "inputTokens": 1623
+      "inputTokens": 1564
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q79",
-      "inputTokens": 1620
+      "inputTokens": 1561
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q80",
-      "inputTokens": 1619
+      "inputTokens": 1560
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q81",
-      "inputTokens": 1619
+      "inputTokens": 1560
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q82",
-      "inputTokens": 1621
+      "inputTokens": 1562
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q83",
-      "inputTokens": 1619
+      "inputTokens": 1560
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q84",
-      "inputTokens": 1617
+      "inputTokens": 1558
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q85",
-      "inputTokens": 1619
+      "inputTokens": 1560
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q86",
-      "inputTokens": 1620
+      "inputTokens": 1561
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q87",
-      "inputTokens": 1628
+      "inputTokens": 1569
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q88",
-      "inputTokens": 1628
+      "inputTokens": 1569
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q89",
-      "inputTokens": 1628
+      "inputTokens": 1569
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q90",
-      "inputTokens": 1628
+      "inputTokens": 1569
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q91",
-      "inputTokens": 1628
+      "inputTokens": 1569
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q92",
-      "inputTokens": 1629
+      "inputTokens": 1570
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q93",
-      "inputTokens": 1629
+      "inputTokens": 1570
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q94",
-      "inputTokens": 1633
+      "inputTokens": 1574
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q95",
-      "inputTokens": 1633
+      "inputTokens": 1574
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q96",
-      "inputTokens": 11317
+      "inputTokens": 11283
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q97",
-      "inputTokens": 11314
+      "inputTokens": 11280
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q98",
-      "inputTokens": 11306
+      "inputTokens": 11272
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q99",
-      "inputTokens": 11311
+      "inputTokens": 11277
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q100",
-      "inputTokens": 11317
+      "inputTokens": 11283
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q101",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q102",
-      "inputTokens": 11312
+      "inputTokens": 11278
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q103",
-      "inputTokens": 11317
+      "inputTokens": 11283
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q104",
-      "inputTokens": 11313
+      "inputTokens": 11279
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q105",
-      "inputTokens": 11312
+      "inputTokens": 11278
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q106",
-      "inputTokens": 11312
+      "inputTokens": 11278
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q107",
-      "inputTokens": 11307
+      "inputTokens": 11273
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q108",
-      "inputTokens": 11309
+      "inputTokens": 11275
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q109",
-      "inputTokens": 11309
+      "inputTokens": 11275
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q110",
-      "inputTokens": 11307
+      "inputTokens": 11273
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q111",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q112",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q113",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q114",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q115",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q116",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q117",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q118",
-      "inputTokens": 11311
+      "inputTokens": 11277
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q119",
-      "inputTokens": 11319
+      "inputTokens": 11285
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q120",
-      "inputTokens": 11319
+      "inputTokens": 11285
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q121",
-      "inputTokens": 11319
+      "inputTokens": 11285
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q122",
-      "inputTokens": 11320
+      "inputTokens": 11286
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q123",
-      "inputTokens": 11320
+      "inputTokens": 11286
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q124",
-      "inputTokens": 4875
+      "inputTokens": 4836
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q125",
-      "inputTokens": 4878
+      "inputTokens": 4839
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q126",
-      "inputTokens": 4876
+      "inputTokens": 4837
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q127",
-      "inputTokens": 4876
+      "inputTokens": 4837
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q128",
-      "inputTokens": 4875
+      "inputTokens": 4836
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q129",
-      "inputTokens": 4878
+      "inputTokens": 4839
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q130",
-      "inputTokens": 4876
+      "inputTokens": 4837
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q131",
-      "inputTokens": 4876
+      "inputTokens": 4837
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q132",
-      "inputTokens": 4875
+      "inputTokens": 4836
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q133",
-      "inputTokens": 4878
+      "inputTokens": 4839
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q134",
-      "inputTokens": 4861
+      "inputTokens": 4822
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q135",
-      "inputTokens": 4860
+      "inputTokens": 4821
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q136",
-      "inputTokens": 4861
+      "inputTokens": 4822
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q137",
-      "inputTokens": 4860
+      "inputTokens": 4821
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q138",
-      "inputTokens": 4860
+      "inputTokens": 4821
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q139",
-      "inputTokens": 4867
+      "inputTokens": 4828
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q140",
-      "inputTokens": 4868
+      "inputTokens": 4829
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q141",
-      "inputTokens": 4870
+      "inputTokens": 4831
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q142",
-      "inputTokens": 4866
+      "inputTokens": 4827
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q143",
-      "inputTokens": 4861
+      "inputTokens": 4822
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q144",
-      "inputTokens": 4868
+      "inputTokens": 4829
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q145",
-      "inputTokens": 4867
+      "inputTokens": 4828
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q146",
-      "inputTokens": 4874
+      "inputTokens": 4835
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q147",
-      "inputTokens": 4875
+      "inputTokens": 4836
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q148",
-      "inputTokens": 4874
+      "inputTokens": 4835
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q149",
-      "inputTokens": 4872
+      "inputTokens": 4833
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q150",
-      "inputTokens": 4873
+      "inputTokens": 4834
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q151",
-      "inputTokens": 1133
+      "inputTokens": 1094
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q152",
-      "inputTokens": 1128
+      "inputTokens": 1089
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q153",
-      "inputTokens": 1128
+      "inputTokens": 1089
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q154",
-      "inputTokens": 1134
+      "inputTokens": 1095
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q155",
-      "inputTokens": 1129
+      "inputTokens": 1090
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q156",
-      "inputTokens": 1134
+      "inputTokens": 1095
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q157",
-      "inputTokens": 1135
+      "inputTokens": 1096
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q158",
-      "inputTokens": 1128
+      "inputTokens": 1089
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q159",
-      "inputTokens": 1133
+      "inputTokens": 1094
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q160",
-      "inputTokens": 1132
+      "inputTokens": 1093
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q161",
-      "inputTokens": 1134
+      "inputTokens": 1095
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q162",
-      "inputTokens": 1134
+      "inputTokens": 1095
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q163",
-      "inputTokens": 1133
+      "inputTokens": 1094
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q164",
-      "inputTokens": 1132
+      "inputTokens": 1093
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q165",
-      "inputTokens": 1132
+      "inputTokens": 1093
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q166",
-      "inputTokens": 1138
+      "inputTokens": 1099
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q167",
-      "inputTokens": 1133
+      "inputTokens": 1094
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q168",
-      "inputTokens": 1134
+      "inputTokens": 1095
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q169",
-      "inputTokens": 1136
+      "inputTokens": 1097
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q170",
-      "inputTokens": 1138
+      "inputTokens": 1099
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q171",
-      "inputTokens": 1137
+      "inputTokens": 1098
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q172",
-      "inputTokens": 1138
+      "inputTokens": 1099
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q173",
-      "inputTokens": 1142
+      "inputTokens": 1103
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q174",
-      "inputTokens": 1135
+      "inputTokens": 1096
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q175",
-      "inputTokens": 1143
+      "inputTokens": 1104
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q176",
-      "inputTokens": 1132
+      "inputTokens": 1093
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q177",
-      "inputTokens": 1143
+      "inputTokens": 1104
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q178",
-      "inputTokens": 1139
+      "inputTokens": 1100
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-config",
       "questionId": "q179",
-      "inputTokens": 1136
+      "inputTokens": 1097
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q180",
-      "inputTokens": 1271
+      "inputTokens": 1212
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q181",
-      "inputTokens": 1263
+      "inputTokens": 1204
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q182",
-      "inputTokens": 1265
+      "inputTokens": 1206
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q183",
-      "inputTokens": 1270
+      "inputTokens": 1211
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q184",
-      "inputTokens": 1264
+      "inputTokens": 1205
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q185",
-      "inputTokens": 1264
+      "inputTokens": 1205
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q186",
-      "inputTokens": 1271
+      "inputTokens": 1212
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q187",
-      "inputTokens": 1263
+      "inputTokens": 1204
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q188",
-      "inputTokens": 1265
+      "inputTokens": 1206
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q189",
-      "inputTokens": 1269
+      "inputTokens": 1210
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q190",
-      "inputTokens": 1263
+      "inputTokens": 1204
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q191",
-      "inputTokens": 1266
+      "inputTokens": 1207
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q192",
-      "inputTokens": 1255
+      "inputTokens": 1196
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q193",
-      "inputTokens": 1265
+      "inputTokens": 1206
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q194",
-      "inputTokens": 1261
+      "inputTokens": 1202
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q195",
-      "inputTokens": 1274
+      "inputTokens": 1215
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "keyed",
       "questionId": "q196",
-      "inputTokens": 1258
+      "inputTokens": 1199
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q197",
-      "inputTokens": 2532
+      "inputTokens": 2473
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q198",
-      "inputTokens": 2530
+      "inputTokens": 2471
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q199",
-      "inputTokens": 2532
+      "inputTokens": 2473
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q200",
-      "inputTokens": 2533
+      "inputTokens": 2474
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q201",
-      "inputTokens": 2537
+      "inputTokens": 2478
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q202",
-      "inputTokens": 2533
+      "inputTokens": 2474
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q203",
-      "inputTokens": 2530
+      "inputTokens": 2471
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q204",
-      "inputTokens": 2530
+      "inputTokens": 2471
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q205",
-      "inputTokens": 2541
+      "inputTokens": 2482
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q206",
-      "inputTokens": 2527
+      "inputTokens": 2468
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q207",
-      "inputTokens": 2531
+      "inputTokens": 2472
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q208",
-      "inputTokens": 2537
+      "inputTokens": 2478
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q209",
-      "inputTokens": 2528
+      "inputTokens": 2469
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q210",
-      "inputTokens": 2537
+      "inputTokens": 2478
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q211",
-      "inputTokens": 2538
+      "inputTokens": 2479
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q212",
-      "inputTokens": 2539
+      "inputTokens": 2480
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q213",
-      "inputTokens": 2533
+      "inputTokens": 2474
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested-group",
       "questionId": "q214",
-      "inputTokens": 2531
+      "inputTokens": 2472
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q215",
-      "inputTokens": 3985
+      "inputTokens": 3926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q216",
-      "inputTokens": 3991
+      "inputTokens": 3932
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q217",
-      "inputTokens": 3987
+      "inputTokens": 3928
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q218",
-      "inputTokens": 3989
+      "inputTokens": 3930
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q219",
-      "inputTokens": 3989
+      "inputTokens": 3930
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "tabular",
       "questionId": "q220",
-      "inputTokens": 3985
+      "inputTokens": 3926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q221",
-      "inputTokens": 8877
+      "inputTokens": 8828
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q222",
-      "inputTokens": 8886
+      "inputTokens": 8837
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q223",
-      "inputTokens": 8879
+      "inputTokens": 8830
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q224",
-      "inputTokens": 8887
+      "inputTokens": 8838
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q225",
-      "inputTokens": 8880
+      "inputTokens": 8831
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "nested",
       "questionId": "q226",
-      "inputTokens": 8890
+      "inputTokens": 8841
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q227",
-      "inputTokens": 1619
+      "inputTokens": 1560
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q228",
-      "inputTokens": 1625
+      "inputTokens": 1566
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q229",
-      "inputTokens": 1623
+      "inputTokens": 1564
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q230",
-      "inputTokens": 1623
+      "inputTokens": 1564
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "analytics",
       "questionId": "q231",
-      "inputTokens": 1618
+      "inputTokens": 1559
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q232",
-      "inputTokens": 11307
+      "inputTokens": 11273
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q233",
-      "inputTokens": 11313
+      "inputTokens": 11279
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q234",
-      "inputTokens": 11312
+      "inputTokens": 11278
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q235",
-      "inputTokens": 11310
+      "inputTokens": 11276
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "github",
       "questionId": "q236",
-      "inputTokens": 11306
+      "inputTokens": 11272
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q237",
-      "inputTokens": 4861
+      "inputTokens": 4822
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q238",
-      "inputTokens": 4873
+      "inputTokens": 4834
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q239",
-      "inputTokens": 4865
+      "inputTokens": 4826
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "structural-validation-control",
       "questionId": "q240",
-      "inputTokens": 985
+      "inputTokens": 926
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "structural-validation-truncated",
       "questionId": "q241",
-      "inputTokens": 879
+      "inputTokens": 820
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "structural-validation-extra-rows",
       "questionId": "q242",
-      "inputTokens": 1101
+      "inputTokens": 1042
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "structural-validation-width-mismatch",
       "questionId": "q243",
-      "inputTokens": 982
+      "inputTokens": 923
     },
     {
-      "runId": "v2-final-2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
       "format": "terset",
       "dataset": "structural-validation-missing-fields",
       "questionId": "q244",
-      "inputTokens": 929
+      "inputTokens": 870
     }
   ]
 }

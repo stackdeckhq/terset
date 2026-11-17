@@ -3,7 +3,7 @@
 // CSV is n/a when the data is not one list of records.
 // Columns put Terset first, then the others, the same as benchmark.md.
 // Each table scrolls sideways inside its own box on small screens, never the page.
-import { BENCH_TABLE_HEAD, COST_TABLE_HEAD, benchTableRows, benchTotalsRow, costCaption, costTableRows, costTotalsRow } from '../data/numbers.ts';
+import { BENCH_TABLE_HEAD, COST_TABLE_HEAD, FITTED_RULES_NOTE, benchTableRows, benchTotalsRow, costCaption, costTableRows, costTotalsRow } from '../data/numbers.ts';
 import type { Counter } from '../data/numbers.ts';
 
 /** The toggle's two labels: one while the table is closed, one while it is open. */
@@ -67,7 +67,7 @@ export function BenchTables({ counter }: { readonly counter: Counter }) {
         rows={benchTableRows(counter)}
         totals={benchTotalsRow(counter)}
       />
-      <p className="tbl-note">CSV marked lossy did not read back to the same typed data. Terset counts include the rules line. Pretty JSON is in this table only, not in the chart.</p>
+      <p className="tbl-note">CSV marked lossy did not read back to the same typed data. {FITTED_RULES_NOTE} Pretty JSON is in this table only, not in the chart.</p>
       <h4 className="tbl-h">Input cost at list price</h4>
       <p className="tbl-note">{costCaption(counter)}</p>
       <Table

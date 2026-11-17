@@ -11,9 +11,9 @@
       ]
     },
     {
-      "runId": "v2-final-2026-11-13",
-      "runOn": "2026-11-13",
-      "publishedPath": "bench/published/2026-11-13",
+      "runId": "fitted-rules-rerun-2026-11-17",
+      "runOn": "2026-11-17",
+      "publishedPath": "bench/published/2026-11-17",
       "formats": [
         "terset"
       ]
@@ -36,14 +36,14 @@
       "rows": [
         {
           "format": "terset",
-          "runOn": "2026-11-13",
-          "correct": 243,
+          "runOn": "2026-11-17",
+          "correct": 242,
           "total": 244,
-          "low": 0.9771544911855791,
-          "high": 0.9992761719952722,
-          "inputTokens": 1200640,
-          "outputTokens": 44414,
-          "totalCost": 5.69084
+          "low": 0.9706117105007331,
+          "high": 0.9977492777777971,
+          "inputTokens": 1188659,
+          "outputTokens": 44555,
+          "totalCost": 5.645736
         },
         {
           "format": "json-compact",
@@ -91,14 +91,14 @@
       "rows": [
         {
           "format": "terset",
-          "runOn": "2026-11-13",
-          "correct": 241,
+          "runOn": "2026-11-17",
+          "correct": 242,
           "total": 244,
-          "low": 0.964481398748853,
-          "high": 0.9958099146273562,
-          "inputTokens": 848844,
-          "outputTokens": 15460,
-          "totalCost": 1.852288
+          "low": 0.9706117105007331,
+          "high": 0.9977492777777971,
+          "inputTokens": 842260,
+          "outputTokens": 15670,
+          "totalCost": 1.84122
         },
         {
           "format": "json-compact",
@@ -147,7 +147,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 163544,
+            "terset": 161125,
             "json-compact": 275433,
             "json-pretty": 374284,
             "toon": 169612
@@ -156,7 +156,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 98801,
+            "terset": 97489,
             "json-compact": 165713,
             "json-pretty": 264400,
             "toon": 109256
@@ -174,7 +174,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 48704,
+            "terset": 46934,
             "json-compact": 98774,
             "json-pretty": 138704,
             "toon": 52004
@@ -183,7 +183,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 46151,
+            "terset": 45191,
             "json-compact": 73721,
             "json-pretty": 113531,
             "toon": 51011
@@ -201,7 +201,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 373299,
+            "terset": 372177,
             "json-compact": 557967,
             "json-pretty": 677295,
             "toon": 381153
@@ -210,7 +210,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 289885,
+            "terset": 289258,
             "json-compact": 387862,
             "json-pretty": 509962,
             "toon": 300940
@@ -228,7 +228,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 146099,
+            "terset": 144929,
             "json-compact": 217409,
             "json-pretty": 278759,
             "toon": 232559
@@ -237,7 +237,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 109453,
+            "terset": 108793,
             "json-compact": 147793,
             "json-pretty": 206773,
             "toon": 178393
@@ -255,7 +255,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 364109,
+            "terset": 362100,
             "json-compact": 466404,
             "json-pretty": 632249,
             "toon": 426675
@@ -264,7 +264,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 238087,
+            "terset": 236980,
             "json-compact": 291387,
             "json-pretty": 456781,
             "toon": 309632
@@ -282,7 +282,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 45599,
+            "terset": 44537,
             "json-compact": 74669,
             "json-pretty": 103667,
             "toon": 47093
@@ -291,7 +291,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 26510,
+            "terset": 25934,
             "json-compact": 44726,
             "json-pretty": 74552,
             "toon": 28112
@@ -309,7 +309,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 21507,
+            "terset": 20504,
             "json-compact": 36892,
             "json-pretty": 46582,
             "toon": 22578
@@ -318,7 +318,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 16125,
+            "terset": 15581,
             "json-compact": 23401,
             "json-pretty": 33754,
             "toon": 17757
@@ -336,7 +336,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 32903,
+            "terset": 31772,
             "json-compact": 31308,
             "json-pretty": 42560,
             "toon": 32874
@@ -345,7 +345,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 20852,
+            "terset": 20214,
             "json-compact": 19170,
             "json-pretty": 29523,
             "toon": 22128
@@ -363,7 +363,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 985,
+            "terset": 926,
             "json-compact": 1474,
             "json-pretty": 1965,
             "toon": 1053
@@ -372,7 +372,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 601,
+            "terset": 569,
             "json-compact": 898,
             "json-pretty": 1385,
             "toon": 685
@@ -390,7 +390,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 879,
+            "terset": 820,
             "json-compact": 1284,
             "json-pretty": 1703,
             "toon": 944
@@ -399,7 +399,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 538,
+            "terset": 506,
             "json-compact": 785,
             "json-pretty": 1200,
             "toon": 615
@@ -417,7 +417,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 1101,
+            "terset": 1042,
             "json-compact": 1674,
             "json-pretty": 2237,
             "toon": 1172
@@ -426,7 +426,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 671,
+            "terset": 639,
             "json-compact": 1019,
             "json-pretty": 1578,
             "toon": 761
@@ -444,7 +444,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 982,
+            "terset": 923,
             "json-compact": 1467,
             "json-pretty": 1955,
             "toon": 1050
@@ -453,7 +453,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 598,
+            "terset": 566,
             "json-compact": 893,
             "json-pretty": 1377,
             "toon": 682
@@ -471,7 +471,7 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 929,
+            "terset": 870,
             "json-compact": 1406,
             "json-pretty": 1885,
             "toon": 997
@@ -480,7 +480,7 @@
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 572,
+            "terset": 540,
             "json-compact": 861,
             "json-pretty": 1336,
             "toon": 656

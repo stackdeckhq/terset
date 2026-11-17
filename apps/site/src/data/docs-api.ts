@@ -128,10 +128,10 @@ print(value)`,
   {
     id: 'rules-for',
     name: { js: 'rulesFor', py: 'rules_for' },
-    summary: 'Returns the rules sentences one text needs, for the system prompt. It checks the text like `decode` does.',
+    summary: 'Returns the rules sentences one text needs, to send right before that text. It checks the text like `decode` does.',
     signature: { js: 'rulesFor(text: string): string', py: 'rules_for(text: str) -> str' },
     params: { js: TEXT_PARAM('string'), py: TEXT_PARAM('str') },
-    returns: { js: '`string`: the base rules, plus the keyed and dotted sentences when the text uses them.', py: '`str`: the base rules, plus the keyed and dotted sentences when the text uses them.' },
+    returns: { js: '`string`: only the sentences the text uses, or an empty string when none apply.', py: '`str`: only the sentences the text uses, or an empty string when none apply.' },
     errors: TEXT_ERRORS,
     jsFence: 'js',
     example: {
@@ -146,7 +146,7 @@ const text = encode({
   },
 });
 console.log(rulesFor(text));`,
-        output: "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field.",
+        output: "Tables use tab-separated headers and rows. name{N} has N entries; the @key column holds each entry's key and is not a field.",
       },
       py: {
         code: `from terset import encode, rules_for
@@ -159,7 +159,7 @@ text = encode({
     },
 })
 print(rules_for(text))`,
-        output: "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field.",
+        output: "Tables use tab-separated headers and rows. name{N} has N entries; the @key column holds each entry's key and is not a field.",
       },
     },
     differs: {
@@ -170,7 +170,7 @@ print(rules_for(text))`,
   {
     id: 'rules-constant',
     name: { js: 'RULES', py: 'RULES' },
-    summary: 'The full rules text, for one prompt that serves many texts. It is a constant, not a function.',
+    summary: 'The full rules text, for a shared or cached system prompt that serves many texts. It is a constant, not a function.',
     signature: { js: 'const RULES: string', py: 'RULES: str' },
     params: { js: [], py: [] },
     returns: { js: '`string`: every rules sentence, the same in both packages.', py: '`str`: every rules sentence, the same in both packages.' },
@@ -181,15 +181,17 @@ print(rules_for(text))`,
         code: `${IMPORT('RULES, rulesFor')}
 
 const fitted = rulesFor(${TABLE_TEXT});
-console.log(RULES.startsWith(fitted)); // true`,
-        output: 'true',
+console.log(fitted.length < RULES.length); // true, one text needs fewer rules
+console.log(rulesFor("name: Ada") === ""); // true, no table means no rules`,
+        output: 'true\ntrue',
       },
       py: {
         code: `from terset import RULES, rules_for
 
 fitted = rules_for(${TABLE_TEXT})
-print(RULES.startswith(fitted))  # True`,
-        output: 'True',
+print(len(fitted) < len(RULES))  # True, one text needs fewer rules
+print(rules_for("name: Ada") == "")  # True, no table means no rules`,
+        output: 'True\nTrue',
       },
     },
     differs: {

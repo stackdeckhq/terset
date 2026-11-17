@@ -5,8 +5,8 @@ const SampleTextSchema = z.strictObject({
   pretty: z.string().min(1),
   compact: z.string().min(1),
   terset: z.string().min(1),
-  rules: z.string().min(1),
-  rulesTokens: z.number().int().positive(),
+  rules: z.string(),
+  rulesTokens: z.number().int().nonnegative(),
   toon: z.string().min(1),
   roundTrip: z.literal(true),
 });

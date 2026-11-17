@@ -284,7 +284,7 @@ export function costLine(file: AccuracyFile): string {
 /** How the run was made, in at most five short lines. Inline Markdown: code spans and links. */
 export function accuracyMethod(file: AccuracyFile): readonly string[] {
   return [
-    `Tables use ${formatCount(file.calls)} calls from runs on ${file.publishedRuns.map((run) => run.runOn).join(' and ')}; none failed. Terset was rerun after its format changed in 0.2.1; the other formats did not change.`,
+    `Tables use ${formatCount(file.calls)} calls from runs on ${file.publishedRuns.map((run) => run.runOn).join(' and ')}; none failed. Terset was rerun with fitted rules, which send only the rules each text needs. The other formats did not change.`,
     // The short hash fits a phone column; the link keeps the full one.
     `Questions from the open [TOON benchmark](https://github.com/toon-format/toon) (MIT), commit [${file.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${file.upstreamSha}).`,
     'Temperature 0 where the model accepts it, scored by fixed rules with no model judge.',
@@ -308,7 +308,7 @@ export function accuracyReadmeBlock(file: AccuracyFile): string {
     ...file.models.flatMap((model) => [`#### ${model.name}`, accuracyReadmeTable(model)]),
     ACCURACY_FORMAT_NOTE,
     accuracySummary(file).join('\n'),
-    `${costLine(file)} ${inputTokensLine(file)} Temperature 0 where the model accepts it. Terset was rerun on ${tersetRunOn(file)} after its format changed in 0.2.1; the other formats did not change. Each row names its run date.`,
+    `${costLine(file)} ${inputTokensLine(file)} Temperature 0 where the model accepts it. Terset was rerun on ${tersetRunOn(file)} with fitted rules, which send only the rules each text needs. The other formats did not change. Each row names its run date.`,
     `Method and limits: [terset.dev/benchmark](${SITE_URL}/benchmark#accuracy). Every answer and its score: ${publishedLinks(file)}.`,
   ].join('\n\n');
 }

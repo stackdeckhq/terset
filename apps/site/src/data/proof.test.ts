@@ -18,12 +18,12 @@ const SOL = model('gpt-6.1-sol');
 describe('cost bars', () => {
   it('gives each format its cost at API list price and run date, Terset first, scaled from zero', () => {
     expect(costBars(OPUS).map((bar) => [bar.label, bar.costText, bar.runOn])).toEqual([
-      ['Terset', '$5.69', '2026-11-13'],
+      ['Terset', '$5.65', '2026-11-17'],
       ['Compact JSON', '$8.04', '2026-11-12'],
       ['Pretty JSON', '$10.20', '2026-11-12'],
       ['TOON', '$6.35', '2026-11-12'],
     ]);
-    expect(costBars(SOL)[0]).toMatchObject({ costText: '$1.85', runOn: '2026-11-13', terset: true });
+    expect(costBars(SOL)[0]).toMatchObject({ costText: '$1.84', runOn: '2026-11-17', terset: true });
     for (const bars of [costBars(OPUS), costBars(SOL)]) {
       expect(Math.max(...bars.map((bar) => bar.fraction))).toBe(1);
       expect(bars.every((bar) => bar.fraction > 0)).toBe(true);
@@ -34,9 +34,9 @@ describe('cost bars', () => {
 describe('big numbers', () => {
   it('shows fewer tokens, lower cost and right answers per model', () => {
     expect(bigNumbers(ACCURACY).map((item) => [item.id, item.values.map((value) => `${value.model} ${value.text}`), item.win])).toEqual([
-      ['tokens', ['Opus 32.0%', 'Sol 26.7%'], true],
-      ['cost', ['Opus 29.2%', 'Sol 25.8%'], true],
-      ['answers', ['Opus 243/244', 'Sol 241/244'], false],
+      ['tokens', ['Opus 32.7%', 'Sol 27.3%'], true],
+      ['cost', ['Opus 29.8%', 'Sol 26.2%'], true],
+      ['answers', ['Opus 242/244', 'Sol 242/244'], false],
     ]);
     expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers');
   });
@@ -44,8 +44,8 @@ describe('big numbers', () => {
   it('splits each value into a large figure and a quiet tail that join back into the text', () => {
     for (const item of bigNumbers(ACCURACY)) for (const value of item.values) expect(`${value.figure}${value.tail}`).toBe(value.text);
     expect(bigNumbers(ACCURACY)[2]?.values.map((value) => [value.figure, value.tail])).toEqual([
-      ['243', '/244'],
-      ['241', '/244'],
+      ['242', '/244'],
+      ['242', '/244'],
     ]);
   });
 
@@ -72,19 +72,19 @@ describe('data sets', () => {
     expect(datasetRows(ACCURACY, SOL)).toHaveLength(13);
   });
 
-  it('puts Terset under TOON on 13 of 13 for Sol and 12 of 13 for Opus, with nested config a tie', () => {
+  it('puts Terset under TOON on 13 of 13 for both models, nested config included', () => {
     expect(datasetRows(ACCURACY, SOL).every((row) => row.vsToon.verdict === 'fewer')).toBe(true);
     const opus = datasetRows(ACCURACY, OPUS);
-    expect(opus.filter((row) => row.vsToon.verdict === 'fewer')).toHaveLength(12);
+    expect(opus.filter((row) => row.vsToon.verdict === 'fewer')).toHaveLength(13);
     const config = opus.find((row) => row.kind === 'nested-config');
-    expect(config?.terset).toBe(config === undefined ? 0 : config.toon + 29);
-    expect(config?.vsToon).toMatchObject({ verdict: 'tie', text: 'Tie' });
+    expect(config?.terset).toBe(config === undefined ? 0 : config.toon - 1102);
+    expect(config?.vsToon).toMatchObject({ verdict: 'fewer', text: '−3.4%' });
   });
 
   it('shows the nested config loss against compact JSON plainly on both models', () => {
     const loss = (item: AccuracyModel) => datasetRows(ACCURACY, item).filter((row) => row.vsJson.verdict === 'more').map((row) => [row.kind, row.vsJson.text]);
-    expect(loss(OPUS)).toEqual([['nested-config', '+5.1%']]);
-    expect(loss(SOL)).toEqual([['nested-config', '+8.8%']]);
+    expect(loss(OPUS)).toEqual([['nested-config', '+1.5%']]);
+    expect(loss(SOL)).toEqual([['nested-config', '+5.4%']]);
   });
 
   it('sums the data sets to each model total', () => {
@@ -96,13 +96,13 @@ describe('data sets', () => {
   });
 
   it('says the result per model in one line', () => {
-    expect(datasetSummary(datasetRows(ACCURACY, OPUS))).toBe('Fewer tokens than TOON on 12 of 13 (1 tie). Fewer than compact JSON on 12 of 13 (1 more).');
+    expect(datasetSummary(datasetRows(ACCURACY, OPUS))).toBe('Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).');
     expect(datasetSummary(datasetRows(ACCURACY, SOL))).toBe('Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).');
   });
 
   it('shares one scale from zero, wide enough for the largest saving and loss', () => {
     const scale = datasetScale(ACCURACY);
-    // Analytics on Opus saves 50.7% against compact JSON, so the scale rounds up to 55%.
+    // Analytics on Opus saves 52.5% against compact JSON, so the scale rounds up to 55%.
     expect(scale.save).toBeCloseTo(0.55, 9);
     expect(scale.lose).toBeCloseTo(0.1, 9);
   });
@@ -116,7 +116,7 @@ describe('data sets', () => {
 
 describe('smaller than TOON', () => {
   it('counts the 11 sample cases and Sol on all 13 data sets, on the OpenAI tokenizer', () => {
-    expect(smallerThanToon(ACCURACY, COUNTERS)).toMatchObject({ smaller: 21, total: 24, text: 'Smaller than TOON on 21 of 24 data sets', tokenizer: 'OpenAI tokenizer' });
+    expect(smallerThanToon(ACCURACY, COUNTERS)).toMatchObject({ smaller: 22, total: 24, text: 'Smaller than TOON on 22 of 24 data sets', tokenizer: 'OpenAI tokenizer' });
   });
 
   it('gives nothing while the bench is pending', () => {
@@ -139,13 +139,13 @@ describe('home headline', () => {
   it('leads with TOON on the OpenAI tokenizer, then compact JSON on a plain line', () => {
     const counters = ready();
     const total = counters.o200k.cases.length;
-    expect(underToon(counters.o200k)).toBe(8);
+    expect(underToon(counters.o200k)).toBe(9);
     expect(homeHeadline(BENCH, counters)).toEqual({
-      title: 'Fewer tokens than TOON in 8 of 11 cases.',
+      title: 'Fewer tokens than TOON in 9 of 11 cases.',
       tag: 'OpenAI tokenizer',
       line: `Fewer than compact JSON in ${String(underJson(counters.o200k))} of ${String(total)}.`,
     });
-    expect(homeHeadline(BENCH, counters).line).toBe('Fewer than compact JSON in 9 of 11.');
+    expect(homeHeadline(BENCH, counters).line).toBe('Fewer than compact JSON in 10 of 11.');
   });
 
   it('never says "on both counters" and claims nothing about answers', () => {
@@ -162,21 +162,21 @@ describe('home headline', () => {
     const claude = counters.claude;
     if (claude === null) throw new Error('the Claude file is pending');
     expect(counterSummary(claude)).toContain(`under TOON's best in ${String(underToon(claude))} of 11 cases`);
-    expect(underToon(claude)).toBe(6);
+    expect(underToon(claude)).toBe(10);
     expect(homeHeadline(BENCH, counters, 'claude')).toEqual({
       title: `Fewer tokens than TOON in ${String(underToon(claude))} of ${String(claude.cases.length)} cases.`,
       tag: claude.label,
       line: `Fewer than compact JSON in ${String(underJson(claude))} of ${String(claude.cases.length)}.`,
     });
-    expect(homeHeadline(BENCH, counters, 'claude')).toEqual({ title: 'Fewer tokens than TOON in 6 of 11 cases.', tag: 'Claude Opus 5.5', line: 'Fewer than compact JSON in 9 of 11.' });
+    expect(homeHeadline(BENCH, counters, 'claude')).toEqual({ title: 'Fewer tokens than TOON in 10 of 11 cases.', tag: 'Claude Opus 5.5', line: 'Fewer than compact JSON in 10 of 11.' });
   });
 
   it('keeps a tie with TOON out of the Claude count', () => {
     const claude = ready().claude;
     if (claude === null) throw new Error('the Claude file is pending');
     const tied = claude.cases.map((row) => (row.name === '200 users' ? { ...row, toon: row.terset } : row));
-    expect(homeHeadline(BENCH, ready(), 'claude').title).toBe('Fewer tokens than TOON in 6 of 11 cases.');
-    expect(homeHeadline(BENCH, { ...ready(), claude: { ...claude, cases: tied } }, 'claude').title).toBe('Fewer tokens than TOON in 5 of 11 cases.');
+    expect(homeHeadline(BENCH, ready(), 'claude').title).toBe('Fewer tokens than TOON in 10 of 11 cases.');
+    expect(homeHeadline(BENCH, { ...ready(), claude: { ...claude, cases: tied } }, 'claude').title).toBe('Fewer tokens than TOON in 9 of 11 cases.');
   });
 
   it('throws for the Claude tab when its counts are pending or compact JSON wins half', () => {
@@ -191,7 +191,7 @@ describe('home headline', () => {
   });
 
   it('states one more TOON loss as measured instead of hiding it', () => {
-    expect(homeHeadline(BENCH, withCase('200 users', (row) => ({ ...row, toon: row.terset }))).title).toBe('Fewer tokens than TOON in 7 of 11 cases.');
+    expect(homeHeadline(BENCH, withCase('200 users', (row) => ({ ...row, toon: row.terset }))).title).toBe('Fewer tokens than TOON in 8 of 11 cases.');
   });
 
   it('throws when compact JSON wins half the cases or more', () => {
@@ -208,10 +208,10 @@ describe('home headline', () => {
 describe('benchmark.md lines', () => {
   it('states each claim with its tokenizer and says accuracy is a tie', () => {
     expect(proofLines(ACCURACY, COUNTERS)).toEqual([
-      'Fewer input tokens than compact JSON: 32.0% on Opus and 26.7% on Sol. Each model counts with its own tokenizer.',
-      'Lower cost than compact JSON: 29.2% on Opus and 25.8% on Sol. Accuracy is a tie.',
-      'Smaller than TOON on 21 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
-      'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 12 of 13 (1 tie). Fewer than compact JSON on 12 of 13 (1 more).',
+      'Fewer input tokens than compact JSON: 32.7% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
+      'Lower cost than compact JSON: 29.8% on Opus and 26.2% on Sol. Accuracy is a tie.',
+      'Smaller than TOON on 22 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
+      'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
       'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
     ]);
   });

@@ -6,7 +6,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { BENCH_FIXTURE } from '../data/bench-fixture.dev.ts';
-import { PRICES, buildCounters, costTotalsRow, formatCount } from '../data/numbers.ts';
+import { FITTED_RULES_NOTE, PRICES, buildCounters, costTotalsRow, formatCount } from '../data/numbers.ts';
 import type { Counter } from '../data/numbers.ts';
 import { BENCH_TABLE_TOGGLE, BenchTable } from './BenchTable.tsx';
 
@@ -60,5 +60,9 @@ describe('bench table per counter', () => {
     const html = render(counter, false);
     expect(html).toContain('o200k_base tokens per case');
     expect(html).toContain(`<td>${formatCount(first.terset)}</td>`);
+  });
+
+  it('says under the token table that each Terset count carries the fitted rules line', () => {
+    expect(render(fixtureCounter(), false)).toContain(FITTED_RULES_NOTE);
   });
 });

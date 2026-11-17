@@ -23,19 +23,22 @@ _HeaderTrie: TypeAlias = "dict[str, _HeaderTrie | None]"
 RULES = "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
 
 _SENTENCES = RULES.split(". ")
-_BASE_RULES = ". ".join(_SENTENCES[:5]) + "."
+_FITTED_RULES = [
+    ("table", _SENTENCES[0] + "."),
+    ("empty", _SENTENCES[1] + "."),
+    ("quoted", _SENTENCES[2] + "."),
+    ("json", _SENTENCES[3] + "."),
+    ("id", _SENTENCES[4] + "."),
+    ("keyed", _SENTENCES[5] + "."),
+    ("nested", _SENTENCES[6]),
+]
 
 
 def rules_for(text: str) -> str:
     """Return the rules needed by canonical text, with decode's validation."""
     features: set[str] = set()
     _read_document(text, features)
-    sentences = [_BASE_RULES]
-    if "keyed" in features:
-        sentences.append(_SENTENCES[5] + ".")
-    if "nested" in features:
-        sentences.append(_SENTENCES[6])
-    return " ".join(sentences)
+    return " ".join(sentence for feature, sentence in _FITTED_RULES if feature in features)
 
 _KEY = re.compile(r"[A-Za-z_$][A-Za-z0-9_$.-]*\Z")
 _NUMBER = re.compile(r"[-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?\Z")
@@ -431,6 +434,7 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
             raise ValueError(_DEPTH_ERROR)
         paths.append(path)
     if features is not None:
+        features.add("table")
         if keyed:
             features.add("keyed")
         if any(len(path) > 1 for path in paths):
@@ -455,6 +459,8 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
                 node[segment] = child
                 node = child
     ids = not keyed and fields[0] == "id"
+    if ids and features is not None:
+        features.add("id")
     result: JsonRoot = {} if keyed else []
     for index in range(count):
         if start + 1 + index >= len(lines):
@@ -468,6 +474,13 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
         for column, (path, raw) in enumerate(zip(paths, cells)):
             if column == 0 and ids and not raw:
                 raise ValueError("Missing string id.")
+            if features is not None and not (column == 0 and ids):
+                if not raw:
+                    features.add("empty")
+                elif raw.startswith('"'):
+                    features.add("quoted")
+                elif raw.startswith(("{", "[")):
+                    features.add("json")
             if raw:
                 _set_path(row, path, raw if column == 0 and ids else _read_cell(raw))
         if isinstance(result, list):
@@ -535,6 +548,8 @@ def _read_document(text: str, features: set[str] | None = None) -> JsonRoot:
             else:
                 if not rest.startswith(" "):
                     raise ValueError("Expected scalar field.")
+                if features is not None and rest[1:].startswith('"'):
+                    features.add("quoted")
                 _set(result, key, _read_cell(rest[1:]))
     try:
         canonical = encode(result)

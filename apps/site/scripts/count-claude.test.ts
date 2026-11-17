@@ -38,7 +38,8 @@ describe('public count inputs and formats', () => {
     expect(requestPlan(inputs).requests).toBe(41);
     expect(formatTexts(INPUT.value)).toMatchObject({
       json: '{"hello":"world"}', jsonPretty: '{\n  "hello": "world"\n}',
-      yaml: 'hello: world\n', csv: null, terset: `${rulesFor('hello: world')}\nhello: world`,
+      // Empty rules, so no rules line and no newline before the data.
+      yaml: 'hello: world\n', csv: null, terset: 'hello: world',
     });
   });
 
@@ -319,16 +320,24 @@ describe('private benchmark inputs', () => {
 });
 
 describe('published Claude requests', () => {
-  const requests = publishedRequests(PUBLISHED_RUNS.map((source) => ({
+  const runs = PUBLISHED_RUNS.map((source) => ({
     source, raw: JSON.parse(readFileSync(new URL(`../../../${source.path}`, import.meta.url), 'utf8')) as unknown,
-  })));
+  }));
+  const requests = publishedRequests(runs.filter(({ source }) => !source.formats.some(format => format === 'terset')));
   const claude = (count: number) => ({ ...options(vi.fn<typeof globalThis.fetch>().mockImplementation(() => Promise.resolve(response(count))), 2000), model: 'claude-opus-5-5' });
 
-  it('rebuilds every Claude request of the selected formats: 244 Terset and 732 JSON or TOON', () => {
-    expect(requests).toHaveLength(976);
-    const tally = Object.fromEntries(['terset', 'json-compact', 'json-pretty', 'toon'].map((format) => [format, requests.filter((request) => request.format === format).length]));
+  it('rebuilds all 976 published requests, fitted Terset primers included, and refuses the older full-rules Terset run', () => {
+    expect(requests).toHaveLength(732);
+    const all = publishedRequests(runs);
+    expect(all).toHaveLength(976);
+    const tally = Object.fromEntries(['terset', 'json-compact', 'json-pretty', 'toon'].map((format) => [format, all.filter((request) => request.format === format).length]));
     expect(tally).toEqual({ terset: 244, 'json-compact': 244, 'json-pretty': 244, toon: 244 });
-    expect(new Set(requests.map((request) => request.body.model))).toEqual(new Set(['claude-opus-5-5']));
+    expect(new Set(all.map((request) => request.body.model))).toEqual(new Set(['claude-opus-5-5']));
+    // The 2026-11-13 run sent the full rules text, so today's fitted primers no longer match it.
+    const terset = runs.find(({ source }) => source.formats.some((format) => format === 'terset'));
+    if (terset === undefined) throw new Error('no Terset run');
+    const older = JSON.parse(readFileSync(new URL('../../../bench/published/2026-11-13/v2-final-2026-11-13.json', import.meta.url), 'utf8')) as unknown;
+    expect(() => publishedRequests([{ source: terset.source, raw: older }])).toThrow('a rebuilt prompt differs from the one the run reserved for');
   });
 
   it('counts the exact body the benchmark sent, built by the same function (no drift)', async () => {

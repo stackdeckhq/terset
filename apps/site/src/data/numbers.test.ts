@@ -120,6 +120,22 @@ describe('bench numbers', () => {
     expect(csvNote(BENCH_FIXTURE)).toContain('50 to 50 tokens smaller on 1 flat');
   });
 
+  // A tie is not a win, so "Where Terset does not win" lists it next to the cases JSON wins.
+  it('lists a tie with compact JSON in the JSON note', () => {
+    const bench: BenchReady = {
+      status: 'ready',
+      tokenizer: 'o200k_base',
+      rulesTokens: 40,
+      yamlVersion: '2.9.1',
+      cases: [
+        { name: 'Win', json: 900, jsonPretty: 1500, yaml: 1100, toon: 800, csv: null, csvExact: null, terset: 700 },
+        { name: 'Tie', json: 63, jsonPretty: 90, yaml: 89, toon: 99, csv: null, csvExact: null, terset: 63 },
+      ],
+      samples: SAMPLES,
+    };
+    expect(jsonWinsNote(bench)).toBe('Compact JSON is smaller than or equal to Terset on tie (63 vs 63).');
+  });
+
   it('names the case where CSV is larger by the most', () => {
     const bench: BenchReady = {
       status: 'ready',
@@ -250,7 +266,7 @@ describe('bench numbers', () => {
     if (BENCH_FILE.status !== 'ready') return;
     const line = sweepReadmeLine(SWEEP, BENCH_FILE);
     expect(line).toBe(
-      'Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed, except UI text, uniform rows against TOON, where Terset is smaller on 985 of 1,000.',
+      'Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed.',
     );
     const list = benchmarkKeepElse(BENCH_FILE, COUNTERS).map((item) => `- ${item}`).join('\n');
     for (const path of READMES) {

@@ -128,9 +128,9 @@ export function underToon(bench: CaseSet): number {
   return bench.cases.filter((row) => row.terset < row.toon).length;
 }
 
-/** Cases where compact JSON is smaller than Terset with its rules line. */
+/** Cases where compact JSON is smaller than or equal to Terset with its rules line. A tie is not a Terset win. */
 export function jsonWins(bench: CaseSet): readonly CaseRow[] {
-  return bench.cases.filter((row) => row.json < row.terset);
+  return bench.cases.filter((row) => row.json <= row.terset);
 }
 
 /** The benchmark headline, computed from the data. Neutral while pending. */
@@ -143,16 +143,16 @@ export function benchHeadline(bench: BenchFile): string {
 export function benchSummary(bench: CaseSource): string {
   if (!('cases' in bench)) return `${bench.reason} ${PENDING_NOTE}`;
   const total = String(bench.cases.length);
-  return `Terset, rules line included, is under TOON's best in ${String(underToon(bench))} of ${total} cases and under compact JSON in ${String(underJson(bench))} of ${total}.`;
+  return `Terset, fitted rules line included, is under TOON's best in ${String(underToon(bench))} of ${total} cases and under compact JSON in ${String(underJson(bench))} of ${total}.`;
 }
 
-/** The cases JSON wins, as one plain sentence. Empty when there are none. */
+/** The cases JSON wins or ties, as one plain sentence. Empty when there are none. */
 export function jsonWinsNote(bench: CaseSource): string {
   if (!('cases' in bench)) return '';
   const wins = jsonWins(bench);
   if (wins.length === 0) return '';
   const list = wins.map((row) => `${row.name.toLowerCase()} (${formatCount(row.json)} vs ${formatCount(row.terset)})`).join(' and ');
-  return `Compact JSON wins on ${list}.`;
+  return `Compact JSON is smaller than or equal to Terset on ${list}.`;
 }
 
 /** Where TOON's best is not larger than Terset, computed from the data. Empty when Terset is under TOON everywhere. */
@@ -181,9 +181,12 @@ export function csvNote(bench: CaseSource): string {
   return `Plain CSV is ${range} tokens smaller on ${String(smaller.length)} flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting.${larger}`;
 }
 
+/** What every Terset count holds besides the data. Every note beside a headline count says it. */
+export const FITTED_RULES_NOTE = 'Each Terset count includes rulesFor(text), the rules line fitted to that text.';
+
 export function tokenizerNote(bench: BenchFile): string {
   if (bench.status === 'pending') return 'Counts will use one named tokenizer. Others will differ. JSON will mean compact JSON, not pretty printed.';
-  return `Tokens counted with one tokenizer, ${bench.tokenizer}. Others will differ. JSON means compact JSON, not pretty printed.`;
+  return `Tokens counted with one tokenizer, ${bench.tokenizer}. Others will differ. JSON means compact JSON, not pretty printed. ${FITTED_RULES_NOTE}`;
 }
 
 export const QUALITY_NOTE = 'Token counts say nothing about answer quality. Terset is about fewer tokens.';

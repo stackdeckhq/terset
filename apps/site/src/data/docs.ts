@@ -136,10 +136,10 @@ const data = {
 
 const text = encode(data);
 
-// Send the fitted rules once in the system prompt, and the text as the data.
+// One text: send its fitted rules right before the data.
 const messages = [
-  { role: "system", content: \`You read Terset data. \${rulesFor(text)}\` },
-  { role: "user", content: \`Which users have no role?\\n\\n\${text}\` },
+  { role: "system", content: "You read Terset data." },
+  { role: "user", content: \`Which users have no role?\\n\\n\${rulesFor(text)}\\n\${text}\` },
 ];
 
 console.log(text);
@@ -160,10 +160,10 @@ data = {
 
 text = encode(data)
 
-# Send the fitted rules once in the system prompt, and the text as the data.
+# One text: send its fitted rules right before the data.
 messages = [
-    {"role": "system", "content": f"You read Terset data. {rules_for(text)}"},
-    {"role": "user", "content": f"Which users have no role?\\n\\n{text}"},
+    {"role": "system", "content": "You read Terset data."},
+    {"role": "user", "content": f"Which users have no role?\\n\\n{rules_for(text)}\\n{text}"},
 ]
 
 print(text)
@@ -177,7 +177,7 @@ export function quickStartSteps(lang: DocLang): readonly string[] {
   const name = NAMES[lang];
   return [
     `\`${name.encode}(value)\` turns a JSON object or array into Terset text.`,
-    `Put \`${name.rulesFor}(text)\` in the system prompt once. The data carries no legend.`,
+    `Send \`${name.rulesFor}(text)\` right before the data. A shared or cached system prompt for many texts takes \`${name.rules}\` instead.`,
     `\`${name.decode}(text)\` gives back the same value. Ask the model to answer in JSON, since Terset is for reading.`,
   ];
 }
@@ -269,15 +269,20 @@ export const CHEAT_SHEET: readonly CheatInput[] = [
 // 5. Rules
 
 export const RULES_INTRO: readonly string[] = [
-  'A model needs the rules once, in the system prompt. The data itself carries no legend.',
+  'For one text, send `rulesFor(text)` right before the data. The data itself carries no legend.',
   '`rulesFor(text)` returns only the sentences that text needs. In Python it is `rules_for(text)`. It checks the text like `decode` does, so it rejects the same input.',
-  '`RULES` is the full text, for one prompt that serves many texts. It is the same string in both packages.',
+  '`RULES` is the full text, for a shared or cached system prompt that serves many texts. It is the same string in both packages.',
 ];
 
 export const RULES_PARTS: readonly { readonly when: string; readonly adds: string }[] = [
-  { when: 'Always', adds: 'The five base sentences: tables, empty cells, quotes, nested cells and the `id` header.' },
+  { when: 'Any table is present', adds: 'The tables sentence.' },
+  { when: 'A table cell is empty', adds: 'The empty cells sentence.' },
+  { when: 'A table cell or root value is a quoted string', adds: 'The quotes sentence.' },
+  { when: 'A table cell holds a JSON array or object', adds: 'The nested cells sentence.' },
+  { when: 'A list table starts with a bare `id` header', adds: 'The `id` header sentence.' },
   { when: 'A keyed table `name{N}` is present', adds: 'The `@key` sentence.' },
   { when: 'A dotted header `a.b` is present', adds: 'The dotted header sentence.' },
+  { when: 'None of these', adds: 'Nothing. The rules are an empty string.' },
 ];
 
 // 6. Errors and limits
@@ -312,7 +317,7 @@ export const DEPTH_NOTE = 'In Python, very deep data and an already deep call st
 // 7. When not to use it. Shared word for word with both package READMEs.
 
 export const WHEN_NOT: readonly { readonly title: string; readonly text: string }[] = [
-  { title: 'No lists of records.', text: 'Config files and deeply nested data stay JSON, so the rules line only adds tokens.' },
+  { title: 'No lists of records.', text: 'Config files and deeply nested data stay JSON. Terset sends no rules for them and saves a few tokens at most.' },
   { title: 'One-row lists.', text: 'A list needs two or more objects to become a table.' },
   { title: 'Mixed arrays.', text: 'A list with any item that is not an object stays JSON.' },
   { title: 'Nested lists.', text: 'Lists of objects inside a record stay JSON inside their cell. Only the top level becomes tables.' },

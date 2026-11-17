@@ -1,5 +1,5 @@
-// Step 7: a real prompt. RULES once in the system prompt, the table and the
-// question in the user message. The code lines come from the format adapter.
+// Step 7: a real prompt. The fitted rules right before the table, then the
+// question, in one user message. The code lines come from the format adapter.
 import { Link } from '@tanstack/react-router';
 import { formatCount } from '../../data/numbers.ts';
 import { IMPORT_LINE, RULES_PLACEMENT, USAGE_LINES } from '../../lib/format.ts';
@@ -11,8 +11,8 @@ import { Reveal, Step } from './Step.tsx';
 const QUESTION = 'Which orders shipped?';
 
 const MESSAGE_HTML =
-  `<span class="blk b-l"><span class="lab">System prompt, once</span>${esc(ORDERS_RULES)}</span>` +
-  `<span class="blk b-t"><span class="lab">User message: the table</span><span class="fade-x"><span class="xs" tabindex="0" role="region" aria-label="User message: the table. Scrolls sideways.">${ORDERS_HL}</span></span></span>` +
+  `<span class="blk b-l"><span class="lab">User message: the fitted rules</span>${esc(ORDERS_RULES)}</span>` +
+  `<span class="blk b-t"><span class="lab">Then the table</span><span class="fade-x"><span class="xs" tabindex="0" role="region" aria-label="The table. Scrolls sideways.">${ORDERS_HL}</span></span></span>` +
   `<span class="blk b-q"><span class="lab">Question</span>${esc(QUESTION)}</span>`;
 
 const CODE_TEXT = [IMPORT_LINE, '', ...USAGE_LINES].join('\n');
@@ -31,7 +31,7 @@ export function StepPrompt() {
             <span className="fn">Prompt with the six orders</span>
             <span>Fitted rules: {RULES_COUNT} tokens</span>
           </div>
-          <div className="msg" tabIndex={0} aria-label="Example prompt: rules in the system prompt, then the table and the question" dangerouslySetInnerHTML={{ __html: MESSAGE_HTML }} />
+          <div className="msg" tabIndex={0} aria-label="Example prompt: the fitted rules, then the table and the question" dangerouslySetInnerHTML={{ __html: MESSAGE_HTML }} />
           <p className="split-note">{RULES_PLACEMENT}</p>
         </div>
         <div className="side">

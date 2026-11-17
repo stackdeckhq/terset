@@ -20,10 +20,10 @@ Terset writes JSON records as one terse table. Decoding gives the same JSON back
 
 Never write Terset by hand. Always use `encode`.
 
-## The rules sentence
+## The rules
 
-Put it in the system prompt once. The data carries no legend.
-`rulesFor(text)` gives the shortest valid one.
+For one text, send `rulesFor(text)` right before the data. It gives only the sentences that text needs.
+A shared or cached system prompt for many texts takes the full rules below.
 
 ```text
 {{RULES}}

@@ -90,6 +90,6 @@ export const AGENT_PROMPT_FOR = 'For a coding agent that writes prompts. Paste i
 export const AGENT_PROMPT = [
   `Read ${SITE_URL}/agents.md before you write any prompt.`,
   `Install the ${PACKAGE_NAME} package from npm with ${INSTALL_COMMANDS.pnpm}, or the same package in the project's own package manager.`,
-  'When a prompt carries a list of JSON records, encode it with Terset and put rulesFor(text) in the system prompt once.',
+  'When a prompt carries a list of JSON records, encode it with Terset and send rulesFor(text) right before the data.',
   'Keep JSON for config and tiny data, and ask for answers in JSON.',
 ].join('\n');

@@ -52,10 +52,10 @@ describe('format equivalence and prompt controls', () => {
     ];
     for (const [index, prompt] of prompts.entries()) {
       const primer = primers[index];
-      if (!primer) throw new Error('Missing primer');
+      if (primer === undefined) throw new Error('Missing primer');
       expect(prompt.system).toContain(primer);
       expect(prompt.system.replace(primer, '')).toBe('Read the supplied data.\n\n');
-      for (const other of primers.filter(p => p !== primer)) expect(prompt.system).not.toContain(other);
+      for (const other of primers.filter(p => p !== primer && p !== '')) expect(prompt.system).not.toContain(other);
       expect(prompt.user.replace(`in ${String(FORMATS[index])} format`, 'in FORMAT format')).toBe(
         prompts[0]?.user.replace('in json-compact format', 'in FORMAT format'));
     }
