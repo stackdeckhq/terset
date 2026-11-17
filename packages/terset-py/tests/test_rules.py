@@ -27,7 +27,7 @@ class RulesTests(unittest.TestCase):
         self.assertEqual(cases[-1]["rules"], RULES)
 
     def test_same_rejections(self):
-        cases = json.loads((PACKAGE.parent / "terset/tests/rejection-errors.json").read_text(encoding="utf-8"))
+        cases = json.loads((PACKAGE.parents[1] / "conformance/rejection-errors.json").read_text(encoding="utf-8"))
         cases.append({"text": "{2}\n@key\tname\na\tAda\nb\tLin"})
         for case in cases:
             with self.subTest(text=case["text"]):
