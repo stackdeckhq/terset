@@ -16,6 +16,7 @@
     "cases": "node apps/site/scripts/update-cases.ts",
     "numbers": "node apps/site/scripts/update-numbers.ts",
     "sweep": "node apps/site/scripts/update-sweep.ts",
+    "real": "node apps/site/scripts/update-real.ts",
     "accuracy": "node apps/site/scripts/update-accuracy.ts",
     "bytes": "node apps/site/scripts/update-bytes.ts",
     "docs:readme": "node apps/site/scripts/update-readmes.ts",
