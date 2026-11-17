@@ -119,6 +119,7 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
+          registry-url: https://registry.npmjs.org
 
       - name: Check the npm version
         run: |
@@ -166,13 +167,16 @@ jobs:
           mkdir -p "$RUNNER_TEMP/pack"
           pnpm --dir packages/terset pack --pack-destination "$RUNNER_TEMP/pack"
 
-      # Trusted publishing: npm signs in with the workflow's OIDC token. No npm token is used.
+      # npm tries trusted publishing first and uses NPM_TOKEN only if that fails.
+      # Remove the secret and this env once a release shows the trusted publisher.
       - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish "$RUNNER_TEMP"/pack/*.tgz --provenance --access public
 
   publish-pypi:
     name: Publish Python package
-    needs: release-checks
+    needs: [release-checks, publish]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: pypi
