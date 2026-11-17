@@ -17,6 +17,8 @@
 
 This repository holds the JavaScript and Python packages and the site.
 
+Terset is an early project. It was first published in November 2026. The format is frozen at 1.0.
+
 <!-- docs:contents -->
 **Contents**
 
