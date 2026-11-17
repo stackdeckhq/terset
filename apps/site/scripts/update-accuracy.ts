@@ -281,7 +281,8 @@ function inputCounts(counts: ClaudeRequestCounts): { readonly inputFor: (item: P
 /**
  * A run that uses another run's Claude counts for a shown format must have sent the same
  * requests: the same Claude model and input reservation setup, and the same recorded and
- * reserved input tokens on every row of that format. The plan fingerprint may differ, since
+ * reserved input tokens on every row of that format, from the same frozen data, upstream
+ * commit and tokenizer. The plan fingerprint may differ, since
  * it covers every model in the run. A run that lends counts must have counts of its own.
  */
 function assertSameRequests(item: Published, all: readonly Published[]): void {
@@ -294,6 +295,11 @@ function assertSameRequests(item: Published, all: readonly Published[]): void {
     const setup = (run: RunFile): string => JSON.stringify([run.models.find((model) => model.id === COUNTED_MODEL)?.api, run.inputReservation]);
     if (setup(item.run) !== setup(counted.run) || !counted.run.models.some((model) => model.id === COUNTED_MODEL)) {
       throw new Error(`${item.run.runId}: its Claude setup differs from ${from}, so it cannot use its Claude counts`);
+    }
+    // The lending run may be history only, so the check across table runs does not cover it.
+    const data = (run: RunFile): string => JSON.stringify([Object.entries(run.dataHashes).sort(), run.upstreamSha, run.tokenizer]);
+    if (data(item.run) !== data(counted.run)) {
+      throw new Error(`${item.run.runId}: its source data differs from ${from}, so it cannot use its Claude counts`);
     }
     const key = (row: RunRow): string => JSON.stringify([row.dataset, row.questionId]);
     const ofFormat = (run: RunFile): RunRow[] => run.rows.filter((row) => row.model === COUNTED_MODEL && row.format === format);

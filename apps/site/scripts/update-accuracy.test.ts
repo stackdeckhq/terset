@@ -160,6 +160,21 @@ describe('the Opus matched batch', () => {
     expect(() => buildAccuracy(setup, freshCounts())).toThrow(/its Claude setup differs/u);
   });
 
+  it('refuses the borrowed counts when the lending run used other data, questions or tokenizer', () => {
+    const commit = freshRuns();
+    runNamed(commit, 'p4-2026-11-12').upstreamSha = 'another-commit';
+    expect(() => buildAccuracy(commit, freshCounts())).toThrow(/its source data differs from p4-2026-11-12/u);
+    const hashes = freshRuns();
+    const lender = runNamed(hashes, 'fitted-rules-rerun-2026-11-17');
+    const [name] = Object.keys(lender.dataHashes);
+    if (name === undefined) throw new Error('no data hash');
+    lender.dataHashes[name] = 'another-hash';
+    expect(() => buildAccuracy(hashes, freshCounts())).toThrow(/its source data differs from fitted-rules-rerun-2026-11-17/u);
+    const tokenizer = freshRuns();
+    runNamed(tokenizer, 'p4-2026-11-12').tokenizer = 'another-tokenizer';
+    expect(() => buildAccuracy(tokenizer, freshCounts())).toThrow(/its source data differs from p4-2026-11-12/u);
+  });
+
   it('refuses repeats of one batch with different plans or days', () => {
     const plans = freshRuns();
     lastOpus(plans).fingerprint = 'another-plan';
