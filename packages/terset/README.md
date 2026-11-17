@@ -295,10 +295,10 @@ On 244 questions and two models, accuracy is a tie. Terset used fewer input toke
 
 | Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Terset | 242 of 244 | Mean of 2 runs: 242, 242 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.64 | Reference | 2026-11-17 |
-| Compact JSON | 241 of 244 | 1 run | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.04 | +42.6% | 2026-11-12 |
-| JSON | 239 of 244 | 1 run | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.8% | 2026-11-12 |
-| TOON | 242 of 244 | 1 run | 99.2% | 97.1% to 99.8% | 1,369,764 | $6.35 | +12.6% | 2026-11-12 |
+| Terset | 243 of 244 | Mean of 3 runs: 243, 243, 243 | 99.6% | 97.7% to 99.9% | 1,188,659 | $5.65 | Reference | 2026-11-17 |
+| Compact JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.05 | +42.4% | 2026-11-17 |
+| JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 2,303,845 | $10.16 | +79.9% | 2026-11-17 |
+| TOON | 241.7 of 244 | Mean of 3 runs: 242, 242, 241 (241 to 242) | 99.0% | 96.9% to 99.7% | 1,369,764 | $6.35 | +12.4% | 2026-11-17 |
 
 #### GPT 6.1 Sol
 
@@ -311,12 +311,13 @@ On 244 questions and two models, accuracy is a tie. Terset used fewer input toke
 
 JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.
 
-Claude Opus 5.5: Terset has two runs, both on 2026-11-17, and the other formats have one run each, on 2026-11-12. Its matched batch is not published yet, so these rows use the earlier runs. GPT 6.1 Sol: every format ran three times on 2026-11-17, in one matched batch with the same setup. No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.
+On both models, every format ran three times on 2026-11-17. Each model's runs are one matched batch with the same setup. No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.
 
 Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.
-Against compact JSON, Terset cost 29.9% less on Claude Opus 5.5 and 26.1% less on GPT 6.1 Sol.
+One format's score moved by up to two questions from run to run. A gap that small is noise, not a win.
+Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.1% less on GPT 6.1 Sol.
 
-Cost is at API list price: input and output tokens times list prices read on 2026-11-12 and 2026-11-17. Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them. Temperature 0 where the model accepts it. Terset ran with fitted rules, which send only the rules each text needs. Each row names its run date.
+Cost is at API list price: input and output tokens times list prices read on 2026-11-17. Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them. Temperature 0 where the model accepts it. Terset ran with fitted rules, which send only the rules each text needs. Each row names its run date.
 
 Method and limits: [terset.dev/benchmark](https://terset.dev/benchmark#accuracy). Every answer and its score: [2026-11-12](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-12), [2026-11-13](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-13) and [2026-11-17](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-17).
 

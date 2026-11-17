@@ -17,13 +17,13 @@ const SOL = model('gpt-6.1-sol');
 
 describe('cost bars', () => {
   it('gives each format its cost at API list price and its runs, Terset first, scaled from zero', () => {
+    // Each model has a matched batch, so every format is a mean of its three runs on one day.
     expect(costBars(OPUS).map((bar) => [bar.label, bar.costText, bar.runs])).toEqual([
-      ['Terset', '$5.64', ['mean of 2 runs', '2026-11-17']],
-      ['Compact JSON', '$8.04', ['run 2026-11-12']],
-      ['Pretty JSON', '$10.20', ['run 2026-11-12']],
-      ['TOON', '$6.35', ['run 2026-11-12']],
+      ['Terset', '$5.65', ['mean of 3 runs', '2026-11-17']],
+      ['Compact JSON', '$8.05', ['mean of 3 runs', '2026-11-17']],
+      ['Pretty JSON', '$10.16', ['mean of 3 runs', '2026-11-17']],
+      ['TOON', '$6.35', ['mean of 3 runs', '2026-11-17']],
     ]);
-    // Sol has a matched batch, so every format is a mean of its three runs on one day.
     expect(costBars(SOL).map((bar) => [bar.label, bar.costText, bar.runs])).toEqual([
       ['Terset', '$1.84', ['mean of 3 runs', '2026-11-17']],
       ['Compact JSON', '$2.49', ['mean of 3 runs', '2026-11-17']],
@@ -42,17 +42,17 @@ describe('big numbers', () => {
   it('shows fewer tokens, lower cost and right answers per model, the answers as the mean of the Terset runs', () => {
     expect(bigNumbers(ACCURACY).map((item) => [item.id, item.values.map((value) => `${value.model} ${value.text}`), item.win])).toEqual([
       ['tokens', ['Opus 32.7%', 'Sol 27.3%'], true],
-      ['cost', ['Opus 29.9%', 'Sol 26.1%'], true],
-      ['answers', ['Opus 242/244', 'Sol 242/244'], false],
+      ['cost', ['Opus 29.8%', 'Sol 26.1%'], true],
+      ['answers', ['Opus 243/244', 'Sol 242/244'], false],
     ]);
-    // Opus has two Terset runs and Sol has three, so the label names no count.
-    expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers, mean of the Terset runs');
+    // Both models have three Terset runs, so the label names the count.
+    expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers, mean of 3 Terset runs');
   });
 
   it('splits each value into a large figure and a quiet tail that join back into the text', () => {
     for (const item of bigNumbers(ACCURACY)) for (const value of item.values) expect(`${value.figure}${value.tail}`).toBe(value.text);
     expect(bigNumbers(ACCURACY)[2]?.values.map((value) => [value.figure, value.tail])).toEqual([
-      ['242', '/244'],
+      ['243', '/244'],
       ['242', '/244'],
     ]);
   });
@@ -62,7 +62,7 @@ describe('big numbers', () => {
   });
 
   it('says cost is at API list price with the price read date', () => {
-    expect(costNote(ACCURACY)).toBe('Cost for all 244 questions at API list price: input and output tokens times list prices read on 2026-11-12 and 2026-11-17.');
+    expect(costNote(ACCURACY)).toBe('Cost for all 244 questions at API list price: input and output tokens times list prices read on 2026-11-17.');
   });
 
   it('refuses to print when Terset no longer costs less than compact JSON', () => {
@@ -217,7 +217,7 @@ describe('benchmark.md lines', () => {
   it('states each claim with its tokenizer and says accuracy is a tie', () => {
     expect(proofLines(ACCURACY, COUNTERS)).toEqual([
       'Fewer input tokens than compact JSON: 32.7% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
-      'Lower cost than compact JSON: 29.9% on Opus and 26.1% on Sol. Accuracy is a tie.',
+      'Lower cost than compact JSON: 29.8% on Opus and 26.1% on Sol. Accuracy is a tie.',
       'Smaller than TOON on 22 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
       'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
       'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',

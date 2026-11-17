@@ -2,8 +2,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { OPUS_COUNTS_FROM, OUTPUT, PUBLISHED_RUNS, REQUEST_COUNTS, accuracyText, buildAccuracy, claudeCountedFormats, headlineFormats, sourceRunId, wilson95 } from './update-accuracy.ts';
-import type { PublishedSource } from './update-accuracy.ts';
+import { OUTPUT, PUBLISHED_RUNS, REQUEST_COUNTS, accuracyText, borrowedCountsFrom, buildAccuracy, claudeCountedFormats, headlineFormats, sourceRunId, wilson95 } from './update-accuracy.ts';
 import type { AccuracyFile, AccuracyFormat } from '../src/data/accuracy-schema.ts';
 import type { ClaudeRequestCounts } from '../src/data/claude-request-counts-schema.ts';
 
@@ -43,6 +42,11 @@ function newer(runs: MutableRun[]): MutableRun {
   return runNamed(runs, 'matched-sol-2026-11-17-r3');
 }
 
+/** The last matched Opus repeat. */
+function lastOpus(runs: MutableRun[]): MutableRun {
+  return runNamed(runs, 'matched-opus-2026-11-17-r3');
+}
+
 function firstModel(run: MutableRun): MutableRun['models'][number] {
   const model = run.models[0];
   if (model === undefined) throw new Error('no model');
@@ -61,43 +65,13 @@ function modelOf(file: AccuracyFile, id: string): AccuracyFile['models'][number]
   return model;
 }
 
+const SOL = 'gpt-6.1-sol';
+const OPUS = 'claude-opus-5-5';
 const SOL_BATCH = ['matched-sol-2026-11-17-r1', 'matched-sol-2026-11-17-r2', 'matched-sol-2026-11-17-r3'];
 const OPUS_BATCH = ['matched-opus-2026-11-17-r1', 'matched-opus-2026-11-17-r2', 'matched-opus-2026-11-17-r3'];
-const OPUS = 'claude-opus-5-5';
-
-/**
- * A stand-in for an Opus matched repeat, built from the Opus rows the earlier runs recorded:
- * compact JSON, JSON and TOON from 2026-11-12 and Terset from the fitted-rules rerun. It holds
- * only Opus and has its own plan fingerprint, like the real files will.
- */
-function opusRepeat(runs: MutableRun[], runId: string): MutableRun {
-  const p4 = runNamed(runs, 'p4-2026-11-12');
-  const rerun = runNamed(runs, 'fitted-rules-rerun-2026-11-17');
-  const opusOf = <T extends { model: string; format: string }>(items: readonly T[], formats: readonly string[]): T[] =>
-    items.filter((item) => item.model === OPUS && formats.includes(item.format));
-  const older = ['json-compact', 'json-pretty', 'toon'];
-  const rows = [...opusOf(p4.rows, older), ...opusOf(rerun.rows, ['terset'])];
-  return {
-    ...structuredClone(p4),
-    runId,
-    fingerprint: 'opus-batch',
-    plannedCalls: rows.length,
-    models: p4.models.filter((model) => model.id === OPUS),
-    rows: structuredClone(rows),
-    failures: [],
-    summary: structuredClone([...opusOf(p4.summary, older), ...opusOf(rerun.summary, ['terset'])]),
-  };
-}
-
-const opusSources: readonly PublishedSource[] = OPUS_BATCH.map((runId): PublishedSource => ({
-  kind: 'matched', path: `bench/published/2026-11-17/${runId}.json`, model: OPUS, claudeCountsFrom: OPUS_COUNTS_FROM,
-}));
-
-/** Every published run, plus three stand-in Opus matched repeats. */
-function withOpusBatch(): { readonly runs: MutableRun[]; readonly sources: readonly PublishedSource[] } {
-  const runs = freshRuns();
-  return { runs: [...runs, ...OPUS_BATCH.map((runId) => opusRepeat(runs, runId))], sources: [...PUBLISHED_RUNS, ...opusSources] };
-}
+const BATCHES: Readonly<Record<string, readonly string[]>> = { [OPUS]: OPUS_BATCH, [SOL]: SOL_BATCH };
+const HISTORY = ['p4-2026-11-12', 'v2-final-2026-11-13', 'fitted-rules-2026-11-17', 'fitted-rules-rerun-2026-11-17'];
+const ALL_FORMATS = ['terset', 'json-compact', 'json-pretty', 'toon'];
 
 describe('every published run', () => {
   const published = `${REPO}bench/published/`;
@@ -108,30 +82,31 @@ describe('every published run', () => {
   const site = JSON.parse(readFileSync(OUTPUT, 'utf8')) as AccuracyFile;
 
   it('lists every run file in bench/published, in the script and in the site data, so none is left out', () => {
-    expect(runFiles.length).toBeGreaterThanOrEqual(7);
+    expect(runFiles.length).toBeGreaterThanOrEqual(10);
     expect([...PUBLISHED_RUNS.map((source) => source.path)].sort()).toEqual(runFiles);
     expect(site.publishedRuns.map((run) => `${run.publishedPath}/${run.runId}.json`).sort()).toEqual(runFiles);
   });
 
   it('feeds every matched run file into the tables, for its model and every format', () => {
     const matched = runFiles.filter((path) => /\/matched-/u.test(path));
-    expect(matched.length).toBeGreaterThanOrEqual(3);
+    expect(matched.length).toBeGreaterThanOrEqual(6);
     for (const path of matched) {
       const runId = path.replace(/^.*\/|\.json$/gu, '');
       const entry = site.publishedRuns.find((run) => run.runId === runId);
-      expect(entry?.inTables, runId).toEqual([{ model: entry?.models[0], formats: ['terset', 'json-compact', 'json-pretty', 'toon'] }]);
+      expect(entry?.inTables, runId).toEqual([{ model: entry?.models[0], formats: ALL_FORMATS }]);
     }
   });
 
-  it('takes no format for a model with matched runs from an older run, in the build and in the committed file', () => {
+  it('takes every format for each model from its own matched batch only, in the build and in the committed file', () => {
     for (const file of [buildAccuracy(freshRuns(), freshCounts()), site]) {
-      const sol = modelOf(file, 'gpt-6.1-sol');
-      expect(sol.runsFrom).toBe('matched-batch');
-      for (const row of sol.rows) {
-        expect(row.runs.map((run) => [run.runId, run.runOn]), row.format).toEqual(SOL_BATCH.map((runId) => [runId, '2026-11-17']));
-      }
-      for (const run of file.publishedRuns.filter((item) => !SOL_BATCH.includes(item.runId))) {
-        expect(run.inTables.map((entry) => entry.model), run.runId).not.toContain('gpt-6.1-sol');
+      for (const model of file.models) {
+        const batch = BATCHES[model.id] ?? [];
+        for (const row of model.rows) {
+          expect(row.runs.map((run) => [run.runId, run.runOn]), `${model.id} ${row.format}`).toEqual(batch.map((runId) => [runId, '2026-11-17']));
+        }
+        for (const run of file.publishedRuns.filter((item) => !batch.includes(item.runId))) {
+          expect(run.inTables.map((entry) => entry.model), run.runId).not.toContain(model.id);
+        }
       }
     }
   });
@@ -139,75 +114,58 @@ describe('every published run', () => {
   it('shows each score as the mean of its runs, with each run beside it', () => {
     const file = buildAccuracy(freshRuns(), freshCounts());
     const scores = (id: string) => modelOf(file, id).rows.map((row) => [row.format, row.correct, row.runs.map((run) => run.correct)]);
-    expect(scores('gpt-6.1-sol')).toEqual([
+    expect(scores(OPUS)).toEqual([
+      ['terset', 243, [243, 243, 243]],
+      ['json-compact', 241, [241, 241, 241]],
+      ['json-pretty', 241, [241, 241, 241]],
+      ['toon', 725 / 3, [242, 242, 241]],
+    ]);
+    expect(scores(SOL)).toEqual([
       ['terset', 242, [242, 241, 243]],
       ['json-compact', 706 / 3, [236, 234, 236]],
       ['json-pretty', 712 / 3, [237, 238, 237]],
       ['toon', 242, [242, 242, 242]],
     ]);
-    // Opus has no matched runs yet, so it keeps the earlier runs.
-    expect(modelOf(file, OPUS).runsFrom).toBe('earlier-runs');
-    expect(modelOf(file, OPUS).rows.map((row) => [row.format, row.runs.map((run) => [run.runId, run.correct])])).toEqual([
-      ['terset', [['fitted-rules-2026-11-17', 242], ['fitted-rules-rerun-2026-11-17', 242]]],
-      ['json-compact', [['p4-2026-11-12', 241]]],
-      ['json-pretty', [['p4-2026-11-12', 239]]],
-      ['toon', [['p4-2026-11-12', 242]]],
-    ]);
   });
 
-  it('keeps the 2026-11-13 full-rules run as history only', () => {
+  it('keeps every run from before the matched batches as history only', () => {
     const file = buildAccuracy(freshRuns(), freshCounts());
-    expect(file.publishedRuns.find((run) => run.runId === 'v2-final-2026-11-13')?.inTables).toEqual([]);
+    for (const id of HISTORY) expect(file.publishedRuns.find((run) => run.runId === id)?.inTables, id).toEqual([]);
   });
 });
 
-describe('the Opus matched batch, once its files land', () => {
-  it('switches Opus to its three repeats for every format, with the same counted tokens as before', () => {
-    const before = buildAccuracy(freshRuns(), freshCounts());
-    const { runs, sources } = withOpusBatch();
-    const file = buildAccuracy(runs, freshCounts(), sources);
-    const opus = modelOf(file, OPUS);
-    expect(opus.runsFrom).toBe('matched-batch');
-    for (const row of opus.rows) {
-      expect(row.runs.map((run) => run.runId), row.format).toEqual(OPUS_BATCH);
-      expect(row.inputTokens, row.format).toBe(modelOf(before, OPUS).rows.find((item) => item.format === row.format)?.inputTokens);
+describe('the Opus matched batch', () => {
+  it('uses the counts of the runs that sent the same requests: compact JSON, JSON and TOON from 2026-11-12, Terset from the fitted-rules rerun', () => {
+    const counted = PUBLISHED_RUNS.map((source) => [sourceRunId(source), claudeCountedFormats(PUBLISHED_RUNS, source)] as const).filter(([, formats]) => formats.length > 0);
+    expect(counted).toEqual([['p4-2026-11-12', ['json-compact', 'json-pretty', 'toon']], ['fitted-rules-rerun-2026-11-17', ['terset']]]);
+    for (const source of PUBLISHED_RUNS.filter((item) => OPUS_BATCH.includes(sourceRunId(item)))) {
+      expect(headlineFormats(source, SOL), sourceRunId(source)).toEqual([]);
+      expect(ALL_FORMATS.map((format) => borrowedCountsFrom(source, format as AccuracyFormat))).toEqual(['fitted-rules-rerun-2026-11-17', 'p4-2026-11-12', 'p4-2026-11-12', 'p4-2026-11-12']);
     }
-    // Every earlier run is now history.
-    for (const id of ['p4-2026-11-12', 'v2-final-2026-11-13', 'fitted-rules-2026-11-17', 'fitted-rules-rerun-2026-11-17']) {
-      expect(file.publishedRuns.find((run) => run.runId === id)?.inTables, id).toEqual([]);
-    }
-    expect(file.calls).toBe(244 * 4 * 6);
-  });
-
-  it('counts the same Claude requests as before: the older runs still lend their counts', () => {
-    const { sources } = withOpusBatch();
-    const counted = (list: readonly PublishedSource[]): readonly (readonly [string, readonly string[]])[] =>
-      list.map((source) => [sourceRunId(source), claudeCountedFormats(list, source)] as const).filter(([, formats]) => formats.length > 0);
-    const expected = [['p4-2026-11-12', ['json-compact', 'json-pretty', 'toon']], ['fitted-rules-rerun-2026-11-17', ['terset']]];
-    expect(counted(PUBLISHED_RUNS)).toEqual(expected);
-    expect(counted(sources)).toEqual(expected);
-    for (const source of opusSources) expect(headlineFormats(sources, source, 'gpt-6.1-sol')).toEqual([]);
   });
 
   it('refuses the borrowed counts when an Opus request differs, or its setup does', () => {
-    const request = withOpusBatch();
-    const row = request.runs.at(-1)?.rows.find((entry) => entry.format === 'toon');
+    const request = freshRuns();
+    const row = lastOpus(request).rows.find((entry) => entry.format === 'toon');
     if (row === undefined) throw new Error('no TOON row');
     row.reservedInputTokens += 1;
-    expect(() => buildAccuracy(request.runs, freshCounts(), request.sources)).toThrow(/a request differs from p4-2026-11-12/u);
-    const setup = withOpusBatch();
-    const last = setup.runs.at(-1);
-    if (last === undefined) throw new Error('no run');
-    last.inputReservation.allowance += 1;
-    expect(() => buildAccuracy(setup.runs, freshCounts(), setup.sources)).toThrow(/its Claude setup differs/u);
+    expect(() => buildAccuracy(request, freshCounts())).toThrow(/a request differs from p4-2026-11-12/u);
+    const terset = freshRuns();
+    const tersetRow = lastOpus(terset).rows.find((entry) => entry.format === 'terset');
+    if (tersetRow === undefined) throw new Error('no Terset row');
+    tersetRow.inputTokens += 1;
+    expect(() => buildAccuracy(terset, freshCounts())).toThrow(/a request differs from fitted-rules-rerun-2026-11-17/u);
+    const setup = freshRuns();
+    lastOpus(setup).inputReservation.allowance += 1;
+    expect(() => buildAccuracy(setup, freshCounts())).toThrow(/its Claude setup differs/u);
   });
 
-  it('refuses repeats of one batch with different plans', () => {
-    const { runs, sources } = withOpusBatch();
-    const last = runs.at(-1);
-    if (last === undefined) throw new Error('no run');
-    last.fingerprint = 'another-plan';
-    expect(() => buildAccuracy(runs, freshCounts(), sources)).toThrow(/matched batch plan/u);
+  it('refuses repeats of one batch with different plans or days', () => {
+    const plans = freshRuns();
+    lastOpus(plans).fingerprint = 'another-plan';
+    expect(() => buildAccuracy(plans, freshCounts())).toThrow(/claude-opus-5-5 matched batch plan/u);
+    const days = PUBLISHED_RUNS.map((source) => (sourceRunId(source) === 'matched-opus-2026-11-17-r3' ? { ...source, path: 'bench/published/2026-11-18/matched-opus-2026-11-17-r3.json' } : source));
+    expect(() => buildAccuracy(freshRuns(), freshCounts(), days)).toThrow(/claude-opus-5-5 matched batch date/u);
   });
 });
 
@@ -219,17 +177,26 @@ describe('matched runs', () => {
     expect(() => buildAccuracy(runs, freshCounts())).toThrow(/a matched run must hold only gpt-6.1-sol/u);
   });
 
-  it('keeps the two failed Sol requests that were retried, and counts them', () => {
+  it('keeps every failed request that was retried, and counts them', () => {
     const runs = freshRuns();
-    expect(runNamed(runs, 'matched-sol-2026-11-17-r1').failures.map((failure) => [failure.format, failure.questionId])).toEqual([['toon', 'q188'], ['json-compact', 'q194']]);
+    const failures = (runId: string) => runNamed(runs, runId).failures.map((failure) => [failure.format, failure.questionId]);
+    expect(failures('matched-sol-2026-11-17-r1')).toEqual([['toon', 'q188'], ['json-compact', 'q194']]);
+    expect(failures('matched-opus-2026-11-17-r1')).toEqual([['toon', 'q186'], ['toon', 'q186']]);
+    expect(failures('matched-opus-2026-11-17-r2')).toEqual([['toon', 'q186']]);
+    expect(failures('matched-opus-2026-11-17-r3')).toEqual([['toon', 'q186'], ['toon', 'q200']]);
     const file = buildAccuracy(runs, freshCounts());
-    expect(file.failedCalls).toBe(2);
-    expect(file.publishedRuns.map((run) => [run.runId, run.failedRequests]).filter(([, failed]) => failed !== 0)).toEqual([['matched-sol-2026-11-17-r1', 2]]);
+    expect(file.failedCalls).toBe(7);
+    expect(file.publishedRuns.map((run) => [run.runId, run.failedRequests]).filter(([, failed]) => failed !== 0)).toEqual([
+      ['matched-sol-2026-11-17-r1', 2],
+      ['matched-opus-2026-11-17-r1', 2],
+      ['matched-opus-2026-11-17-r2', 1],
+      ['matched-opus-2026-11-17-r3', 2],
+    ]);
   });
 
   it('refuses a failed request that was never answered', () => {
     const runs = freshRuns();
-    newer(runs).failures.push({ model: 'gpt-6.1-sol', format: 'toon', dataset: 'keyed', questionId: 'not-asked', status: 'failed' });
+    newer(runs).failures.push({ model: SOL, format: 'toon', dataset: 'keyed', questionId: 'not-asked', status: 'failed' });
     expect(() => buildAccuracy(runs, freshCounts())).toThrow(/a failed request was never answered/u);
   });
 });
@@ -239,52 +206,44 @@ describe('accuracy results', () => {
     expect(readFileSync(OUTPUT, 'utf8')).toBe(accuracyText());
   });
 
-  it('takes Sol from its matched batch and Opus from the earlier runs, with run dates and means', () => {
+  it('takes both models from their matched batches, with run dates and means', () => {
     const file = buildAccuracy(freshRuns(), freshCounts());
     expect(file.questions).toBe(244);
-    // Opus: 244 questions in three formats once and in Terset twice. Sol: four formats three times.
-    expect(file.calls).toBe(244 * 5 + 244 * 4 * 3);
+    // Each model: 244 questions in four formats, three times.
+    expect(file.calls).toBe(244 * 4 * 3 * 2);
     expect(file.publishedRuns.map((run) => [run.runId, run.runOn, run.inTables])).toEqual([
-      ['p4-2026-11-12', '2026-11-12', [{ model: OPUS, formats: ['json-compact', 'json-pretty', 'toon'] }]],
+      ['p4-2026-11-12', '2026-11-12', []],
       ['v2-final-2026-11-13', '2026-11-13', []],
-      ['fitted-rules-2026-11-17', '2026-11-17', [{ model: OPUS, formats: ['terset'] }]],
-      ['fitted-rules-rerun-2026-11-17', '2026-11-17', [{ model: OPUS, formats: ['terset'] }]],
-      ...SOL_BATCH.map((runId) => [runId, '2026-11-17', [{ model: 'gpt-6.1-sol', formats: ['terset', 'json-compact', 'json-pretty', 'toon'] }]]),
+      ['fitted-rules-2026-11-17', '2026-11-17', []],
+      ['fitted-rules-rerun-2026-11-17', '2026-11-17', []],
+      ...SOL_BATCH.map((runId) => [runId, '2026-11-17', [{ model: SOL, formats: ALL_FORMATS }]]),
+      ...OPUS_BATCH.map((runId) => [runId, '2026-11-17', [{ model: OPUS, formats: ALL_FORMATS }]]),
     ]);
-    const opus = file.models.find((model) => model.id === 'claude-opus-5-5');
-    expect(opus?.rows.map((row) => [row.format, row.correct, row.inputTokens, row.runs.map((run) => run.runOn)])).toEqual([
-      ['terset', 242, 1188659, ['2026-11-17', '2026-11-17']],
-      ['json-compact', 241, 1766161, ['2026-11-12']],
-      ['json-pretty', 239, 2303845, ['2026-11-12']],
-      ['toon', 242, 1369764, ['2026-11-12']],
+    const threeDays = ['2026-11-17', '2026-11-17', '2026-11-17'];
+    const opus = modelOf(file, OPUS);
+    expect(opus.rows.map((row) => [row.format, row.inputTokens, row.runs.map((run) => run.runOn)])).toEqual([
+      ['terset', 1188659, threeDays],
+      ['json-compact', 1766161, threeDays],
+      ['json-pretty', 2303845, threeDays],
+      ['toon', 1369764, threeDays],
     ]);
-    const sol = modelOf(file, 'gpt-6.1-sol');
+    const sol = modelOf(file, SOL);
     expect(sol.rows.map((row) => [row.format, row.inputTokens, row.runs.map((run) => run.runOn)])).toEqual([
-      ['terset', 842260, ['2026-11-17', '2026-11-17', '2026-11-17']],
-      ['json-compact', 1158229, ['2026-11-17', '2026-11-17', '2026-11-17']],
-      ['json-pretty', 1696152, ['2026-11-17', '2026-11-17', '2026-11-17']],
-      ['toon', 1020628, ['2026-11-17', '2026-11-17', '2026-11-17']],
+      ['terset', 842260, threeDays],
+      ['json-compact', 1158229, threeDays],
+      ['json-pretty', 1696152, threeDays],
+      ['toon', 1020628, threeDays],
     ]);
     // Output tokens and cost differ between the runs, so the row carries their mean.
     expect(sol.rows[0]?.runs.map((run) => [run.outputTokens, run.totalCost])).toEqual([[15342, 1.83794], [15968, 1.8442], [16091, 1.84543]]);
     expect(sol.rows[0]).toMatchObject({ correct: 242, inputTokens: 842260, outputTokens: 15800.333333333334 });
     expect(sol.rows[0]?.totalCost).toBeCloseTo(1.8425233333333333, 9);
     expect(sol.rows[1]?.totalCost).toBeCloseTo(2.4934213333333335, 9);
-    expect(opus?.rows[0]?.totalCost).toBeCloseTo(5.638606, 9);
+    expect(opus.rows[0]?.runs.map((run) => [run.outputTokens, run.totalCost])).toEqual([[44481, 5.644256], [44447, 5.643576], [45271, 5.660056]]);
+    expect(opus.rows[0]?.totalCost).toBeCloseTo(5.6492960000000005, 9);
     // The interval is for the mean score over the 244 questions.
     expect(sol.rows[1]?.low).toBeCloseTo(wilson95(706 / 3, 244).low, 12);
-  });
-
-  it('lets a run use another run\'s Claude counts only when it sent the same requests', () => {
-    const borrowing = (runs: MutableRun[]): MutableRun => runNamed(runs, 'fitted-rules-2026-11-17');
-    const setup = freshRuns();
-    borrowing(setup).inputReservation.margin += 1;
-    expect(() => buildAccuracy(setup, freshCounts())).toThrow(/its Claude setup differs/u);
-    const request = freshRuns();
-    const row = borrowing(request).rows.find((entry) => entry.model === OPUS && entry.format === 'terset');
-    if (row === undefined) throw new Error('no Terset row');
-    row.reservedInputTokens += 1;
-    expect(() => buildAccuracy(request, freshCounts())).toThrow(/a request differs/u);
+    expect(opus.rows[3]?.low).toBeCloseTo(wilson95(725 / 3, 244).low, 12);
   });
 
   it.each([
@@ -308,7 +267,7 @@ describe('accuracy results', () => {
     expect(() => buildAccuracy(runs, freshCounts())).toThrow(/Published runs differ/u);
   });
 
-  it('sums input tokens per data set from the run each format is taken from, one row per structure check', () => {
+  it('sums input tokens per data set from the runs each format is taken from, one row per structure check', () => {
     const file = buildAccuracy(freshRuns(), freshCounts());
     expect(file.kinds.map((item) => [item.kind, item.questions])).toEqual([
       ['tabular', 41],
@@ -327,9 +286,9 @@ describe('accuracy results', () => {
     ]);
     const keyed = file.kinds.find((item) => item.kind === 'keyed');
     expect(keyed?.models.map((model) => [model.id, model.inputTokens.terset, model.inputTokens['json-compact'], model.inputTokens.toon])).toEqual([
-      // Opus: Terset from 2026-11-17, compact JSON and TOON from 2026-11-12. Sol: its matched batch.
-      ['claude-opus-5-5', 20504, 36892, 22578],
-      ['gpt-6.1-sol', 15581, 23401, 17757],
+      // Both models: the mean over each matched batch.
+      [OPUS, 20504, 36892, 22578],
+      [SOL, 15581, 23401, 17757],
     ]);
     for (const item of file.kinds) expect(item.datasets, item.kind).toHaveLength(1);
     for (const model of file.models) {
@@ -342,7 +301,7 @@ describe('accuracy results', () => {
 
   it('refuses a dataset with no kind of data', () => {
     const runs = freshRuns();
-    // Renamed in both runs, so the question-set check still passes and the kind check is reached.
+    // Renamed in every run, so the question-set check still passes and the kind check is reached.
     for (const run of runs) for (const row of [...run.rows, ...run.failures]) if (row.dataset === 'keyed') row.dataset = 'mystery';
     const counts = freshCounts();
     for (const row of counts.rows) if (row.dataset === 'keyed') row.dataset = 'mystery';
@@ -359,8 +318,8 @@ describe('accuracy results', () => {
   });
 
   it('refuses a summary that differs from the raw rows in any run with Terset in the tables', () => {
-    const withTerset = PUBLISHED_RUNS.filter((source) => headlineFormats(PUBLISHED_RUNS, source, OPUS).includes('terset') || headlineFormats(PUBLISHED_RUNS, source, 'gpt-6.1-sol').includes('terset'));
-    expect(withTerset).toHaveLength(5);
+    const withTerset = PUBLISHED_RUNS.filter((source) => headlineFormats(source, OPUS).includes('terset') || headlineFormats(source, SOL).includes('terset'));
+    expect(withTerset).toHaveLength(6);
     for (const source of withTerset) {
       const runs = freshRuns();
       const row = runNamed(runs, sourceRunId(source)).summary.find((item) => item.format === 'terset' && item.dataset === 'ALL');
@@ -387,23 +346,26 @@ describe('Claude input tokens from the request counts', () => {
     counts.rows.filter((row) => row.runId === runId && row.format === format).reduce((sum, row) => sum + row.inputTokens, 0);
 
   it('holds one count for every published Claude request, counted after a baseline of 9', () => {
-    expect(counts.model).toBe('claude-opus-5-5');
+    expect(counts.model).toBe(OPUS);
     expect(counts.baseline).toEqual({ text: 'a', inputTokens: 9 });
     expect(counts.rows).toHaveLength(976);
   });
 
   it('publishes the counted Claude tokens and the reported Sol tokens, with cost from those tokens', () => {
     const file = buildAccuracy(freshRuns(), counts);
-    const opus = file.models.find((model) => model.id === 'claude-opus-5-5');
-    const sol = file.models.find((model) => model.id === 'gpt-6.1-sol');
-    expect(opus?.inputTokensFrom).toBe('anthropic-token-count');
-    expect(sol?.inputTokensFrom).toBe('model-report');
-    const countedAs = (runId: string, format: AccuracyFormat): string => PUBLISHED_RUNS.find((source) => sourceRunId(source) === runId)?.claudeCountsFrom?.[format] ?? runId;
-    for (const row of opus?.rows ?? []) {
+    const opus = modelOf(file, OPUS);
+    const sol = modelOf(file, SOL);
+    expect(opus.inputTokensFrom).toBe('anthropic-token-count');
+    expect(sol.inputTokensFrom).toBe('model-report');
+    const countedAs = (runId: string, format: AccuracyFormat): string => {
+      const source = PUBLISHED_RUNS.find((item) => sourceRunId(item) === runId);
+      return (source === undefined ? undefined : borrowedCountsFrom(source, format)) ?? runId;
+    };
+    for (const row of opus.rows) {
       for (const run of row.runs) expect(run.inputTokens, `${row.format} ${run.runId}`).toBe(countedSum(countedAs(run.runId, row.format), row.format));
       expect(row.totalCost, row.format).toBeCloseTo((row.inputTokens * 4 + row.outputTokens * 20) / 1_000_000, 9);
     }
-    expect(sol?.rows[0]?.inputTokens).toBe(842260);
+    expect(sol.rows[0]?.inputTokens).toBe(842260);
   });
 
   it('refuses a published Claude request with no count', () => {
@@ -421,6 +383,6 @@ describe('Claude input tokens from the request counts', () => {
   });
 
   it('refuses counts for a model that is not Claude', () => {
-    expect(() => buildAccuracy(freshRuns(), { ...freshCounts(), model: 'gpt-6.1-sol' })).toThrow(/not a Claude model/u);
+    expect(() => buildAccuracy(freshRuns(), { ...freshCounts(), model: SOL })).toThrow(/not a Claude model/u);
   });
 });

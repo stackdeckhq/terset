@@ -5,10 +5,9 @@
 // The runs live in bench/published/<run date>/ as the benchmark harness wrote them.
 // Every number is recomputed here from the raw rows: correct answers, Wilson 95%
 // intervals, input tokens and list-price dollars, overall and per kind of data
-// for input tokens. PUBLISHED_RUNS lists every run. A model with a matched batch takes
-// every format from that batch's repeats; a model without one takes each format from the
-// earlier runs listed for it. Every other run is history. A format with more than one run
-// is shown with each run and the mean over them; no run is ever picked. Each run's own
+// for input tokens. PUBLISHED_RUNS lists every run. Each model takes every format from
+// its matched batch's repeats. Every other run is history. Each format is shown with each
+// run and the mean over them; no run is ever picked. Each run's own
 // summary is checked against the recomputed figures, and any difference stops the script.
 // Claude input tokens come from claude-request-counts.json: Anthropic's token count
 // for each published request body. Every published Claude row needs exactly one count,
@@ -47,7 +46,7 @@ export type CountsFrom = Readonly<Partial<Record<AccuracyFormat, string>>>;
 
 /**
  * A run from a matched batch: one model, every format, the same day and setup as the
- * other repeats of that batch. A model with matched runs takes every format from them.
+ * other repeats of that batch. The tables take every format for its model from these runs.
  */
 export interface MatchedSource {
   readonly kind: 'matched';
@@ -57,21 +56,24 @@ export interface MatchedSource {
 }
 
 /**
- * A run from before the matched batch. It holds every model, and the site takes `formats`
- * from it only for a model with no matched runs. With no formats it is history only.
+ * A run from before the matched batches. The tables take nothing from it, though it may
+ * lend its Claude counts to a matched run that sent the same requests.
  */
-export interface EarlierSource {
-  readonly kind: 'earlier';
+export interface HistorySource {
+  readonly kind: 'history';
   readonly path: string;
-  readonly formats: readonly AccuracyFormat[];
-  readonly claudeCountsFrom?: CountsFrom;
 }
 
-export type PublishedSource = MatchedSource | EarlierSource;
+export type PublishedSource = MatchedSource | HistorySource;
+
+/** The run whose Claude counts this run uses for a format, if it borrows them. */
+export function borrowedCountsFrom(source: PublishedSource, format: AccuracyFormat): string | undefined {
+  return source.kind === 'matched' ? source.claudeCountsFrom?.[format] : undefined;
+}
 
 /**
- * The Opus matched runs ran at the same commit as these runs, so they should send the same
- * request bodies and can use their counts. The script checks every row before it does.
+ * The Opus matched runs ran at the same commit as these runs and sent the same request
+ * bodies, so they use their counts. The script checks every row before it does.
  */
 export const OPUS_COUNTS_FROM: CountsFrom = {
   'json-compact': 'p4-2026-11-12',
@@ -82,14 +84,16 @@ export const OPUS_COUNTS_FROM: CountsFrom = {
 
 /** Every published run, in the order the site lists them. Each format is shown with all of its runs. */
 export const PUBLISHED_RUNS: readonly PublishedSource[] = [
-  { kind: 'earlier', path: 'bench/published/2026-11-12/p4-2026-11-12.json', formats: ['json-compact', 'json-pretty', 'toon'] },
-  // Terset got the full rules text in this run, so it is history only.
-  { kind: 'earlier', path: 'bench/published/2026-11-13/v2-final-2026-11-13.json', formats: [] },
-  { kind: 'earlier', path: 'bench/published/2026-11-17/fitted-rules-2026-11-17.json', formats: ['terset'], claudeCountsFrom: { terset: 'fitted-rules-rerun-2026-11-17' } },
-  { kind: 'earlier', path: 'bench/published/2026-11-17/fitted-rules-rerun-2026-11-17.json', formats: ['terset'] },
+  { kind: 'history', path: 'bench/published/2026-11-12/p4-2026-11-12.json' },
+  { kind: 'history', path: 'bench/published/2026-11-13/v2-final-2026-11-13.json' },
+  { kind: 'history', path: 'bench/published/2026-11-17/fitted-rules-2026-11-17.json' },
+  { kind: 'history', path: 'bench/published/2026-11-17/fitted-rules-rerun-2026-11-17.json' },
   { kind: 'matched', path: 'bench/published/2026-11-17/matched-sol-2026-11-17-r1.json', model: 'gpt-6.1-sol' },
   { kind: 'matched', path: 'bench/published/2026-11-17/matched-sol-2026-11-17-r2.json', model: 'gpt-6.1-sol' },
   { kind: 'matched', path: 'bench/published/2026-11-17/matched-sol-2026-11-17-r3.json', model: 'gpt-6.1-sol' },
+  { kind: 'matched', path: 'bench/published/2026-11-17/matched-opus-2026-11-17-r1.json', model: 'claude-opus-5-5', claudeCountsFrom: OPUS_COUNTS_FROM },
+  { kind: 'matched', path: 'bench/published/2026-11-17/matched-opus-2026-11-17-r2.json', model: 'claude-opus-5-5', claudeCountsFrom: OPUS_COUNTS_FROM },
+  { kind: 'matched', path: 'bench/published/2026-11-17/matched-opus-2026-11-17-r3.json', model: 'claude-opus-5-5', claudeCountsFrom: OPUS_COUNTS_FROM },
 ];
 export const OUTPUT = fileURLToPath(new URL('../src/data/accuracy-results.json', import.meta.url));
 /** Anthropic's token count for every published Claude request. `pnpm --dir apps/site count:claude --published` writes it. */
@@ -100,15 +104,9 @@ export function sourceRunId(source: PublishedSource): string {
   return basename(source.path, '.json');
 }
 
-/** True when the model has a matched batch, so no earlier run feeds its tables. */
-export function hasMatchedRuns(sources: readonly PublishedSource[], model: ModelId): boolean {
-  return sources.some((source) => source.kind === 'matched' && source.model === model);
-}
-
-/** The formats the tables take from this run for this model. Empty when the run is history for it. */
-export function headlineFormats(sources: readonly PublishedSource[], source: PublishedSource, model: ModelId): readonly AccuracyFormat[] {
-  if (source.kind === 'matched') return source.model === model ? ACCURACY_FORMATS : [];
-  return hasMatchedRuns(sources, model) ? [] : source.formats;
+/** The formats the tables take from this run for this model: all of them from its own matched runs, else none. */
+export function headlineFormats(source: PublishedSource, model: ModelId): readonly AccuracyFormat[] {
+  return source.kind === 'matched' && source.model === model ? ACCURACY_FORMATS : [];
 }
 
 /**
@@ -118,9 +116,9 @@ export function headlineFormats(sources: readonly PublishedSource[], source: Pub
  */
 export function claudeCountedFormats(sources: readonly PublishedSource[], source: PublishedSource): readonly AccuracyFormat[] {
   const runId = sourceRunId(source);
-  const shown = headlineFormats(sources, source, COUNTED_MODEL);
-  const lent = sources.flatMap((other) => ACCURACY_FORMATS.filter((format) => headlineFormats(sources, other, COUNTED_MODEL).includes(format) && other.claudeCountsFrom?.[format] === runId));
-  return ACCURACY_FORMATS.filter((format) => (shown.includes(format) || lent.includes(format)) && source.claudeCountsFrom?.[format] === undefined);
+  const shown = headlineFormats(source, COUNTED_MODEL);
+  const lent = sources.flatMap((other) => ACCURACY_FORMATS.filter((format) => headlineFormats(other, COUNTED_MODEL).includes(format) && borrowedCountsFrom(other, format) === runId));
+  return ACCURACY_FORMATS.filter((format) => (shown.includes(format) || lent.includes(format)) && borrowedCountsFrom(source, format) === undefined);
 }
 
 const Count = z.number().int().nonnegative();
@@ -268,7 +266,7 @@ function inputCounts(counts: ClaudeRequestCounts): { readonly inputFor: (item: P
   return {
     inputFor: ({ run, source }) => (row) => {
       if (row.model !== counts.model) return row.inputTokens;
-      const key = requestCountKey({ runId: source.claudeCountsFrom?.[row.format] ?? run.runId, format: row.format, dataset: row.dataset, questionId: row.questionId });
+      const key = requestCountKey({ runId: borrowedCountsFrom(source, row.format) ?? run.runId, format: row.format, dataset: row.dataset, questionId: row.questionId });
       const counted = byKey.get(key);
       if (counted === undefined) throw new Error(`No request count for ${key}`);
       used.add(key);
@@ -288,11 +286,11 @@ function inputCounts(counts: ClaudeRequestCounts): { readonly inputFor: (item: P
  */
 function assertSameRequests(item: Published, all: readonly Published[]): void {
   for (const format of item.shown[COUNTED_MODEL]) {
-    const from = item.source.claudeCountsFrom?.[format];
+    const from = borrowedCountsFrom(item.source, format);
     if (from === undefined) continue;
     const counted = all.find((other) => other.run.runId === from);
     if (counted === undefined) throw new Error(`${item.run.runId}: takes Claude counts from ${from}, which is not published`);
-    if (counted.source.claudeCountsFrom?.[format] !== undefined) throw new Error(`${item.run.runId}: ${from} has no ${format} counts of its own`);
+    if (borrowedCountsFrom(counted.source, format) !== undefined) throw new Error(`${item.run.runId}: ${from} has no ${format} counts of its own`);
     const setup = (run: RunFile): string => JSON.stringify([run.models.find((model) => model.id === COUNTED_MODEL)?.api, run.inputReservation]);
     if (setup(item.run) !== setup(counted.run) || !counted.run.models.some((model) => model.id === COUNTED_MODEL)) {
       throw new Error(`${item.run.runId}: its Claude setup differs from ${from}, so it cannot use its Claude counts`);
@@ -400,8 +398,8 @@ export function buildAccuracy(rawRuns: readonly unknown[], rawCounts: unknown, s
       throw new Error(`${run.runId}: a matched run must hold only ${source.model}, and it holds ${run.models.map((model) => model.id).join(', ')}`);
     }
     const shown: Record<ModelId, readonly AccuracyFormat[]> = {
-      'claude-opus-5-5': headlineFormats(sources, source, 'claude-opus-5-5'),
-      'gpt-6.1-sol': headlineFormats(sources, source, 'gpt-6.1-sol'),
+      'claude-opus-5-5': headlineFormats(source, 'claude-opus-5-5'),
+      'gpt-6.1-sol': headlineFormats(source, 'gpt-6.1-sol'),
     };
     return { run, source, runOn: basename(dirname(source.path)), shown };
   });
@@ -427,11 +425,9 @@ export function buildAccuracy(rawRuns: readonly unknown[], rawCounts: unknown, s
     for (const format of ACCURACY_FORMATS) {
       if (!runs.some((item) => item.shown[model].includes(format))) throw new Error(`No published run is selected for ${model} ${format}`);
     }
-    if (hasMatchedRuns(sources, model)) {
-      // A batch is run together: one plan and one day.
-      equalField(new Set(runs.map((item) => item.run.fingerprint)).size, 1, `${model} matched batch plan`);
-      equalField(new Set(runs.map((item) => item.runOn)).size, 1, `${model} matched batch date`);
-    }
+    // A batch is run together: one plan and one day.
+    equalField(new Set(runs.map((item) => item.run.fingerprint)).size, 1, `${model} matched batch plan`);
+    equalField(new Set(runs.map((item) => item.runOn)).size, 1, `${model} matched batch date`);
   }
   const counts = ClaudeRequestCountsSchema.parse(rawCounts);
   const countedRun = used.find((item) => item.shown[COUNTED_MODEL].length > 0)?.run ?? reference;
@@ -445,7 +441,6 @@ export function buildAccuracy(rawRuns: readonly unknown[], rawCounts: unknown, s
     return {
       id: model, name: MODEL_NAMES[model],
       inputTokensFrom: model === counts.model ? 'anthropic-token-count' : 'model-report',
-      runsFrom: hasMatchedRuns(sources, model) ? 'matched-batch' : 'earlier-runs',
       inputPerMillion: settings.price.inputPerMillion,
       outputPerMillion: settings.price.outputPerMillion,
       priceSource: settings.price.sourceUrl,

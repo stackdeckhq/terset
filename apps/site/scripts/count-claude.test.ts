@@ -346,6 +346,7 @@ describe('published Claude requests', () => {
     expect(skipped.map(({ source }) => sourceRunId(source))).toEqual([
       'v2-final-2026-11-13', 'fitted-rules-2026-11-17',
       'matched-sol-2026-11-17-r1', 'matched-sol-2026-11-17-r2', 'matched-sol-2026-11-17-r3',
+      'matched-opus-2026-11-17-r1', 'matched-opus-2026-11-17-r2', 'matched-opus-2026-11-17-r3',
     ]);
     expect(publishedRequests(skipped)).toEqual([]);
   });

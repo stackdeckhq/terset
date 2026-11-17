@@ -17,15 +17,16 @@ describe('big numbers', () => {
   it('prints each value as text, wins marked, accuracy plain', () => {
     expect(html.match(/<li class="big-n win">/gu)).toHaveLength(2);
     expect(html).toContain('<li class="big-n">');
-    for (const text of ['32.7%', '27.3%', '29.9%', '26.1%']) expect(html).toContain(`<b>${text}</b>`);
-    // The mean of the Terset runs: 242 on Opus and 242 on Sol.
-    expect(html.match(/<b>242<span class="big-t">\/244<\/span><\/b>/gu)).toHaveLength(2);
+    for (const text of ['32.7%', '27.3%', '29.8%', '26.1%']) expect(html).toContain(`<b>${text}</b>`);
+    // The mean of the Terset runs: 243 on Opus and 242 on Sol.
+    expect(html.match(/<b>243<span class="big-t">\/244<\/span><\/b>/gu)).toHaveLength(1);
+    expect(html.match(/<b>242<span class="big-t">\/244<\/span><\/b>/gu)).toHaveLength(1);
   });
 
   it('names the metric first, then one column per model with the model before its number', () => {
     const cards = html.match(/<li class="big-n[^"]*">.*?<\/li>/gu) ?? [];
     expect(cards).toHaveLength(3);
-    for (const [index, metric] of ['Fewer input tokens than compact JSON', 'Lower cost than compact JSON', 'Right answers, mean of the Terset runs'].entries()) {
+    for (const [index, metric] of ['Fewer input tokens than compact JSON', 'Lower cost than compact JSON', 'Right answers, mean of 3 Terset runs'].entries()) {
       const card = cards[index] ?? '';
       expect(card).toMatch(new RegExp(`^<li class="big-n[^"]*"><span class="big-l">${metric}</span> <span class="big-v">`, 'u'));
       expect(card.match(/<span class="big-c"><small>(Opus|Sol)<\/small> <b>/gu)).toHaveLength(2);
@@ -49,11 +50,10 @@ describe('cost bars', () => {
     const html = renderToStaticMarkup(createElement(CostBars, { file: ACCURACY, headingId: 'h', title: 'Cost' }));
     expect(html.match(/class="cost-bar terset[ "]/gu)).toHaveLength(2);
     // One short line each, so the Terset label fits the value column beside the bar.
-    // Opus Terset is a mean of 2 runs. Every Sol row is a mean of its 3 matched runs.
-    expect(html.match(/<small>mean of 2 runs<\/small><small>2026-11-17<\/small>/gu)).toHaveLength(1);
-    expect(html.match(/<small>mean of 3 runs<\/small><small>2026-11-17<\/small>/gu)).toHaveLength(4);
-    expect(html.match(/run 2026-11-12/gu)).toHaveLength(3);
-    expect(html).toContain('<b>$5.64</b>');
+    // Every row on both models is a mean of its 3 matched runs.
+    expect(html.match(/<small>mean of 3 runs<\/small><small>2026-11-17<\/small>/gu)).toHaveLength(8);
+    expect(html).not.toMatch(/run 2026-11-1\d/u);
+    expect(html).toContain('<b>$5.65</b>');
     expect(html).toContain('<b>$1.84</b>');
   });
 

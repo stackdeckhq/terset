@@ -89,11 +89,13 @@ export const HISTORY: readonly HistoryRow[] = [
     date: '2026-11-17',
     area: 'Answer accuracy',
     changes: [
+      { metric: 'opus-correct', from: 242, to: 243, note: '243 in all three runs' },
+      { metric: 'opus-cost-saving', from: 29.9, to: 29.8 },
       { metric: 'sol-correct', from: 240, to: 242, note: 'mean of 242, 241 and 243' },
       { metric: 'sol-cost-saving', from: 26.4, to: 26.1 },
-      { metric: 'calls', from: 2440, to: 4148 },
+      { metric: 'calls', from: 2440, to: 5856 },
     ],
-    why: 'Sol ran every format three times on 2026-11-17, in one matched batch with the same setup. The Sol rows now show the mean of those three runs. The older Sol runs stay published as history.',
+    why: 'Each model ran every format three times on 2026-11-17, in one matched batch per model with the same setup. Every row now shows the mean of its three runs. The older runs stay published as history.',
     pr: null,
   },
   {

@@ -73,14 +73,18 @@ describe('number history', () => {
 
   it('pins the newest row to the current headline accuracy and cost', () => {
     const newest = HISTORY[0];
-    // The Sol matched batch: every Sol row is the mean of three runs on 2026-11-17.
+    // The matched batches: every row on both models is the mean of three runs on 2026-11-17.
     expect(newest?.changes.map((change) => [change.metric, change.from, change.to])).toEqual([
+      ['opus-correct', 242, 243],
+      ['opus-cost-saving', 29.9, 29.8],
       ['sol-correct', 240, 242],
       ['sol-cost-saving', 26.4, 26.1],
-      ['calls', 2440, 4148],
+      ['calls', 2440, 5856],
     ]);
+    expect(formatRow(model('claude-opus-5-5'), 'terset').runs.map((run) => run.correct)).toEqual([243, 243, 243]);
+    expect(newest?.changes[0]?.note).toBe('243 in all three runs');
     expect(formatRow(model('gpt-6.1-sol'), 'terset').runs.map((run) => run.correct)).toEqual([242, 241, 243]);
-    expect(newest?.changes[0]?.note).toBe('mean of 242, 241 and 243');
+    expect(newest?.changes[2]?.note).toBe('mean of 242, 241 and 243');
   });
 
   it('chains each metric: an older row ends where the next newer row starts', () => {
@@ -107,7 +111,7 @@ describe('number history', () => {
   it('prints the fitted rules move in the table, with the old number first', () => {
     const rows = historyTableRows(HISTORY);
     expect(HISTORY_TABLE_HEAD).toEqual(['Date', 'What changed (old to new)', 'Why', 'Public PR']);
-    expect(rows[0]?.[1]).toBe('Answer accuracy. Sol, Terset right answers: 240 to 242 of 244 (mean of 242, 241 and 243). Sol, lower cost than compact JSON: 26.4% to 26.1%. Calls in the accuracy tables: 2,440 to 4,148.');
+    expect(rows[0]?.[1]).toBe('Answer accuracy. Opus 5.5, Terset right answers: 242 to 243 of 244 (243 in all three runs). Opus 5.5, lower cost than compact JSON: 29.9% to 29.8%. Sol, Terset right answers: 240 to 242 of 244 (mean of 242, 241 and 243). Sol, lower cost than compact JSON: 26.4% to 26.1%. Calls in the accuracy tables: 2,440 to 5,856.');
     expect(rows[2]?.[1]).toContain('Terset total: 43,348 to 43,044 tokens.');
     expect(rows[2]?.[1]).toContain('Under TOON: 5.9% to 6.6%.');
     expect(rows[2]?.[3]).toBe('#7');

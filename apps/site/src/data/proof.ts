@@ -44,7 +44,7 @@ export interface CostBar {
   readonly fraction: number;
   /**
    * Where the cost comes from, one short line each so it fits beside the bar:
-   * ["run 2026-11-12"], or ["mean of 2 runs", "2026-11-17"].
+   * ["run 2026-11-17"] for a single run, or ["mean of 3 runs", "2026-11-17"].
    */
   readonly runs: readonly string[];
   readonly terset: boolean;

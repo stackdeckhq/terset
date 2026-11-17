@@ -111,43 +111,31 @@ function datesOf(rows: readonly AccuracyRow[]): readonly string[] {
   return [...new Set(rows.flatMap((row) => row.runs.map((run) => run.runOn)))].sort();
 }
 
-/** One model's runs from a matched batch, in one sentence. Throws unless every format has the same repeats on one day. */
-function matchedRunsSentence(model: AccuracyModel): string {
-  const repeats = model.rows.map((row) => row.runs.length);
-  const runs = repeats[0] ?? 0;
-  assertClaim(runs > 1 && repeats.every((count) => count === runs), `every format on ${model.name} has the same repeats`);
-  const dates = datesOf(model.rows);
-  assertClaim(dates.length === 1, `the ${model.name} batch ran on one day`);
-  return `${model.name}: every format ran ${countWord(runs)} times on ${dates.join('')}, in one matched batch with the same setup.`;
-}
-
 /**
- * One model's runs from before its matched batch, in one sentence. Throws unless Terset has
- * more than one run and every other format one, so the sentence never goes stale.
- */
-function earlierRunsSentence(model: AccuracyModel): string {
-  const terset = formatRow(model, 'terset');
-  const runs = terset.runs.length;
-  assertClaim(runs > 1, `Terset has more than one run on ${model.name}`);
-  const others = model.rows.filter((row) => row.format !== 'terset');
-  assertClaim(others.every((row) => row.runs.length === 1), `the other formats have one run each on ${model.name}`);
-  const tersetDates = datesOf([terset]);
-  const when = tersetDates.length === 1 ? `${runs === 2 ? 'both' : 'all'} on ${tersetDates.join('')}` : `on ${listPhrase(tersetDates)}`;
-  return `${model.name}: Terset has ${countWord(runs)} runs, ${when}, and the other formats have one run each, on ${listPhrase(datesOf(others))}. Its matched batch is not published yet, so these rows use the earlier runs.`;
-}
-
-/**
- * The note on runs under the tables and in the READMEs: where each model's rows come from,
- * how many runs and when. Each sentence is checked against the data.
+ * The note on runs under the tables and in the READMEs: how many runs and when. Throws
+ * unless every format on every model has the same repeats, all on one day.
  */
 export function accuracyRunsNote(file: AccuracyFile): string {
+  const rows = file.models.flatMap((model) => model.rows);
+  const runs = rows[0]?.runs.length ?? 0;
+  assertClaim(runs > 1 && rows.every((row) => row.runs.length === runs), 'every format on every model has the same repeats');
+  const dates = datesOf(rows);
+  assertClaim(dates.length === 1, 'every run in the tables ran on one day');
   return [
-    ...file.models.map((model) => (model.runsFrom === 'matched-batch' ? matchedRunsSentence(model) : earlierRunsSentence(model))),
+    `On ${modelsPhrase(file)}, every format ran ${countWord(runs)} times on ${dates.join('')}. Each model's runs are one matched batch with the same setup.`,
     "No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.",
   ].join(' ');
 }
 
-export const ACCURACY_RUNS_HEAD = ['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed requests'] as const;
+/** The most one format's score moved between its runs, on any model, in questions. */
+export function largestRunSpread(file: AccuracyFile): number {
+  return Math.max(...file.models.flatMap((model) => model.rows.map((row) => {
+    const scores = row.runs.map((run) => run.correct);
+    return Math.max(...scores) - Math.min(...scores);
+  })));
+}
+
+export const ACCURACY_RUNS_HEAD = ['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed attempts'] as const;
 
 function modelShortName(file: AccuracyFile, id: string): string {
   const model = file.models.find((item) => item.id === id);
@@ -163,7 +151,7 @@ function formatsPhrase(formats: readonly AccuracyFormat[]): string {
 
 /**
  * One row per published run, in publishing order: what it holds, what the tables take from
- * it, and how many requests failed and were retried. A run the tables do not use is history.
+ * it, and how many attempts failed and were retried. A run the tables do not use is history.
  */
 export function publishedRunsRows(file: AccuracyFile): readonly (readonly string[])[] {
   return file.publishedRuns.map((run) => [
@@ -238,7 +226,14 @@ export function accuracyIntro(file: AccuracyFile): string {
   return `Each model answered the same ${formatCount(file.questions)} questions about the same data, sent in each of four formats.`;
 }
 
-/** The result in two sentences under the tables. Each claim is checked against the data first. */
+/** How far one format's score moved between its runs, and what that means for small gaps. */
+export function runNoiseLine(file: AccuracyFile): string {
+  const spread = largestRunSpread(file);
+  assertClaim(spread > 0, "a format's score moved between its runs");
+  return `One format's score moved by up to ${countWord(spread)} ${spread === 1 ? 'question' : 'questions'} from run to run. A gap that small is noise, not a win.`;
+}
+
+/** The result in three lines under the tables. Each claim is checked against the data first. */
 export function accuracySummary(file: AccuracyFile): readonly string[] {
   assertClaim(file.models.every(intervalsOverlap), 'every interval overlaps');
   assertClaim(file.models.every((model) => formatRow(model, 'terset').totalCost < formatRow(model, 'json-compact').totalCost), 'Terset cost less than compact JSON');
@@ -248,6 +243,7 @@ export function accuracySummary(file: AccuracyFile): readonly string[] {
   });
   return [
     `Accuracy is a tie. On ${formatCount(file.questions)} questions, every format's 95% interval overlaps every other format's, on ${modelsPhrase(file)}.`,
+    runNoiseLine(file),
     `Against compact JSON, Terset cost ${savings.join(' and ')}.`,
   ];
 }
@@ -382,11 +378,14 @@ function sentenceCount(value: number): string {
   return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
 }
 
-/** Whether any request in the tables failed, and what happened to it. */
+/**
+ * Whether any request in the tables failed, and what happened to it. A request can fail
+ * more than once before it is answered, so the line counts failed attempts.
+ */
 export function failedCallsLine(file: AccuracyFile): string {
   if (file.failedCalls === 0) return 'None failed.';
-  const each = file.failedCalls === 1 ? 'It stays' : file.failedCalls === 2 ? 'Both stay' : 'All stay';
-  return `${sentenceCount(file.failedCalls)} ${file.failedCalls === 1 ? 'request' : 'requests'} failed and ${file.failedCalls === 1 ? 'was' : 'were'} retried in the same run. ${each} in the run file.`;
+  if (file.failedCalls === 1) return 'One attempt failed and was retried in the same run. It stays in the run file.';
+  return `${sentenceCount(file.failedCalls)} attempts failed and were retried in the same run. Each stays in its run file.`;
 }
 
 /** How the input tokens were counted, in one sentence: the counted models first, then the rest. */

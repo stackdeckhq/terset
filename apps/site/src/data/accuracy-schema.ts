@@ -64,11 +64,6 @@ export const AccuracyModelSchema = z.strictObject({
   name: z.string().min(1),
   /** Where the input tokens come from: Anthropic's token count of each request body, or the model's own report. */
   inputTokensFrom: z.enum(['anthropic-token-count', 'model-report']),
-  /**
-   * Where the rows come from: a matched batch, where every format ran together on one day
-   * with the same setup and repeats, or earlier runs, where formats ran on different days.
-   */
-  runsFrom: z.enum(['matched-batch', 'earlier-runs']),
   inputPerMillion: z.number().positive(),
   outputPerMillion: z.number().positive(),
   priceSource: z.url({ protocol: /^https$/u }),
@@ -103,7 +98,7 @@ export const AccuracyFileSchema = z.strictObject({
     models: z.array(z.string().min(1)).min(1),
     /** The formats the run holds. */
     formats: z.array(AccuracyFormatSchema).min(1),
-    /** Requests that failed and were retried in the same run. The file keeps each one. */
+    /** Failed attempts, each retried in the same run. One request can fail more than once. The file keeps each one. */
     failedRequests: Count,
     /** Per model, the formats the tables take from this run. Empty when the run is history only. */
     inTables: z.array(z.strictObject({ model: z.string().min(1), formats: z.array(AccuracyFormatSchema).min(1) })),

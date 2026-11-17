@@ -19,6 +19,7 @@ import {
   accuracyTableRows,
   costOverTerset,
   failedCallsLine,
+  formatRow,
   intervalsOverlap,
   kindMarkdownHead,
   kindTableRows,
@@ -54,12 +55,12 @@ describe('accuracy', () => {
     expect(ACCURACY_TABLE_HEAD.slice(1, 3)).toEqual(['Correct', 'Runs']);
     expect(ACCURACY_TABLE_HEAD.slice(-2)).toEqual(['Costs more than Terset', 'Run date']);
     expect(accuracyTableRows(model('claude-opus-5-5'))).toEqual([
-      ['Terset', '242 of 244', 'Mean of 2 runs: 242, 242', '99.2%', '97.1% to 99.8%', '1,188,659', '$5.64', 'Reference', '2026-11-17'],
-      ['Compact JSON', '241 of 244', '1 run', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.04', '+42.6%', '2026-11-12'],
-      ['JSON', '239 of 244', '1 run', '98.0%', '95.3% to 99.1%', '2,303,845', '$10.20', '+80.8%', '2026-11-12'],
-      ['TOON', '242 of 244', '1 run', '99.2%', '97.1% to 99.8%', '1,369,764', '$6.35', '+12.6%', '2026-11-12'],
+      ['Terset', '243 of 244', 'Mean of 3 runs: 243, 243, 243', '99.6%', '97.7% to 99.9%', '1,188,659', '$5.65', 'Reference', '2026-11-17'],
+      ['Compact JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.05', '+42.4%', '2026-11-17'],
+      ['JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '2,303,845', '$10.16', '+79.9%', '2026-11-17'],
+      ['TOON', '241.7 of 244', 'Mean of 3 runs: 242, 242, 241 (241 to 242)', '99.0%', '96.9% to 99.7%', '1,369,764', '$6.35', '+12.4%', '2026-11-17'],
     ]);
-    // Sol comes from its matched batch: every format is the mean of three runs on one day.
+    // Both models come from their matched batches: every format is the mean of three runs on one day.
     expect(accuracyTableRows(model('gpt-6.1-sol'))).toEqual([
       ['Terset', '242 of 244', 'Mean of 3 runs: 242, 241, 243 (241 to 243)', '99.2%', '97.1% to 99.8%', '842,260', '$1.84', 'Reference', '2026-11-17'],
       ['Compact JSON', '235.3 of 244', 'Mean of 3 runs: 236, 234, 236 (234 to 236)', '96.4%', '93.3% to 98.1%', '1,158,229', '$2.49', '+35.3%', '2026-11-17'],
@@ -85,32 +86,24 @@ describe('accuracy', () => {
     };
     expect(lines('gpt-6.1-sol', 'terset')).toEqual(['Mean of 3 runs', '242, 241, 243 (241 to 243)']);
     expect(lines('gpt-6.1-sol', 'toon')).toEqual(['Mean of 3 runs', '242, 242, 242']);
-    expect(lines('claude-opus-5-5', 'terset')).toEqual(['Mean of 2 runs', '242, 242']);
-    expect(lines('claude-opus-5-5', 'toon')).toEqual(['1 run']);
+    expect(lines('claude-opus-5-5', 'terset')).toEqual(['Mean of 3 runs', '243, 243, 243']);
+    expect(lines('claude-opus-5-5', 'toon')).toEqual(['Mean of 3 runs', '242, 242, 241 (241 to 242)']);
+    const single = formatRow(model('claude-opus-5-5'), 'toon');
+    expect(runsCellLines({ ...single, runs: single.runs.slice(0, 1) })).toEqual(['1 run']);
   });
 
-  it('says how many runs each format has, and throws once that no longer holds', () => {
+  it('says every format on both models ran three times on one day, and throws once that no longer holds', () => {
     expect(accuracyRunsNote(ACCURACY)).toBe(
-      'Claude Opus 5.5: Terset has two runs, both on 2026-11-17, and the other formats have one run each, on 2026-11-12. Its matched batch is not published yet, so these rows use the earlier runs. ' +
-        'GPT 6.1 Sol: every format ran three times on 2026-11-17, in one matched batch with the same setup. ' +
+      "On both models, every format ran three times on 2026-11-17. Each model's runs are one matched batch with the same setup. " +
         "No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.",
     );
     const oneRun = withRows((rows) => {
-      const terset = rows.find((row) => row.format === 'terset');
-      if (terset === undefined) throw new Error('missing row');
-      terset.runs = terset.runs.slice(0, 1);
+      for (const row of rows) row.runs = row.runs.slice(0, 1);
     });
-    expect(() => accuracyRunsNote(oneRun)).toThrow(/more than one run on Claude Opus 5\.5/u);
-    const repeated = withRows((rows) => {
-      const toon = rows.find((row) => row.format === 'toon');
-      const run = toon?.runs[0];
-      if (toon === undefined || run === undefined) throw new Error('missing row');
-      toon.runs = [run, { ...run, runId: 'again' }];
-    });
-    expect(() => accuracyRunsNote(repeated)).toThrow(/one run each/u);
+    expect(() => accuracyRunsNote(oneRun)).toThrow(/same repeats/u);
   });
 
-  it('says a matched batch ran every format the same number of times on one day, and throws once that no longer holds', () => {
+  it('throws when a format has other repeats or another day than the rest', () => {
     const solRows = (change: (rows: AccuracyModel['rows'][number][]) => void): AccuracyFile => {
       const copy = structuredClone(ACCURACY) as AccuracyFile & { models: (AccuracyModel & { rows: AccuracyModel['rows'][number][] })[] };
       const sol = copy.models.find((item) => item.id === 'gpt-6.1-sol');
@@ -134,22 +127,25 @@ describe('accuracy', () => {
   });
 
   it('lists every published run with what the tables take from it, older runs as history', () => {
-    expect(ACCURACY_RUNS_HEAD).toEqual(['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed requests']);
+    expect(ACCURACY_RUNS_HEAD).toEqual(['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed attempts']);
     expect(publishedRunsRows(ACCURACY)).toEqual([
-      ['p4-2026-11-12', '2026-11-12', 'Opus and Sol', 'All four', 'Opus: Compact JSON, JSON and TOON', '0'],
+      ['p4-2026-11-12', '2026-11-12', 'Opus and Sol', 'All four', 'History only', '0'],
       ['v2-final-2026-11-13', '2026-11-13', 'Opus and Sol', 'Terset', 'History only', '0'],
-      ['fitted-rules-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'Opus: Terset', '0'],
-      ['fitted-rules-rerun-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'Opus: Terset', '0'],
+      ['fitted-rules-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'History only', '0'],
+      ['fitted-rules-rerun-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'History only', '0'],
       ['matched-sol-2026-11-17-r1', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '2, retried'],
       ['matched-sol-2026-11-17-r2', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '0'],
       ['matched-sol-2026-11-17-r3', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '0'],
+      ['matched-opus-2026-11-17-r1', '2026-11-17', 'Opus', 'All four', 'Opus: All four', '2, retried'],
+      ['matched-opus-2026-11-17-r2', '2026-11-17', 'Opus', 'All four', 'Opus: All four', '1, retried'],
+      ['matched-opus-2026-11-17-r3', '2026-11-17', 'Opus', 'All four', 'Opus: All four', '2, retried'],
     ]);
   });
 
-  it('says how many requests failed and that they stay in the run file', () => {
-    expect(failedCallsLine(ACCURACY)).toBe('Two requests failed and were retried in the same run. Both stay in the run file.');
+  it('says how many attempts failed and that they stay in the run files', () => {
+    expect(failedCallsLine(ACCURACY)).toBe('Seven attempts failed and were retried in the same run. Each stays in its run file.');
     expect(failedCallsLine({ ...ACCURACY, failedCalls: 0 })).toBe('None failed.');
-    expect(failedCallsLine({ ...ACCURACY, failedCalls: 1 })).toBe('One request failed and was retried in the same run. It stays in the run file.');
+    expect(failedCallsLine({ ...ACCURACY, failedCalls: 1 })).toBe('One attempt failed and was retried in the same run. It stays in the run file.');
   });
 
   it('works out the cost over Terset from the unrounded costs, with a minus when a format is cheaper', () => {
@@ -178,7 +174,7 @@ describe('accuracy', () => {
     });
     const first = toonCheaper.models[0];
     if (first === undefined) throw new Error('no models');
-    expect(accuracyTableRows(first).map((row) => row[7])).toEqual(['Reference', '+42.6%', '+80.8%', '−10.0%']);
+    expect(accuracyTableRows(first).map((row) => row[7])).toEqual(['Reference', '+42.4%', '+79.9%', '−10.0%']);
     expect(accuracyTableMarks(first).map((row) => row[6])).toEqual([null, 'terset-cheaper', 'terset-cheaper', 'terset-pricier']);
     expect([overTersetMark('+0.1%'), overTersetMark('−0.1%'), overTersetMark('0.0%'), overTersetMark('Reference')]).toEqual(['terset-cheaper', 'terset-pricier', null, null]);
   });
@@ -240,11 +236,15 @@ describe('accuracy', () => {
     expect(() => accuracyHomeLine(longer)).toThrow(/fewer input tokens/u);
   });
 
-  it('keeps the result to two sentences under the tables', () => {
+  it('keeps the result to three lines under the tables, small gaps called noise', () => {
     expect(accuracySummary(ACCURACY)).toEqual([
       "Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.",
-      'Against compact JSON, Terset cost 29.9% less on Claude Opus 5.5 and 26.1% less on GPT 6.1 Sol.',
+      "One format's score moved by up to two questions from run to run. A gap that small is noise, not a win.",
+      'Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.1% less on GPT 6.1 Sol.',
     ]);
+    const steady = structuredClone(ACCURACY) as AccuracyFile & { models: (AccuracyModel & { rows: AccuracyModel['rows'][number][] })[] };
+    for (const item of steady.models) for (const row of item.rows) row.runs = row.runs.map((run) => ({ ...run, correct: row.runs[0]?.correct ?? run.correct }));
+    expect(() => accuracySummary(steady)).toThrow(/moved between its runs/u);
   });
 
   it('shows Terset input tokens against compact JSON and TOON per kind of data, losses included', () => {
@@ -306,8 +306,8 @@ describe('accuracy', () => {
     // A 40-character hash cannot fit a 390 px column, so the text shows the short hash
     // and the link carries the full one.
     expect(method).toContain(`commit [${ACCURACY.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${ACCURACY.upstreamSha})`);
-    expect(method).toContain('Cost is at API list price: input and output tokens times list prices read on 2026-11-12 and 2026-11-17.');
-    expect(method).toContain('Tables use 4,148 answered calls from runs on 2026-11-12 and 2026-11-17. Two requests failed and were retried in the same run.');
+    expect(method).toContain('Cost is at API list price: input and output tokens times list prices read on 2026-11-17.');
+    expect(method).toContain('Tables use 5,856 answered calls from runs on 2026-11-17. Seven attempts failed and were retried in the same run.');
     expect(method).toContain("Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them.");
     expect(method).toContain('no model judge');
   });
@@ -322,11 +322,13 @@ describe('accuracy', () => {
     const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
     expect(text).toContain('## Answer accuracy');
     expect(text).toContain('| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |');
-    expect(text).toContain('| Terset | 242 of 244 | Mean of 2 runs: 242, 242 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.64 | Reference | 2026-11-17 |');
+    expect(text).toContain('| Terset | 243 of 244 | Mean of 3 runs: 243, 243, 243 | 99.6% | 97.7% to 99.9% | 1,188,659 | $5.65 | Reference | 2026-11-17 |');
     expect(text).toContain('| Terset | 242 of 244 | Mean of 3 runs: 242, 241, 243 (241 to 243) | 99.2% | 97.1% to 99.8% | 842,260 | $1.84 | Reference | 2026-11-17 |');
     expect(text).toContain('| matched-sol-2026-11-17-r1 | 2026-11-17 | Sol | All four | Sol: All four | 2, retried |');
+    expect(text).toContain('| matched-opus-2026-11-17-r2 | 2026-11-17 | Opus | All four | Opus: All four | 1, retried |');
+    expect(text).toContain('| p4-2026-11-12 | 2026-11-12 | Opus and Sol | All four | History only | 0 |');
     expect(text).toContain('| v2-final-2026-11-13 | 2026-11-13 | Opus and Sol | Terset | History only | 0 |');
-    expect(text).toContain('| JSON | 239 of 244 | 1 run | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.8% | 2026-11-12 |');
+    expect(text).toContain('| JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 2,303,845 | $10.16 | +79.9% | 2026-11-17 |');
     expect(text).toContain(accuracyRunsNote(ACCURACY));
     expect(text).not.toContain('Cost vs compact JSON');
     expect(text).toContain(ACCURACY_FORMAT_NOTE);
