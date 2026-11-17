@@ -13,6 +13,7 @@ import { BYTES, bytesLine } from './bytes.ts';
 import { HISTORY, HISTORY_NOTE, HISTORY_TABLE_HEAD, historyTableRows, prLabel, prUrl } from './history.ts';
 import { PRICES } from './prices.ts';
 import { proofLines } from './proof.ts';
+import { REAL, REAL_TABLE_HEAD, realIntro, realLines, realMethod, realTableRows } from './real.ts';
 import { SIZE_LINE } from './size.ts';
 import { SWEEP, SWEEP_TABLE_HEAD, sweepIntro, sweepLines, sweepMethod, sweepTableRows, sweepTitle } from './sweep.ts';
 
@@ -116,6 +117,12 @@ function sweepSection(bench: BenchFile): readonly string[] {
   return [`## ${sweepTitle(SWEEP)}, ${SWEEP.tokenizer}`, sweepIntro(SWEEP), bullets(sweepLines(SWEEP, bench)), [head, markdownRow(SWEEP_TABLE_HEAD.map(() => '---')), ...sweepTableRows(SWEEP).map(markdownRow)].join('\n')];
 }
 
+/** The real files: a title, the intro, one table, one line per file and the method. */
+function realSection(): readonly string[] {
+  const head = markdownRow(REAL_TABLE_HEAD);
+  return [`## Real data, ${REAL.tokenizer}`, realIntro(REAL), [head, markdownRow(REAL_TABLE_HEAD.map(() => '---')), ...realTableRows(REAL).map(markdownRow)].join('\n'), bullets(realLines(REAL)), realMethod(REAL)];
+}
+
 function countSections(counters: Counters): readonly string[] {
   if (counters.claude === null) return [countTable(counters.o200k)];
   return counterList(counters).flatMap((counter) => [`## Tokens, ${counter.name}`, countTable(counter)]);
@@ -152,7 +159,7 @@ function historyMarkdown(): readonly string[] {
 /** The benchmark as Markdown, for /benchmark.md and llms-full.txt. Terset comes first in every comparison. */
 export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CLAUDE, accuracy: AccuracyFile = ACCURACY): string {
   const counters = benchCounters(bench, claude);
-  const counts = counters === null ? ['**Numbers pending.** No token counts are published yet.'] : [...countSections(counters), ...sweepSection(bench)];
+  const counts = counters === null ? ['**Numbers pending.** No token counts are published yet.'] : [...countSections(counters), ...sweepSection(bench), ...realSection()];
   const cost = counters === null ? [] : ['## Input cost at list price', ...counterList(counters).map(costTable)];
   const keepElse = benchmarkKeepElse(bench, counters);
   const costLines = benchmarkCostMethod(counters);

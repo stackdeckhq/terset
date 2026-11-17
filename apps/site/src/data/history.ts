@@ -167,7 +167,7 @@ export const HISTORY: readonly HistoryRow[] = [
 ];
 
 /** The plain paragraph under the table, on what the numbers are and are not checked against. */
-export const HISTORY_NOTE = `The rules line was tuned with these ${String(SWEEP.cases.length)} case shapes and the TOON question set in view. So they are not independent checks of it. The sweep across ${formatCount(SWEEP.seeds)} seeds above draws new data for the same shapes. A held-out stress suite and real-world data are in progress.`;
+export const HISTORY_NOTE = `The rules line was tuned with these ${String(SWEEP.cases.length)} case shapes and the TOON question set in view. So they are not independent checks of it. The sweep across ${formatCount(SWEEP.seeds)} seeds above draws new data for the same shapes. A held-out stress suite is in progress. Real data that nothing was tuned on is in the Real data section above.`;
 
 export const HISTORY_TABLE_HEAD = ['Date', 'What changed (old to new)', 'Why', 'Public PR'] as const;
 
