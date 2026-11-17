@@ -2,12 +2,14 @@ import { createFileRoute } from '@tanstack/react-router';
 import { BenchChart } from '../components/BenchChart.tsx';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { FullTables } from '../components/FullTables.tsx';
+import { SweepTable } from '../components/SweepTable.tsx';
 import { BigNumbers, CostBars, DatasetChart } from '../components/Proof.tsx';
 import { ACCURACY, accuracyIntro, accuracyMethod } from '../data/accuracy.ts';
 import { BYTES, bytesLine } from '../data/bytes.ts';
 import { benchmarkCostMethod, benchmarkKeepElse, benchmarkLimits, benchmarkMethod, benchmarkPageLines } from '../data/benchmark-doc.ts';
-import { BENCH, CLAUDE, COUNTERS, countersHeadline, countersNote } from '../data/numbers.ts';
+import { BENCH, BENCH_FILE, CLAUDE, COUNTERS, countersHeadline, countersNote } from '../data/numbers.ts';
 import { smallerThanToon } from '../data/proof.ts';
+import { SWEEP, sweepIntro, sweepLines, sweepTitle } from '../data/sweep.ts';
 import { inline } from '../lib/markdown.ts';
 
 const DESCRIPTION = 'Token counts for Terset, compact and pretty JSON, YAML, TOON and CSV on two counters, input cost at list price, answer accuracy on two models, the method and the limits.';
@@ -69,6 +71,18 @@ function BenchmarkPage() {
       <section className="doc-section follow" aria-label="Full tables">
         <FullTables file={ACCURACY} counters={COUNTERS} />
       </section>
+      {BENCH.status === 'ready' && (
+        <section className="doc-section" id="sweep" aria-labelledby="sweep-h">
+          <h2 id="sweep-h" className="with-tag">
+            {sweepTitle(SWEEP)}
+            <span className="tok">{SWEEP.tokenizer}</span>
+          </h2>
+          <p>{sweepIntro(SWEEP)}</p>
+          {/* The sample seed check reads the committed file, never the dev fixture. */}
+          <Lines lines={sweepLines(SWEEP, BENCH_FILE)} />
+          <SweepTable sweep={SWEEP} />
+        </section>
+      )}
       {keepElse.length > 0 && (
         <section className="doc-section" aria-labelledby="else-h">
           <h2 id="else-h">When to keep something else</h2>

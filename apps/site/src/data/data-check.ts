@@ -15,8 +15,10 @@ import { GeneratedSamplesSchema } from './generated-schema.ts';
 import { BENCH_FILE, CLAUDE_FILE } from './numbers.ts';
 import { PRICES } from './prices.ts';
 import { PricesSchema } from './prices-schema.ts';
+import { SeedSweepSchema } from './seed-sweep-schema.ts';
 import { SIZES } from './sizes.ts';
 import { SizesSchema } from './sizes-schema.ts';
+import { SWEEP } from './sweep.ts';
 
 export interface DataCheck {
   /** Where the value comes from, relative to apps/site. */
@@ -36,6 +38,7 @@ export const DATA_CHECKS: readonly DataCheck[] = [
   check('src/data/bytes-results.json', BytesFileSchema, BYTES),
   check('src/data/claude-counts.json', ClaudeCountsSchema, CLAUDE_FILE),
   check('src/data/prices.ts', PricesSchema, PRICES),
+  check('src/data/seed-sweep.json', SeedSweepSchema, SWEEP),
   check('src/generated/samples.json', GeneratedSamplesSchema, GENERATED),
   check('src/generated/sizes.json', SizesSchema, SIZES),
 ];

@@ -1,7 +1,8 @@
 // Writes src/data/bench-results.json, the one file every site number comes from.
 //
-//   pnpm numbers                 writes the pending state (no numbers shown)
-//   pnpm numbers --cases <file>  writes measured numbers
+//   pnpm numbers                 counts the committed inputs in src/data/count-cases.json
+//   pnpm numbers --cases <file>  counts another inputs file
+//   pnpm numbers --pending       writes the pending state (no numbers shown)
 //
 // <file> is a neutral JSON file:
 //   { "cases": [{ "name", "data" }] }
@@ -32,8 +33,9 @@ import { RULES, decode, encode, rulesFor } from '../src/lib/format.ts';
 import type { JsonObject } from '../src/lib/format.ts';
 import { parseNeutralInputs } from './claude-inputs.ts';
 import { formatTexts } from './count-claude.ts';
+import { OUTPUT as CASES_FILE } from './update-cases.ts';
 
-const OUTPUT = fileURLToPath(new URL('../src/data/bench-results.json', import.meta.url));
+export const OUTPUT = fileURLToPath(new URL('../src/data/bench-results.json', import.meta.url));
 const TOKENIZER = 'o200k_base';
 const PENDING_REASON = 'The encoder is still a draft, so its token counts are not published yet.';
 
@@ -81,11 +83,13 @@ export function buildNumbers(casesText: string | undefined): BenchFile {
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = process.argv.slice(2);
+  const pending = args.includes('--pending');
   const flag = args.indexOf('--cases');
-  const casesPath = flag === -1 ? undefined : args[flag + 1];
-  if (flag !== -1 && casesPath === undefined) throw new Error('--cases needs a file path');
+  const casesPath = flag === -1 ? CASES_FILE : args[flag + 1];
+  if (casesPath === undefined) throw new Error('--cases needs a file path');
+  if (pending && flag !== -1) throw new Error('--pending takes no --cases');
 
-  const file = BenchFileSchema.parse(buildNumbers(casesPath === undefined ? undefined : readFileSync(resolve(casesPath), 'utf8')));
+  const file = BenchFileSchema.parse(buildNumbers(pending ? undefined : readFileSync(resolve(casesPath), 'utf8')));
   writeFileSync(OUTPUT, `${JSON.stringify(file, null, 2)}\n`);
   console.log(file.status === 'pending' ? `Wrote ${OUTPUT}: pending.` : `Wrote ${OUTPUT}: ${String(file.cases.length)} cases, ready.`);
 }

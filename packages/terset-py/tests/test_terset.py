@@ -113,6 +113,17 @@ class ConformanceTests(unittest.TestCase):
         self.assertEqual(list(decode(encode(value))), ["2", "10", "z", "01"])
         self.assertEqual(list(decode(encode(value))["z"]), ["b", "a"])
 
+    def test_header_fits_every_row_order(self):
+        skipped = [{"key": "a", "text": "A", "maxLength": 30}, {"key": "b", "text": "B", "description": "D", "maxLength": 61}]
+        self.assertEqual(encode(skipped), "[2]\nkey\ttext\tdescription\tmaxLength\na\tA\t\t30\nb\tB\tD\t61")
+        self.assertEqual(encode([{"a": 1, "b": 2}, {"c": 3, "a": 4}]), "[2]\nc\ta\tb\n\t1\t2\n3\t4\t")
+        self.assertEqual(encode([{"a": 1, "c": 2}, {"b": 3, "c": 4}]), "[2]\na\tb\tc\n1\t\t2\n\t3\t4")
+        self.assertEqual(encode({"people": {"ada": {"a": 1, "c": 2}, "lin": {"b": 3, "c": 4}}}), "people{2}:\n@key\ta\tb\tc\nada\t1\t\t2\nlin\t\t3\t4")
+        for value in (skipped, [{"a": 1, "b": 2}, {"c": 3, "a": 4}]):
+            self.assertEqual(json.dumps(decode(encode(value))), json.dumps(value))
+        conflict = [{"a": 1, "b": 2}, {"b": 3, "a": 4}]
+        self.assertEqual(encode(conflict), json.dumps(conflict, separators=(",", ":")))
+
     def test_shared_references_are_not_cycles(self):
         child = {"a": 1}
         self.assertEqual(decode(encode({"left": child, "right": child})), {"left": child, "right": child})

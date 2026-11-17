@@ -41,11 +41,15 @@ export function csvCell(row: CaseRow): string {
   return row.csvExact === true ? formatCount(row.csv) : `${formatCount(row.csv)} lossy`;
 }
 
-/** Signed change from `base` to `value`, one decimal, with a true minus sign. */
-export function pct(value: number, base: number): string {
-  const change = Math.round(((value - base) / base) * 1000) / 10;
+/** A percent change already rounded to one decimal, signed with a true minus sign: "−21.7%", "+3.0%", "0.0%". */
+export function formatChange(change: number): string {
   const sign = change > 0 ? '+' : change < 0 ? '−' : '';
   return `${sign}${Math.abs(change).toFixed(1)}%`;
+}
+
+/** Signed change from `base` to `value`, one decimal, with a true minus sign. */
+export function pct(value: number, base: number): string {
+  return formatChange(Math.round(((value - base) / base) * 1000) / 10);
 }
 
 /** One plain phrase with no sign: "8.7% fewer tokens than JSON", "3.0% more tokens than TOON" or "As many tokens as JSON". */
@@ -184,6 +188,9 @@ export function tokenizerNote(bench: BenchFile): string {
 
 export const QUALITY_NOTE = 'Token counts say nothing about answer quality. Terset is about fewer tokens.';
 
+/** The `@toon-format/toon` version every TOON count and size uses. numbers.test.ts checks it against the installed package. */
+export const TOON_VERSION = '4.4.0';
+
 /** Where the eleven case inputs come from. Both counters use the same inputs. */
 export const CASE_SOURCE_NOTE =
-  'The case inputs are not in this repository. Eight are made-up data built from a fixed random seed. The UI text and translation cases use interface text from an app whose source is not public, so only their counts are published.';
+  'All 11 case inputs are made-up data in this repository: `apps/site/src/data/count-cases.json`, built by `pnpm cases` from seed 20261117. `pnpm numbers` recounts them with o200k_base.';

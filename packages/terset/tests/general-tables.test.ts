@@ -46,6 +46,18 @@ it("quotes one-column root-line lookalikes instead of consuming the next root fi
   roundTrip({ rows: [{ id: "next:" }, { id: "other:" }], next: "end" });
 });
 
+it("orders the header so every row's own key order fits, first-seen when several fit", () => {
+  // An early row skips a middle field that a later row has.
+  const skipped = [{ key: "a", text: "A", maxLength: 30 }, { key: "b", text: "B", description: "D", maxLength: 61 }];
+  assert.equal(roundTrip(skipped), "[2]\nkey\ttext\tdescription\tmaxLength\na\tA\t\t30\nb\tB\tD\t61");
+  // A field every earlier row skipped can lead the header.
+  assert.equal(roundTrip([{ a: 1, b: 2 }, { c: 3, a: 4 }]), "[2]\nc\ta\tb\n\t1\t2\n3\t4\t");
+  // Both a and b may come first; a was seen first.
+  assert.equal(roundTrip([{ a: 1, c: 2 }, { b: 3, c: 4 }]), "[2]\na\tb\tc\n1\t\t2\n\t3\t4");
+  assert.equal(roundTrip({ rows: skipped }), "rows[2]:\nkey\ttext\tdescription\tmaxLength\na\tA\t\t30\nb\tB\tD\t61");
+  assert.equal(roundTrip({ people: { ada: { a: 1, c: 2 }, lin: { b: 3, c: 4 } } }), "people{2}:\n@key\ta\tb\tc\nada\t1\t\t2\nlin\t\t3\t4");
+});
+
 it("uses one whole-list JSON fallback for incompatible order, scalars, nested lists and small lists", () => {
   const lists: JsonValue[][] = [[], [{}], [{ a: 1 }], [{}, {}], [1, { a: 1 }], [[{ a: 1 }, { a: 2 }]], [{ a: 1, b: 2 }, { b: 3, a: 4 }]];
   for (const list of lists) assert.equal(roundTrip(list), JSON.stringify(list));

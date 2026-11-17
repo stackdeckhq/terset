@@ -10,7 +10,9 @@ import { BENCH_FIXTURE as SHIP_FIXTURE } from './bench-fixture.ship.ts';
 import { parseBench } from './bench-schema.ts';
 import type { BenchReady } from './bench-schema.ts';
 import type { CaseSet, Counter } from './numbers.ts';
-import { benchmarkMarkdown } from './benchmark-doc.ts';
+import { benchmarkKeepElse, benchmarkMarkdown } from './benchmark-doc.ts';
+import { SIZE_LINE } from './size.ts';
+import { SWEEP, sweepReadmeLine } from './sweep.ts';
 import {
   BENCH,
   BENCH_FILE,
@@ -46,6 +48,10 @@ const SAMPLES: BenchReady['samples'] = { orders: { json: 1, toon: 1, terset: 1 }
 
 /** The yaml version this site installs, so the file cannot claim another one. */
 const YAML_VERSION = (JSON.parse(readFileSync(createRequire(import.meta.url).resolve('yaml/package.json'), 'utf8')) as { version: string }).version;
+
+/** The TOON encoder this site counts with, read from its installed package. */
+// Its exports map hides package.json from resolve, so read the site's installed copy directly.
+const TOON_INSTALLED = (JSON.parse(readFileSync(new URL('../../node_modules/@toon-format/toon/package.json', import.meta.url), 'utf8')) as { version: string }).version;
 
 /** The README's benchmark table: fewer columns than benchmark.md, a plain hyphen for minus. */
 function readmeBenchTable(bench: CaseSet): string {
@@ -137,6 +143,13 @@ describe('bench numbers', () => {
     expect(csvCell({ ...row, csv: 1200, csvExact: true })).toBe('1,200');
   });
 
+  it('names the installed TOON version in the method, the READMEs and the size line', () => {
+    const line = `TOON is the \`@toon-format/toon\` package, version ${TOON_INSTALLED}, the smaller of its comma and tab forms for each case.`;
+    expect(benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE)).toContain(`- ${line}\n`);
+    for (const path of READMES) expect(readme(path), path).toContain(`- ${line}\n`);
+    expect(SIZE_LINE).toContain(`TOON ${TOON_INSTALLED} encode`);
+  });
+
   it('measures pretty JSON and YAML for every case, and pretty JSON is never smaller than compact JSON', () => {
     expect(BENCH_FILE.status).toBe('ready');
     if (BENCH_FILE.status !== 'ready') return;
@@ -220,6 +233,28 @@ describe('bench numbers', () => {
       }
       expect(text, path).toContain(`- Claude: ${jsonWinsNote(claude)}\n`);
       expect(text, path).toContain(`- Claude: ${toonWinsNote(claude)}\n`);
+    }
+  });
+
+  // Every line names its counter, CSV included, so a reader never takes one counter's result for the other's.
+  it('keeps the README "Where Terset does not win" list equal to the site list, one line per counter', () => {
+    const list = benchmarkKeepElse(BENCH_FILE, COUNTERS).map((line) => `- ${line}`).join('\n');
+    for (const path of READMES) {
+      expect(readme(path), path).toContain(`Where Terset does not win:\n\n${list}\n\n`);
+    }
+  });
+
+  // One sample seed could be lucky, so the README says how the o200k_base results hold across the seed sweep.
+  it('follows the README list with the seed sweep line, from the committed sweep', () => {
+    expect(BENCH_FILE.status).toBe('ready');
+    if (BENCH_FILE.status !== 'ready') return;
+    const line = sweepReadmeLine(SWEEP, BENCH_FILE);
+    expect(line).toBe(
+      'Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed, except UI text, uniform rows against TOON, where Terset is smaller on 985 of 1,000.',
+    );
+    const list = benchmarkKeepElse(BENCH_FILE, COUNTERS).map((item) => `- ${item}`).join('\n');
+    for (const path of READMES) {
+      expect(readme(path), path).toContain(`${list}\n\n${line}\n\n`);
     }
   });
 

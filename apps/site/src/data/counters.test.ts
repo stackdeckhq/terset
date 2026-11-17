@@ -73,7 +73,7 @@ describe('Claude counts paired with the bench file', () => {
     const text = full.slice(0, start) + full.slice(end);
     expect(text).not.toContain('Claude');
     expect(text.match(/^\| Case \| Terset \| JSON compact \| JSON pretty/gmu)).toHaveLength(1);
-    expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than TOON in 11 of 11 cases.`);
+    expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than TOON in 8 of 11 cases.`);
   });
 
   it('fails clearly on a missing case row', () => {
@@ -181,7 +181,7 @@ describe('input cost at list price', () => {
         expect(centsDelta(cents(terset), cents(json))).toBe(delta);
       }
     }
-    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$258.00', '$342.87', '−$84.87']);
-    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$88.09', '$112.50', '−$24.41']);
+    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$236.61', '$344.41', '−$107.80']);
+    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.70', '$117.62', '−$30.92']);
   });
 });

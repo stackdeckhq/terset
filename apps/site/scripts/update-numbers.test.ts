@@ -1,7 +1,9 @@
+import { readFileSync } from 'node:fs';
 import { encode as tokens } from 'gpt-tokenizer/encoding/o200k_base';
 import { describe, expect, it } from 'vitest';
 import { RULES, rulesFor } from '../src/lib/format.ts';
-import { buildNumbers } from './update-numbers.ts';
+import { OUTPUT as CASES_FILE } from './update-cases.ts';
+import { OUTPUT, buildNumbers } from './update-numbers.ts';
 
 describe('local token measurements', () => {
   it('counts raw cases with the current counted and nested table syntax', () => {
@@ -38,5 +40,10 @@ describe('local token measurements', () => {
     expect(buildNumbers(undefined).status).toBe('pending');
     const row = { name: 'Duplicate', data: { privateValue: 'kept outside output' } };
     expect(() => buildNumbers(JSON.stringify({ cases: [row, row] }))).toThrow('cases need unique names and slugs');
+  });
+
+  it('keeps the published counts equal to a fresh count of the committed case inputs', () => {
+    const published: unknown = JSON.parse(readFileSync(OUTPUT, 'utf8'));
+    expect(published).toEqual(buildNumbers(readFileSync(CASES_FILE, 'utf8')));
   });
 });

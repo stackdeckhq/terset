@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import heapq
 import json
 import math
 import re
@@ -205,23 +206,53 @@ def _flatten(path: list[str], values: list[JsonValue | object]) -> list[_Column]
     return columns
 
 
+def _header(rows: list[JsonObject]) -> list[str] | None:
+    """One header that every row's own key order fits, or None when none does.
+
+    When several fields may come next, the one seen first wins, so a list whose
+    first-seen field order already fits every row keeps exactly that order.
+    """
+    fields: list[str] = []
+    positions: dict[str, int] = {}
+    # A field's followers in some row, and how many fields must come before it.
+    followers: list[list[int]] = []
+    waiting: list[int] = []
+    for row in rows:
+        previous = -1
+        for key in _keys(row):
+            index = positions.get(key)
+            if index is None:
+                index = len(fields)
+                positions[key] = index
+                fields.append(key)
+                followers.append([])
+                waiting.append(0)
+            if previous >= 0:
+                followers[previous].append(index)
+                waiting[index] += 1
+            previous = index
+    if not fields:
+        return None
+    ready = [index for index, count in enumerate(waiting) if count == 0]
+    heapq.heapify(ready)
+    order: list[str] = []
+    while ready:
+        index = heapq.heappop(ready)
+        order.append(fields[index])
+        for following in followers[index]:
+            waiting[following] -= 1
+            if waiting[following] == 0:
+                heapq.heappush(ready, following)
+    # Fields left over sit on a cycle: two rows order the same pair both ways.
+    return order if len(order) == len(fields) else None
+
+
 def _table(value: list[JsonObject], keyed: bool, entry_keys: list[str] | None = None, max_bytes: int | float = math.inf) -> str | None:
     if len(value) < 2:
         return None
     rows = [{_unicode(key): child for key, child in row.items()} for row in value]
-    fields: list[str] = []
-    positions: dict[str, int] = {}
-    for row in rows:
-        previous = -1
-        for key in _keys(row):
-            if key not in positions:
-                positions[key] = len(fields)
-                fields.append(key)
-            index = positions[key]
-            if index <= previous:
-                return None
-            previous = index
-    if not fields:
+    fields = _header(rows)
+    if fields is None:
         return None
     if len(rows) * (len(fields) - 1) >= max_bytes:
         return None

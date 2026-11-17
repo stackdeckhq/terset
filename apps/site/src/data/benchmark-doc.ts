@@ -4,7 +4,7 @@
 // A pending Claude file gives the o200k_base document alone.
 import { ACCURACY, ACCURACY_FORMAT_NOTE, ACCURACY_KIND_NOTE, accuracyIntro, accuracyLines, accuracyMarkdownTable, accuracyMethod, kindMarkdownTable } from './accuracy.ts';
 import type { AccuracyFile } from './accuracy.ts';
-import { BENCH_TABLE_HEAD, CASE_SOURCE_NOTE, PENDING_NOTE, PENDING_TITLE, QUALITY_NOTE, benchSummary, benchTableRows, benchTotalsRow, csvNote, formatCount, jsonWinsNote, toonWinsNote, totalsNote } from './bench.ts';
+import { BENCH_TABLE_HEAD, CASE_SOURCE_NOTE, PENDING_NOTE, TOON_VERSION, PENDING_TITLE, QUALITY_NOTE, benchSummary, benchTableRows, benchTotalsRow, csvNote, formatCount, jsonWinsNote, toonWinsNote, totalsNote } from './bench.ts';
 import type { BenchFile } from './bench.ts';
 import type { ClaudeCounts } from './claude-counts-schema.ts';
 import { COST_TABLE_HEAD, buildCounters, claudeMethod, costCaption, costMethod, costTableRows, costTotalsRow, counterList, counterSummary, counterTotals } from './counters.ts';
@@ -13,6 +13,7 @@ import { BYTES, bytesLine } from './bytes.ts';
 import { PRICES } from './prices.ts';
 import { proofLines } from './proof.ts';
 import { SIZE_LINE } from './size.ts';
+import { SWEEP, SWEEP_TABLE_HEAD, sweepIntro, sweepLines, sweepMethod, sweepTableRows, sweepTitle } from './sweep.ts';
 
 export const BENCHMARK_TITLE = 'Terset benchmark';
 
@@ -58,14 +59,14 @@ export function benchmarkMethod(bench: BenchFile, claude: ClaudeCounts = NO_CLAU
         : `Every count uses one tokenizer, \`${bench.tokenizer}\`.`
       : 'Every count will use one named tokenizer.',
     ...(bench.status === 'ready' ? claudeMethod(claude) : []),
-    ...(bench.status === 'ready' ? [CASE_SOURCE_NOTE] : []),
+    ...(bench.status === 'ready' ? [CASE_SOURCE_NOTE, sweepMethod(SWEEP, paired)] : []),
     'Every format gets the same input, root arrays included.',
     'JSON compact is `JSON.stringify(value)`, with no spaces and no line breaks. It is the main baseline: every headline percentage is against it.',
     'JSON pretty is `JSON.stringify(value, null, 2)`, with a 2-space indent.',
     bench.status === 'ready'
       ? `YAML is the \`yaml\` package, version ${bench.yamlVersion}, \`stringify\` with default options.`
       : 'YAML will be the `yaml` package, `stringify` with default options.',
-    'TOON is the smaller of its comma and tab forms for each case.',
+    `TOON is the \`@toon-format/toon\` package, version ${TOON_VERSION}, the smaller of its comma and tab forms for each case.`,
     'CSV is plain comma CSV for data that is one list of records, and n/a otherwise. Each CSV is read back and checked; lossy means it did not come back as the same typed data.',
     bench.status === 'ready'
       ? `Terset o200k_base counts include rulesFor(text), fitted to each encoded text, once per prompt. The full RULES reference is ${formatCount(bench.rulesTokens)} tokens.`
@@ -108,6 +109,12 @@ function costTable(counter: Counter): string {
   return [costCaption(counter), [markdownRow(COST_TABLE_HEAD), markdownRow(COST_TABLE_HEAD.map(() => '---')), ...costTableRows(counter).map(markdownRow), markdownRow(costTotalsRow(counter))].join('\n')].join('\n\n');
 }
 
+/** The seed sweep: a title, the intro, how often each result holds and one table. */
+function sweepSection(bench: BenchFile): readonly string[] {
+  const head = markdownRow(SWEEP_TABLE_HEAD);
+  return [`## ${sweepTitle(SWEEP)}, ${SWEEP.tokenizer}`, sweepIntro(SWEEP), bullets(sweepLines(SWEEP, bench)), [head, markdownRow(SWEEP_TABLE_HEAD.map(() => '---')), ...sweepTableRows(SWEEP).map(markdownRow)].join('\n')];
+}
+
 function countSections(counters: Counters): readonly string[] {
   if (counters.claude === null) return [countTable(counters.o200k)];
   return counterList(counters).flatMap((counter) => [`## Tokens, ${counter.name}`, countTable(counter)]);
@@ -133,7 +140,7 @@ function accuracyMarkdown(file: AccuracyFile, counters: Counters | null): readon
 /** The benchmark as Markdown, for /benchmark.md and llms-full.txt. Terset comes first in every comparison. */
 export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CLAUDE, accuracy: AccuracyFile = ACCURACY): string {
   const counters = benchCounters(bench, claude);
-  const counts = counters === null ? ['**Numbers pending.** No token counts are published yet.'] : countSections(counters);
+  const counts = counters === null ? ['**Numbers pending.** No token counts are published yet.'] : [...countSections(counters), ...sweepSection(bench)];
   const cost = counters === null ? [] : ['## Input cost at list price', ...counterList(counters).map(costTable)];
   const keepElse = benchmarkKeepElse(bench, counters);
   const costLines = benchmarkCostMethod(counters);

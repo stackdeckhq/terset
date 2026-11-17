@@ -32,9 +32,10 @@ describe("terset", () => {
   it("preserves root, table, fallback and nested key order", () => {
     const value = JSON.parse('{"10":10,"2":2,"z":[{"id":"1","b":2},{"id":"2","b":3,"c":4}],"a":{"z":1,"a":2}}') as JsonObject;
     roundTrip(value);
+    // A later row may add a field before ones an earlier row already has.
+    assert.equal(roundTrip({ list: [{ id: "1", b: 1 }, { id: "2", a: 2, b: 3 }] }), "list[2]:\nid\ta\tb\n1\t\t1\n2\t2\t3");
     for (const list of [
       [{ id: "1", a: 1, b: 2 }, { id: "2", b: 3, a: 4 }],
-      [{ id: "1", b: 1 }, { id: "2", a: 2, b: 3 }],
       [{ a: 1, id: "1" }, { id: "2", a: 2 }],
       [{ id: "1" }, 7], [], [{ id: "" }], [{ id: "a\tb" }],
     ] satisfies JsonValue[][]) {
