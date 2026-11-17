@@ -98,6 +98,15 @@ describe('seed sweep text', () => {
     expect(sweepLines(withCase('Mixed', { underJson: 400, tiedJson: 300 }), rows(100)).at(-1)).toBe(
       'Seed 100 wins, ties or loses against JSON compact and TOON the way most seeds do on every case except Mixed, where no result holds on most seeds.',
     );
+    // No majority against JSON must not hide a clear miss against TOON: most seeds win there and the sample loses.
+    const noMajority = withCase('Mixed', { underJson: 400, tiedJson: 300, underToon: 999, tiedToon: 0 });
+    const losesBoth = sample([
+      { name: 'Rows', terset: 80, json: 100, toon: 120 },
+      { name: 'Text', terset: 90, json: 100, toon: 85 },
+      { name: 'Mixed', terset: 110, json: 100, toon: 105 },
+    ]);
+    expect(sweepLines(noMajority, losesBoth).at(-1)).toBe(odd);
+    expect(sweepReadmeLine(noMajority, losesBoth)).toContain('seed 100 is not typical for Mixed');
     expect(sweepReadmeLine(FIXTURE, rows(110))).toBe(
       'Across 1,000 seeds of the same 3 case shapes, counted with o200k_base, seed 100 is not typical for Mixed: most seeds win, tie or lose against JSON compact or TOON the other way.',
     );

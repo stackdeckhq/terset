@@ -116,8 +116,9 @@ function judgeSample(sweep: SeedSweep, sample: CaseSource): SampleJudgement | nu
       [mostSeeds(sweep, jsonOutcome(row)), resultOf(seed.terset, seed.json)],
       [mostSeeds(sweep, toonOutcome(row)), resultOf(seed.terset, seed.toon)],
     ] as const;
-    if (pairs.some(([most]) => most === null)) even.push(row.name);
-    else if (pairs.some(([most, result]) => most !== result)) odd.push(row.name);
+    // A clear miss against one format counts even when the other format has no majority.
+    if (pairs.some(([most, result]) => most !== null && most !== result)) odd.push(row.name);
+    else if (pairs.some(([most]) => most === null)) even.push(row.name);
   }
   return { odd, even };
 }
