@@ -5,14 +5,15 @@
 // The runs live in bench/published/<run date>/ as the benchmark harness wrote them.
 // Every number is recomputed here from the raw rows: correct answers, Wilson 95%
 // intervals, input tokens and list-price dollars, overall and per kind of data
-// for input tokens. PUBLISHED_RUNS lists every run and the formats taken from it.
-// A format with more than one run is shown with each run and the mean over them;
-// no run is ever picked. Each run's own summary is checked against the recomputed
-// figures, and any difference stops the script.
+// for input tokens. PUBLISHED_RUNS lists every run. A model with a matched batch takes
+// every format from that batch's repeats; a model without one takes each format from the
+// earlier runs listed for it. Every other run is history. A format with more than one run
+// is shown with each run and the mean over them; no run is ever picked. Each run's own
+// summary is checked against the recomputed figures, and any difference stops the script.
 // Claude input tokens come from claude-request-counts.json: Anthropic's token count
 // for each published request body. Every published Claude row needs exactly one count,
-// and every count must match a published row. A run with the same plan as a counted
-// run sends the same request bodies, so it uses that run's counts, after a check.
+// and every count must match a published row. A run that sent the same request bodies as
+// a counted run uses that run's counts, after a check of every row.
 // Other tokens are as each model reported. Importing this file writes nothing; only running it does.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
@@ -25,32 +26,102 @@ import type { ClaudeRequestCounts } from '../src/data/claude-request-counts-sche
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 
-/** One published run and the formats the site takes from it. */
-export interface PublishedSource {
+/** Every model the published runs may hold, in the order the site shows them. */
+export const MODELS = ['claude-opus-5-5', 'gpt-6.1-sol'] as const;
+export type ModelId = (typeof MODELS)[number];
+
+/** The vendor's name for each model. */
+const MODEL_NAMES: Readonly<Record<ModelId, string>> = {
+  'claude-opus-5-5': 'Claude Opus 5.5',
+  'gpt-6.1-sol': 'GPT 6.1 Sol',
+};
+
+/** The model whose input tokens come from Anthropic's token count of each request body. */
+export const COUNTED_MODEL: ModelId = 'claude-opus-5-5';
+
+/**
+ * Per format, the run whose Claude request counts a run uses instead of its own. A run may
+ * use them only when it sent the same request bodies, which the script checks row by row.
+ */
+export type CountsFrom = Readonly<Partial<Record<AccuracyFormat, string>>>;
+
+/**
+ * A run from a matched batch: one model, every format, the same day and setup as the
+ * other repeats of that batch. A model with matched runs takes every format from them.
+ */
+export interface MatchedSource {
+  readonly kind: 'matched';
+  readonly path: string;
+  readonly model: ModelId;
+  readonly claudeCountsFrom?: CountsFrom;
+}
+
+/**
+ * A run from before the matched batch. It holds every model, and the site takes `formats`
+ * from it only for a model with no matched runs. With no formats it is history only.
+ */
+export interface EarlierSource {
+  readonly kind: 'earlier';
   readonly path: string;
   readonly formats: readonly AccuracyFormat[];
-  /**
-   * The run whose Claude request counts this run uses. Set only for a run with the same
-   * plan fingerprint as that run, so every request body is the same and so is its count.
-   */
-  readonly claudeCountsFrom?: string;
+  readonly claudeCountsFrom?: CountsFrom;
 }
+
+export type PublishedSource = MatchedSource | EarlierSource;
+
+/**
+ * The Opus matched runs ran at the same commit as these runs, so they should send the same
+ * request bodies and can use their counts. The script checks every row before it does.
+ */
+export const OPUS_COUNTS_FROM: CountsFrom = {
+  'json-compact': 'p4-2026-11-12',
+  'json-pretty': 'p4-2026-11-12',
+  toon: 'p4-2026-11-12',
+  terset: 'fitted-rules-rerun-2026-11-17',
+};
 
 /** Every published run, in the order the site lists them. Each format is shown with all of its runs. */
 export const PUBLISHED_RUNS: readonly PublishedSource[] = [
-  { path: 'bench/published/2026-11-12/p4-2026-11-12.json', formats: ['json-compact', 'json-pretty', 'toon'] },
-  { path: 'bench/published/2026-11-17/fitted-rules-2026-11-17.json', formats: ['terset'], claudeCountsFrom: 'fitted-rules-rerun-2026-11-17' },
-  { path: 'bench/published/2026-11-17/fitted-rules-rerun-2026-11-17.json', formats: ['terset'] },
+  { kind: 'earlier', path: 'bench/published/2026-11-12/p4-2026-11-12.json', formats: ['json-compact', 'json-pretty', 'toon'] },
+  // Terset got the full rules text in this run, so it is history only.
+  { kind: 'earlier', path: 'bench/published/2026-11-13/v2-final-2026-11-13.json', formats: [] },
+  { kind: 'earlier', path: 'bench/published/2026-11-17/fitted-rules-2026-11-17.json', formats: ['terset'], claudeCountsFrom: { terset: 'fitted-rules-rerun-2026-11-17' } },
+  { kind: 'earlier', path: 'bench/published/2026-11-17/fitted-rules-rerun-2026-11-17.json', formats: ['terset'] },
+  { kind: 'matched', path: 'bench/published/2026-11-17/matched-sol-2026-11-17-r1.json', model: 'gpt-6.1-sol' },
+  { kind: 'matched', path: 'bench/published/2026-11-17/matched-sol-2026-11-17-r2.json', model: 'gpt-6.1-sol' },
+  { kind: 'matched', path: 'bench/published/2026-11-17/matched-sol-2026-11-17-r3.json', model: 'gpt-6.1-sol' },
 ];
 export const OUTPUT = fileURLToPath(new URL('../src/data/accuracy-results.json', import.meta.url));
 /** Anthropic's token count for every published Claude request. `pnpm --dir apps/site count:claude --published` writes it. */
 export const REQUEST_COUNTS = fileURLToPath(new URL('../src/data/claude-request-counts.json', import.meta.url));
 
-/** The vendor's name for each model id the run may contain. */
-const MODEL_NAMES: Readonly<Record<string, string>> = {
-  'claude-opus-5-5': 'Claude Opus 5.5',
-  'gpt-6.1-sol': 'GPT 6.1 Sol',
-};
+/** The run id a source's file holds: its file name without `.json`. */
+export function sourceRunId(source: PublishedSource): string {
+  return basename(source.path, '.json');
+}
+
+/** True when the model has a matched batch, so no earlier run feeds its tables. */
+export function hasMatchedRuns(sources: readonly PublishedSource[], model: ModelId): boolean {
+  return sources.some((source) => source.kind === 'matched' && source.model === model);
+}
+
+/** The formats the tables take from this run for this model. Empty when the run is history for it. */
+export function headlineFormats(sources: readonly PublishedSource[], source: PublishedSource, model: ModelId): readonly AccuracyFormat[] {
+  if (source.kind === 'matched') return source.model === model ? ACCURACY_FORMATS : [];
+  return hasMatchedRuns(sources, model) ? [] : source.formats;
+}
+
+/**
+ * The formats whose Claude requests in this run need their own count: those the tables take
+ * from it for the counted model, and those another run takes counts from, minus those this
+ * run takes from another run.
+ */
+export function claudeCountedFormats(sources: readonly PublishedSource[], source: PublishedSource): readonly AccuracyFormat[] {
+  const runId = sourceRunId(source);
+  const shown = headlineFormats(sources, source, COUNTED_MODEL);
+  const lent = sources.flatMap((other) => ACCURACY_FORMATS.filter((format) => headlineFormats(sources, other, COUNTED_MODEL).includes(format) && other.claudeCountsFrom?.[format] === runId));
+  return ACCURACY_FORMATS.filter((format) => (shown.includes(format) || lent.includes(format)) && source.claudeCountsFrom?.[format] === undefined);
+}
 
 const Count = z.number().int().nonnegative();
 const RunRow = z.object({ model: z.string(), format: z.enum(ACCURACY_FORMATS), dataset: z.string(), questionId: z.string(), correct: z.boolean(), inputTokens: Count, outputTokens: Count, reservedInputTokens: Count });
@@ -67,6 +138,8 @@ const RunSummary = z.object({
   dataset: z.string(),
   metrics: z.object({ correct: Count, total: Count, inputTokens: Count, outputTokens: Count, totalCost: z.number(), wilson95: z.object({ lower: z.number(), upper: z.number() }).nullable() }),
 });
+/** A request that failed. The harness stops, and a rerun of the same id retries it. */
+const RunFailure = z.object({ model: z.string(), format: z.enum(ACCURACY_FORMATS), dataset: z.string(), questionId: z.string(), status: z.literal('failed') });
 const RunFile = z.object({
   runId: z.string(),
   fingerprint: z.string().min(1),
@@ -74,7 +147,8 @@ const RunFile = z.object({
   status: z.literal('complete'),
   plannedCalls: Count,
   rows: z.array(RunRow),
-  failures: z.array(z.unknown()),
+  failures: z.array(RunFailure),
+  inputReservation: z.object({ margin: z.number(), allowance: Count }),
   models: z.array(RunModel).min(1),
   upstreamSha: z.string(),
   dataHashes: z.record(z.string(), z.string()),
@@ -90,6 +164,8 @@ interface Published {
   readonly run: RunFile;
   readonly source: PublishedSource;
   readonly runOn: string;
+  /** The formats the tables take from this run, per model. */
+  readonly shown: Readonly<Record<ModelId, readonly AccuracyFormat[]>>;
 }
 
 /** The input tokens a row is published with. */
@@ -139,24 +215,29 @@ export const KIND_DATASETS: Readonly<Record<AccuracyKindId, readonly string[]>> 
 
 /**
  * Input tokens per kind of data, model and format: summed over the rows of each run
- * the format is published from, then the mean over those runs. `runsFor` returns one
- * row list per run for one format, with the input tokens it is published with.
+ * the tables take that format from for that model, then the mean over those runs.
+ * `runsFor` returns one row list per run, holding only that model and format, with the
+ * input tokens each row is published with.
  */
-function kindRows(models: RunFile['models'], runsFor: (format: AccuracyFormat) => readonly RunFile['rows'][]): AccuracyKind[] {
+function kindRows(models: readonly ModelId[], runsFor: (model: ModelId, format: AccuracyFormat) => readonly RunFile['rows'][]): AccuracyKind[] {
   const grouped = Object.values(KIND_DATASETS).flat();
-  for (const format of ACCURACY_FORMATS) {
-    for (const rows of runsFor(format)) {
-      const inRun = [...new Set(rows.map((row) => row.dataset))];
-      const unknown = inRun.filter((dataset) => !grouped.includes(dataset));
-      if (unknown.length > 0) throw new Error(`No kind of data for dataset ${unknown.join(', ')}`);
-      const missing = grouped.filter((dataset) => !inRun.includes(dataset));
-      if (missing.length > 0) throw new Error(`The ${format} rows have no dataset ${missing.join(', ')}`);
+  for (const model of models) {
+    for (const format of ACCURACY_FORMATS) {
+      for (const rows of runsFor(model, format)) {
+        const inRun = [...new Set(rows.map((row) => row.dataset))];
+        const unknown = inRun.filter((dataset) => !grouped.includes(dataset));
+        if (unknown.length > 0) throw new Error(`No kind of data for dataset ${unknown.join(', ')}`);
+        const missing = grouped.filter((dataset) => !inRun.includes(dataset));
+        if (missing.length > 0) throw new Error(`The ${model} ${format} rows have no dataset ${missing.join(', ')}`);
+      }
     }
   }
+  const [firstModel] = models;
+  if (firstModel === undefined) throw new Error('No models');
   return ACCURACY_KINDS.map((kind): AccuracyKind => {
     const datasets = KIND_DATASETS[kind];
     const inKind = (rows: RunFile['rows']): RunFile['rows'] => rows.filter((row) => datasets.includes(row.dataset));
-    const [compact] = runsFor('json-compact');
+    const [compact] = runsFor(firstModel, 'json-compact');
     if (compact === undefined) throw new Error('No compact JSON run');
     const questions = new Set(inKind(compact).map((row) => `${row.dataset}/${row.questionId}`)).size;
     return {
@@ -164,30 +245,30 @@ function kindRows(models: RunFile['models'], runsFor: (format: AccuracyFormat) =
       datasets: [...datasets],
       questions,
       models: models.map((model) => {
-        const tokens = (format: AccuracyFormat): number => mean(runsFor(format).map((rows) => {
-          const own = inKind(rows).filter((row) => row.model === model.id);
-          if (own.length !== questions) throw new Error(`${model.id} ${format} ${kind}: ${String(own.length)} answers for ${String(questions)} questions`);
+        const tokens = (format: AccuracyFormat): number => mean(runsFor(model, format).map((rows) => {
+          const own = inKind(rows);
+          if (own.length !== questions) throw new Error(`${model} ${format} ${kind}: ${String(own.length)} answers for ${String(questions)} questions`);
           return own.reduce((sum, row) => sum + row.inputTokens, 0);
         }));
-        return { id: model.id, inputTokens: { terset: tokens('terset'), 'json-compact': tokens('json-compact'), 'json-pretty': tokens('json-pretty'), toon: tokens('toon') } };
+        return { id: model, inputTokens: { terset: tokens('terset'), 'json-compact': tokens('json-compact'), 'json-pretty': tokens('json-pretty'), toon: tokens('toon') } };
       }),
     };
   });
 }
 
 /**
- * The input tokens each published row is published with: the request count for the
- * counted Claude model, the reported tokens for everything else. A run with
- * `claudeCountsFrom` looks its counts up under that run's id. `assertAllUsed`
- * throws when a count matched no published row.
+ * The input tokens each shown row is published with: the request count for the counted
+ * Claude model, the reported tokens for everything else. A format with `claudeCountsFrom`
+ * looks its counts up under that run's id. `assertAllUsed` throws when a count matched no
+ * shown row.
  */
 function inputCounts(counts: ClaudeRequestCounts): { readonly inputFor: (item: Published) => InputFor; readonly assertAllUsed: () => void } {
   const byKey = new Map(counts.rows.map((row) => [requestCountKey(row), row.inputTokens]));
   const used = new Set<string>();
   return {
     inputFor: ({ run, source }) => (row) => {
-      if (row.model !== counts.model || !source.formats.includes(row.format)) return row.inputTokens;
-      const key = requestCountKey({ runId: source.claudeCountsFrom ?? run.runId, format: row.format, dataset: row.dataset, questionId: row.questionId });
+      if (row.model !== counts.model) return row.inputTokens;
+      const key = requestCountKey({ runId: source.claudeCountsFrom?.[row.format] ?? run.runId, format: row.format, dataset: row.dataset, questionId: row.questionId });
       const counted = byKey.get(key);
       if (counted === undefined) throw new Error(`No request count for ${key}`);
       used.add(key);
@@ -200,22 +281,32 @@ function inputCounts(counts: ClaudeRequestCounts): { readonly inputFor: (item: P
 }
 
 /**
- * A run that uses another run's Claude counts must have sent the same requests: the same
- * plan fingerprint, and the same recorded and reserved input tokens on every published row.
+ * A run that uses another run's Claude counts for a shown format must have sent the same
+ * requests: the same Claude model and input reservation setup, and the same recorded and
+ * reserved input tokens on every row of that format. The plan fingerprint may differ, since
+ * it covers every model in the run. A run that lends counts must have counts of its own.
  */
 function assertSameRequests(item: Published, all: readonly Published[]): void {
-  const from = item.source.claudeCountsFrom;
-  if (from === undefined) return;
-  const counted = all.find((other) => other.run.runId === from);
-  if (counted === undefined) throw new Error(`${item.run.runId}: takes Claude counts from ${from}, which is not published`);
-  if (counted.source.claudeCountsFrom !== undefined) throw new Error(`${item.run.runId}: ${from} has no counts of its own`);
-  if (item.run.fingerprint !== counted.run.fingerprint) throw new Error(`${item.run.runId}: its plan differs from ${from}, so it cannot use its Claude counts`);
-  const key = (row: RunRow): string => JSON.stringify([row.model, row.format, row.dataset, row.questionId]);
-  const theirs = new Map(counted.run.rows.map((row) => [key(row), row]));
-  for (const row of item.run.rows.filter((entry) => item.source.formats.includes(entry.format))) {
-    const other = theirs.get(key(row));
-    if (other?.inputTokens !== row.inputTokens || other.reservedInputTokens !== row.reservedInputTokens) {
-      throw new Error(`${item.run.runId}: a request differs from ${from}, so it cannot use its Claude counts`);
+  for (const format of item.shown[COUNTED_MODEL]) {
+    const from = item.source.claudeCountsFrom?.[format];
+    if (from === undefined) continue;
+    const counted = all.find((other) => other.run.runId === from);
+    if (counted === undefined) throw new Error(`${item.run.runId}: takes Claude counts from ${from}, which is not published`);
+    if (counted.source.claudeCountsFrom?.[format] !== undefined) throw new Error(`${item.run.runId}: ${from} has no ${format} counts of its own`);
+    const setup = (run: RunFile): string => JSON.stringify([run.models.find((model) => model.id === COUNTED_MODEL)?.api, run.inputReservation]);
+    if (setup(item.run) !== setup(counted.run) || !counted.run.models.some((model) => model.id === COUNTED_MODEL)) {
+      throw new Error(`${item.run.runId}: its Claude setup differs from ${from}, so it cannot use its Claude counts`);
+    }
+    const key = (row: RunRow): string => JSON.stringify([row.dataset, row.questionId]);
+    const ofFormat = (run: RunFile): RunRow[] => run.rows.filter((row) => row.model === COUNTED_MODEL && row.format === format);
+    const theirs = new Map(ofFormat(counted.run).map((row) => [key(row), row]));
+    const mine = ofFormat(item.run);
+    if (mine.length !== theirs.size) throw new Error(`${item.run.runId}: a request differs from ${from}, so it cannot use its Claude counts`);
+    for (const row of mine) {
+      const other = theirs.get(key(row));
+      if (other?.inputTokens !== row.inputTokens || other.reservedInputTokens !== row.reservedInputTokens) {
+        throw new Error(`${item.run.runId}: a request differs from ${from}, so it cannot use its Claude counts`);
+      }
     }
   }
 }
@@ -232,12 +323,10 @@ interface RunScore {
   readonly totalCost: number;
 }
 
-function runScores(item: Published, model: RunFile['models'][number], inputFor: InputFor): RunScore[] {
+/** The scores of the formats the tables take from this run for this model. */
+function runScores(item: Published, model: RunFile['models'][number], formats: readonly AccuracyFormat[], inputFor: InputFor): RunScore[] {
   const { run } = item;
   const mine = run.rows.filter((row) => row.model === model.id);
-  const formats = ACCURACY_FORMATS.filter((format) => mine.some((row) => row.format === format));
-  const questionSets = formats.map((format) => questionSet(mine.filter((row) => row.format === format)));
-  if (new Set(questionSets).size !== 1) throw new Error(`${model.id}: formats did not answer the same questions`);
   return formats.map((format: AccuracyFormat): RunScore => {
     const rows = mine.filter((row) => row.format === format);
     if (new Set(rows.map((row) => row.questionId)).size !== rows.length) throw new Error(`${model.id} ${format}: a question was answered twice`);
@@ -285,80 +374,126 @@ function equalField(a: unknown, b: unknown, field: string): void {
   if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`Published runs differ in ${field}`);
 }
 
-/** Combines every published run of every format after checking that all runs are comparable. */
-export function buildAccuracy(rawRuns: readonly unknown[], rawCounts: unknown): AccuracyFile {
-  if (rawRuns.length !== PUBLISHED_RUNS.length) throw new Error('Expected every published run');
+function isModelId(id: string): id is ModelId {
+  return MODELS.some((model) => model === id);
+}
+
+function modelIn(run: RunFile, model: ModelId): RunFile['models'][number] {
+  const found = run.models.find((entry) => entry.id === model);
+  if (found === undefined) throw new Error(`${run.runId}: the run has no ${model}`);
+  return found;
+}
+
+/**
+ * Combines the published runs after checking that every run the tables use is comparable.
+ * `sources` lists the runs in the same order as `rawRuns`; tests pass their own list.
+ */
+export function buildAccuracy(rawRuns: readonly unknown[], rawCounts: unknown, sources: readonly PublishedSource[] = PUBLISHED_RUNS): AccuracyFile {
+  if (rawRuns.length !== sources.length) throw new Error('Expected every published run');
   const published = rawRuns.map((raw, index): Published => {
-    const source = PUBLISHED_RUNS[index];
+    const source = sources[index];
     if (source === undefined) throw new Error('Missing published source');
-    return { run: RunFile.parse(raw), source, runOn: basename(dirname(source.path)) };
-  });
-  const run = published[0]?.run;
-  if (run === undefined) throw new Error('No published runs');
-  if (new Set(published.map((item) => item.run.runId)).size !== published.length) throw new Error('A run is published twice');
-  const counts = ClaudeRequestCountsSchema.parse(rawCounts);
-  if (run.models.find((model) => model.id === counts.model)?.api !== 'anthropic') throw new Error(`The request counts are for ${counts.model}, which is not a Claude model in the runs`);
-  const { inputFor, assertAllUsed } = inputCounts(counts);
-  for (const { run: candidate } of published) {
-    equalField(candidate.models, run.models, 'models and prices (including API, temperature and output token parameter)');
-    equalField(Object.entries(candidate.dataHashes).sort(), Object.entries(run.dataHashes).sort(), 'data hashes');
-    equalField(candidate.upstreamSha, run.upstreamSha, 'upstream commit');
-    equalField(candidate.tokenizer, run.tokenizer, 'tokenizer');
-    equalField(candidate.budgets.perCallMaxOutputTokens, run.budgets.perCallMaxOutputTokens, 'per-call output cap');
-    if (candidate.rows.some((row) => !candidate.models.some((model) => model.id === row.model))) throw new Error('Unknown row model');
-    for (const model of candidate.models) {
-      const formats = new Set(candidate.rows.filter((row) => row.model === model.id).map((row) => row.format));
-      for (const format of formats) {
-        equalField(questionSet(candidate.rows.filter((row) => row.model === model.id && row.format === format)), questionSet(run.rows.filter((row) => row.model === run.models[0]?.id && row.format === 'json-compact')), 'question set');
-      }
+    const run = RunFile.parse(raw);
+    if (run.runId !== sourceRunId(source)) throw new Error(`${source.path} holds run ${run.runId}, not ${sourceRunId(source)}`);
+    validateRun(run);
+    if (source.kind === 'matched' && (run.models.length !== 1 || run.models[0]?.id !== source.model)) {
+      throw new Error(`${run.runId}: a matched run must hold only ${source.model}, and it holds ${run.models.map((model) => model.id).join(', ')}`);
     }
-    validateRun(candidate);
+    const shown: Record<ModelId, readonly AccuracyFormat[]> = {
+      'claude-opus-5-5': headlineFormats(sources, source, 'claude-opus-5-5'),
+      'gpt-6.1-sol': headlineFormats(sources, source, 'gpt-6.1-sol'),
+    };
+    return { run, source, runOn: basename(dirname(source.path)), shown };
+  });
+  if (new Set(published.map((item) => item.run.runId)).size !== published.length) throw new Error('A run is published twice');
+  const used = published.filter((item) => MODELS.some((model) => item.shown[model].length > 0));
+  const reference = used[0]?.run;
+  if (reference === undefined) throw new Error('No published run feeds the tables');
+  const referenceQuestions = questionSet(reference.rows.filter((row) => row.model === reference.models[0]?.id && row.format === 'json-compact'));
+  for (const { run, shown } of used) {
+    equalField(Object.entries(run.dataHashes).sort(), Object.entries(reference.dataHashes).sort(), 'data hashes');
+    equalField(run.upstreamSha, reference.upstreamSha, 'upstream commit');
+    equalField(run.tokenizer, reference.tokenizer, 'tokenizer');
+    equalField(run.budgets.perCallMaxOutputTokens, reference.budgets.perCallMaxOutputTokens, 'per-call output cap');
+    for (const model of MODELS) {
+      for (const format of shown[model]) equalField(questionSet(run.rows.filter((row) => row.model === model && row.format === format)), referenceQuestions, 'question set');
+    }
   }
-  for (const item of published) assertSameRequests(item, published);
-  for (const format of ACCURACY_FORMATS) {
-    if (!published.some((item) => item.source.formats.includes(format))) throw new Error(`No published run is selected for ${format}`);
+  for (const model of MODELS) {
+    const runs = used.filter((item) => item.shown[model].length > 0);
+    const [first] = runs;
+    if (first === undefined) throw new Error(`No published run feeds the ${model} tables`);
+    for (const item of runs) equalField(modelIn(item.run, model), modelIn(first.run, model), `${model} settings and prices (including API, temperature and output token parameter)`);
+    for (const format of ACCURACY_FORMATS) {
+      if (!runs.some((item) => item.shown[model].includes(format))) throw new Error(`No published run is selected for ${model} ${format}`);
+    }
+    if (hasMatchedRuns(sources, model)) {
+      // A batch is run together: one plan and one day.
+      equalField(new Set(runs.map((item) => item.run.fingerprint)).size, 1, `${model} matched batch plan`);
+      equalField(new Set(runs.map((item) => item.runOn)).size, 1, `${model} matched batch date`);
+    }
   }
-  const models = run.models.map((model): AccuracyModel => {
-    const name = MODEL_NAMES[model.id];
-    if (name === undefined) throw new Error(`No display name for model ${model.id}`);
-    const scores = published.flatMap((item) => {
-      const ownModel = item.run.models.find((entry) => entry.id === model.id);
-      if (ownModel === undefined) throw new Error('Missing published model');
-      return runScores(item, ownModel, inputFor(item)).filter((score) => item.source.formats.includes(score.format));
-    });
+  const counts = ClaudeRequestCountsSchema.parse(rawCounts);
+  const countedRun = used.find((item) => item.shown[COUNTED_MODEL].length > 0)?.run ?? reference;
+  if (counts.model !== COUNTED_MODEL || modelIn(countedRun, COUNTED_MODEL).api !== 'anthropic') throw new Error(`The request counts are for ${counts.model}, which is not a Claude model in the runs`);
+  const { inputFor, assertAllUsed } = inputCounts(counts);
+  for (const item of used) assertSameRequests(item, published);
+  const models = MODELS.map((model): AccuracyModel => {
+    const runs = used.filter((item) => item.shown[model].length > 0);
+    const scores = runs.flatMap((item) => runScores(item, modelIn(item.run, model), item.shown[model], inputFor(item)));
+    const settings = modelIn(runs[0]?.run ?? reference, model);
     return {
-      id: model.id, name,
-      inputTokensFrom: model.id === counts.model ? 'anthropic-token-count' : 'model-report',
-      inputPerMillion: model.price.inputPerMillion,
-      outputPerMillion: model.price.outputPerMillion,
-      priceSource: model.price.sourceUrl,
-      priceReadOn: model.price.dateRead,
+      id: model, name: MODEL_NAMES[model],
+      inputTokensFrom: model === counts.model ? 'anthropic-token-count' : 'model-report',
+      runsFrom: hasMatchedRuns(sources, model) ? 'matched-batch' : 'earlier-runs',
+      inputPerMillion: settings.price.inputPerMillion,
+      outputPerMillion: settings.price.outputPerMillion,
+      priceSource: settings.price.sourceUrl,
+      priceReadOn: settings.price.dateRead,
       rows: ACCURACY_FORMATS.map((format) => meanRow(format, scores.filter((score) => score.format === format))),
     };
   });
-  const kinds = kindRows(run.models, (format) => published
-    .filter((item) => item.source.formats.includes(format))
+  const kinds = kindRows(MODELS, (model, format) => used
+    .filter((item) => item.shown[model].includes(format))
     .map((item) => {
       const input = inputFor(item);
-      return item.run.rows.filter((row) => row.format === format).map((row) => ({ ...row, inputTokens: input(row) }));
+      return item.run.rows.filter((row) => row.model === model && row.format === format).map((row) => ({ ...row, inputTokens: input(row) }));
     }));
   assertAllUsed();
+  const shownFailures = (item: Published): number => item.run.failures.filter((failure) => isModelId(failure.model) && item.shown[failure.model].includes(failure.format)).length;
   return AccuracyFileSchema.parse({
-    publishedRuns: published.map(({ run: item, source, runOn }) => ({ runId: item.runId, runOn, publishedPath: dirname(source.path), formats: [...source.formats] })),
-    upstreamSha: run.upstreamSha,
+    publishedRuns: published.map((item) => ({
+      runId: item.run.runId,
+      runOn: item.runOn,
+      publishedPath: dirname(item.source.path),
+      models: item.run.models.map((model) => model.id),
+      formats: ACCURACY_FORMATS.filter((format) => item.run.rows.some((row) => row.format === format)),
+      failedRequests: item.run.failures.length,
+      inTables: MODELS.filter((model) => item.shown[model].length > 0).map((model) => ({ model, formats: [...item.shown[model]] })),
+    })),
+    upstreamSha: reference.upstreamSha,
     questions: models[0]?.rows[0]?.total,
-    datasets: new Set(run.rows.map((row) => row.dataset)).size,
+    datasets: new Set(reference.rows.map((row) => row.dataset)).size,
     calls: models.flatMap((model) => model.rows).reduce((sum, row) => sum + row.total * row.runs.length, 0),
-    failedCalls: 0,
+    failedCalls: used.reduce((sum, item) => sum + shownFailures(item), 0),
     models,
     kinds,
   });
 }
 
+/**
+ * A complete run: every planned call answered, each model once, every row for a model in
+ * the run. A failed request is kept in the file; it counts only when a rerun answered it.
+ */
 function validateRun(run: RunFile): void {
-  if (run.failures.length > 0) throw new Error('The run recorded failed calls');
   if (run.rows.length !== run.plannedCalls) throw new Error(`The run recorded ${String(run.rows.length)} of ${String(run.plannedCalls)} planned calls`);
   if (new Set(run.models.map((model) => model.id)).size !== run.models.length) throw new Error('Duplicate model id');
+  if (run.rows.some((row) => !run.models.some((model) => model.id === row.model))) throw new Error('Unknown row model');
+  if (run.models.some((model) => !isModelId(model.id))) throw new Error(`${run.runId}: no display name for a model in the run`);
+  for (const failure of run.failures) {
+    const answered = run.rows.some((row) => row.model === failure.model && row.format === failure.format && row.dataset === failure.dataset && row.questionId === failure.questionId);
+    if (!answered) throw new Error(`${run.runId}: a failed request was never answered (${failure.model} ${failure.format} ${failure.dataset} ${failure.questionId})`);
+  }
 }
 
 /** The file `pnpm accuracy` writes, as text. */

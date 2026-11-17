@@ -4,39 +4,174 @@
       "runId": "p4-2026-11-12",
       "runOn": "2026-11-12",
       "publishedPath": "bench/published/2026-11-12",
+      "models": [
+        "claude-opus-5-5",
+        "gpt-6.1-sol"
+      ],
       "formats": [
+        "terset",
         "json-compact",
         "json-pretty",
         "toon"
+      ],
+      "failedRequests": 0,
+      "inTables": [
+        {
+          "model": "claude-opus-5-5",
+          "formats": [
+            "json-compact",
+            "json-pretty",
+            "toon"
+          ]
+        }
       ]
+    },
+    {
+      "runId": "v2-final-2026-11-13",
+      "runOn": "2026-11-13",
+      "publishedPath": "bench/published/2026-11-13",
+      "models": [
+        "claude-opus-5-5",
+        "gpt-6.1-sol"
+      ],
+      "formats": [
+        "terset"
+      ],
+      "failedRequests": 0,
+      "inTables": []
     },
     {
       "runId": "fitted-rules-2026-11-17",
       "runOn": "2026-11-17",
       "publishedPath": "bench/published/2026-11-17",
+      "models": [
+        "claude-opus-5-5",
+        "gpt-6.1-sol"
+      ],
       "formats": [
         "terset"
+      ],
+      "failedRequests": 0,
+      "inTables": [
+        {
+          "model": "claude-opus-5-5",
+          "formats": [
+            "terset"
+          ]
+        }
       ]
     },
     {
       "runId": "fitted-rules-rerun-2026-11-17",
       "runOn": "2026-11-17",
       "publishedPath": "bench/published/2026-11-17",
+      "models": [
+        "claude-opus-5-5",
+        "gpt-6.1-sol"
+      ],
       "formats": [
         "terset"
+      ],
+      "failedRequests": 0,
+      "inTables": [
+        {
+          "model": "claude-opus-5-5",
+          "formats": [
+            "terset"
+          ]
+        }
+      ]
+    },
+    {
+      "runId": "matched-sol-2026-11-17-r1",
+      "runOn": "2026-11-17",
+      "publishedPath": "bench/published/2026-11-17",
+      "models": [
+        "gpt-6.1-sol"
+      ],
+      "formats": [
+        "terset",
+        "json-compact",
+        "json-pretty",
+        "toon"
+      ],
+      "failedRequests": 2,
+      "inTables": [
+        {
+          "model": "gpt-6.1-sol",
+          "formats": [
+            "terset",
+            "json-compact",
+            "json-pretty",
+            "toon"
+          ]
+        }
+      ]
+    },
+    {
+      "runId": "matched-sol-2026-11-17-r2",
+      "runOn": "2026-11-17",
+      "publishedPath": "bench/published/2026-11-17",
+      "models": [
+        "gpt-6.1-sol"
+      ],
+      "formats": [
+        "terset",
+        "json-compact",
+        "json-pretty",
+        "toon"
+      ],
+      "failedRequests": 0,
+      "inTables": [
+        {
+          "model": "gpt-6.1-sol",
+          "formats": [
+            "terset",
+            "json-compact",
+            "json-pretty",
+            "toon"
+          ]
+        }
+      ]
+    },
+    {
+      "runId": "matched-sol-2026-11-17-r3",
+      "runOn": "2026-11-17",
+      "publishedPath": "bench/published/2026-11-17",
+      "models": [
+        "gpt-6.1-sol"
+      ],
+      "formats": [
+        "terset",
+        "json-compact",
+        "json-pretty",
+        "toon"
+      ],
+      "failedRequests": 0,
+      "inTables": [
+        {
+          "model": "gpt-6.1-sol",
+          "formats": [
+            "terset",
+            "json-compact",
+            "json-pretty",
+            "toon"
+          ]
+        }
       ]
     }
   ],
   "upstreamSha": "22caca377f08d737789a2ca60ab02c425a3aa947",
   "questions": 244,
   "datasets": 13,
-  "calls": 2440,
-  "failedCalls": 0,
+  "calls": 4148,
+  "failedCalls": 2,
   "models": [
     {
       "id": "claude-opus-5-5",
       "name": "Claude Opus 5.5",
       "inputTokensFrom": "anthropic-token-count",
+      "runsFrom": "earlier-runs",
       "inputPerMillion": 4,
       "outputPerMillion": 20,
       "priceSource": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -136,98 +271,155 @@
       "id": "gpt-6.1-sol",
       "name": "GPT 6.1 Sol",
       "inputTokensFrom": "model-report",
+      "runsFrom": "matched-batch",
       "inputPerMillion": 2,
       "outputPerMillion": 10,
       "priceSource": "https://developers.openai.com/api/docs/pricing",
-      "priceReadOn": "2026-11-12",
+      "priceReadOn": "2026-11-17",
       "rows": [
         {
           "format": "terset",
           "runs": [
             {
-              "runId": "fitted-rules-2026-11-17",
-              "runOn": "2026-11-17",
-              "correct": 238,
-              "inputTokens": 842260,
-              "outputTokens": 14979,
-              "totalCost": 1.83431
-            },
-            {
-              "runId": "fitted-rules-rerun-2026-11-17",
+              "runId": "matched-sol-2026-11-17-r1",
               "runOn": "2026-11-17",
               "correct": 242,
               "inputTokens": 842260,
-              "outputTokens": 15670,
-              "totalCost": 1.84122
+              "outputTokens": 15342,
+              "totalCost": 1.83794
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r2",
+              "runOn": "2026-11-17",
+              "correct": 241,
+              "inputTokens": 842260,
+              "outputTokens": 15968,
+              "totalCost": 1.8442
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r3",
+              "runOn": "2026-11-17",
+              "correct": 243,
+              "inputTokens": 842260,
+              "outputTokens": 16091,
+              "totalCost": 1.84543
             }
           ],
-          "correct": 240,
+          "correct": 242,
           "total": 244,
-          "low": 0.9586147210280338,
-          "high": 0.9936069174458542,
+          "low": 0.9706117105007331,
+          "high": 0.9977492777777971,
           "inputTokens": 842260,
-          "outputTokens": 15324.5,
-          "totalCost": 1.837765
+          "outputTokens": 15800.333333333334,
+          "totalCost": 1.8425233333333333
         },
         {
           "format": "json-compact",
           "runs": [
             {
-              "runId": "p4-2026-11-12",
-              "runOn": "2026-11-12",
+              "runId": "matched-sol-2026-11-17-r1",
+              "runOn": "2026-11-17",
               "correct": 236,
               "inputTokens": 1158229,
-              "outputTokens": 17981,
-              "totalCost": 2.496268
+              "outputTokens": 17978,
+              "totalCost": 2.496238
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r2",
+              "runOn": "2026-11-17",
+              "correct": 234,
+              "inputTokens": 1158229,
+              "outputTokens": 17458,
+              "totalCost": 2.491038
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r3",
+              "runOn": "2026-11-17",
+              "correct": 236,
+              "inputTokens": 1158229,
+              "outputTokens": 17653,
+              "totalCost": 2.492988
             }
           ],
-          "correct": 236,
+          "correct": 235.33333333333334,
           "total": 244,
-          "low": 0.9366484070383405,
-          "high": 0.9832945318262631,
+          "low": 0.9331401236564472,
+          "high": 0.9814230319399426,
           "inputTokens": 1158229,
-          "outputTokens": 17981,
-          "totalCost": 2.496268
+          "outputTokens": 17696.333333333332,
+          "totalCost": 2.4934213333333335
         },
         {
           "format": "json-pretty",
           "runs": [
             {
-              "runId": "p4-2026-11-12",
-              "runOn": "2026-11-12",
+              "runId": "matched-sol-2026-11-17-r1",
+              "runOn": "2026-11-17",
               "correct": 237,
               "inputTokens": 1696152,
-              "outputTokens": 16762,
-              "totalCost": 3.559924
+              "outputTokens": 16258,
+              "totalCost": 3.554884
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r2",
+              "runOn": "2026-11-17",
+              "correct": 238,
+              "inputTokens": 1696152,
+              "outputTokens": 16907,
+              "totalCost": 3.561374
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r3",
+              "runOn": "2026-11-17",
+              "correct": 237,
+              "inputTokens": 1696152,
+              "outputTokens": 15951,
+              "totalCost": 3.551814
             }
           ],
-          "correct": 237,
+          "correct": 237.33333333333334,
           "total": 244,
-          "low": 0.94197743468984,
-          "high": 0.9860351790770849,
+          "low": 0.9437736573758427,
+          "high": 0.9869288480251891,
           "inputTokens": 1696152,
-          "outputTokens": 16762,
-          "totalCost": 3.559924
+          "outputTokens": 16372,
+          "totalCost": 3.5560240000000003
         },
         {
           "format": "toon",
           "runs": [
             {
-              "runId": "p4-2026-11-12",
-              "runOn": "2026-11-12",
-              "correct": 239,
+              "runId": "matched-sol-2026-11-17-r1",
+              "runOn": "2026-11-17",
+              "correct": 242,
               "inputTokens": 1020628,
-              "outputTokens": 15077,
-              "totalCost": 2.192026
+              "outputTokens": 15081,
+              "totalCost": 2.192066
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r2",
+              "runOn": "2026-11-17",
+              "correct": 242,
+              "inputTokens": 1020628,
+              "outputTokens": 15751,
+              "totalCost": 2.198766
+            },
+            {
+              "runId": "matched-sol-2026-11-17-r3",
+              "runOn": "2026-11-17",
+              "correct": 242,
+              "inputTokens": 1020628,
+              "outputTokens": 15710,
+              "totalCost": 2.198356
             }
           ],
-          "correct": 239,
+          "correct": 242,
           "total": 244,
-          "low": 0.9529358324479501,
-          "high": 0.9912161311236168,
+          "low": 0.9706117105007331,
+          "high": 0.9977492777777971,
           "inputTokens": 1020628,
-          "outputTokens": 15077,
-          "totalCost": 2.192026
+          "outputTokens": 15514,
+          "totalCost": 2.196396
         }
       ]
     }

@@ -70,10 +70,24 @@ export function rowRunOn(row: AccuracyRow): string {
   return listPhrase([...new Set(row.runs.map((run) => run.runOn))].sort());
 }
 
-/** Every run behind a row: "1 run" when there is one, else "Mean of 2 runs: 238, 242". */
+/**
+ * Every run behind a row, as lines: ["1 run"] when there is one, else the mean and each
+ * run's score: ["Mean of 2 runs", "238, 242"]. With more than two runs whose scores differ,
+ * the lowest and highest follow in brackets: ["Mean of 3 runs", "236, 234, 236 (234 to 236)"].
+ * The page shows one per line, so the column stays narrow.
+ */
+export function runsCellLines(row: AccuracyRow): readonly string[] {
+  if (row.runs.length === 1) return ['1 run'];
+  const scores = row.runs.map((run) => run.correct);
+  const lowest = Math.min(...scores);
+  const highest = Math.max(...scores);
+  const range = row.runs.length > 2 && lowest !== highest ? ` (${formatCount(lowest)} to ${formatCount(highest)})` : '';
+  return [`Mean of ${String(row.runs.length)} runs`, `${scores.map(formatCount).join(', ')}${range}`];
+}
+
+/** The runs cell on one line, for Markdown: "Mean of 3 runs: 236, 234, 236 (234 to 236)". */
 export function runsCell(row: AccuracyRow): string {
-  if (row.runs.length === 1) return '1 run';
-  return `Mean of ${String(row.runs.length)} runs: ${row.runs.map((run) => formatCount(run.correct)).join(', ')}`;
+  return runsCellLines(row).join(': ');
 }
 
 /** The table cells for one model, Terset first. A row with more than one run shows the mean, with each run beside it. */
@@ -92,28 +106,83 @@ export function accuracyTableRows(model: AccuracyModel): readonly (readonly stri
   ]);
 }
 
+/** The dates of the given rows' runs, oldest first, each once. */
+function datesOf(rows: readonly AccuracyRow[]): readonly string[] {
+  return [...new Set(rows.flatMap((row) => row.runs.map((run) => run.runOn)))].sort();
+}
+
+/** One model's runs from a matched batch, in one sentence. Throws unless every format has the same repeats on one day. */
+function matchedRunsSentence(model: AccuracyModel): string {
+  const repeats = model.rows.map((row) => row.runs.length);
+  const runs = repeats[0] ?? 0;
+  assertClaim(runs > 1 && repeats.every((count) => count === runs), `every format on ${model.name} has the same repeats`);
+  const dates = datesOf(model.rows);
+  assertClaim(dates.length === 1, `the ${model.name} batch ran on one day`);
+  return `${model.name}: every format ran ${countWord(runs)} times on ${dates.join('')}, in one matched batch with the same setup.`;
+}
+
 /**
- * The note on runs under the tables and in the READMEs: how many runs each format has and
- * when, and that a matched batch is planned. Throws when the data no longer has Terset with
- * more than one run and every other format with one, so the note never goes stale.
+ * One model's runs from before its matched batch, in one sentence. Throws unless Terset has
+ * more than one run and every other format one, so the sentence never goes stale.
+ */
+function earlierRunsSentence(model: AccuracyModel): string {
+  const terset = formatRow(model, 'terset');
+  const runs = terset.runs.length;
+  assertClaim(runs > 1, `Terset has more than one run on ${model.name}`);
+  const others = model.rows.filter((row) => row.format !== 'terset');
+  assertClaim(others.every((row) => row.runs.length === 1), `the other formats have one run each on ${model.name}`);
+  const tersetDates = datesOf([terset]);
+  const when = tersetDates.length === 1 ? `${runs === 2 ? 'both' : 'all'} on ${tersetDates.join('')}` : `on ${listPhrase(tersetDates)}`;
+  return `${model.name}: Terset has ${countWord(runs)} runs, ${when}, and the other formats have one run each, on ${listPhrase(datesOf(others))}. Its matched batch is not published yet, so these rows use the earlier runs.`;
+}
+
+/**
+ * The note on runs under the tables and in the READMEs: where each model's rows come from,
+ * how many runs and when. Each sentence is checked against the data.
  */
 export function accuracyRunsNote(file: AccuracyFile): string {
-  const rowsOf = (format: AccuracyFormat): readonly AccuracyRow[] => file.models.map((model) => formatRow(model, format));
-  const tersetRuns = rowsOf('terset').map((row) => row.runs.length);
-  const runs = tersetRuns[0] ?? 0;
-  assertClaim(runs > 1 && tersetRuns.every((count) => count === runs), 'Terset has the same number of runs, more than one, on every model');
-  const others = file.models.flatMap((model) => model.rows.filter((row) => row.format !== 'terset'));
-  assertClaim(others.every((row) => row.runs.length === 1), 'the other formats have one run each');
-  const dates = (rows: readonly AccuracyRow[]): readonly string[] => [...new Set(rows.flatMap((row) => row.runs.map((run) => run.runOn)))].sort();
-  const tersetDates = dates(rowsOf('terset'));
-  const when = tersetDates.length === 1 ? `${runs === 2 ? 'both' : 'all'} on ${tersetDates.join('')}` : `on ${listPhrase(tersetDates)}`;
   return [
-    `Terset has ${countWord(runs)} runs, ${when}.`,
-    `The other formats have one run each, on ${listPhrase(dates(others))}.`,
-    "Terset's rows show the mean of its runs, and the Runs column lists each run's score.",
-    'A matched batch, with repeats of every format, is planned.',
+    ...file.models.map((model) => (model.runsFrom === 'matched-batch' ? matchedRunsSentence(model) : earlierRunsSentence(model))),
+    "No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.",
   ].join(' ');
 }
+
+export const ACCURACY_RUNS_HEAD = ['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed requests'] as const;
+
+function modelShortName(file: AccuracyFile, id: string): string {
+  const model = file.models.find((item) => item.id === id);
+  if (model === undefined) throw new Error(`No model ${id} in the accuracy data`);
+  return shortModelName(model);
+}
+
+const ACCURACY_FORMAT_COUNT = Object.keys(FORMAT_LABELS).length;
+
+function formatsPhrase(formats: readonly AccuracyFormat[]): string {
+  return formats.length === ACCURACY_FORMAT_COUNT ? 'All four' : listPhrase(formats.map((format) => FORMAT_LABELS[format]));
+}
+
+/**
+ * One row per published run, in publishing order: what it holds, what the tables take from
+ * it, and how many requests failed and were retried. A run the tables do not use is history.
+ */
+export function publishedRunsRows(file: AccuracyFile): readonly (readonly string[])[] {
+  return file.publishedRuns.map((run) => [
+    run.runId,
+    run.runOn,
+    listPhrase(run.models.map((id) => modelShortName(file, id))),
+    formatsPhrase(run.formats),
+    run.inTables.length === 0 ? 'History only' : run.inTables.map((entry) => `${modelShortName(file, entry.model)}: ${formatsPhrase(entry.formats)}`).join('; '),
+    run.failedRequests === 0 ? '0' : `${formatCount(run.failedRequests)}, retried`,
+  ]);
+}
+
+/** The published runs table in Markdown, for /benchmark.md. */
+export function publishedRunsMarkdownTable(file: AccuracyFile): string {
+  return [markdownRow(ACCURACY_RUNS_HEAD), markdownRow(ACCURACY_RUNS_HEAD.map(() => '---')), ...publishedRunsRows(file).map(markdownRow)].join('\n');
+}
+
+/** The line under the published runs table. */
+export const PUBLISHED_RUNS_NOTE = 'Every published run, with what the tables take from it. History runs stay published and are not in the tables.';
 
 /** How a signed change cell is marked: a saving in the accent tone, a loss plain and muted, or not at all. */
 export type SignMark = 'is-less' | 'is-more' | null;
@@ -302,9 +371,22 @@ function publishedLinks(file: AccuracyFile): string {
   return listPhrase([...folders].map(([path, runOn]) => `[${runOn}](${REPO_URL}/tree/main/${path})`));
 }
 
-/** The dates of every published run, oldest first, each once. */
+/** The dates of every run the tables use, oldest first, each once. */
 function runDates(file: AccuracyFile): string {
-  return listPhrase([...new Set(file.publishedRuns.map((run) => run.runOn))].sort());
+  return listPhrase([...new Set(file.publishedRuns.filter((run) => run.inTables.length > 0).map((run) => run.runOn))].sort());
+}
+
+/** Small counts as capitalized words, to open a sentence. */
+function sentenceCount(value: number): string {
+  const word = countWord(value);
+  return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+}
+
+/** Whether any request in the tables failed, and what happened to it. */
+export function failedCallsLine(file: AccuracyFile): string {
+  if (file.failedCalls === 0) return 'None failed.';
+  const each = file.failedCalls === 1 ? 'It stays' : file.failedCalls === 2 ? 'Both stay' : 'All stay';
+  return `${sentenceCount(file.failedCalls)} ${file.failedCalls === 1 ? 'request' : 'requests'} failed and ${file.failedCalls === 1 ? 'was' : 'were'} retried in the same run. ${each} in the run file.`;
 }
 
 /** How the input tokens were counted, in one sentence: the counted models first, then the rest. */
@@ -326,7 +408,7 @@ export function costLine(file: AccuracyFile): string {
 /** How the run was made, in at most five short lines. Inline Markdown: code spans and links. */
 export function accuracyMethod(file: AccuracyFile): readonly string[] {
   return [
-    `Tables use ${formatCount(file.calls)} calls from runs on ${runDates(file)}; none failed. Terset ran with fitted rules, which send only the rules each text needs.`,
+    `Tables use ${formatCount(file.calls)} answered calls from runs on ${runDates(file)}. ${failedCallsLine(file)} Terset ran with fitted rules, which send only the rules each text needs.`,
     // The short hash fits a phone column; the link keeps the full one.
     `Questions from the open [TOON benchmark](https://github.com/toon-format/toon) (MIT), commit [${file.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${file.upstreamSha}).`,
     'Temperature 0 where the model accepts it, scored by fixed rules with no model judge.',

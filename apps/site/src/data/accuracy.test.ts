@@ -6,6 +6,7 @@ import {
   ACCURACY,
   ACCURACY_FORMAT_NOTE,
   ACCURACY_KIND_NOTE,
+  ACCURACY_RUNS_HEAD,
   ACCURACY_TABLE_HEAD,
   accuracyHomeLine,
   accuracyKindLine,
@@ -17,10 +18,13 @@ import {
   accuracyTableMarks,
   accuracyTableRows,
   costOverTerset,
+  failedCallsLine,
   intervalsOverlap,
   kindMarkdownHead,
   kindTableRows,
   overTersetMark,
+  publishedRunsRows,
+  runsCellLines,
   signMark,
   wholePct,
 } from './accuracy.ts';
@@ -55,8 +59,13 @@ describe('accuracy', () => {
       ['JSON', '239 of 244', '1 run', '98.0%', '95.3% to 99.1%', '2,303,845', '$10.20', '+80.8%', '2026-11-12'],
       ['TOON', '242 of 244', '1 run', '99.2%', '97.1% to 99.8%', '1,369,764', '$6.35', '+12.6%', '2026-11-12'],
     ]);
-    expect(accuracyTableRows(model('gpt-6.1-sol'))[0]).toEqual(['Terset', '240 of 244', 'Mean of 2 runs: 238, 242', '98.4%', '95.9% to 99.4%', '842,260', '$1.84', 'Reference', '2026-11-17']);
-    expect(accuracyTableRows(model('gpt-6.1-sol')).map((row) => row[7])).toEqual(['Reference', '+35.8%', '+93.7%', '+19.3%']);
+    // Sol comes from its matched batch: every format is the mean of three runs on one day.
+    expect(accuracyTableRows(model('gpt-6.1-sol'))).toEqual([
+      ['Terset', '242 of 244', 'Mean of 3 runs: 242, 241, 243 (241 to 243)', '99.2%', '97.1% to 99.8%', '842,260', '$1.84', 'Reference', '2026-11-17'],
+      ['Compact JSON', '235.3 of 244', 'Mean of 3 runs: 236, 234, 236 (234 to 236)', '96.4%', '93.3% to 98.1%', '1,158,229', '$2.49', '+35.3%', '2026-11-17'],
+      ['JSON', '237.3 of 244', 'Mean of 3 runs: 237, 238, 237 (237 to 238)', '97.3%', '94.4% to 98.7%', '1,696,152', '$3.56', '+93.0%', '2026-11-17'],
+      ['TOON', '242 of 244', 'Mean of 3 runs: 242, 242, 242', '99.2%', '97.1% to 99.8%', '1,020,628', '$2.20', '+19.2%', '2026-11-17'],
+    ]);
   });
 
   it('shows a mean with a fraction to one decimal, and a whole mean as a count', () => {
@@ -68,14 +77,30 @@ describe('accuracy', () => {
     expect(accuracyTableRows(half.models[0] ?? model('claude-opus-5-5'))[0]?.[1]).toBe('240.5 of 244');
   });
 
+  it('splits the runs cell into the mean line and the scores line, so the page column stays narrow', () => {
+    const lines = (id: string, format: string): readonly string[] => {
+      const row = model(id).rows.find((item) => item.format === format);
+      if (row === undefined) throw new Error(`no ${format} row`);
+      return runsCellLines(row);
+    };
+    expect(lines('gpt-6.1-sol', 'terset')).toEqual(['Mean of 3 runs', '242, 241, 243 (241 to 243)']);
+    expect(lines('gpt-6.1-sol', 'toon')).toEqual(['Mean of 3 runs', '242, 242, 242']);
+    expect(lines('claude-opus-5-5', 'terset')).toEqual(['Mean of 2 runs', '242, 242']);
+    expect(lines('claude-opus-5-5', 'toon')).toEqual(['1 run']);
+  });
+
   it('says how many runs each format has, and throws once that no longer holds', () => {
-    expect(accuracyRunsNote(ACCURACY)).toBe("Terset has two runs, both on 2026-11-17. The other formats have one run each, on 2026-11-12. Terset's rows show the mean of its runs, and the Runs column lists each run's score. A matched batch, with repeats of every format, is planned.");
+    expect(accuracyRunsNote(ACCURACY)).toBe(
+      'Claude Opus 5.5: Terset has two runs, both on 2026-11-17, and the other formats have one run each, on 2026-11-12. Its matched batch is not published yet, so these rows use the earlier runs. ' +
+        'GPT 6.1 Sol: every format ran three times on 2026-11-17, in one matched batch with the same setup. ' +
+        "No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.",
+    );
     const oneRun = withRows((rows) => {
       const terset = rows.find((row) => row.format === 'terset');
       if (terset === undefined) throw new Error('missing row');
       terset.runs = terset.runs.slice(0, 1);
     });
-    expect(() => accuracyRunsNote(oneRun)).toThrow(/more than one, on every model/u);
+    expect(() => accuracyRunsNote(oneRun)).toThrow(/more than one run on Claude Opus 5\.5/u);
     const repeated = withRows((rows) => {
       const toon = rows.find((row) => row.format === 'toon');
       const run = toon?.runs[0];
@@ -83,6 +108,48 @@ describe('accuracy', () => {
       toon.runs = [run, { ...run, runId: 'again' }];
     });
     expect(() => accuracyRunsNote(repeated)).toThrow(/one run each/u);
+  });
+
+  it('says a matched batch ran every format the same number of times on one day, and throws once that no longer holds', () => {
+    const solRows = (change: (rows: AccuracyModel['rows'][number][]) => void): AccuracyFile => {
+      const copy = structuredClone(ACCURACY) as AccuracyFile & { models: (AccuracyModel & { rows: AccuracyModel['rows'][number][] })[] };
+      const sol = copy.models.find((item) => item.id === 'gpt-6.1-sol');
+      if (sol === undefined) throw new Error('no Sol');
+      change(sol.rows);
+      return copy;
+    };
+    const uneven = solRows((rows) => {
+      const toon = rows.find((row) => row.format === 'toon');
+      if (toon === undefined) throw new Error('missing row');
+      toon.runs = toon.runs.slice(0, 2);
+    });
+    expect(() => accuracyRunsNote(uneven)).toThrow(/same repeats/u);
+    const twoDays = solRows((rows) => {
+      const toon = rows.find((row) => row.format === 'toon');
+      const run = toon?.runs[0];
+      if (toon === undefined || run === undefined) throw new Error('missing row');
+      toon.runs = [{ ...run, runOn: '2026-11-18' }, ...toon.runs.slice(1)];
+    });
+    expect(() => accuracyRunsNote(twoDays)).toThrow(/ran on one day/u);
+  });
+
+  it('lists every published run with what the tables take from it, older runs as history', () => {
+    expect(ACCURACY_RUNS_HEAD).toEqual(['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed requests']);
+    expect(publishedRunsRows(ACCURACY)).toEqual([
+      ['p4-2026-11-12', '2026-11-12', 'Opus and Sol', 'All four', 'Opus: Compact JSON, JSON and TOON', '0'],
+      ['v2-final-2026-11-13', '2026-11-13', 'Opus and Sol', 'Terset', 'History only', '0'],
+      ['fitted-rules-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'Opus: Terset', '0'],
+      ['fitted-rules-rerun-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'Opus: Terset', '0'],
+      ['matched-sol-2026-11-17-r1', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '2, retried'],
+      ['matched-sol-2026-11-17-r2', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '0'],
+      ['matched-sol-2026-11-17-r3', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '0'],
+    ]);
+  });
+
+  it('says how many requests failed and that they stay in the run file', () => {
+    expect(failedCallsLine(ACCURACY)).toBe('Two requests failed and were retried in the same run. Both stay in the run file.');
+    expect(failedCallsLine({ ...ACCURACY, failedCalls: 0 })).toBe('None failed.');
+    expect(failedCallsLine({ ...ACCURACY, failedCalls: 1 })).toBe('One request failed and was retried in the same run. It stays in the run file.');
   });
 
   it('works out the cost over Terset from the unrounded costs, with a minus when a format is cheaper', () => {
@@ -176,7 +243,7 @@ describe('accuracy', () => {
   it('keeps the result to two sentences under the tables', () => {
     expect(accuracySummary(ACCURACY)).toEqual([
       "Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.",
-      'Against compact JSON, Terset cost 29.9% less on Claude Opus 5.5 and 26.4% less on GPT 6.1 Sol.',
+      'Against compact JSON, Terset cost 29.9% less on Claude Opus 5.5 and 26.1% less on GPT 6.1 Sol.',
     ]);
   });
 
@@ -239,7 +306,8 @@ describe('accuracy', () => {
     // A 40-character hash cannot fit a 390 px column, so the text shows the short hash
     // and the link carries the full one.
     expect(method).toContain(`commit [${ACCURACY.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${ACCURACY.upstreamSha})`);
-    expect(method).toContain('Cost is at API list price: input and output tokens times list prices read on 2026-11-12.');
+    expect(method).toContain('Cost is at API list price: input and output tokens times list prices read on 2026-11-12 and 2026-11-17.');
+    expect(method).toContain('Tables use 4,148 answered calls from runs on 2026-11-12 and 2026-11-17. Two requests failed and were retried in the same run.');
     expect(method).toContain("Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them.");
     expect(method).toContain('no model judge');
   });
@@ -255,7 +323,9 @@ describe('accuracy', () => {
     expect(text).toContain('## Answer accuracy');
     expect(text).toContain('| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |');
     expect(text).toContain('| Terset | 242 of 244 | Mean of 2 runs: 242, 242 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.64 | Reference | 2026-11-17 |');
-    expect(text).toContain('| Terset | 240 of 244 | Mean of 2 runs: 238, 242 | 98.4% | 95.9% to 99.4% | 842,260 | $1.84 | Reference | 2026-11-17 |');
+    expect(text).toContain('| Terset | 242 of 244 | Mean of 3 runs: 242, 241, 243 (241 to 243) | 99.2% | 97.1% to 99.8% | 842,260 | $1.84 | Reference | 2026-11-17 |');
+    expect(text).toContain('| matched-sol-2026-11-17-r1 | 2026-11-17 | Sol | All four | Sol: All four | 2, retried |');
+    expect(text).toContain('| v2-final-2026-11-13 | 2026-11-13 | Opus and Sol | Terset | History only | 0 |');
     expect(text).toContain('| JSON | 239 of 244 | 1 run | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.8% | 2026-11-12 |');
     expect(text).toContain(accuracyRunsNote(ACCURACY));
     expect(text).not.toContain('Cost vs compact JSON');

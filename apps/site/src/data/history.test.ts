@@ -73,13 +73,14 @@ describe('number history', () => {
 
   it('pins the newest row to the current headline accuracy and cost', () => {
     const newest = HISTORY[0];
+    // The Sol matched batch: every Sol row is the mean of three runs on 2026-11-17.
     expect(newest?.changes.map((change) => [change.metric, change.from, change.to])).toEqual([
-      ['sol-correct', 242, 240],
-      ['opus-cost-saving', 29.8, 29.9],
-      ['sol-cost-saving', 26.2, 26.4],
-      ['calls', 1952, 2440],
+      ['sol-correct', 240, 242],
+      ['sol-cost-saving', 26.4, 26.1],
+      ['calls', 2440, 4148],
     ]);
-    expect(formatRow(model('gpt-6.1-sol'), 'terset').runs.map((run) => run.correct)).toEqual([238, 242]);
+    expect(formatRow(model('gpt-6.1-sol'), 'terset').runs.map((run) => run.correct)).toEqual([242, 241, 243]);
+    expect(newest?.changes[0]?.note).toBe('mean of 242, 241 and 243');
   });
 
   it('chains each metric: an older row ends where the next newer row starts', () => {
@@ -100,17 +101,19 @@ describe('number history', () => {
       expect(row.why).not.toBe('');
       for (const change of row.changes) expect(change.from).not.toBe(change.to);
     }
-    expect(HISTORY.map((row) => row.pr)).toEqual([null, 7, 7, 7, 6, 6]);
+    expect(HISTORY.map((row) => row.pr)).toEqual([null, null, 7, 7, 7, 6, 6]);
   });
 
   it('prints the fitted rules move in the table, with the old number first', () => {
     const rows = historyTableRows(HISTORY);
     expect(HISTORY_TABLE_HEAD).toEqual(['Date', 'What changed (old to new)', 'Why', 'Public PR']);
-    expect(rows[1]?.[1]).toContain('Terset total: 43,348 to 43,044 tokens.');
-    expect(rows[1]?.[1]).toContain('Under TOON: 5.9% to 6.6%.');
-    expect(rows[1]?.[3]).toBe('#7');
-    expect(rows[4]?.[1]).toContain('Cases under TOON: 11 to 8 of 11.');
+    expect(rows[0]?.[1]).toBe('Answer accuracy. Sol, Terset right answers: 240 to 242 of 244 (mean of 242, 241 and 243). Sol, lower cost than compact JSON: 26.4% to 26.1%. Calls in the accuracy tables: 2,440 to 4,148.');
+    expect(rows[2]?.[1]).toContain('Terset total: 43,348 to 43,044 tokens.');
+    expect(rows[2]?.[1]).toContain('Under TOON: 5.9% to 6.6%.');
+    expect(rows[2]?.[3]).toBe('#7');
+    expect(rows[5]?.[1]).toContain('Cases under TOON: 11 to 8 of 11.');
     expect(rows[0]?.[3]).toBe('Not merged yet');
+    expect(rows[1]?.[3]).toBe('Not merged yet');
   });
 
   it('puts the table and the note in benchmark.md', () => {

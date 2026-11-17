@@ -20,7 +20,8 @@ import { DOC_EXAMPLES, SAMPLE_IDS, SAMPLE_LABELS, SAMPLES } from '../src/data/sa
 import { rulesFor, decode, encode } from '../src/lib/format.ts';
 import type { JsonObject, JsonRoot, JsonValue } from '../src/lib/format.ts';
 import { parseNeutralInputs } from './claude-inputs.ts';
-import { PUBLISHED_RUNS, REQUEST_COUNTS } from './update-accuracy.ts';
+import { PUBLISHED_RUNS, REQUEST_COUNTS, claudeCountedFormats } from './update-accuracy.ts';
+import type { PublishedSource } from './update-accuracy.ts';
 
 export const ENDPOINT = '/v1/messages/count_tokens';
 export const METHOD = 'One user message per text. Subtract the same-run input_tokens for "a", then add 1, assuming "a" is one Claude text token. This estimates text tokens by removing fixed message framing. TOON is the smaller count of default and tab forms. Terset is rulesFor(text), a newline, then encoded data in one message; when rulesFor(text) is empty it is the encoded data alone. CSV is a root record list or the only field of an object; nested cells use compact JSON, null and absent cells are empty. csvExact compares the record list with cells inferred as JSON scalar values or plain text. o200kJson is compact JSON counted locally with o200k_base for input verification. Counts do not measure answer quality.';
@@ -209,13 +210,18 @@ const PublishedRun = z.object({
  * Every Claude request of the selected formats in the published runs, rebuilt with the
  * benchmark's own plan and body code. Each request must match one recorded row, and its
  * input reservation, which the run computed from the same prompt, must match too.
- * A run that uses another run's counts sent the same requests, so it is not counted again.
+ * Only the formats `claudeCountedFormats` names for each run are counted: a run that uses
+ * another run's counts sent the same requests, so it is not counted again, and a run the
+ * Claude tables do not use is counted only for the formats it lends to another run.
  */
-export function publishedRequests(runs: readonly { readonly source: (typeof PUBLISHED_RUNS)[number]; readonly raw: unknown }[]): PublishedRequest[] {
-  return runs.filter(({ source }) => source.claudeCountsFrom === undefined).flatMap(({ source, raw }) => {
+export function publishedRequests(
+  runs: readonly { readonly source: PublishedSource; readonly raw: unknown }[],
+  sources: readonly PublishedSource[] = PUBLISHED_RUNS,
+): PublishedRequest[] {
+  return runs.filter(({ source }) => claudeCountedFormats(sources, source).length > 0).flatMap(({ source, raw }) => {
     const run = PublishedRun.parse(raw);
     const claude = run.models.filter((model) => model.api === 'anthropic');
-    const formats: readonly AccuracyFormat[] = source.formats;
+    const formats = claudeCountedFormats(sources, source);
     const recorded = new Map(run.rows
       .filter((row) => claude.some((model) => model.id === row.model) && formats.some((format) => format === row.format))
       .map((row) => [JSON.stringify([row.model, row.format, row.dataset, row.questionId]), row]));

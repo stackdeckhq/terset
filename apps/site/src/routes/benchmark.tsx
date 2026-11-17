@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { PublishedRunsTable } from '../components/AccuracyTables.tsx';
 import { BenchChart } from '../components/BenchChart.tsx';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { FullTables } from '../components/FullTables.tsx';
@@ -106,6 +107,10 @@ function BenchmarkPage() {
       <section className="doc-section acc-method notes" aria-labelledby="acc-method-h">
         <h2 id="acc-method-h">Accuracy method</h2>
         <Lines lines={accuracyMethod(ACCURACY)} />
+      </section>
+      <section className="doc-section" id="published-runs" aria-labelledby="runs-h">
+        <h2 id="runs-h">Published runs</h2>
+        <PublishedRunsTable file={ACCURACY} />
       </section>
       <section className="doc-section notes" aria-labelledby="method-h">
         <h2 id="method-h">Method</h2>

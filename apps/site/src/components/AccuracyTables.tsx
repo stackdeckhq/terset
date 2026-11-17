@@ -1,8 +1,25 @@
 // Answer accuracy per model: one table each, Terset first, then how much more each format cost than Terset.
 // Then one table by data set: Terset input tokens against compact JSON and TOON.
 // Each table scrolls sideways inside its own box on small screens, never the page.
-import { ACCURACY_FORMAT_NOTE, ACCURACY_KIND_NOTE, ACCURACY_TABLE_HEAD, KIND_BASE_LABELS, KIND_BASES, accuracyRunsNote, accuracyTableMarks, accuracyTableRows, kindColumns, kindTableRows, shortModelName, signMark } from '../data/accuracy.ts';
-import type { AccuracyFile, AccuracyModel } from '../data/accuracy.ts';
+import {
+  ACCURACY_FORMAT_NOTE,
+  ACCURACY_KIND_NOTE,
+  ACCURACY_RUNS_HEAD,
+  ACCURACY_TABLE_HEAD,
+  KIND_BASE_LABELS,
+  KIND_BASES,
+  PUBLISHED_RUNS_NOTE,
+  accuracyRunsNote,
+  accuracyTableMarks,
+  accuracyTableRows,
+  kindColumns,
+  kindTableRows,
+  publishedRunsRows,
+  runsCellLines,
+  shortModelName,
+  signMark,
+} from '../data/accuracy.ts';
+import type { AccuracyFile, AccuracyModel, AccuracyRow } from '../data/accuracy.ts';
 
 function KindTable({ file }: { readonly file: AccuracyFile }) {
   const columns = kindColumns(file);
@@ -58,6 +75,20 @@ function KindTable({ file }: { readonly file: AccuracyFile }) {
   );
 }
 
+/** The runs cell as stacked lines: the mean, then each run's score. Falls back to the one-line cell. */
+function RunsLines({ row, cell }: { readonly row: AccuracyRow | undefined; readonly cell: string }) {
+  if (row === undefined) return <>{cell}</>;
+  return (
+    <>
+      {runsCellLines(row).map((line) => (
+        <span key={line} className="bt-line">
+          {line}
+        </span>
+      ))}
+    </>
+  );
+}
+
 /** One model's table. The lowest input tokens and cost are marked like the kind table, and so is every format Terset cost less than. */
 function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly model: AccuracyModel }) {
   const marks = accuracyTableMarks(model);
@@ -82,7 +113,7 @@ function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly mod
                 <th scope="row">{name}</th>
                 {cells.map((cell, index) => (
                   <td key={ACCURACY_TABLE_HEAD[index + 1]} className={marks[rowIndex]?.[index] ?? undefined}>
-                    {cell}
+                    {ACCURACY_TABLE_HEAD[index + 1] === 'Runs' ? <RunsLines row={model.rows[rowIndex]} cell={cell} /> : cell}
                   </td>
                 ))}
               </tr>
@@ -94,6 +125,39 @@ function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly mod
         {model.name} at ${model.inputPerMillion} per million input tokens and ${model.outputPerMillion} per million output tokens, list price read on {model.priceReadOn}.
       </p>
     </div>
+  );
+}
+
+/** Every published run, with what the tables take from it. A run the tables do not use reads "History only". */
+export function PublishedRunsTable({ file }: { readonly file: AccuracyFile }) {
+  return (
+    <>
+      <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label="Published runs table, scrolls sideways on small screens">
+        <table className="bt bt-text">
+          <caption className="sr">Every published accuracy run, oldest first, with its date, models, formats, what the tables take from it and its failed requests</caption>
+          <thead>
+            <tr>
+              {ACCURACY_RUNS_HEAD.map((cell) => (
+                <th key={cell} scope="col">
+                  {cell}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {publishedRunsRows(file).map(([runId, ...cells]) => (
+              <tr key={runId}>
+                <th scope="row">{runId}</th>
+                {cells.map((cell, index) => (
+                  <td key={ACCURACY_RUNS_HEAD[index + 1]}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="tbl-note">{PUBLISHED_RUNS_NOTE}</p>
+    </>
   );
 }
 
