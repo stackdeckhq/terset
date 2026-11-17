@@ -10,6 +10,7 @@ import type { ClaudeCounts } from './claude-counts-schema.ts';
 import { COST_TABLE_HEAD, buildCounters, claudeMethod, costCaption, costMethod, costTableRows, costTotalsRow, counterList, counterSummary, counterTotals } from './counters.ts';
 import type { Counter, Counters } from './counters.ts';
 import { BYTES, bytesLine } from './bytes.ts';
+import { HISTORY, HISTORY_NOTE, HISTORY_TABLE_HEAD, historyTableRows, prLabel, prUrl } from './history.ts';
 import { PRICES } from './prices.ts';
 import { proofLines } from './proof.ts';
 import { SIZE_LINE } from './size.ts';
@@ -138,6 +139,16 @@ function accuracyMarkdown(file: AccuracyFile, counters: Counters | null): readon
   ];
 }
 
+/** Every published number that moved, as one table, then the note on what the numbers are not checked against. */
+function historyMarkdown(): readonly string[] {
+  const rows = historyTableRows(HISTORY).map(([date, changed, why], index) => {
+    const pr = HISTORY[index]?.pr ?? null;
+    const url = prUrl(pr);
+    return markdownRow([date, changed, why, url === null ? prLabel(pr) : `[${prLabel(pr)}](${url})`]);
+  });
+  return ['## Number history', [markdownRow(HISTORY_TABLE_HEAD), markdownRow(HISTORY_TABLE_HEAD.map(() => '---')), ...rows].join('\n'), HISTORY_NOTE];
+}
+
 /** The benchmark as Markdown, for /benchmark.md and llms-full.txt. Terset comes first in every comparison. */
 export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CLAUDE, accuracy: AccuracyFile = ACCURACY): string {
   const counters = benchCounters(bench, claude);
@@ -158,5 +169,7 @@ export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CL
     ...(costLines.length > 0 ? ['## Cost method', bullets(costLines)] : []),
     '## Limits',
     bullets(benchmarkLimits(counters)),
+    // The history names both counters, so it shows only when both are ready.
+    ...(counters === null || counters.claude === null ? [] : historyMarkdown()),
   ].join('\n\n');
 }

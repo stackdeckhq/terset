@@ -2,11 +2,13 @@ import { createFileRoute } from '@tanstack/react-router';
 import { BenchChart } from '../components/BenchChart.tsx';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { FullTables } from '../components/FullTables.tsx';
+import { HistoryTable } from '../components/HistoryTable.tsx';
 import { SweepTable } from '../components/SweepTable.tsx';
 import { BigNumbers, CostBars, DatasetChart } from '../components/Proof.tsx';
 import { ACCURACY, accuracyIntro, accuracyMethod } from '../data/accuracy.ts';
 import { BYTES, bytesLine } from '../data/bytes.ts';
 import { benchmarkCostMethod, benchmarkKeepElse, benchmarkLimits, benchmarkMethod, benchmarkPageLines } from '../data/benchmark-doc.ts';
+import { HISTORY_NOTE } from '../data/history.ts';
 import { BENCH, BENCH_FILE, CLAUDE, COUNTERS, countersHeadline, countersNote } from '../data/numbers.ts';
 import { smallerThanToon } from '../data/proof.ts';
 import { SWEEP, sweepIntro, sweepLines, sweepTitle } from '../data/sweep.ts';
@@ -107,6 +109,14 @@ function BenchmarkPage() {
         <h2 id="limits-h">Limits</h2>
         <Lines lines={benchmarkLimits(COUNTERS)} />
       </section>
+      {/* The history names both counters, so it shows only when both are ready. */}
+      {COUNTERS !== null && COUNTERS.claude !== null && (
+        <section className="doc-section" id="history" aria-labelledby="history-h">
+          <h2 id="history-h">Number history</h2>
+          <HistoryTable />
+          <p className="tbl-note">{HISTORY_NOTE}</p>
+        </section>
+      )}
     </DocPage>
   );
 }
