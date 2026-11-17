@@ -6,7 +6,7 @@ import {
   adjustedCount, countClaude, countPublished, csvText, ENDPOINT, formatTexts, main, METHOD,
   parseArgs, publicInputs, publishedRequests, requestPlan, settingsFromEnv,
 } from './count-claude.ts';
-import { PUBLISHED_RUNS } from './update-accuracy.ts';
+import { PUBLISHED_RUNS, claudeCountedFormats, sourceRunId } from './update-accuracy.ts';
 import { NeutralInputsSchema, parseNeutralInputs } from './claude-inputs.ts';
 import { encode as o200kTokens } from 'gpt-tokenizer/encoding/o200k_base';
 import { encode as toonEncode } from '@toon-format/toon';
@@ -323,7 +323,7 @@ describe('published Claude requests', () => {
   const runs = PUBLISHED_RUNS.map((source) => ({
     source, raw: JSON.parse(readFileSync(new URL(`../../../${source.path}`, import.meta.url), 'utf8')) as unknown,
   }));
-  const requests = publishedRequests(runs.filter(({ source }) => !source.formats.some(format => format === 'terset')));
+  const requests = publishedRequests(runs.filter(({ source }) => sourceRunId(source) === 'p4-2026-11-12'));
   const claude = (count: number) => ({ ...options(vi.fn<typeof globalThis.fetch>().mockImplementation(() => Promise.resolve(response(count))), 2000), model: 'claude-opus-5-5' });
 
   it('rebuilds all 976 published requests, fitted Terset primers included, and refuses the older full-rules Terset run', () => {
@@ -334,10 +334,21 @@ describe('published Claude requests', () => {
     expect(tally).toEqual({ terset: 244, 'json-compact': 244, 'json-pretty': 244, toon: 244 });
     expect(new Set(all.map((request) => request.body.model))).toEqual(new Set(['claude-opus-5-5']));
     // The 2026-11-13 run sent the full rules text, so today's fitted primers no longer match it.
-    const terset = runs.find(({ source }) => source.formats.some((format) => format === 'terset'));
-    if (terset === undefined) throw new Error('no Terset run');
-    const older = JSON.parse(readFileSync(new URL('../../../bench/published/2026-11-13/v2-final-2026-11-13.json', import.meta.url), 'utf8')) as unknown;
-    expect(() => publishedRequests([{ source: terset.source, raw: older }])).toThrow('a rebuilt prompt differs from the one the run reserved for');
+    const terset = runs.find(({ source }) => claudeCountedFormats(PUBLISHED_RUNS, source).includes('terset'));
+    if (terset === undefined) throw new Error('no counted Terset run');
+    const older = runs.find(({ source }) => sourceRunId(source) === 'v2-final-2026-11-13');
+    if (older === undefined) throw new Error('no 2026-11-13 run');
+    expect(() => publishedRequests([{ source: terset.source, raw: older.raw }])).toThrow('a rebuilt prompt differs from the one the run reserved for');
+  });
+
+  it('skips runs with no counts of their own: borrowed, history only, or no Claude model', () => {
+    const skipped = runs.filter(({ source }) => claudeCountedFormats(PUBLISHED_RUNS, source).length === 0);
+    expect(skipped.map(({ source }) => sourceRunId(source))).toEqual([
+      'v2-final-2026-11-13', 'fitted-rules-2026-11-17',
+      'matched-sol-2026-11-17-r1', 'matched-sol-2026-11-17-r2', 'matched-sol-2026-11-17-r3',
+      'matched-opus-2026-11-17-r1', 'matched-opus-2026-11-17-r2', 'matched-opus-2026-11-17-r3',
+    ]);
+    expect(publishedRequests(skipped)).toEqual([]);
   });
 
   it('counts the exact body the benchmark sent, built by the same function (no drift)', async () => {

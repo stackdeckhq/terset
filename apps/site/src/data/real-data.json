@@ -1,0 +1,32 @@
+{
+  "tokenizer": "o200k_base",
+  "toonVersion": "4.4.0",
+  "files": [
+    {
+      "name": "USGS earthquakes, one day",
+      "path": "bench/data/real/usgs-earthquakes-all-day.geojson",
+      "source": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+      "fetched": "2026-11-17",
+      "sha256": "7306b59e3a896439a3c57efd6597ac062b8234dd459ebcd1eb4c5fcfc07b5485",
+      "bytes": 157609,
+      "json": 55230,
+      "jsonPretty": 77638,
+      "toon": 64611,
+      "toonDefault": 64611,
+      "terset": 38397
+    },
+    {
+      "name": "NWS forecast grid, nested",
+      "path": "bench/data/real/nws-gridpoint-lwx-97-71.json",
+      "source": "https://api.weather.gov/gridpoints/LWX/97,71",
+      "fetched": "2026-11-17",
+      "sha256": "9ca6b9be09aed19680ae60eb24c6e92e8caac82cd6dfee3af034478482f39158",
+      "bytes": 166043,
+      "json": 34067,
+      "jsonPretty": 45755,
+      "toon": 31062,
+      "toonDefault": 31062,
+      "terset": 34068
+    }
+  ]
+}

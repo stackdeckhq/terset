@@ -4,28 +4,6 @@ import { decode, encode } from "../src/index.ts";
 import { readFileSync } from "node:fs";
 import { seededCases } from "./seeded.ts";
 
-export const REJECTED = [
-  "people[3]:\nname\nAda\nLin", "people[1]:\nname\nAda\nLin",
-  "[2]\nname\nAda\nLin\nOther", "[3]\nname\nAda\nLin",
-  "people{3}:\n@key\tname\na\tAda\nb\tLin",
-  "people{2}:\n@key\tname\na\tAda\nb\tLin\nc\tOther",
-  "people[2]:\nname\nAda\textra\nLin",
-  "people{2}:\n@key\tname\na\tAda\textra\nb\tLin",
-  "people[2]:\nname\tname\nAda\tAda\nLin\tLin",
-  "people{2}:\n@key\tname\na\tAda\na\tLin",
-  "people[2]:\nname\nAda\nLin\npeople: true",
-  'value: {"a":1,"a":2}', '[2]\na.b\ta\n1\t{}\n2\t{}',
-  "[2]\na.b\ta.b\n1\t2\n3\t4", "[2]\na..b\n1\n2",
-  'people{2}:\n"@key"\tname\na\tAda\nb\tLin',
-  "people[02]:\nname\nAda\nLin", 'people[2]:\nname\n"Ada"\nLin',
-  '[{"name":"Ada"},{"name":"Lin"}]', "value:  1", "value: 1\n",
-  "people:\nname\nAda\nLin", "name\nAda\nLin",
-  "[0]\nname", "[9007199254740992]\nname\nAda\nLin",
-  "people{2}:\n@key\tname\n\tAda\nb\tLin",
-  "people{2}:\n@key\tname\na[2]:\tAda\nb\tLin",
-  "[2]\na.b\na\n", "[2]\na.b\ta.c\n1\t\n\t2",
-];
-
 it("counts table rows through the public package API", () => {
   const value = { people: [{ name: "Ada" }, { name: "Lin" }] };
   const text = "people[2]:\nname\nAda\nLin";
@@ -82,7 +60,6 @@ it("uses compact JSON at the exact keyed-table byte boundary", () => {
 });
 
 it("rejects every shared damaged or noncanonical text", () => {
-  const texts = JSON.parse(readFileSync(new URL("./rejections.json", import.meta.url), "utf8")) as string[];
-  assert.deepEqual(texts, REJECTED);
-  for (const text of texts) assert.throws(() => decode(text), text);
+  const texts = JSON.parse(readFileSync(new URL("../../../conformance/rejections.json", import.meta.url), "utf8")) as string[];
+  for (const text of texts) assert.throws(() => decode(text), SyntaxError, text);
 });

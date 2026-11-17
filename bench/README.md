@@ -24,27 +24,61 @@ its Markdown report.
   local paths, account names and environment values. None were found. The four
   email addresses are fake values present in the frozen upstream datasets.
   Terset got the full rules text in this run. The site no longer uses it.
-- [2026-11-17](published/2026-11-17/fitted-rules-rerun-2026-11-17.md): Claude
-  Opus 5.5 and GPT 6.1 Sol, all 244 questions in Terset with fitted rules.
-  The site's Terset row comes from this rerun. A first run the same day with the
-  same setup scored Opus 242 and Sol 238 of 244. Its
-  [report](published/2026-11-17/fitted-rules-2026-11-17.md) sits in the same
-  folder. Identical runs differ by a few questions. Both files were checked for
-  keys, base URLs, local paths and account names. None were found. The four email
+- 2026-11-17: Claude Opus 5.5 and GPT 6.1 Sol, all 244 questions in Terset with
+  fitted rules, run twice with the same setup.
+  The [first run](published/2026-11-17/fitted-rules-2026-11-17.md) scored Opus
+  242 and Sol 238 of 244. The
+  [second run](published/2026-11-17/fitted-rules-rerun-2026-11-17.md) scored
+  Opus 242 and Sol 242 of 244. Identical runs differ by a few questions. Both
+  files were checked for keys, base URLs, local paths and account names. None
+  were found. The four email addresses are fake values from the frozen upstream
+  datasets.
+- 2026-11-17, matched batch: GPT 6.1 Sol, all 244 questions in all four
+  formats, run three times on one day with the same setup:
+  [r1](published/2026-11-17/matched-sol-2026-11-17-r1.md),
+  [r2](published/2026-11-17/matched-sol-2026-11-17-r2.md) and
+  [r3](published/2026-11-17/matched-sol-2026-11-17-r3.md). Terset scored 242,
+  241 and 243 of 244. TOON scored 242 in each run. Compact JSON scored 236, 234
+  and 236. Indented JSON scored 237, 238 and 237. Two requests in r1 failed and
+  were retried in the same run. Both failures stay in its file. All three files
+  were checked for keys, base URLs, local paths and account names. None were
+  found. The four email addresses are fake values from the frozen upstream
+  datasets.
+- 2026-11-17, matched batch: Claude Opus 5.5, all 244 questions in all four
+  formats, run three times on one day with the same setup:
+  [r1](published/2026-11-17/matched-opus-2026-11-17-r1.md),
+  [r2](published/2026-11-17/matched-opus-2026-11-17-r2.md) and
+  [r3](published/2026-11-17/matched-opus-2026-11-17-r3.md). Terset scored 243
+  of 244 in each run. TOON scored 242, 242 and 241. Compact JSON and indented
+  JSON scored 241 in each run. Five attempts failed and were retried in the
+  same run: TOON q186 twice in r1, TOON q186 in r2, and TOON q186 and q200 in
+  r3. Each failure stays in its file. All three files were checked for keys,
+  base URLs, local paths and account names. None were found. The four email
   addresses are fake values from the frozen upstream datasets.
 
-Terset rows carry the later date because its format changed in 0.2.1 and its
-rules became fitted on 2026-11-17. The other formats did not change.
-
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
-published runs, and updates the accuracy blocks in the READMEs. It takes Terset
-from the 2026-11-17 rerun and compact JSON, indented JSON and TOON from 2026-11-12.
-Cost comparisons use the earlier compact JSON rows for the same model.
+published runs, and updates the accuracy blocks in the READMEs. Each model
+takes every format from its matched batch only. The earlier runs stay
+published as history. The tables take nothing from them. No run is picked.
+Each format shows the mean over its three runs, with each run's score beside
+it. On Opus, Terset got 243, TOON about 241.7 and both JSON forms 241. On Sol,
+Terset and TOON are level at 242.0. A gap of one or two questions is within
+run-to-run noise, so these runs show no accuracy win for any format. Terset
+uses fewer input tokens on both models.
 It refuses differing model settings, prices, question sets, data hashes,
-upstream commits, tokenizers or per-call output caps. Whole-run budgets and
-fingerprints differ because the later run measured only Terset.
-Each table row records its run date. Tests fail when the committed site file
-or a README accuracy block drifts from these selected rows.
+upstream commits, tokenizers or per-call output caps. The runs in one matched
+batch must share one plan fingerprint and one date, and each must hold only its
+model.
+Claude input tokens come from Anthropic's token count of each request body.
+The 2026-11-12 run and the second 2026-11-17 fitted-rules run were counted.
+The Opus matched runs sent the same requests, so they reuse those counts:
+Terset from the fitted-rules run and the other formats from 2026-11-12. A run
+that borrows counts must have the same Claude settings and the same reserved
+and recorded input tokens on every row as the counted run. The script checks
+that before it uses the counts.
+Each table row records its run dates. Tests fail when the committed site file
+or a README accuracy block drifts from the published runs, or when a run file in
+`bench/published/` is left out.
 
 ## Local use
 

@@ -2,7 +2,7 @@
 // and every number comes from the bench file and the Claude counts passed in.
 // A pending bench file gives a marked pending document with no counts in it.
 // A pending Claude file gives the o200k_base document alone.
-import { ACCURACY, ACCURACY_FORMAT_NOTE, ACCURACY_KIND_NOTE, accuracyIntro, accuracyLines, accuracyMarkdownTable, accuracyMethod, kindMarkdownTable } from './accuracy.ts';
+import { ACCURACY, ACCURACY_FORMAT_NOTE, ACCURACY_KIND_NOTE, PUBLISHED_RUNS_NOTE, accuracyIntro, accuracyLines, accuracyMarkdownTable, accuracyMethod, accuracyRunsNote, kindMarkdownTable, publishedRunsMarkdownTable } from './accuracy.ts';
 import type { AccuracyFile } from './accuracy.ts';
 import { BENCH_TABLE_HEAD, CASE_SOURCE_NOTE, PENDING_NOTE, TOON_VERSION, PENDING_TITLE, QUALITY_NOTE, benchSummary, benchTableRows, benchTotalsRow, csvNote, formatCount, jsonWinsNote, toonWinsNote, totalsNote } from './bench.ts';
 import type { BenchFile } from './bench.ts';
@@ -10,8 +10,10 @@ import type { ClaudeCounts } from './claude-counts-schema.ts';
 import { COST_TABLE_HEAD, buildCounters, claudeMethod, costCaption, costMethod, costTableRows, costTotalsRow, counterList, counterSummary, counterTotals } from './counters.ts';
 import type { Counter, Counters } from './counters.ts';
 import { BYTES, bytesLine } from './bytes.ts';
+import { HISTORY, HISTORY_NOTE, HISTORY_TABLE_HEAD, historyTableRows, prLabel, prUrl } from './history.ts';
 import { PRICES } from './prices.ts';
 import { proofLines } from './proof.ts';
+import { REAL, REAL_TABLE_HEAD, realIntro, realLines, realMethod, realTableRows } from './real.ts';
 import { SIZE_LINE } from './size.ts';
 import { SWEEP, SWEEP_TABLE_HEAD, sweepIntro, sweepLines, sweepMethod, sweepTableRows, sweepTitle } from './sweep.ts';
 
@@ -115,6 +117,12 @@ function sweepSection(bench: BenchFile): readonly string[] {
   return [`## ${sweepTitle(SWEEP)}, ${SWEEP.tokenizer}`, sweepIntro(SWEEP), bullets(sweepLines(SWEEP, bench)), [head, markdownRow(SWEEP_TABLE_HEAD.map(() => '---')), ...sweepTableRows(SWEEP).map(markdownRow)].join('\n')];
 }
 
+/** The real files: a title, the intro, one line per file, one table and the method. The same order as the page. */
+function realSection(): readonly string[] {
+  const head = markdownRow(REAL_TABLE_HEAD);
+  return [`## Real data, ${REAL.tokenizer}`, realIntro(REAL), bullets(realLines(REAL)), [head, markdownRow(REAL_TABLE_HEAD.map(() => '---')), ...realTableRows(REAL).map(markdownRow)].join('\n'), realMethod(REAL)];
+}
+
 function countSections(counters: Counters): readonly string[] {
   if (counters.claude === null) return [countTable(counters.o200k)];
   return counterList(counters).flatMap((counter) => [`## Tokens, ${counter.name}`, countTable(counter)]);
@@ -128,19 +136,33 @@ function accuracyMarkdown(file: AccuracyFile, counters: Counters | null): readon
     bullets(proofLines(file, counters)),
     ...file.models.flatMap((model) => [`### ${model.name}`, accuracyMarkdownTable(model)]),
     ACCURACY_FORMAT_NOTE,
+    accuracyRunsNote(file),
     '### By data set',
     kindMarkdownTable(file),
     ACCURACY_KIND_NOTE,
     bullets(accuracyLines(file)),
     '## Accuracy method',
     bullets(accuracyMethod(file)),
+    '### Published runs',
+    publishedRunsMarkdownTable(file),
+    PUBLISHED_RUNS_NOTE,
   ];
+}
+
+/** Every published number that moved, as one table, then the note on what the numbers are not checked against. */
+function historyMarkdown(): readonly string[] {
+  const rows = historyTableRows(HISTORY).map(([date, changed, why], index) => {
+    const pr = HISTORY[index]?.pr ?? null;
+    const url = prUrl(pr);
+    return markdownRow([date, changed, why, url === null ? prLabel(pr) : `[${prLabel(pr)}](${url})`]);
+  });
+  return ['## Number history', [markdownRow(HISTORY_TABLE_HEAD), markdownRow(HISTORY_TABLE_HEAD.map(() => '---')), ...rows].join('\n'), HISTORY_NOTE];
 }
 
 /** The benchmark as Markdown, for /benchmark.md and llms-full.txt. Terset comes first in every comparison. */
 export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CLAUDE, accuracy: AccuracyFile = ACCURACY): string {
   const counters = benchCounters(bench, claude);
-  const counts = counters === null ? ['**Numbers pending.** No token counts are published yet.'] : [...countSections(counters), ...sweepSection(bench)];
+  const counts = counters === null ? ['**Numbers pending.** No token counts are published yet.'] : [...countSections(counters), ...sweepSection(bench), ...realSection()];
   const cost = counters === null ? [] : ['## Input cost at list price', ...counterList(counters).map(costTable)];
   const keepElse = benchmarkKeepElse(bench, counters);
   const costLines = benchmarkCostMethod(counters);
@@ -157,5 +179,7 @@ export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CL
     ...(costLines.length > 0 ? ['## Cost method', bullets(costLines)] : []),
     '## Limits',
     bullets(benchmarkLimits(counters)),
+    // The history names both counters, so it shows only when both are ready.
+    ...(counters === null || counters.claude === null ? [] : historyMarkdown()),
   ].join('\n\n');
 }

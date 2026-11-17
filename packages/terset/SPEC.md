@@ -1,8 +1,36 @@
 # Terset format
 
+Format version 1.0
+
 TERse SETs. Terset writes a JSON object or array as short lines. Any list of
 two or more objects becomes one tab-separated table when that is smaller
 than compact JSON.
+
+## Stability
+
+Format 1.0 freezes every text a 1.0 encoder may write, the value each text
+represents, and what a 1.0 decoder must accept and must reject. The encoder
+rules below choose exactly one text for each value, including its key
+order. A decoder must accept only that canonical text. A different spelling
+of the same value must be rejected.
+
+A change that makes any 1.0 text decode differently, or makes a decoder
+reject valid 1.0 text, requires Format 2.0. A purely additive change that
+1.0 decoders reject cleanly requires Format 1.1. Each format version keeps
+its own fixtures. The language-neutral 1.0 suite lives in `conformance/`
+at the repository root. Format versions are separate from package versions.
+
+The rules line, `RULES`, `rulesFor` and `rules_for` output, and prompt text
+for models are outside this freeze. They remain tunable and are versioned
+by date. The current guidance below is dated 2026-11-17. Performance and
+package APIs are also outside the freeze.
+
+Error message wording is outside the freeze. The current package tests pin
+JavaScript `SyntaxError` and Python `ValueError` for rejected text. The
+`rejection-errors.json` fixture also pins each listed message for those two
+packages as a regression check. It defines no portable error code or kind.
+Other implementations must refuse those texts, but may use their own error
+types and messages.
 
 ## Data
 
@@ -13,7 +41,22 @@ errors. Numeric `-0` is an explicit error. Text `"-0"` round-trips. An empty
 root object is `{}`. Key order is JavaScript own enumerable key order,
 including the integer-key ordering JSON uses.
 
-## Lines and cells
+An array-index key is a canonical decimal integer from 0 through
+4294967294, with no leading zero except `0` itself. These keys come first
+in ascending numeric order. All other keys keep insertion order at every
+object level. Thus `4294967295`, `01` and `-0` are ordinary string keys.
+Key order is part of the value for canonical encoding and round trips.
+
+Numbers have IEEE-754 binary64 semantics. A language with arbitrary-size
+integers must supply the same binary64 value, rather than preserve extra
+integer precision. An encoder must reject values outside this data model.
+
+## Canonical encoder
+
+The following rules are requirements, including quoting, table selection
+and fallback. An encoder must write their exact result.
+
+### Lines and cells
 
 Each root field is `key: value`, `key[N]:` followed by a list table, or
 `key{N}:` followed by a keyed table. A root array starts with `[N]` on its
@@ -45,35 +88,33 @@ nested values are compact JSON. Tabs and LF inside text use JSON escapes.
 Lone surrogate code units are JSON-escaped, so UTF-8 transport cannot
 replace them. Astral pairs are kept as they are.
 
-No legend is written into the data. The package exports one rules line,
-`RULES`, to put once in the system prompt, outside the data:
+Here troublesome characters mean U+0000 through U+001F, U+007F, U+0085,
+U+2028, U+2029 and lone surrogate code units. Edge whitespace is exactly
+U+0009 through U+000D, U+0020, U+00A0, U+1680, U+2000 through U+200A,
+U+2028, U+2029, U+202F, U+205F, U+3000 and U+FEFF.
 
-> Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.
+Numeric-looking text matches this whole ASCII pattern:
 
-`rulesFor(text)` in JavaScript and `rules_for(text)` in Python return only
-the sentences whose constructs appear in canonical encoded text. Sentences
-keep this order and join with single spaces:
+```text
+[-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?
+```
 
-| Order | Trigger | Sentence |
-| --- | --- | --- |
-| 1 | Any table | Tables use tab-separated headers and rows. |
-| 2 | Any empty table cell, excluding the string id column | Empty cells mean absent. |
-| 3 | Any table cell or root field value that starts with a double quote | JSON quotes distinguish numeric, boolean or null text from scalars. |
-| 4 | Any table cell that starts with `{` or `[` | Nested cells use JSON. |
-| 5 | A list table whose first header is bare `id` | A leading bare id header marks string IDs. |
-| 6 | Keyed table with its `@key` header | name{N} has N entries; the @key column holds each entry's key and is not a field. |
-| 7 | Unquoted dotted header path in either table kind | Header a.b is field b in object a. |
+Compact JSON uses the key order above and ECMAScript `JSON.stringify`
+spelling, with no optional whitespace. Strings escape double quotes and
+backslashes. Backspace, tab, LF, form feed and CR use `\b`, `\t`, `\n`,
+`\f` and `\r`. Other U+0000 through U+001F characters and lone surrogates
+use lowercase `\uXXXX` escapes. Other characters stay literal, including
+astral pairs, U+0085, U+2028 and U+2029 inside JSON strings. There is no
+Unicode normalization or slash escaping.
 
-Cells in a leading bare `id` column are raw strings and do not trigger
-sentences 3 or 4. Entry keys in the `@key` column are bare text and do not
-trigger them either. Quoted header names do not trigger sentence 3. Root JSON
-arrays and objects do not trigger sentence 4. Text with no trigger returns
-the empty string `""`. Invalid text raises the same error as `decode`.
-A sender may send the full `RULES` line or the fitted
-line returned for the encoded text. List tables keep their `[N]` counts in
-the data. The decoder rejects missing or extra rows.
+Number spelling is the shortest decimal that round-trips to the same
+binary64 value, using ECMAScript's nearest-decimal and even-tie rules.
+Nonzero magnitudes from 1e-6 inclusive to 1e21 exclusive use fixed notation.
+Other nonzero magnitudes use lowercase `e`, an explicit `+` for a positive
+exponent, and no exponent leading zeros. Zero is `0`. For example, 1e-6 is
+`0.000001`, 1e-7 is `1e-7`, and 1e21 is `1e+21`.
 
-## Table selection and fallback
+### Table selection and fallback
 
 An array of two or more objects becomes a table when the header and data
 rows are strictly shorter than the array's compact JSON in UTF-8 bytes.
@@ -129,6 +170,13 @@ the header. A literal `@key` field is also JSON-quoted.
 One-column strings that look like a root `key:` line are JSON-quoted. If an
 id looks like such a line, the header uses the typed `"id"` mode instead.
 This includes counted root lines such as `key[2]:` and `key{2}:`.
+A lookalike starts with a simple key or a quoted key-shaped prefix,
+optionally followed by a bracketed or braced run of ASCII digits, then a
+colon and any remaining text. This check includes quoted prefixes with
+invalid JSON escapes and counts that would be invalid in a real field.
+This extra quoting applies only to one-column list tables. Keyed entry
+keys must avoid these lookalikes regardless of table width. String ids
+in wider list tables may contain them as raw text.
 Root field lines hold no raw tabs. Read exactly N rows after the header.
 Every row must have the exact header width.
 
@@ -157,8 +205,8 @@ switch or reader for uncounted tables.
 
 ## Decoder
 
-In JavaScript, rejected text raises `SyntaxError`. Invalid values passed to
-the encoder raise `TypeError`.
+Rejected text raises `SyntaxError` in JavaScript and `ValueError` in Python.
+Invalid values passed to the encoder raise `TypeError` in both packages.
 
 The decoder accepts only the encoder's canonical output. It parses JSON
 with JSON.parse and never evaluates text. It rejects duplicate keys and
@@ -172,13 +220,53 @@ duplicate nested keys included. Properties are defined as own data, so
 depth limit also applies to JSON cells. The same input always gives
 byte-identical output.
 
+In particular, a decoder must reject extra whitespace, an added final LF,
+unneeded quotes or escapes, alternate number spellings, and a JSON fallback
+where the encoder would choose a table. It must also reject a table where
+the encoder would choose JSON. An LF that represents an absent final
+one-column cell is data and must be kept. A decoder may implement canonical
+validation without calling an encoder, but must accept the same texts.
+
 ## Limits
 
 Header paths have at most 8 segments. Deeper object values stay JSON cells
 at the eighth segment. Decoders reject longer paths before reading rows.
 
-Numeric negative zero is rejected. Depth above 500 is rejected. Text
-`"-0"`, lone surrogates, 100 kB strings and 5,000 rows round-trip. Large
+Numeric negative zero is rejected. The root is at depth 0. Each object
+field or array element adds one, including scalar leaves. Depth 500 is
+allowed and depth 501 is rejected. Table framing does not reset depth.
+Text `"-0"`, lone surrogates, 100 kB strings and 5,000 rows round-trip. Large
 finite numbers keep their IEEE-754 value. Precision lost before encoding
 cannot come back. NFC and NFD text stay different code units, in values and
 in keys. Available memory and runtime stack limits also constrain input size.
+
+## Rules guidance, 2026-11-17
+
+This section is outside Format 1.0. No legend is written into the data.
+The package exports one rules line, `RULES`, to put once in a shared system
+prompt, outside the data:
+
+> Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.
+
+`rulesFor(text)` in JavaScript and `rules_for(text)` in Python return only
+the sentences whose constructs appear in canonical encoded text. Sentences
+keep this order and join with single spaces:
+
+| Order | Trigger | Sentence |
+| --- | --- | --- |
+| 1 | Any table | Tables use tab-separated headers and rows. |
+| 2 | Any empty table cell, excluding the string id column | Empty cells mean absent. |
+| 3 | Any table cell or root field value that starts with a double quote | JSON quotes distinguish numeric, boolean or null text from scalars. |
+| 4 | Any table cell that starts with `{` or `[` | Nested cells use JSON. |
+| 5 | A list table whose first header is bare `id` | A leading bare id header marks string IDs. |
+| 6 | Keyed table with its `@key` header | name{N} has N entries; the @key column holds each entry's key and is not a field. |
+| 7 | Unquoted dotted header path in either table kind | Header a.b is field b in object a. |
+
+Cells in a leading bare `id` column are raw strings and do not trigger
+sentences 3 or 4. Entry keys in the `@key` column are bare text and do not
+trigger them either. Quoted header names do not trigger sentence 3. Root JSON
+arrays and objects do not trigger sentence 4. Text with no trigger returns
+the empty string `""`. Invalid text raises the same error as `decode`.
+A sender may send the full `RULES` line or the fitted line returned for the
+encoded text. Rules fixtures stay in `packages/terset/tests/rules-cases.json`
+and are separate from the frozen conformance suite.

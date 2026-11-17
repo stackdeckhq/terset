@@ -57,7 +57,11 @@ describe('share image text follows the data', () => {
 
   it('shows right answers from the same model and calls accuracy a tie, never a win', () => {
     const model = quotedModel();
-    expect(stat(2).value).toBe(`${String(formatRow(model, 'terset').correct)} of ${String(ACCURACY.questions)}`);
+    const terset = formatRow(model, 'terset');
+    // The image shows one number, so it must be what every run scored, not a picked run.
+    expect(terset.runs.length).toBeGreaterThan(1);
+    expect(terset.runs.every((run) => run.correct === terset.correct)).toBe(true);
+    expect(stat(2).value).toBe(`${String(terset.correct)} of ${String(ACCURACY.questions)}`);
     expect(ACCURACY.models.every(intervalsOverlap)).toBe(true);
     expect(stat(2).label).toContain('A tie with JSON');
     expect(stat(2).win).toBe(false);
@@ -65,7 +69,7 @@ describe('share image text follows the data', () => {
 
   it('says every word in the alt text, which uses the same constant', () => {
     for (const words of [...OG_TEXT.headline, ...OG_TEXT.stats.flatMap((item) => [item.value, item.label])]) expect(OG_IMAGE_ALT).toContain(words);
-    expect(OG_IMAGE_PATH).toBe('/og-v5.png');
+    expect(OG_IMAGE_PATH).toBe('/og-v6.png');
   });
 });
 

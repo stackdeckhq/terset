@@ -36,7 +36,8 @@ export const NAMES: PerLang<{ readonly rulesFor: string; readonly encode: string
 export const DOCS_TITLE = 'Terset docs';
 export const DOCS_DESCRIPTION = 'Install Terset for JavaScript or Python, encode your first table, and look up every function, error and limit.';
 export const DOCS_LEAD = 'Install, a quick start, a cheat sheet and the full API for JavaScript and Python.';
-export const VERSION_LINE = `Version ${PACKAGE_VERSION} for JavaScript and Python. Both packages write the same text.`;
+export const FORMAT_LINE = 'The format is frozen at 1.0. JavaScript and Python are separate implementations that both pass the conformance suite at conformance/ in the repository.';
+export const VERSION_LINE = `Version ${PACKAGE_VERSION} for JavaScript and Python. ${FORMAT_LINE}`;
 
 /** The sections of /docs, in order. The page, its contents list and /docs.md share them. */
 export const DOCS_SECTIONS = [
@@ -336,4 +337,4 @@ export const DOC_LINKS: readonly { readonly label: string; readonly href: string
 ];
 
 /** The short Reference section both package READMEs carry. */
-export const README_REFERENCE = `Every function, parameter, error and limit, for JavaScript and Python: [terset.dev/docs](${DOCS_URL}).`;
+export const README_REFERENCE = `Every function, parameter, error and limit, for JavaScript and Python: [terset.dev/docs](${DOCS_URL}).\n\n${FORMAT_LINE}`;

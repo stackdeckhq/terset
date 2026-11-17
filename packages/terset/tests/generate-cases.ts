@@ -2,4 +2,4 @@
 import { writeFileSync } from "node:fs";
 import { sharedCases } from "./shared-cases.ts";
 
-writeFileSync(new URL("./cases.json", import.meta.url), sharedCases());
+writeFileSync(new URL("../../../conformance/cases.json", import.meta.url), sharedCases());

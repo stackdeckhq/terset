@@ -1,4 +1,4 @@
-// Answer accuracy from selected published benchmark runs: the tables, the summary and
+// Answer accuracy from every published benchmark run: the tables, the summary and
 // the method, for /benchmark, /benchmark.md, the home page and the READMEs.
 // Every figure comes from accuracy-results.json, which `pnpm accuracy` writes.
 // The copy is kept short: the tables carry the detail. It states only what the data supports. Each claim is checked against
@@ -24,7 +24,7 @@ export const FORMAT_LABELS: Readonly<Record<AccuracyFormat, string>> = {
 /** Says what the two JSON rows mean, under the tables on the page, in /benchmark.md and in the READMEs. */
 export const ACCURACY_FORMAT_NOTE = 'JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.';
 
-export const ACCURACY_TABLE_HEAD = ['Format', 'Correct', 'Accuracy', '95% interval', 'Input tokens', 'Cost', 'Costs more than Terset', 'Run date'] as const;
+export const ACCURACY_TABLE_HEAD = ['Format', 'Correct', 'Runs', 'Accuracy', '95% interval', 'Input tokens', 'Cost', 'Costs more than Terset', 'Run date'] as const;
 
 /** The Terset cell in the cost column, which every other row is set against. */
 export const TERSET_REFERENCE = 'Reference';
@@ -58,20 +58,119 @@ export function costOverTerset(cost: number, tersetCost: number): string {
   return pct(cost, tersetCost);
 }
 
-/** The table cells for one model, Terset first. The last cell is how much more each format cost than Terset. */
+const MEAN = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+
+/** A mean over runs: a whole number as a count, anything else to one decimal. */
+export function formatMean(value: number): string {
+  return MEAN.format(value);
+}
+
+/** The dates of a row's runs, oldest first, each once. */
+export function rowRunOn(row: AccuracyRow): string {
+  return listPhrase([...new Set(row.runs.map((run) => run.runOn))].sort());
+}
+
+/**
+ * Every run behind a row, as lines: ["1 run"] when there is one, else the mean and each
+ * run's score: ["Mean of 2 runs", "238, 242"]. With more than two runs whose scores differ,
+ * the lowest and highest follow in brackets: ["Mean of 3 runs", "236, 234, 236 (234 to 236)"].
+ * The page shows one per line, so the column stays narrow.
+ */
+export function runsCellLines(row: AccuracyRow): readonly string[] {
+  if (row.runs.length === 1) return ['1 run'];
+  const scores = row.runs.map((run) => run.correct);
+  const lowest = Math.min(...scores);
+  const highest = Math.max(...scores);
+  const range = row.runs.length > 2 && lowest !== highest ? ` (${formatCount(lowest)} to ${formatCount(highest)})` : '';
+  return [`Mean of ${String(row.runs.length)} runs`, `${scores.map(formatCount).join(', ')}${range}`];
+}
+
+/** The runs cell on one line, for Markdown: "Mean of 3 runs: 236, 234, 236 (234 to 236)". */
+export function runsCell(row: AccuracyRow): string {
+  return runsCellLines(row).join(': ');
+}
+
+/** The table cells for one model, Terset first. A row with more than one run shows the mean, with each run beside it. */
 export function accuracyTableRows(model: AccuracyModel): readonly (readonly string[])[] {
   const terset = formatRow(model, 'terset');
   return model.rows.map((row) => [
     FORMAT_LABELS[row.format],
-    `${formatCount(row.correct)} of ${formatCount(row.total)}`,
+    `${formatMean(row.correct)} of ${formatCount(row.total)}`,
+    runsCell(row),
     percent(row.correct / row.total),
     `${percent(row.low)} to ${percent(row.high)}`,
-    formatCount(row.inputTokens),
+    formatMean(row.inputTokens),
     usd(row.totalCost),
     row.format === 'terset' ? TERSET_REFERENCE : costOverTerset(row.totalCost, terset.totalCost),
-    row.runOn,
+    rowRunOn(row),
   ]);
 }
+
+/** The dates of the given rows' runs, oldest first, each once. */
+function datesOf(rows: readonly AccuracyRow[]): readonly string[] {
+  return [...new Set(rows.flatMap((row) => row.runs.map((run) => run.runOn)))].sort();
+}
+
+/**
+ * The note on runs under the tables and in the READMEs: how many runs and when. Throws
+ * unless every format on every model has the same repeats, all on one day.
+ */
+export function accuracyRunsNote(file: AccuracyFile): string {
+  const rows = file.models.flatMap((model) => model.rows);
+  const runs = rows[0]?.runs.length ?? 0;
+  assertClaim(runs > 1 && rows.every((row) => row.runs.length === runs), 'every format on every model has the same repeats');
+  const dates = datesOf(rows);
+  assertClaim(dates.length === 1, 'every run in the tables ran on one day');
+  return [
+    `On ${modelsPhrase(file)}, every format ran ${countWord(runs)} times on ${dates.join('')}. Each model's runs are one matched batch with the same setup.`,
+    "No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.",
+  ].join(' ');
+}
+
+/** The most one format's score moved between its runs, on any model, in questions. */
+export function largestRunSpread(file: AccuracyFile): number {
+  return Math.max(...file.models.flatMap((model) => model.rows.map((row) => {
+    const scores = row.runs.map((run) => run.correct);
+    return Math.max(...scores) - Math.min(...scores);
+  })));
+}
+
+export const ACCURACY_RUNS_HEAD = ['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed attempts'] as const;
+
+function modelShortName(file: AccuracyFile, id: string): string {
+  const model = file.models.find((item) => item.id === id);
+  if (model === undefined) throw new Error(`No model ${id} in the accuracy data`);
+  return shortModelName(model);
+}
+
+const ACCURACY_FORMAT_COUNT = Object.keys(FORMAT_LABELS).length;
+
+function formatsPhrase(formats: readonly AccuracyFormat[]): string {
+  return formats.length === ACCURACY_FORMAT_COUNT ? 'All four' : listPhrase(formats.map((format) => FORMAT_LABELS[format]));
+}
+
+/**
+ * One row per published run, in publishing order: what it holds, what the tables take from
+ * it, and how many attempts failed and were retried. A run the tables do not use is history.
+ */
+export function publishedRunsRows(file: AccuracyFile): readonly (readonly string[])[] {
+  return file.publishedRuns.map((run) => [
+    run.runId,
+    run.runOn,
+    listPhrase(run.models.map((id) => modelShortName(file, id))),
+    formatsPhrase(run.formats),
+    run.inTables.length === 0 ? 'History only' : run.inTables.map((entry) => `${modelShortName(file, entry.model)}: ${formatsPhrase(entry.formats)}`).join('; '),
+    run.failedRequests === 0 ? '0' : `${formatCount(run.failedRequests)}, retried`,
+  ]);
+}
+
+/** The published runs table in Markdown, for /benchmark.md. */
+export function publishedRunsMarkdownTable(file: AccuracyFile): string {
+  return [markdownRow(ACCURACY_RUNS_HEAD), markdownRow(ACCURACY_RUNS_HEAD.map(() => '---')), ...publishedRunsRows(file).map(markdownRow)].join('\n');
+}
+
+/** The line under the published runs table. */
+export const PUBLISHED_RUNS_NOTE = 'Every published run, with what the tables take from it. History runs stay published and are not in the tables.';
 
 /** How a signed change cell is marked: a saving in the accent tone, a loss plain and muted, or not at all. */
 export type SignMark = 'is-less' | 'is-more' | null;
@@ -105,7 +204,7 @@ export function accuracyTableMarks(model: AccuracyModel): readonly (readonly Cel
   return accuracyTableRows(model).map((cells, index) => {
     const row = model.rows[index];
     if (row === undefined) throw new Error(`${model.name} has no row ${String(index)}`);
-    return [null, null, null, row.inputTokens === fewestTokens ? 'is-less' : null, row.totalCost === lowestCost ? 'is-less' : null, overTersetMark(cells[6] ?? ''), null];
+    return [null, null, null, null, row.inputTokens === fewestTokens ? 'is-less' : null, row.totalCost === lowestCost ? 'is-less' : null, overTersetMark(cells[7] ?? ''), null];
   });
 }
 
@@ -127,7 +226,14 @@ export function accuracyIntro(file: AccuracyFile): string {
   return `Each model answered the same ${formatCount(file.questions)} questions about the same data, sent in each of four formats.`;
 }
 
-/** The result in two sentences under the tables. Each claim is checked against the data first. */
+/** How far one format's score moved between its runs, and what that means for small gaps. */
+export function runNoiseLine(file: AccuracyFile): string {
+  const spread = largestRunSpread(file);
+  assertClaim(spread > 0, "a format's score moved between its runs");
+  return `One format's score moved by up to ${countWord(spread)} ${spread === 1 ? 'question' : 'questions'} from run to run. A gap that small is noise, not a win.`;
+}
+
+/** The result in three lines under the tables. Each claim is checked against the data first. */
 export function accuracySummary(file: AccuracyFile): readonly string[] {
   assertClaim(file.models.every(intervalsOverlap), 'every interval overlaps');
   assertClaim(file.models.every((model) => formatRow(model, 'terset').totalCost < formatRow(model, 'json-compact').totalCost), 'Terset cost less than compact JSON');
@@ -137,6 +243,7 @@ export function accuracySummary(file: AccuracyFile): readonly string[] {
   });
   return [
     `Accuracy is a tie. On ${formatCount(file.questions)} questions, every format's 95% interval overlaps every other format's, on ${modelsPhrase(file)}.`,
+    runNoiseLine(file),
     `Against compact JSON, Terset cost ${savings.join(' and ')}.`,
   ];
 }
@@ -254,15 +361,31 @@ export function accuracyLines(file: AccuracyFile): readonly string[] {
   return [...accuracySummary(file), ...(kindLine === null ? [] : [kindLine])];
 }
 
+/** One link per published folder, named by its run date. Runs from one day share a folder. */
 function publishedLinks(file: AccuracyFile): string {
-  return file.publishedRuns.map((run) => `[${run.runOn}](${REPO_URL}/tree/main/${run.publishedPath})`).join(' and ');
+  const folders = new Map(file.publishedRuns.map((run) => [run.publishedPath, run.runOn]));
+  return listPhrase([...folders].map(([path, runOn]) => `[${runOn}](${REPO_URL}/tree/main/${path})`));
 }
 
-/** The date of the run Terset's rows come from. */
-export function tersetRunOn(file: AccuracyFile): string {
-  const run = file.publishedRuns.find((item) => item.formats.includes('terset'));
-  if (run === undefined) throw new Error('No published run holds Terset');
-  return run.runOn;
+/** The dates of every run the tables use, oldest first, each once. */
+function runDates(file: AccuracyFile): string {
+  return listPhrase([...new Set(file.publishedRuns.filter((run) => run.inTables.length > 0).map((run) => run.runOn))].sort());
+}
+
+/** Small counts as capitalized words, to open a sentence. */
+function sentenceCount(value: number): string {
+  const word = countWord(value);
+  return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+}
+
+/**
+ * Whether any request in the tables failed, and what happened to it. A request can fail
+ * more than once before it is answered, so the line counts failed attempts.
+ */
+export function failedCallsLine(file: AccuracyFile): string {
+  if (file.failedCalls === 0) return 'None failed.';
+  if (file.failedCalls === 1) return 'One attempt failed and was retried in the same run. It stays in the run file.';
+  return `${sentenceCount(file.failedCalls)} attempts failed and were retried in the same run. Each stays in its run file.`;
 }
 
 /** How the input tokens were counted, in one sentence: the counted models first, then the rest. */
@@ -284,7 +407,7 @@ export function costLine(file: AccuracyFile): string {
 /** How the run was made, in at most five short lines. Inline Markdown: code spans and links. */
 export function accuracyMethod(file: AccuracyFile): readonly string[] {
   return [
-    `Tables use ${formatCount(file.calls)} calls from runs on ${file.publishedRuns.map((run) => run.runOn).join(' and ')}; none failed. Terset was rerun with fitted rules, which send only the rules each text needs. The other formats did not change.`,
+    `Tables use ${formatCount(file.calls)} answered calls from runs on ${runDates(file)}. ${failedCallsLine(file)} Terset ran with fitted rules, which send only the rules each text needs.`,
     // The short hash fits a phone column; the link keeps the full one.
     `Questions from the open [TOON benchmark](https://github.com/toon-format/toon) (MIT), commit [${file.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${file.upstreamSha}).`,
     'Temperature 0 where the model accepts it, scored by fixed rules with no model judge.',
@@ -307,8 +430,9 @@ export function accuracyReadmeBlock(file: AccuracyFile): string {
     accuracyHomeLine(file),
     ...file.models.flatMap((model) => [`#### ${model.name}`, accuracyReadmeTable(model)]),
     ACCURACY_FORMAT_NOTE,
+    accuracyRunsNote(file),
     accuracySummary(file).join('\n'),
-    `${costLine(file)} ${inputTokensLine(file)} Temperature 0 where the model accepts it. Terset was rerun on ${tersetRunOn(file)} with fitted rules, which send only the rules each text needs. The other formats did not change. Each row names its run date.`,
+    `${costLine(file)} ${inputTokensLine(file)} Temperature 0 where the model accepts it. Terset ran with fitted rules, which send only the rules each text needs. Each row names its run date.`,
     `Method and limits: [terset.dev/benchmark](${SITE_URL}/benchmark#accuracy). Every answer and its score: ${publishedLinks(file)}.`,
   ].join('\n\n');
 }

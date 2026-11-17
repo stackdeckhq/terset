@@ -1,5 +1,8 @@
 name: Release
 
+# A successful completion triggers deploy.yml via workflow_run. Both publish
+# jobs must succeed before the site checks registry availability and deploys main.
+
 on:
   push:
     tags: ['v*']

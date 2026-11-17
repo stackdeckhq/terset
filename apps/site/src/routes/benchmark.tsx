@@ -1,14 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { PublishedRunsTable } from '../components/AccuracyTables.tsx';
 import { BenchChart } from '../components/BenchChart.tsx';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { FullTables } from '../components/FullTables.tsx';
+import { HistoryTable } from '../components/HistoryTable.tsx';
+import { RealTable } from '../components/RealTable.tsx';
 import { SweepTable } from '../components/SweepTable.tsx';
 import { BigNumbers, CostBars, DatasetChart } from '../components/Proof.tsx';
 import { ACCURACY, accuracyIntro, accuracyMethod } from '../data/accuracy.ts';
 import { BYTES, bytesLine } from '../data/bytes.ts';
 import { benchmarkCostMethod, benchmarkKeepElse, benchmarkLimits, benchmarkMethod, benchmarkPageLines } from '../data/benchmark-doc.ts';
+import { HISTORY_NOTE } from '../data/history.ts';
 import { BENCH, BENCH_FILE, CLAUDE, COUNTERS, countersHeadline, countersNote } from '../data/numbers.ts';
 import { smallerThanToon } from '../data/proof.ts';
+import { REAL, realIntro, realLines, realMethod } from '../data/real.ts';
 import { SWEEP, sweepIntro, sweepLines, sweepTitle } from '../data/sweep.ts';
 import { inline } from '../lib/markdown.ts';
 
@@ -83,6 +88,16 @@ function BenchmarkPage() {
           <SweepTable sweep={SWEEP} />
         </section>
       )}
+      <section className="doc-section" id="real-data" aria-labelledby="real-h">
+        <h2 id="real-h" className="with-tag">
+          Real data
+          <span className="tok">{REAL.tokenizer}</span>
+        </h2>
+        <p>{realIntro(REAL)}</p>
+        <Lines lines={realLines(REAL)} />
+        <RealTable data={REAL} />
+        <p className="tbl-note" dangerouslySetInnerHTML={{ __html: inline(realMethod(REAL)) }} />
+      </section>
       {keepElse.length > 0 && (
         <section className="doc-section" aria-labelledby="else-h">
           <h2 id="else-h">When to keep something else</h2>
@@ -92,6 +107,10 @@ function BenchmarkPage() {
       <section className="doc-section acc-method notes" aria-labelledby="acc-method-h">
         <h2 id="acc-method-h">Accuracy method</h2>
         <Lines lines={accuracyMethod(ACCURACY)} />
+      </section>
+      <section className="doc-section" id="published-runs" aria-labelledby="runs-h">
+        <h2 id="runs-h">Published runs</h2>
+        <PublishedRunsTable file={ACCURACY} />
       </section>
       <section className="doc-section notes" aria-labelledby="method-h">
         <h2 id="method-h">Method</h2>
@@ -107,6 +126,14 @@ function BenchmarkPage() {
         <h2 id="limits-h">Limits</h2>
         <Lines lines={benchmarkLimits(COUNTERS)} />
       </section>
+      {/* The history names both counters, so it shows only when both are ready. */}
+      {COUNTERS !== null && COUNTERS.claude !== null && (
+        <section className="doc-section" id="history" aria-labelledby="history-h">
+          <h2 id="history-h">Number history</h2>
+          <HistoryTable />
+          <p className="tbl-note">{HISTORY_NOTE}</p>
+        </section>
+      )}
     </DocPage>
   );
 }

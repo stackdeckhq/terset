@@ -13,7 +13,7 @@ from terset import decode, encode
 
 class DecoderErrorTests(unittest.TestCase):
     def test_specific_errors(self):
-        cases = json.loads((PACKAGE.parent / "terset/tests/rejection-errors.json").read_text(encoding="utf-8"))
+        cases = json.loads((PACKAGE.parents[1] / "conformance/rejection-errors.json").read_text(encoding="utf-8"))
         for case in cases:
             with self.subTest(case=case["name"]), self.assertRaises(ValueError) as caught:
                 decode(case["text"])

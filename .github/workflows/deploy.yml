@@ -1,10 +1,13 @@
 name: Deploy site
 
-# Deploys terset.dev from main. Runs on every push to main, and by hand to redeploy.
+# Deploys main on a push, by hand, or after both release packages publish.
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
 
 permissions:
   contents: read
@@ -13,7 +16,7 @@ jobs:
   deploy:
     name: deploy
     # A manual run from another branch must not reach production.
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     # One deploy at a time. The group sits on the job, below the branch check, so a skipped
@@ -45,6 +48,17 @@ jobs:
 
       - name: Install
         run: pnpm install --frozen-lockfile
+
+      # Only release completion waits for npm and PyPI propagation (up to two minutes).
+      - name: Check the site version is published
+        env:
+          AFTER_RELEASE: ${{ github.event_name == 'workflow_run' }}
+        run: |
+          if [ "$AFTER_RELEASE" = "true" ]; then
+            node apps/site/scripts/check-published-version.ts --retry
+          else
+            node apps/site/scripts/check-published-version.ts
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
