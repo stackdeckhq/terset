@@ -65,20 +65,42 @@ describe('seed sweep text', () => {
     const typical = sample([
       { name: 'Rows', terset: 80, json: 100, toon: 120 },
       { name: 'Text', terset: 90, json: 100, toon: 85 },
-      { name: 'Mixed', terset: 110, json: 100, toon: 115 },
+      { name: 'Mixed', terset: 100, json: 100, toon: 115 },
     ]);
     expect(sweepLines(FIXTURE, typical)).toEqual([
       'Terset is smaller than JSON compact on every seed in 2 of 3 cases and ties on every seed in 1.',
       'Terset is smaller than TOON on every seed in 1 of 3 cases, on none in 1, and on some seeds in 1.',
-      'On every case, seed 100 wins or loses against JSON compact and TOON the way most seeds do.',
+      'On every case, seed 100 wins, ties or loses against JSON compact and TOON the way most seeds do.',
     ]);
     const lucky = sample([
       { name: 'Rows', terset: 80, json: 100, toon: 120 },
       { name: 'Text', terset: 90, json: 100, toon: 95 },
       { name: 'Mixed', terset: 99, json: 100, toon: 115 },
     ]);
-    expect(sweepLines(FIXTURE, lucky).at(-1)).toBe('Seed 100 is not typical for Text and Mixed: it wins or loses against JSON compact or TOON the other way from most seeds.');
+    expect(sweepLines(FIXTURE, lucky).at(-1)).toBe('Seed 100 is not typical for Text and Mixed: it wins, ties or loses against JSON compact or TOON the other way from most seeds.');
     expect(sweepLines(FIXTURE, { status: 'pending', reason: 'Not measured.' })).toHaveLength(2);
+  });
+
+  it('judges a tie apart from a loss when it checks the sample seed', () => {
+    const rows = (mixedTerset: number) =>
+      sample([
+        { name: 'Rows', terset: 80, json: 100, toon: 120 },
+        { name: 'Text', terset: 90, json: 100, toon: 85 },
+        { name: 'Mixed', terset: mixedTerset, json: 100, toon: 115 },
+      ]);
+    const odd = 'Seed 100 is not typical for Mixed: it wins, ties or loses against JSON compact or TOON the other way from most seeds.';
+    // Most seeds tie with JSON on Mixed, so a sample that loses there is not typical.
+    expect(sweepLines(FIXTURE, rows(110)).at(-1)).toBe(odd);
+    expect(sweepLines(withCase('Mixed', { tiedJson: 999 }), rows(110)).at(-1)).toBe(odd);
+    // Most seeds lose, so a sample that ties is not typical either.
+    expect(sweepLines(withCase('Mixed', { tiedJson: 1 }), rows(100)).at(-1)).toBe(odd);
+    // No result holds on more than half the seeds: 400 wins, 300 ties, 300 losses.
+    expect(sweepLines(withCase('Mixed', { underJson: 400, tiedJson: 300 }), rows(100)).at(-1)).toBe(
+      'Seed 100 wins, ties or loses against JSON compact and TOON the way most seeds do on every case except Mixed, where no result holds on most seeds.',
+    );
+    expect(sweepReadmeLine(FIXTURE, rows(110))).toBe(
+      'Across 1,000 seeds of the same 3 case shapes, counted with o200k_base, seed 100 is not typical for Mixed: most seeds win, tie or lose against JSON compact or TOON the other way.',
+    );
   });
 
   it('judges the sample seed only when every case has a sample row, and never against an even split', () => {
@@ -88,14 +110,14 @@ describe('seed sweep text', () => {
     const textWins = sample([
       { name: 'Rows', terset: 80, json: 100, toon: 120 },
       { name: 'Text', terset: 90, json: 100, toon: 95 },
-      { name: 'Mixed', terset: 110, json: 100, toon: 115 },
+      { name: 'Mixed', terset: 100, json: 100, toon: 115 },
     ]);
     const textLoses = sample([
       { name: 'Rows', terset: 80, json: 100, toon: 120 },
       { name: 'Text', terset: 90, json: 100, toon: 85 },
-      { name: 'Mixed', terset: 110, json: 100, toon: 115 },
+      { name: 'Mixed', terset: 100, json: 100, toon: 115 },
     ]);
-    const evenLine = 'Seed 100 wins or loses against JSON compact and TOON the way most seeds do on every case except Text, where the seeds split evenly.';
+    const evenLine = 'Seed 100 wins, ties or loses against JSON compact and TOON the way most seeds do on every case except Text, where no result holds on most seeds.';
     expect(sweepLines(split, textWins).at(-1)).toBe(evenLine);
     expect(sweepLines(split, textLoses).at(-1)).toBe(evenLine);
   });
@@ -104,12 +126,18 @@ describe('seed sweep text', () => {
     const typical = sample([
       { name: 'Rows', terset: 80, json: 100, toon: 120 },
       { name: 'Text', terset: 90, json: 100, toon: 85 },
-      { name: 'Mixed', terset: 110, json: 100, toon: 115 },
+      { name: 'Mixed', terset: 100, json: 100, toon: 115 },
     ]);
     expect(sweepReadmeLine(FIXTURE, typical)).toBe(
       'Across 1,000 seeds of the same 3 case shapes, counted with o200k_base, Terset wins, ties or loses against JSON compact and TOON the same way on every seed, except Mixed against TOON, where Terset is smaller on 985 of 1,000 and ties on 15.',
     );
-    expect(sweepReadmeLine(withCase('Mixed', { underJson: 0, tiedJson: 400 }), typical)).toBe(
+    // Most seeds lose to JSON here, so the sample row loses too.
+    const mixedLoses = sample([
+      { name: 'Rows', terset: 80, json: 100, toon: 120 },
+      { name: 'Text', terset: 90, json: 100, toon: 85 },
+      { name: 'Mixed', terset: 110, json: 100, toon: 115 },
+    ]);
+    expect(sweepReadmeLine(withCase('Mixed', { underJson: 0, tiedJson: 400 }), mixedLoses)).toBe(
       'Across 1,000 seeds of the same 3 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed, except Mixed against JSON compact, where Terset is smaller on 0 of 1,000 and ties on 400; and Mixed against TOON, where Terset is smaller on 985 of 1,000 and ties on 15.',
     );
     const steady: SeedSweep = { ...FIXTURE, cases: FIXTURE.cases.slice(0, 2) };
@@ -119,10 +147,10 @@ describe('seed sweep text', () => {
     const lucky = sample([
       { name: 'Rows', terset: 80, json: 100, toon: 120 },
       { name: 'Text', terset: 90, json: 100, toon: 95 },
-      { name: 'Mixed', terset: 110, json: 100, toon: 115 },
+      { name: 'Mixed', terset: 100, json: 100, toon: 115 },
     ]);
     expect(sweepReadmeLine(FIXTURE, lucky)).toBe(
-      'Across 1,000 seeds of the same 3 case shapes, counted with o200k_base, seed 100 is not typical for Text: most seeds win or lose against JSON compact or TOON the other way.',
+      'Across 1,000 seeds of the same 3 case shapes, counted with o200k_base, seed 100 is not typical for Text: most seeds win, tie or lose against JSON compact or TOON the other way.',
     );
   });
 
@@ -145,6 +173,6 @@ describe('seed sweep text', () => {
     expect(SWEEP.firstSeed).toBe(20261117);
     expect(BENCH_FILE.status).toBe('ready');
     if (BENCH_FILE.status !== 'ready') return;
-    expect(sweepLines(SWEEP, BENCH_FILE).at(-1)).toBe(`On every case, seed ${String(SWEEP.firstSeed)} wins or loses against JSON compact and TOON the way most seeds do.`);
+    expect(sweepLines(SWEEP, BENCH_FILE).at(-1)).toBe(`On every case, seed ${String(SWEEP.firstSeed)} wins, ties or loses against JSON compact and TOON the way most seeds do.`);
   });
 });

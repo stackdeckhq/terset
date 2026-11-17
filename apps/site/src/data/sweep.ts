@@ -84,11 +84,25 @@ function holdLine(sweep: SeedSweep, outcome: (row: SweepCase) => Outcome, other:
 
 /** How the sample seed compares with most seeds, by case name. */
 interface SampleJudgement {
-  /** Cases where the sample wins or loses against JSON or TOON the other way from most seeds. */
+  /** Cases where the sample wins, ties or loses against JSON or TOON the other way from most seeds. */
   readonly odd: readonly string[];
-  /** Cases where exactly half the seeds win against JSON or TOON, so there is no "most seeds" to match. */
+  /** Cases where no result against JSON or TOON holds on more than half the seeds, so there is no "most seeds" to match. */
   readonly even: readonly string[];
 }
+
+type Result = 'win' | 'tie' | 'loss';
+
+/** The result on more than half the seeds, or null when there is none. */
+function mostSeeds(sweep: SeedSweep, { under, tied }: Outcome): Result | null {
+  const counts: readonly (readonly [Result, number])[] = [
+    ['win', under],
+    ['tie', tied],
+    ['loss', sweep.seeds - under - tied],
+  ];
+  return counts.find(([, count]) => count * 2 > sweep.seeds)?.[0] ?? null;
+}
+
+const resultOf = (terset: number, other: number): Result => (terset < other ? 'win' : terset === other ? 'tie' : 'loss');
 
 /** Null while the sample is pending or lacks a row for any sweep case: there is nothing complete to judge. */
 function judgeSample(sweep: SeedSweep, sample: CaseSource): SampleJudgement | null {
@@ -99,11 +113,11 @@ function judgeSample(sweep: SeedSweep, sample: CaseSource): SampleJudgement | nu
     const seed = sample.cases.find((item) => item.name === row.name);
     if (seed === undefined) return null;
     const pairs = [
-      [row.underJson, seed.terset < seed.json],
-      [row.underToon, seed.terset < seed.toon],
+      [mostSeeds(sweep, jsonOutcome(row)), resultOf(seed.terset, seed.json)],
+      [mostSeeds(sweep, toonOutcome(row)), resultOf(seed.terset, seed.toon)],
     ] as const;
-    if (pairs.some(([under]) => under * 2 === sweep.seeds)) even.push(row.name);
-    else if (pairs.some(([under, wins]) => under * 2 > sweep.seeds !== wins)) odd.push(row.name);
+    if (pairs.some(([most]) => most === null)) even.push(row.name);
+    else if (pairs.some(([most, result]) => most !== result)) odd.push(row.name);
   }
   return { odd, even };
 }
@@ -116,10 +130,10 @@ export function sweepLines(sweep: SeedSweep, sample: CaseSource): readonly strin
   const seed = String(sweep.firstSeed);
   const last =
     judged.odd.length > 0
-      ? `Seed ${seed} is not typical for ${names(judged.odd)}: it wins or loses against JSON compact or TOON the other way from most seeds.`
+      ? `Seed ${seed} is not typical for ${names(judged.odd)}: it wins, ties or loses against JSON compact or TOON the other way from most seeds.`
       : judged.even.length > 0
-        ? `Seed ${seed} wins or loses against JSON compact and TOON the way most seeds do on every case except ${names(judged.even)}, where the seeds split evenly.`
-        : `On every case, seed ${seed} wins or loses against JSON compact and TOON the way most seeds do.`;
+        ? `Seed ${seed} wins, ties or loses against JSON compact and TOON the way most seeds do on every case except ${names(judged.even)}, where no result holds on most seeds.`
+        : `On every case, seed ${seed} wins, ties or loses against JSON compact and TOON the way most seeds do.`;
   return [...holds, last];
 }
 
@@ -132,7 +146,7 @@ export function sweepLines(sweep: SeedSweep, sample: CaseSource): readonly strin
 export function sweepReadmeLine(sweep: SeedSweep, sample: CaseSource): string {
   const head = `Across ${formatCount(sweep.seeds)} seeds of the same ${String(sweep.cases.length)} case shapes, counted with ${sweep.tokenizer},`;
   const odd = judgeSample(sweep, sample)?.odd ?? [];
-  if (odd.length > 0) return `${head} seed ${String(sweep.firstSeed)} is not typical for ${names(odd)}: most seeds win or lose against JSON compact or TOON the other way.`;
+  if (odd.length > 0) return `${head} seed ${String(sweep.firstSeed)} is not typical for ${names(odd)}: most seeds win, tie or lose against JSON compact or TOON the other way.`;
   const steady = ({ under, tied }: Outcome): boolean => under === sweep.seeds || tied === sweep.seeds || (under === 0 && tied === 0);
   const comparisons = sweep.cases.flatMap((row) =>
     (
