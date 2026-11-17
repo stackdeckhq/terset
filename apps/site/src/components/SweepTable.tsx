@@ -1,5 +1,6 @@
 // The seed sweep as one table: for each case shape, how many seeds put Terset
-// under JSON compact and under TOON, and the median and 5th to 95th percentile change.
+// under JSON compact and under TOON, how many tie, and the median and 5th to
+// 95th percentile change.
 // The same rows as benchmark.md. It scrolls sideways inside its own box on small screens.
 import { formatCount } from '../data/bench.ts';
 import { SWEEP_TABLE_HEAD, sweepTableRows } from '../data/sweep.ts';
@@ -9,7 +10,7 @@ export function SweepTable({ sweep }: { readonly sweep: SeedSweep }) {
   return (
     <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label="Seed sweep table, scrolls sideways on small screens">
       <table className="bt">
-        <caption className="sr">{`For each case shape over ${formatCount(sweep.seeds)} seeds: how many seeds put Terset under JSON compact and under TOON, with the median change and the 5th to 95th percentile range`}</caption>
+        <caption className="sr">{`For each case shape over ${formatCount(sweep.seeds)} seeds: how many seeds put Terset under JSON compact and under TOON, how many tie, and the median change and the 5th to 95th percentile range`}</caption>
         <thead>
           <tr>
             {SWEEP_TABLE_HEAD.map((cell) => (

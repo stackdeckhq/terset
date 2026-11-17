@@ -11,6 +11,8 @@
 // decoded after UTF-8 transport and compared with its input before it counts.
 // Each change is Terset against the other format, signed like the "vs JSON
 // compact" column of the sample table: negative means Terset is smaller.
+// Wins and ties are counted apart: a win has strictly fewer tokens, a tie
+// exactly as many.
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { encode as toonEncode } from '@toon-format/toon';
@@ -64,7 +66,9 @@ export function summarize(name: string, counts: readonly SeedCounts[]): SweepCas
   return {
     name,
     underToon: counts.filter((row) => row.terset < row.toon).length,
+    tiedToon: counts.filter((row) => row.terset === row.toon).length,
     underJson: counts.filter((row) => row.terset < row.json).length,
+    tiedJson: counts.filter((row) => row.terset === row.json).length,
     vsJson: spread(counts.map((row) => change(row.terset, row.json))),
     vsToon: spread(counts.map((row) => change(row.terset, row.toon))),
   };

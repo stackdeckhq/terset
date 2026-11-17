@@ -27,10 +27,33 @@ function names(list: readonly string[]): string {
   return list.length <= 1 ? (list[0] ?? '') : `${list.slice(0, -1).join(', ')} and ${list.at(-1) ?? ''}`;
 }
 
-export function sweepTableRows(sweep: SeedSweep): readonly SweepTableRow[] {
-  const seeds = (count: number): string => `${formatCount(count)} of ${formatCount(sweep.seeds)}`;
-  return sweep.cases.map((row) => [row.name, seeds(row.underJson), formatChange(row.vsJson.median), range(row.vsJson), seeds(row.underToon), formatChange(row.vsToon.median), range(row.vsToon)]);
+/** "Tie on all 1,000" when every seed ties, "400 of 1,000, 20 tied" when some do, "400 of 1,000" when none do. */
+function underCell(sweep: SeedSweep, under: number, tied: number): string {
+  if (tied === sweep.seeds) return `Tie on all ${formatCount(sweep.seeds)}`;
+  const seeds = `${formatCount(under)} of ${formatCount(sweep.seeds)}`;
+  return tied > 0 ? `${seeds}, ${formatCount(tied)} tied` : seeds;
 }
+
+export function sweepTableRows(sweep: SeedSweep): readonly SweepTableRow[] {
+  return sweep.cases.map((row) => [
+    row.name,
+    underCell(sweep, row.underJson, row.tiedJson),
+    formatChange(row.vsJson.median),
+    range(row.vsJson),
+    underCell(sweep, row.underToon, row.tiedToon),
+    formatChange(row.vsToon.median),
+    range(row.vsToon),
+  ]);
+}
+
+/** One comparison of one case: seeds where Terset is smaller, and seeds where it ties. */
+interface Outcome {
+  readonly under: number;
+  readonly tied: number;
+}
+
+const jsonOutcome = (row: SweepCase): Outcome => ({ under: row.underJson, tied: row.tiedJson });
+const toonOutcome = (row: SweepCase): Outcome => ({ under: row.underToon, tied: row.tiedToon });
 
 export function sweepTitle(sweep: SeedSweep): string {
   return `Across ${formatCount(sweep.seeds)} seeds`;
@@ -40,15 +63,23 @@ export function sweepIntro(sweep: SeedSweep): string {
   return `The sample cases are one draw of made-up data, from seed ${String(sweep.firstSeed)}. Here the same ${String(sweep.cases.length)} case shapes are drawn from ${formatCount(sweep.seeds)} seeds, ${String(sweep.firstSeed)} to ${String(lastSeed(sweep))}, and counted with ${sweep.tokenizer} the same way, to show how often each result holds.`;
 }
 
-/** "Terset is smaller than X on every seed in A of N cases, on none in B, and on some seeds in C", leaving out empty parts. */
-function holdLine(sweep: SeedSweep, under: (row: SweepCase) => number, other: string): string {
-  const counts = sweep.cases.map(under);
-  const every = counts.filter((count) => count === sweep.seeds).length;
-  const none = counts.filter((count) => count === 0).length;
-  const some = counts.length - every - none;
-  const parts = [`on every seed in ${String(every)} of ${String(counts.length)} cases`, ...(none > 0 ? [`on none in ${String(none)}`] : []), ...(some > 0 ? [`on some seeds in ${String(some)}`] : [])];
+/**
+ * "Terset is smaller than X on every seed in A of N cases, on none in B, and on some seeds in C",
+ * leaving out empty parts. Cases that tie on every seed are counted apart, so a full tie never reads
+ * as a loss: "... in A of N cases and ties on every seed in D", or a second sentence when the list is longer.
+ */
+function holdLine(sweep: SeedSweep, outcome: (row: SweepCase) => Outcome, other: string): string {
+  const outcomes = sweep.cases.map(outcome);
+  const every = outcomes.filter(({ under }) => under === sweep.seeds).length;
+  const ties = outcomes.filter(({ tied }) => tied === sweep.seeds).length;
+  const none = outcomes.filter(({ under, tied }) => under === 0 && tied < sweep.seeds).length;
+  const some = outcomes.length - every - ties - none;
+  const parts = [`on every seed in ${String(every)} of ${String(outcomes.length)} cases`, ...(none > 0 ? [`on none in ${String(none)}`] : []), ...(some > 0 ? [`on some seeds in ${String(some)}`] : [])];
   const list = parts.length <= 2 ? parts.join(' and ') : `${parts.slice(0, -1).join(', ')}, and ${parts.at(-1) ?? ''}`;
-  return `Terset is smaller than ${other} ${list}.`;
+  const head = `Terset is smaller than ${other} ${list}`;
+  if (ties === 0) return `${head}.`;
+  if (parts.length === 1) return `${head} and ties on every seed in ${String(ties)}.`;
+  return `${head}. It ties with ${other} on every seed in ${String(ties)}.`;
 }
 
 /** How the sample seed compares with most seeds, by case name. */
@@ -79,7 +110,7 @@ function judgeSample(sweep: SeedSweep, sample: CaseSource): SampleJudgement | nu
 
 /** How often each result holds, then whether the sample seed is typical. The last line needs a sample row for every case. */
 export function sweepLines(sweep: SeedSweep, sample: CaseSource): readonly string[] {
-  const holds = [holdLine(sweep, (row) => row.underJson, 'JSON compact'), holdLine(sweep, (row) => row.underToon, 'TOON')];
+  const holds = [holdLine(sweep, jsonOutcome, 'JSON compact'), holdLine(sweep, toonOutcome, 'TOON')];
   const judged = judgeSample(sweep, sample);
   if (judged === null) return holds;
   const seed = String(sweep.firstSeed);
@@ -94,26 +125,32 @@ export function sweepLines(sweep: SeedSweep, sample: CaseSource): readonly strin
 
 /**
  * One README line after the sample results. The sweep counts only JSON compact and TOON,
- * so the line names them: each case wins or loses the same way on every seed, except
- * where Terset wins on only some seeds. When the sample seed is not typical, it says that instead.
+ * so the line names them: each case wins, ties or loses the same way on every seed, except
+ * where the seeds split. It says "ties" only when some case ties on every seed.
+ * When the sample seed is not typical, it says that instead.
  */
 export function sweepReadmeLine(sweep: SeedSweep, sample: CaseSource): string {
   const head = `Across ${formatCount(sweep.seeds)} seeds of the same ${String(sweep.cases.length)} case shapes, counted with ${sweep.tokenizer},`;
   const odd = judgeSample(sweep, sample)?.odd ?? [];
   if (odd.length > 0) return `${head} seed ${String(sweep.firstSeed)} is not typical for ${names(odd)}: most seeds win or lose against JSON compact or TOON the other way.`;
-  const some = (under: number): boolean => under > 0 && under < sweep.seeds;
-  const mixed = sweep.cases.flatMap((row) =>
+  const steady = ({ under, tied }: Outcome): boolean => under === sweep.seeds || tied === sweep.seeds || (under === 0 && tied === 0);
+  const comparisons = sweep.cases.flatMap((row) =>
     (
       [
-        [row.underJson, 'JSON compact'],
-        [row.underToon, 'TOON'],
+        [jsonOutcome(row), 'JSON compact'],
+        [toonOutcome(row), 'TOON'],
       ] as const
-    )
-      .filter(([under]) => some(under))
-      .map(([under, other]) => `${row.name} against ${other}, where Terset is smaller on ${formatCount(under)} of ${formatCount(sweep.seeds)}`),
+    ).map(([outcome, other]) => ({ name: row.name, outcome, other })),
   );
+  const mixed = comparisons
+    .filter(({ outcome }) => !steady(outcome))
+    .map(({ name, outcome: { under, tied }, other }) => {
+      const ties = tied > 0 ? ` and ties on ${formatCount(tied)}` : '';
+      return `${name} against ${other}, where Terset is smaller on ${formatCount(under)} of ${formatCount(sweep.seeds)}${ties}`;
+    });
+  const verb = comparisons.some(({ outcome }) => outcome.tied === sweep.seeds) ? 'wins, ties or loses' : 'wins or loses';
   const except = mixed.length === 0 ? '' : `, except ${mixed.join('; and ')}`;
-  return `${head} Terset wins or loses against JSON compact and TOON the same way on every seed${except}.`;
+  return `${head} Terset ${verb} against JSON compact and TOON the same way on every seed${except}.`;
 }
 
 export function sweepMethod(sweep: SeedSweep, withClaude: boolean): string {

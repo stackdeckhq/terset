@@ -21,10 +21,33 @@ describe('seed sweep', () => {
     expect(row).toEqual({
       name: 'Fixture',
       underToon: 2,
+      tiedToon: 1,
       underJson: 3,
+      tiedJson: 1,
       vsJson: { p5: -40, median: -33.3, p95: 0 },
       vsToon: { p5: -33.3, median: -20, p95: 12.5 },
     });
+  });
+
+  it('counts ties apart from wins, one comparison at a time', () => {
+    const row = summarize('Ties', [
+      { json: 10, toon: 9, terset: 9 },
+      { json: 10, toon: 9, terset: 10 },
+    ]);
+    expect(row).toMatchObject({ underJson: 1, tiedJson: 1, underToon: 0, tiedToon: 1 });
+  });
+
+  it('rejects a case whose wins and ties add up to more seeds than were run', () => {
+    const spread = { p5: 0, median: 0, p95: 0 };
+    const file = (underJson: number, tiedJson: number) => ({
+      tokenizer: 'o200k_base',
+      toonVersion: '4.4.0',
+      firstSeed: 1,
+      seeds: 10,
+      cases: [{ name: 'Case', underToon: 0, tiedToon: 10, underJson, tiedJson, vsJson: spread, vsToon: spread }],
+    });
+    expect(SeedSweepSchema.safeParse(file(4, 6)).success).toBe(true);
+    expect(SeedSweepSchema.safeParse(file(4, 7)).success).toBe(false);
   });
 
   it('counts the published seed exactly as the published o200k table does', () => {
