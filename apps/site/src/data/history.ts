@@ -96,7 +96,7 @@ export const HISTORY: readonly HistoryRow[] = [
       { metric: 'calls', from: 2440, to: 5856 },
     ],
     why: 'Each model ran every format three times on 2026-11-17, in one matched batch per model with the same setup. Every row now shows the mean of its three runs. The older runs stay published as history.',
-    pr: null,
+    pr: 9,
   },
   {
     date: '2026-11-17',
@@ -108,7 +108,7 @@ export const HISTORY: readonly HistoryRow[] = [
       { metric: 'calls', from: 1952, to: 2440 },
     ],
     why: 'The tables showed one of the two Terset runs from 2026-11-17. They now show the mean of both.',
-    pr: null,
+    pr: 9,
   },
   {
     date: '2026-11-17',
