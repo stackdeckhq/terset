@@ -66,7 +66,7 @@ export function rawUrl(path: RawPath): string {
 // Release facts. Every page that names the package, its version, its license or
 // its source reads them from here. A test checks them against packages/terset/package.json.
 export const PACKAGE_NAME = '@stackdeck/terset';
-export const PACKAGE_VERSION = '0.2.1';
+export const PACKAGE_VERSION = '0.2.2';
 export const PACKAGE_LICENSE = 'MIT';
 export const REPO_URL = 'https://github.com/stackdeckhq/terset';
 export const NPM_URL = `https://www.npmjs.com/package/${PACKAGE_NAME}`;
