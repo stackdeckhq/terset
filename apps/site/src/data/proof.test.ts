@@ -16,14 +16,14 @@ const OPUS = model('claude-opus-5-5');
 const SOL = model('gpt-6.1-sol');
 
 describe('cost bars', () => {
-  it('gives each format its cost at API list price and run date, Terset first, scaled from zero', () => {
-    expect(costBars(OPUS).map((bar) => [bar.label, bar.costText, bar.runOn])).toEqual([
-      ['Terset', '$5.65', '2026-11-17'],
-      ['Compact JSON', '$8.04', '2026-11-12'],
-      ['Pretty JSON', '$10.20', '2026-11-12'],
-      ['TOON', '$6.35', '2026-11-12'],
+  it('gives each format its cost at API list price and its runs, Terset first, scaled from zero', () => {
+    expect(costBars(OPUS).map((bar) => [bar.label, bar.costText, bar.runs])).toEqual([
+      ['Terset', '$5.64', 'mean of 2 runs, 2026-11-17'],
+      ['Compact JSON', '$8.04', 'run 2026-11-12'],
+      ['Pretty JSON', '$10.20', 'run 2026-11-12'],
+      ['TOON', '$6.35', 'run 2026-11-12'],
     ]);
-    expect(costBars(SOL)[0]).toMatchObject({ costText: '$1.84', runOn: '2026-11-17', terset: true });
+    expect(costBars(SOL)[0]).toMatchObject({ costText: '$1.84', runs: 'mean of 2 runs, 2026-11-17', terset: true });
     for (const bars of [costBars(OPUS), costBars(SOL)]) {
       expect(Math.max(...bars.map((bar) => bar.fraction))).toBe(1);
       expect(bars.every((bar) => bar.fraction > 0)).toBe(true);
@@ -32,20 +32,20 @@ describe('cost bars', () => {
 });
 
 describe('big numbers', () => {
-  it('shows fewer tokens, lower cost and right answers per model', () => {
+  it('shows fewer tokens, lower cost and right answers per model, the answers as the mean of the Terset runs', () => {
     expect(bigNumbers(ACCURACY).map((item) => [item.id, item.values.map((value) => `${value.model} ${value.text}`), item.win])).toEqual([
       ['tokens', ['Opus 32.7%', 'Sol 27.3%'], true],
-      ['cost', ['Opus 29.8%', 'Sol 26.2%'], true],
-      ['answers', ['Opus 242/244', 'Sol 242/244'], false],
+      ['cost', ['Opus 29.9%', 'Sol 26.4%'], true],
+      ['answers', ['Opus 242/244', 'Sol 240/244'], false],
     ]);
-    expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers');
+    expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers, mean of 2 Terset runs');
   });
 
   it('splits each value into a large figure and a quiet tail that join back into the text', () => {
     for (const item of bigNumbers(ACCURACY)) for (const value of item.values) expect(`${value.figure}${value.tail}`).toBe(value.text);
     expect(bigNumbers(ACCURACY)[2]?.values.map((value) => [value.figure, value.tail])).toEqual([
       ['242', '/244'],
-      ['242', '/244'],
+      ['240', '/244'],
     ]);
   });
 
@@ -209,7 +209,7 @@ describe('benchmark.md lines', () => {
   it('states each claim with its tokenizer and says accuracy is a tie', () => {
     expect(proofLines(ACCURACY, COUNTERS)).toEqual([
       'Fewer input tokens than compact JSON: 32.7% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
-      'Lower cost than compact JSON: 29.8% on Opus and 26.2% on Sol. Accuracy is a tie.',
+      'Lower cost than compact JSON: 29.9% on Opus and 26.4% on Sol. Accuracy is a tie.',
       'Smaller than TOON on 22 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
       'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
       'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',

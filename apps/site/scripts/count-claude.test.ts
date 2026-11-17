@@ -334,10 +334,16 @@ describe('published Claude requests', () => {
     expect(tally).toEqual({ terset: 244, 'json-compact': 244, 'json-pretty': 244, toon: 244 });
     expect(new Set(all.map((request) => request.body.model))).toEqual(new Set(['claude-opus-5-5']));
     // The 2026-11-13 run sent the full rules text, so today's fitted primers no longer match it.
-    const terset = runs.find(({ source }) => source.formats.some((format) => format === 'terset'));
-    if (terset === undefined) throw new Error('no Terset run');
+    const terset = runs.find(({ source }) => source.claudeCountsFrom === undefined && source.formats.some((format) => format === 'terset'));
+    if (terset === undefined) throw new Error('no counted Terset run');
     const older = JSON.parse(readFileSync(new URL('../../../bench/published/2026-11-13/v2-final-2026-11-13.json', import.meta.url), 'utf8')) as unknown;
     expect(() => publishedRequests([{ source: terset.source, raw: older }])).toThrow('a rebuilt prompt differs from the one the run reserved for');
+  });
+
+  it('skips a run that uses another run\'s counts, so no request is counted twice', () => {
+    const borrowed = runs.filter(({ source }) => source.claudeCountsFrom !== undefined);
+    expect(borrowed.length).toBeGreaterThan(0);
+    expect(publishedRequests(borrowed)).toEqual([]);
   });
 
   it('counts the exact body the benchmark sent, built by the same function (no drift)', async () => {

@@ -59,7 +59,7 @@ function CostModel({ model }: { readonly model: AccuracyModel }) {
             </span>
             <span className="cost-v">
               <b>{bar.costText}</b>
-              <small>run {bar.runOn}</small>
+              <small>{bar.runs}</small>
             </span>
           </li>
         ))}

@@ -12,6 +12,7 @@ import {
   accuracyLines,
   accuracyMethod,
   accuracyReadmeBlock,
+  accuracyRunsNote,
   accuracySummary,
   accuracyTableMarks,
   accuracyTableRows,
@@ -46,14 +47,42 @@ function withRows(change: (rows: AccuracyModel['rows'][number][]) => void): Accu
 
 describe('accuracy', () => {
   it('shows every format with its score, interval, tokens and cost, Terset first', () => {
+    expect(ACCURACY_TABLE_HEAD.slice(1, 3)).toEqual(['Correct', 'Runs']);
     expect(ACCURACY_TABLE_HEAD.slice(-2)).toEqual(['Costs more than Terset', 'Run date']);
     expect(accuracyTableRows(model('claude-opus-5-5'))).toEqual([
-      ['Terset', '242 of 244', '99.2%', '97.1% to 99.8%', '1,188,659', '$5.65', 'Reference', '2026-11-17'],
-      ['Compact JSON', '241 of 244', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.04', '+42.4%', '2026-11-12'],
-      ['JSON', '239 of 244', '98.0%', '95.3% to 99.1%', '2,303,845', '$10.20', '+80.6%', '2026-11-12'],
-      ['TOON', '242 of 244', '99.2%', '97.1% to 99.8%', '1,369,764', '$6.35', '+12.5%', '2026-11-12'],
+      ['Terset', '242 of 244', 'Mean of 2 runs: 242, 242', '99.2%', '97.1% to 99.8%', '1,188,659', '$5.64', 'Reference', '2026-11-17'],
+      ['Compact JSON', '241 of 244', '1 run', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.04', '+42.6%', '2026-11-12'],
+      ['JSON', '239 of 244', '1 run', '98.0%', '95.3% to 99.1%', '2,303,845', '$10.20', '+80.8%', '2026-11-12'],
+      ['TOON', '242 of 244', '1 run', '99.2%', '97.1% to 99.8%', '1,369,764', '$6.35', '+12.6%', '2026-11-12'],
     ]);
-    expect(accuracyTableRows(model('gpt-6.1-sol')).map((row) => row[6])).toEqual(['Reference', '+35.6%', '+93.3%', '+19.1%']);
+    expect(accuracyTableRows(model('gpt-6.1-sol'))[0]).toEqual(['Terset', '240 of 244', 'Mean of 2 runs: 238, 242', '98.4%', '95.9% to 99.4%', '842,260', '$1.84', 'Reference', '2026-11-17']);
+    expect(accuracyTableRows(model('gpt-6.1-sol')).map((row) => row[7])).toEqual(['Reference', '+35.8%', '+93.7%', '+19.3%']);
+  });
+
+  it('shows a mean with a fraction to one decimal, and a whole mean as a count', () => {
+    const half = withRows((rows) => {
+      const terset = rows.find((row) => row.format === 'terset');
+      if (terset === undefined) throw new Error('missing row');
+      terset.correct = 240.5;
+    });
+    expect(accuracyTableRows(half.models[0] ?? model('claude-opus-5-5'))[0]?.[1]).toBe('240.5 of 244');
+  });
+
+  it('says how many runs each format has, and throws once that no longer holds', () => {
+    expect(accuracyRunsNote(ACCURACY)).toBe("Terset has two runs, both on 2026-11-17. The other formats have one run each, on 2026-11-12. Terset's rows show the mean of its runs, and the Runs column lists each run's score. A matched batch, with repeats of every format, is planned.");
+    const oneRun = withRows((rows) => {
+      const terset = rows.find((row) => row.format === 'terset');
+      if (terset === undefined) throw new Error('missing row');
+      terset.runs = terset.runs.slice(0, 1);
+    });
+    expect(() => accuracyRunsNote(oneRun)).toThrow(/more than one, on every model/u);
+    const repeated = withRows((rows) => {
+      const toon = rows.find((row) => row.format === 'toon');
+      const run = toon?.runs[0];
+      if (toon === undefined || run === undefined) throw new Error('missing row');
+      toon.runs = [run, { ...run, runId: 'again' }];
+    });
+    expect(() => accuracyRunsNote(repeated)).toThrow(/one run each/u);
   });
 
   it('works out the cost over Terset from the unrounded costs, with a minus when a format is cheaper', () => {
@@ -66,10 +95,10 @@ describe('accuracy', () => {
 
   it('marks the lowest input tokens and cost, and every format Terset cost less than, never the scores', () => {
     expect(accuracyTableMarks(model('claude-opus-5-5'))).toEqual([
-      [null, null, null, 'is-less', 'is-less', null, null],
-      [null, null, null, null, null, 'terset-cheaper', null],
-      [null, null, null, null, null, 'terset-cheaper', null],
-      [null, null, null, null, null, 'terset-cheaper', null],
+      [null, null, null, null, 'is-less', 'is-less', null, null],
+      [null, null, null, null, null, null, 'terset-cheaper', null],
+      [null, null, null, null, null, null, 'terset-cheaper', null],
+      [null, null, null, null, null, null, 'terset-cheaper', null],
     ]);
   });
 
@@ -82,8 +111,8 @@ describe('accuracy', () => {
     });
     const first = toonCheaper.models[0];
     if (first === undefined) throw new Error('no models');
-    expect(accuracyTableRows(first).map((row) => row[6])).toEqual(['Reference', '+42.4%', '+80.6%', '−10.0%']);
-    expect(accuracyTableMarks(first).map((row) => row[5])).toEqual([null, 'terset-cheaper', 'terset-cheaper', 'terset-pricier']);
+    expect(accuracyTableRows(first).map((row) => row[7])).toEqual(['Reference', '+42.6%', '+80.8%', '−10.0%']);
+    expect(accuracyTableMarks(first).map((row) => row[6])).toEqual([null, 'terset-cheaper', 'terset-cheaper', 'terset-pricier']);
     expect([overTersetMark('+0.1%'), overTersetMark('−0.1%'), overTersetMark('0.0%'), overTersetMark('Reference')]).toEqual(['terset-cheaper', 'terset-pricier', null, null]);
   });
 
@@ -97,8 +126,8 @@ describe('accuracy', () => {
     const first = toonCheapest.models[0];
     if (first === undefined) throw new Error('no models');
     const marks = accuracyTableMarks(first);
-    expect(marks.map((row) => row[3])).toEqual([null, null, null, 'is-less']);
     expect(marks.map((row) => row[4])).toEqual([null, null, null, 'is-less']);
+    expect(marks.map((row) => row[5])).toEqual([null, null, null, 'is-less']);
   });
 
   it('marks every row that ties for the lowest value', () => {
@@ -110,7 +139,7 @@ describe('accuracy', () => {
     });
     const first = tied.models[0];
     if (first === undefined) throw new Error('no models');
-    expect(accuracyTableMarks(first).map((row) => row[3])).toEqual(['is-less', null, null, 'is-less']);
+    expect(accuracyTableMarks(first).map((row) => row[4])).toEqual(['is-less', null, null, 'is-less']);
   });
 
   it('marks a signed change by its sign only', () => {
@@ -147,7 +176,7 @@ describe('accuracy', () => {
   it('keeps the result to two sentences under the tables', () => {
     expect(accuracySummary(ACCURACY)).toEqual([
       "Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.",
-      'Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.2% less on GPT 6.1 Sol.',
+      'Against compact JSON, Terset cost 29.9% less on Claude Opus 5.5 and 26.4% less on GPT 6.1 Sol.',
     ]);
   });
 
@@ -224,9 +253,11 @@ describe('accuracy', () => {
   it('puts the accuracy tables in benchmark.md', () => {
     const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
     expect(text).toContain('## Answer accuracy');
-    expect(text).toContain('| Format | Correct | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |');
-    expect(text).toContain('| Terset | 242 of 244 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.65 | Reference | 2026-11-17 |');
-    expect(text).toContain('| JSON | 239 of 244 | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.6% | 2026-11-12 |');
+    expect(text).toContain('| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |');
+    expect(text).toContain('| Terset | 242 of 244 | Mean of 2 runs: 242, 242 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.64 | Reference | 2026-11-17 |');
+    expect(text).toContain('| Terset | 240 of 244 | Mean of 2 runs: 238, 242 | 98.4% | 95.9% to 99.4% | 842,260 | $1.84 | Reference | 2026-11-17 |');
+    expect(text).toContain('| JSON | 239 of 244 | 1 run | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.8% | 2026-11-12 |');
+    expect(text).toContain(accuracyRunsNote(ACCURACY));
     expect(text).not.toContain('Cost vs compact JSON');
     expect(text).toContain(ACCURACY_FORMAT_NOTE);
     expect(text).toContain('### By data set');

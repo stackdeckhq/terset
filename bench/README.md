@@ -24,27 +24,35 @@ its Markdown report.
   local paths, account names and environment values. None were found. The four
   email addresses are fake values present in the frozen upstream datasets.
   Terset got the full rules text in this run. The site no longer uses it.
-- [2026-11-17](published/2026-11-17/fitted-rules-rerun-2026-11-17.md): Claude
-  Opus 5.5 and GPT 6.1 Sol, all 244 questions in Terset with fitted rules.
-  The site's Terset row comes from this rerun. A first run the same day with the
-  same setup scored Opus 242 and Sol 238 of 244. Its
-  [report](published/2026-11-17/fitted-rules-2026-11-17.md) sits in the same
-  folder. Identical runs differ by a few questions. Both files were checked for
-  keys, base URLs, local paths and account names. None were found. The four email
-  addresses are fake values from the frozen upstream datasets.
+- 2026-11-17: Claude Opus 5.5 and GPT 6.1 Sol, all 244 questions in Terset with
+  fitted rules, run twice with the same setup.
+  The [first run](published/2026-11-17/fitted-rules-2026-11-17.md) scored Opus
+  242 and Sol 238 of 244. The
+  [second run](published/2026-11-17/fitted-rules-rerun-2026-11-17.md) scored
+  Opus 242 and Sol 242 of 244. Identical runs differ by a few questions. Both
+  files were checked for keys, base URLs, local paths and account names. None
+  were found. The four email addresses are fake values from the frozen upstream
+  datasets.
 
 Terset rows carry the later date because its format changed in 0.2.1 and its
-rules became fitted on 2026-11-17. The other formats did not change.
+rules became fitted on 2026-11-17. The other formats did not change. A matched
+batch, with repeats of every format, is planned.
 
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
 published runs, and updates the accuracy blocks in the READMEs. It takes Terset
-from the 2026-11-17 rerun and compact JSON, indented JSON and TOON from 2026-11-12.
+from both 2026-11-17 runs and compact JSON, indented JSON and TOON from
+2026-11-12. No run is picked. A format with more than one run shows the mean
+over its runs, with each run's score beside it.
 Cost comparisons use the earlier compact JSON rows for the same model.
 It refuses differing model settings, prices, question sets, data hashes,
 upstream commits, tokenizers or per-call output caps. Whole-run budgets and
-fingerprints differ because the later run measured only Terset.
-Each table row records its run date. Tests fail when the committed site file
-or a README accuracy block drifts from these selected rows.
+fingerprints differ because the later runs measured only Terset.
+Claude input tokens come from Anthropic's token count of each request body.
+The second 2026-11-17 run was counted. The first run has the same plan
+fingerprint and the same recorded input tokens on every row, so it sent the same
+requests and uses the same counts. The script checks both before it does.
+Each table row records its run dates. Tests fail when the committed site file
+or a README accuracy block drifts from the published runs.
 
 ## Local use
 

@@ -209,9 +209,10 @@ const PublishedRun = z.object({
  * Every Claude request of the selected formats in the published runs, rebuilt with the
  * benchmark's own plan and body code. Each request must match one recorded row, and its
  * input reservation, which the run computed from the same prompt, must match too.
+ * A run that uses another run's counts sent the same requests, so it is not counted again.
  */
 export function publishedRequests(runs: readonly { readonly source: (typeof PUBLISHED_RUNS)[number]; readonly raw: unknown }[]): PublishedRequest[] {
-  return runs.flatMap(({ source, raw }) => {
+  return runs.filter(({ source }) => source.claudeCountsFrom === undefined).flatMap(({ source, raw }) => {
     const run = PublishedRun.parse(raw);
     const claude = run.models.filter((model) => model.api === 'anthropic');
     const formats: readonly AccuracyFormat[] = source.formats;

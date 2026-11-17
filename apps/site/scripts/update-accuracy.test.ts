@@ -1,5 +1,5 @@
 // Published rows are recomputed, compared and kept in sync with the site.
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { OUTPUT, PUBLISHED_RUNS, REQUEST_COUNTS, accuracyText, buildAccuracy, wilson95 } from './update-accuracy.ts';
@@ -8,13 +8,14 @@ import type { ClaudeRequestCounts } from '../src/data/claude-request-counts-sche
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 
 interface MutableRun {
+  fingerprint: string;
   plannedCalls: number;
   models: { id: string; api: string; temperature: string; outputTokenParameter: string; price: { inputPerMillion: number; outputPerMillion: number; sourceUrl: string; dateRead: string } }[];
   dataHashes: Record<string, string>;
   upstreamSha: string;
   tokenizer: string;
   budgets: { perCallMaxOutputTokens: number };
-  rows: { model: string; format: string; dataset: string; questionId: string; correct: boolean; inputTokens: number }[];
+  rows: { model: string; format: string; dataset: string; questionId: string; correct: boolean; inputTokens: number; reservedInputTokens: number }[];
   failures: unknown[];
   summary: { model: string; format: string; dataset: string; metrics: { correct: number } }[];
 }
@@ -27,8 +28,9 @@ function freshCounts(): ClaudeRequestCounts {
   return JSON.parse(readFileSync(REQUEST_COUNTS, 'utf8')) as ClaudeRequestCounts;
 }
 
+/** The latest published run. */
 function newer(runs: MutableRun[]): MutableRun {
-  const run = runs[1];
+  const run = runs.at(-1);
   if (run === undefined) throw new Error('no later run');
   return run;
 }
@@ -45,30 +47,85 @@ function firstRow(run: MutableRun): MutableRun['rows'][number] {
   return row;
 }
 
+describe('every published Terset run', () => {
+  const folder = `${REPO}bench/published/2026-11-17/`;
+  const fittedRuns = readdirSync(folder).filter((name) => /^fitted-rules.*\.json$/u.test(name)).sort();
+
+  it('puts every fitted-rules run file in the site data, so no run can be picked', () => {
+    expect(fittedRuns.length).toBeGreaterThanOrEqual(2);
+    const site = JSON.parse(readFileSync(OUTPUT, 'utf8')) as { publishedRuns: { runId: string; formats: string[] }[] };
+    for (const name of fittedRuns) {
+      const { runId } = JSON.parse(readFileSync(`${folder}${name}`, 'utf8')) as { runId: string };
+      expect(PUBLISHED_RUNS.map((source) => source.path), name).toContain(`bench/published/2026-11-17/${name}`);
+      expect(site.publishedRuns.find((run) => run.runId === runId)?.formats, runId).toContain('terset');
+    }
+  });
+
+  it('shows the Terset score as the mean of its runs, with each run beside it', () => {
+    const file = buildAccuracy(freshRuns(), freshCounts());
+    const terset = (id: string) => file.models.find((model) => model.id === id)?.rows.find((row) => row.format === 'terset');
+    expect(terset('claude-opus-5-5')).toMatchObject({ correct: 242, total: 244 });
+    expect(terset('claude-opus-5-5')?.runs.map((run) => [run.runId, run.correct])).toEqual([
+      ['fitted-rules-2026-11-17', 242],
+      ['fitted-rules-rerun-2026-11-17', 242],
+    ]);
+    expect(terset('gpt-6.1-sol')).toMatchObject({ correct: 240, total: 244 });
+    expect(terset('gpt-6.1-sol')?.runs.map((run) => [run.runId, run.correct])).toEqual([
+      ['fitted-rules-2026-11-17', 238],
+      ['fitted-rules-rerun-2026-11-17', 242],
+    ]);
+    // The other formats have one run each.
+    expect(file.models.every((model) => model.rows.filter((row) => row.format !== 'terset').every((row) => row.runs.length === 1))).toBe(true);
+  });
+});
+
 describe('accuracy results', () => {
-  it('keeps the committed file equal to both published runs', () => {
+  it('keeps the committed file equal to every published run', () => {
     expect(readFileSync(OUTPUT, 'utf8')).toBe(accuracyText());
   });
 
-  it('takes only Terset from the newer run, with row dates and the old compact JSON baseline', () => {
+  it('takes Terset from both later runs and the rest from the first, with run dates and means', () => {
     const file = buildAccuracy(freshRuns(), freshCounts());
     expect(file.questions).toBe(244);
-    expect(file.calls).toBe(1952);
+    expect(file.calls).toBe(2440);
     expect(file.failedCalls).toBe(0);
     expect(file.publishedRuns.map((run) => [run.runOn, run.formats])).toEqual([
       ['2026-11-12', ['json-compact', 'json-pretty', 'toon']],
       ['2026-11-17', ['terset']],
+      ['2026-11-17', ['terset']],
     ]);
     const opus = file.models.find((model) => model.id === 'claude-opus-5-5');
-    expect(opus?.rows.map((row) => [row.format, row.correct, row.inputTokens, row.runOn])).toEqual([
-      ['terset', 242, 1188659, '2026-11-17'],
-      ['json-compact', 241, 1766161, '2026-11-12'],
-      ['json-pretty', 239, 2303845, '2026-11-12'],
-      ['toon', 242, 1369764, '2026-11-12'],
+    expect(opus?.rows.map((row) => [row.format, row.correct, row.inputTokens, row.runs.map((run) => run.runOn)])).toEqual([
+      ['terset', 242, 1188659, ['2026-11-17', '2026-11-17']],
+      ['json-compact', 241, 1766161, ['2026-11-12']],
+      ['json-pretty', 239, 2303845, ['2026-11-12']],
+      ['toon', 242, 1369764, ['2026-11-12']],
     ]);
     const sol = file.models.find((model) => model.id === 'gpt-6.1-sol');
-    expect(sol?.rows[0]).toMatchObject({ correct: 242, inputTokens: 842260, totalCost: 1.84122, runOn: '2026-11-17' });
-    expect(opus?.rows[0]?.totalCost).toBe(5.645736);
+    // Output tokens and cost differ between the runs, so the row carries their mean.
+    expect(sol?.rows[0]?.runs.map((run) => [run.outputTokens, run.totalCost])).toEqual([[14979, 1.83431], [15670, 1.84122]]);
+    expect(sol?.rows[0]).toMatchObject({ correct: 240, inputTokens: 842260, outputTokens: 15324.5 });
+    expect(sol?.rows[0]?.totalCost).toBeCloseTo(1.837765, 9);
+    expect(opus?.rows[0]?.totalCost).toBeCloseTo(5.638606, 9);
+    // The interval is for the mean score over the 244 questions.
+    expect(sol?.rows[0]?.low).toBeCloseTo(wilson95(240, 244).low, 12);
+  });
+
+  it('lets a run use another run\'s Claude counts only when it sent the same requests', () => {
+    const borrowing = (runs: MutableRun[]): MutableRun => {
+      const index = PUBLISHED_RUNS.findIndex((source) => source.claudeCountsFrom !== undefined);
+      const run = runs[index];
+      if (run === undefined) throw new Error('no run that uses another run\'s counts');
+      return run;
+    };
+    const plan = freshRuns();
+    borrowing(plan).fingerprint = 'different';
+    expect(() => buildAccuracy(plan, freshCounts())).toThrow(/its plan differs/u);
+    const request = freshRuns();
+    const row = borrowing(request).rows.find((entry) => entry.model === 'claude-opus-5-5' && entry.format === 'terset');
+    if (row === undefined) throw new Error('no Terset row');
+    row.reservedInputTokens += 1;
+    expect(() => buildAccuracy(request, freshCounts())).toThrow(/a request differs/u);
   });
 
   it.each([
@@ -183,9 +240,9 @@ describe('Claude input tokens from the request counts', () => {
     const sol = file.models.find((model) => model.id === 'gpt-6.1-sol');
     expect(opus?.inputTokensFrom).toBe('anthropic-token-count');
     expect(sol?.inputTokensFrom).toBe('model-report');
+    const countedAs = (runId: string): string => PUBLISHED_RUNS.find((source) => source.path.endsWith(`/${runId}.json`))?.claudeCountsFrom ?? runId;
     for (const row of opus?.rows ?? []) {
-      const runId = file.publishedRuns.find((run) => run.formats.includes(row.format))?.runId ?? '';
-      expect(row.inputTokens, row.format).toBe(countedSum(runId, row.format));
+      for (const run of row.runs) expect(run.inputTokens, `${row.format} ${run.runId}`).toBe(countedSum(countedAs(run.runId), row.format));
       expect(row.totalCost, row.format).toBeCloseTo((row.inputTokens * 4 + row.outputTokens * 20) / 1_000_000, 9);
     }
     expect(sol?.rows[0]?.inputTokens).toBe(842260);

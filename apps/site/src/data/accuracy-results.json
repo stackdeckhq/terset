@@ -11,6 +11,14 @@
       ]
     },
     {
+      "runId": "fitted-rules-2026-11-17",
+      "runOn": "2026-11-17",
+      "publishedPath": "bench/published/2026-11-17",
+      "formats": [
+        "terset"
+      ]
+    },
+    {
       "runId": "fitted-rules-rerun-2026-11-17",
       "runOn": "2026-11-17",
       "publishedPath": "bench/published/2026-11-17",
@@ -22,7 +30,7 @@
   "upstreamSha": "22caca377f08d737789a2ca60ab02c425a3aa947",
   "questions": 244,
   "datasets": 13,
-  "calls": 1952,
+  "calls": 2440,
   "failedCalls": 0,
   "models": [
     {
@@ -36,18 +44,44 @@
       "rows": [
         {
           "format": "terset",
-          "runOn": "2026-11-17",
+          "runs": [
+            {
+              "runId": "fitted-rules-2026-11-17",
+              "runOn": "2026-11-17",
+              "correct": 242,
+              "inputTokens": 1188659,
+              "outputTokens": 43842,
+              "totalCost": 5.631476
+            },
+            {
+              "runId": "fitted-rules-rerun-2026-11-17",
+              "runOn": "2026-11-17",
+              "correct": 242,
+              "inputTokens": 1188659,
+              "outputTokens": 44555,
+              "totalCost": 5.645736
+            }
+          ],
           "correct": 242,
           "total": 244,
           "low": 0.9706117105007331,
           "high": 0.9977492777777971,
           "inputTokens": 1188659,
-          "outputTokens": 44555,
-          "totalCost": 5.645736
+          "outputTokens": 44198.5,
+          "totalCost": 5.638606
         },
         {
           "format": "json-compact",
-          "runOn": "2026-11-12",
+          "runs": [
+            {
+              "runId": "p4-2026-11-12",
+              "runOn": "2026-11-12",
+              "correct": 241,
+              "inputTokens": 1766161,
+              "outputTokens": 48732,
+              "totalCost": 8.039284
+            }
+          ],
           "correct": 241,
           "total": 244,
           "low": 0.964481398748853,
@@ -58,7 +92,16 @@
         },
         {
           "format": "json-pretty",
-          "runOn": "2026-11-12",
+          "runs": [
+            {
+              "runId": "p4-2026-11-12",
+              "runOn": "2026-11-12",
+              "correct": 239,
+              "inputTokens": 2303845,
+              "outputTokens": 49069,
+              "totalCost": 10.19676
+            }
+          ],
           "correct": 239,
           "total": 244,
           "low": 0.9529358324479501,
@@ -69,7 +112,16 @@
         },
         {
           "format": "toon",
-          "runOn": "2026-11-12",
+          "runs": [
+            {
+              "runId": "p4-2026-11-12",
+              "runOn": "2026-11-12",
+              "correct": 242,
+              "inputTokens": 1369764,
+              "outputTokens": 43579,
+              "totalCost": 6.350636
+            }
+          ],
           "correct": 242,
           "total": 244,
           "low": 0.9706117105007331,
@@ -91,18 +143,44 @@
       "rows": [
         {
           "format": "terset",
-          "runOn": "2026-11-17",
-          "correct": 242,
+          "runs": [
+            {
+              "runId": "fitted-rules-2026-11-17",
+              "runOn": "2026-11-17",
+              "correct": 238,
+              "inputTokens": 842260,
+              "outputTokens": 14979,
+              "totalCost": 1.83431
+            },
+            {
+              "runId": "fitted-rules-rerun-2026-11-17",
+              "runOn": "2026-11-17",
+              "correct": 242,
+              "inputTokens": 842260,
+              "outputTokens": 15670,
+              "totalCost": 1.84122
+            }
+          ],
+          "correct": 240,
           "total": 244,
-          "low": 0.9706117105007331,
-          "high": 0.9977492777777971,
+          "low": 0.9586147210280338,
+          "high": 0.9936069174458542,
           "inputTokens": 842260,
-          "outputTokens": 15670,
-          "totalCost": 1.84122
+          "outputTokens": 15324.5,
+          "totalCost": 1.837765
         },
         {
           "format": "json-compact",
-          "runOn": "2026-11-12",
+          "runs": [
+            {
+              "runId": "p4-2026-11-12",
+              "runOn": "2026-11-12",
+              "correct": 236,
+              "inputTokens": 1158229,
+              "outputTokens": 17981,
+              "totalCost": 2.496268
+            }
+          ],
           "correct": 236,
           "total": 244,
           "low": 0.9366484070383405,
@@ -113,7 +191,16 @@
         },
         {
           "format": "json-pretty",
-          "runOn": "2026-11-12",
+          "runs": [
+            {
+              "runId": "p4-2026-11-12",
+              "runOn": "2026-11-12",
+              "correct": 237,
+              "inputTokens": 1696152,
+              "outputTokens": 16762,
+              "totalCost": 3.559924
+            }
+          ],
           "correct": 237,
           "total": 244,
           "low": 0.94197743468984,
@@ -124,7 +211,16 @@
         },
         {
           "format": "toon",
-          "runOn": "2026-11-12",
+          "runs": [
+            {
+              "runId": "p4-2026-11-12",
+              "runOn": "2026-11-12",
+              "correct": 239,
+              "inputTokens": 1020628,
+              "outputTokens": 15077,
+              "totalCost": 2.192026
+            }
+          ],
           "correct": 239,
           "total": 244,
           "low": 0.9529358324479501,

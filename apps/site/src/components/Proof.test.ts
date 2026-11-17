@@ -17,15 +17,16 @@ describe('big numbers', () => {
   it('prints each value as text, wins marked, accuracy plain', () => {
     expect(html.match(/<li class="big-n win">/gu)).toHaveLength(2);
     expect(html).toContain('<li class="big-n">');
-    for (const text of ['32.7%', '27.3%', '29.8%', '26.2%']) expect(html).toContain(`<b>${text}</b>`);
-    // Both models answered 242 of 244, so the same value prints twice.
-    expect(html.match(/<b>242<span class="big-t">\/244<\/span><\/b>/gu)).toHaveLength(2);
+    for (const text of ['32.7%', '27.3%', '29.9%', '26.4%']) expect(html).toContain(`<b>${text}</b>`);
+    // The mean of the Terset runs: 242 on Opus, 240 on Sol.
+    expect(html).toContain('<b>242<span class="big-t">/244</span></b>');
+    expect(html).toContain('<b>240<span class="big-t">/244</span></b>');
   });
 
   it('names the metric first, then one column per model with the model before its number', () => {
     const cards = html.match(/<li class="big-n[^"]*">.*?<\/li>/gu) ?? [];
     expect(cards).toHaveLength(3);
-    for (const [index, metric] of ['Fewer input tokens than compact JSON', 'Lower cost than compact JSON', 'Right answers'].entries()) {
+    for (const [index, metric] of ['Fewer input tokens than compact JSON', 'Lower cost than compact JSON', 'Right answers, mean of 2 Terset runs'].entries()) {
       const card = cards[index] ?? '';
       expect(card).toMatch(new RegExp(`^<li class="big-n[^"]*"><span class="big-l">${metric}</span> <span class="big-v">`, 'u'));
       expect(card.match(/<span class="big-c"><small>(Opus|Sol)<\/small> <b>/gu)).toHaveLength(2);
@@ -45,12 +46,12 @@ describe('big numbers', () => {
 });
 
 describe('cost bars', () => {
-  it('dates every row and marks the Terset row', () => {
+  it('dates every row, says which costs are a mean of runs, and marks the Terset row', () => {
     const html = renderToStaticMarkup(createElement(CostBars, { file: ACCURACY, headingId: 'h', title: 'Cost' }));
     expect(html.match(/class="cost-bar terset[ "]/gu)).toHaveLength(2);
-    expect(html.match(/run 2026-11-17/gu)).toHaveLength(2);
+    expect(html.match(/mean of 2 runs, 2026-11-17/gu)).toHaveLength(2);
     expect(html.match(/run 2026-11-12/gu)).toHaveLength(6);
-    expect(html).toContain('<b>$5.65</b>');
+    expect(html).toContain('<b>$5.64</b>');
     expect(html).toContain('<b>$1.84</b>');
   });
 

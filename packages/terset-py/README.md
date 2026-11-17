@@ -284,28 +284,30 @@ On 244 questions and two models, accuracy is a tie. Terset used fewer input toke
 
 #### Claude Opus 5.5
 
-| Format | Correct | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Terset | 242 of 244 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.65 | Reference | 2026-11-17 |
-| Compact JSON | 241 of 244 | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.04 | +42.4% | 2026-11-12 |
-| JSON | 239 of 244 | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.6% | 2026-11-12 |
-| TOON | 242 of 244 | 99.2% | 97.1% to 99.8% | 1,369,764 | $6.35 | +12.5% | 2026-11-12 |
+| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Terset | 242 of 244 | Mean of 2 runs: 242, 242 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.64 | Reference | 2026-11-17 |
+| Compact JSON | 241 of 244 | 1 run | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.04 | +42.6% | 2026-11-12 |
+| JSON | 239 of 244 | 1 run | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.8% | 2026-11-12 |
+| TOON | 242 of 244 | 1 run | 99.2% | 97.1% to 99.8% | 1,369,764 | $6.35 | +12.6% | 2026-11-12 |
 
 #### GPT 6.1 Sol
 
-| Format | Correct | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Terset | 242 of 244 | 99.2% | 97.1% to 99.8% | 842,260 | $1.84 | Reference | 2026-11-17 |
-| Compact JSON | 236 of 244 | 96.7% | 93.7% to 98.3% | 1,158,229 | $2.50 | +35.6% | 2026-11-12 |
-| JSON | 237 of 244 | 97.1% | 94.2% to 98.6% | 1,696,152 | $3.56 | +93.3% | 2026-11-12 |
-| TOON | 239 of 244 | 98.0% | 95.3% to 99.1% | 1,020,628 | $2.19 | +19.1% | 2026-11-12 |
+| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Terset | 240 of 244 | Mean of 2 runs: 238, 242 | 98.4% | 95.9% to 99.4% | 842,260 | $1.84 | Reference | 2026-11-17 |
+| Compact JSON | 236 of 244 | 1 run | 96.7% | 93.7% to 98.3% | 1,158,229 | $2.50 | +35.8% | 2026-11-12 |
+| JSON | 237 of 244 | 1 run | 97.1% | 94.2% to 98.6% | 1,696,152 | $3.56 | +93.7% | 2026-11-12 |
+| TOON | 239 of 244 | 1 run | 98.0% | 95.3% to 99.1% | 1,020,628 | $2.19 | +19.3% | 2026-11-12 |
 
 JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.
 
-Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.
-Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.2% less on GPT 6.1 Sol.
+Terset has two runs, both on 2026-11-17. The other formats have one run each, on 2026-11-12. Terset's rows show the mean of its runs, and the Runs column lists each run's score. A matched batch, with repeats of every format, is planned.
 
-Cost is at API list price: input and output tokens times list prices read on 2026-11-12. Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them. Temperature 0 where the model accepts it. Terset was rerun on 2026-11-17 with fitted rules, which send only the rules each text needs. The other formats did not change. Each row names its run date.
+Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.
+Against compact JSON, Terset cost 29.9% less on Claude Opus 5.5 and 26.4% less on GPT 6.1 Sol.
+
+Cost is at API list price: input and output tokens times list prices read on 2026-11-12. Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them. Temperature 0 where the model accepts it. Terset ran with fitted rules, which send only the rules each text needs. Each row names its run date.
 
 Method and limits: [terset.dev/benchmark](https://terset.dev/benchmark#accuracy). Every answer and its score: [2026-11-12](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-12) and [2026-11-17](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-17).
 

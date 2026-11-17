@@ -2,7 +2,7 @@
 // and every number comes from the bench file and the Claude counts passed in.
 // A pending bench file gives a marked pending document with no counts in it.
 // A pending Claude file gives the o200k_base document alone.
-import { ACCURACY, ACCURACY_FORMAT_NOTE, ACCURACY_KIND_NOTE, accuracyIntro, accuracyLines, accuracyMarkdownTable, accuracyMethod, kindMarkdownTable } from './accuracy.ts';
+import { ACCURACY, ACCURACY_FORMAT_NOTE, ACCURACY_KIND_NOTE, accuracyIntro, accuracyLines, accuracyMarkdownTable, accuracyMethod, accuracyRunsNote, kindMarkdownTable } from './accuracy.ts';
 import type { AccuracyFile } from './accuracy.ts';
 import { BENCH_TABLE_HEAD, CASE_SOURCE_NOTE, PENDING_NOTE, TOON_VERSION, PENDING_TITLE, QUALITY_NOTE, benchSummary, benchTableRows, benchTotalsRow, csvNote, formatCount, jsonWinsNote, toonWinsNote, totalsNote } from './bench.ts';
 import type { BenchFile } from './bench.ts';
@@ -128,6 +128,7 @@ function accuracyMarkdown(file: AccuracyFile, counters: Counters | null): readon
     bullets(proofLines(file, counters)),
     ...file.models.flatMap((model) => [`### ${model.name}`, accuracyMarkdownTable(model)]),
     ACCURACY_FORMAT_NOTE,
+    accuracyRunsNote(file),
     '### By data set',
     kindMarkdownTable(file),
     ACCURACY_KIND_NOTE,
