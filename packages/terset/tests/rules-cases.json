@@ -1,62 +1,128 @@
 [
   {
-    "name": "no table and scalar lookalikes",
-    "text": "text: \"[3] {2} @key a.b\"",
+    "name": "no table",
+    "text": "name: Ada",
     "features": [],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs."
+    "rules": ""
+  },
+  {
+    "name": "quoted root value and scalar lookalikes",
+    "text": "text: \"[3] {2} @key a.b\"",
+    "features": ["quoted"],
+    "rules": "JSON quotes distinguish numeric, boolean or null text from scalars."
   },
   {
     "name": "root JSON list lookalikes",
     "text": "[\"[3]\",\"{2}\",\"@key\",\"a.b\"]",
     "features": [],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs."
+    "rules": ""
   },
   {
     "name": "quoted root key lookalikes",
     "text": "\"[3] {2} @key a.b\": true",
     "features": [],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs."
+    "rules": ""
   },
   {
-    "name": "counted root table and quoted header",
-    "text": "[2]\n\"a.b\"\t\"@key\"\n\"[3]\"\t\"{2}\"\n@key\ta.b",
+    "name": "root JSON array and object values",
+    "text": "a: [1,2]\nb: {\"c\":1}\nd: []",
     "features": [],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs."
+    "rules": ""
+  },
+  {
+    "name": "entry keys that look like quotes or JSON",
+    "text": "rows{2}:\n@key\tname\n\"x\"\tAda\n[x\tLin",
+    "features": ["table", "keyed"],
+    "rules": "Tables use tab-separated headers and rows. name{N} has N entries; the @key column holds each entry's key and is not a field."
+  },
+  {
+    "name": "empty cell in a keyed table",
+    "text": "rows{2}:\n@key\tname\tage\nada\tAda\t1\nlin\tLin\t",
+    "features": ["table", "empty", "keyed"],
+    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. name{N} has N entries; the @key column holds each entry's key and is not a field."
+  },
+  {
+    "name": "counted root table and quoted string cells",
+    "text": "[2]\n\"a.b\"\t\"@key\"\n\"[3]\"\t\"{2}\"\n@key\ta.b",
+    "features": ["table", "quoted"],
+    "rules": "Tables use tab-separated headers and rows. JSON quotes distinguish numeric, boolean or null text from scalars."
   },
   {
     "name": "named counted table",
     "text": "rows[2]:\nname\nAda\nLin",
-    "features": [],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs."
+    "features": ["table"],
+    "rules": "Tables use tab-separated headers and rows."
+  },
+  {
+    "name": "empty cell",
+    "text": "[2]\nname\tage\nAda\t1\nLin\t",
+    "features": ["table", "empty"],
+    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent."
+  },
+  {
+    "name": "quoted string cell",
+    "text": "[2]\nname\n\"true\"\nAda",
+    "features": ["table", "quoted"],
+    "rules": "Tables use tab-separated headers and rows. JSON quotes distinguish numeric, boolean or null text from scalars."
+  },
+  {
+    "name": "JSON array cell",
+    "text": "[2]\nvalue\n[1]\n[2]",
+    "features": ["table", "json"],
+    "rules": "Tables use tab-separated headers and rows. Nested cells use JSON."
+  },
+  {
+    "name": "JSON object cell",
+    "text": "[2]\nvalue\n{}\n{\"a\":1}",
+    "features": ["table", "json"],
+    "rules": "Tables use tab-separated headers and rows. Nested cells use JSON."
+  },
+  {
+    "name": "bare id header with raw lookalike cells",
+    "text": "[3]\nid\n\"true\"\n[1]\n{2}",
+    "features": ["table", "id"],
+    "rules": "Tables use tab-separated headers and rows. A leading bare id header marks string IDs."
+  },
+  {
+    "name": "quoted id header is not a quoted cell",
+    "text": "[2]\n\"id\"\n1\n2",
+    "features": ["table"],
+    "rules": "Tables use tab-separated headers and rows."
   },
   {
     "name": "keyed table",
     "text": "rows{2}:\n@key\tname\nada\tAda\nlin\tLin",
-    "features": ["keyed"],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field."
+    "features": ["table", "keyed"],
+    "rules": "Tables use tab-separated headers and rows. name{N} has N entries; the @key column holds each entry's key and is not a field."
+  },
+  {
+    "name": "keyed id cells use ordinary types",
+    "text": "rows{2}:\n@key\tid\none\t\"true\"\ntwo\t[1]",
+    "features": ["table", "quoted", "json", "keyed"],
+    "rules": "Tables use tab-separated headers and rows. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. name{N} has N entries; the @key column holds each entry's key and is not a field."
   },
   {
     "name": "count and nested root table",
     "text": "[2]\na.b\n1\n2",
-    "features": ["nested"],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. Header a.b is field b in object a."
+    "features": ["table", "nested"],
+    "rules": "Tables use tab-separated headers and rows. Header a.b is field b in object a."
   },
   {
     "name": "keyed and nested",
     "text": "rows{2}:\n@key\ta.b\none\t1\ntwo\t2",
-    "features": ["keyed", "nested"],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
+    "features": ["table", "keyed", "nested"],
+    "rules": "Tables use tab-separated headers and rows. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
   },
   {
     "name": "count and keyed",
     "text": "list[2]:\nname\nAda\nLin\nmap{2}:\n@key\tname\nada\tAda\nlin\tLin",
-    "features": ["keyed"],
-    "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field."
+    "features": ["table", "keyed"],
+    "rules": "Tables use tab-separated headers and rows. name{N} has N entries; the @key column holds each entry's key and is not a field."
   },
   {
     "name": "all constructs in fixed order",
-    "text": "map{2}:\n@key\ta.b\none\t1\ntwo\t2\nlist[2]:\nname\nAda\nLin",
-    "features": ["keyed", "nested"],
+    "text": "map{2}:\n@key\ta.b\tvalue\ttext\none\t1\t[1]\t\"true\"\ntwo\t2\t[2]\t\nlist[2]:\nid\n1\n2",
+    "features": ["table", "empty", "quoted", "json", "id", "keyed", "nested"],
     "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
   }
 ]

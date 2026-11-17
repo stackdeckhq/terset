@@ -36,8 +36,8 @@ describe('step 6 views', () => {
       expect(view.orders).toEqual(counter.samples.orders);
     }
     const [open, claude] = views;
-    expect(open?.headline).toEqual({ title: 'Fewer tokens than TOON in 8 of 11 cases.', tag: 'OpenAI tokenizer', line: 'Fewer than compact JSON in 9 of 11.' });
-    expect(claude?.headline).toEqual({ title: 'Fewer tokens than TOON in 6 of 11 cases.', tag: 'Claude Opus 5.5', line: 'Fewer than compact JSON in 9 of 11.' });
+    expect(open?.headline).toEqual({ title: 'Fewer tokens than TOON in 9 of 11 cases.', tag: 'OpenAI tokenizer', line: 'Fewer than compact JSON in 10 of 11.' });
+    expect(claude?.headline).toEqual({ title: 'Fewer tokens than TOON in 10 of 11 cases.', tag: 'Claude Opus 5.5', line: 'Fewer than compact JSON in 10 of 11.' });
     expect(open?.orders).toEqual(BENCH.status === 'ready' ? BENCH.samples.orders : null);
     expect(claude?.orders).toEqual(counters.claude.samples.orders);
     expect(open?.foot).toContain('The six orders above use o200k_base.');
@@ -89,7 +89,7 @@ describe('step 6 markup', () => {
     expect(off('claude')).toEqual([`${claude.headline.title} <span class="tok">Claude Opus 5.5</span>`, claude.headline.line, ...trio(counters.claude.samples.orders), claude.foot]);
     expect(on('claude')).toEqual([]);
     expect(off('o200k')).toEqual([]);
-    expect(trio(counters.o200k.samples.orders)).toEqual(['327', '−8.1% against JSON', '356', '405']);
+    expect(trio(counters.o200k.samples.orders)).toEqual(['314', '−11.8% against JSON', '356', '405']);
     expect(html).toContain('data-counter="o200k"><div class="chart-top">');
   });
 

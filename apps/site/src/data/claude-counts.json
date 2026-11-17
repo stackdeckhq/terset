@@ -1,7 +1,7 @@
 {
   "status": "ready",
   "model": "claude-opus-5-5",
-  "countedAt": "2026-11-17T00:09:19Z",
+  "countedAt": "2026-11-17T14:46:01Z",
   "endpoint": "/v1/messages/count_tokens",
   "baseline": {
     "text": "a",
@@ -9,7 +9,7 @@
     "inputTokens": 9,
     "overheadTokens": 8
   },
-  "method": "One user message per text. Subtract the same-run input_tokens for \"a\", then add 1, assuming \"a\" is one Claude text token. This estimates text tokens by removing fixed message framing. TOON is the smaller count of default and tab forms. Terset is rulesFor(text), a newline, then encoded data in one message. CSV is a root record list or the only field of an object; nested cells use compact JSON, null and absent cells are empty. csvExact compares the record list with cells inferred as JSON scalar values or plain text. o200kJson is compact JSON counted locally with o200k_base for input verification. Counts do not measure answer quality.",
+  "method": "One user message per text. Subtract the same-run input_tokens for \"a\", then add 1, assuming \"a\" is one Claude text token. This estimates text tokens by removing fixed message framing. TOON is the smaller count of default and tab forms. Terset is rulesFor(text), a newline, then encoded data in one message; when rulesFor(text) is empty it is the encoded data alone. CSV is a root record list or the only field of an object; nested cells use compact JSON, null and absent cells are empty. csvExact compares the record list with cells inferred as JSON scalar values or plain text. o200kJson is compact JSON counted locally with o200k_base for input verification. Counts do not measure answer quality.",
   "rulesMode": "fitted",
   "requests": 113,
   "rows": [
@@ -24,7 +24,7 @@
       "csv": 474,
       "csvExact": false,
       "o200kJson": 356,
-      "terset": 503
+      "terset": 478
     },
     {
       "id": "sample:servers",
@@ -37,7 +37,7 @@
       "csv": 339,
       "csvExact": false,
       "o200kJson": 420,
-      "terset": 403
+      "terset": 378
     },
     {
       "id": "sample:config",
@@ -50,7 +50,7 @@
       "csv": null,
       "csvExact": null,
       "o200kJson": 99,
-      "terset": 225
+      "terset": 150
     },
     {
       "id": "example:users",
@@ -89,7 +89,7 @@
       "csv": 24,
       "csvExact": false,
       "o200kJson": 36,
-      "terset": 108
+      "terset": 84
     },
     {
       "id": "benchmark:ui-text-uneven-rows",
@@ -102,7 +102,7 @@
       "csv": 782,
       "csvExact": false,
       "o200kJson": 697,
-      "terset": 815
+      "terset": 766
     },
     {
       "id": "benchmark:ui-text-uniform-rows",
@@ -115,7 +115,7 @@
       "csv": 722,
       "csvExact": true,
       "o200kJson": 737,
-      "terset": 804
+      "terset": 745
     },
     {
       "id": "benchmark:translation-batch",
@@ -128,7 +128,7 @@
       "csv": null,
       "csvExact": null,
       "o200kJson": 1448,
-      "terset": 1858
+      "terset": 1813
     },
     {
       "id": "benchmark:file-list-short",
@@ -141,7 +141,7 @@
       "csv": null,
       "csvExact": null,
       "o200kJson": 12808,
-      "terset": 12031
+      "terset": 11972
     },
     {
       "id": "benchmark:file-list-long",
@@ -154,7 +154,7 @@
       "csv": null,
       "csvExact": null,
       "o200kJson": 19969,
-      "terset": 21293
+      "terset": 21259
     },
     {
       "id": "benchmark:200-users",
@@ -167,7 +167,7 @@
       "csv": 7629,
       "csvExact": true,
       "o200kJson": 9051,
-      "terset": 7710
+      "terset": 7665
     },
     {
       "id": "benchmark:metrics-numbers-and-booleans",
@@ -180,7 +180,7 @@
       "csv": 3286,
       "csvExact": true,
       "o200kJson": 4798,
-      "terset": 3369
+      "terset": 3310
     },
     {
       "id": "benchmark:deep-nested-config",
@@ -193,7 +193,7 @@
       "csv": null,
       "csvExact": null,
       "o200kJson": 251,
-      "terset": 477
+      "terset": 402
     },
     {
       "id": "benchmark:mixed-type-array",
@@ -206,7 +206,7 @@
       "csv": null,
       "csvExact": null,
       "o200kJson": 63,
-      "terset": 164
+      "terset": 89
     },
     {
       "id": "benchmark:reviews-long-text",
@@ -219,7 +219,7 @@
       "csv": 4861,
       "csvExact": true,
       "o200kJson": 4308,
-      "terset": 4944
+      "terset": 4899
     },
     {
       "id": "benchmark:orders-with-line-items",
@@ -232,7 +232,7 @@
       "csv": 6490,
       "csvExact": false,
       "o200kJson": 4678,
-      "terset": 5687
+      "terset": 5662
     }
   ]
 }

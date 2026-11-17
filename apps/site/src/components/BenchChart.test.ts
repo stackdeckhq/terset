@@ -68,13 +68,13 @@ function expectMinMarks(counter: Counter, html: string): void {
 }
 
 describe('bench chart bar marks', () => {
-  it('marks the smallest count in every o200k_base case, compact JSON where it wins', () => {
+  it('marks the smallest count in every o200k_base case, including the table-free config', () => {
     const counters = ready();
     const html = render(counters);
     expectMinMarks(counters.o200k, html);
     const nested = rowsOf(html).get('Deep nested config') ?? '';
-    expect(nested).toContain('class="brow json min"');
-    expect(nested).toContain('class="brow terset"');
+    expect(nested).toContain('class="brow json"');
+    expect(nested).toContain('class="brow terset min"');
   });
 
   it('marks the smallest count in every Claude case', () => {

@@ -23,7 +23,7 @@ import { parseNeutralInputs } from './claude-inputs.ts';
 import { PUBLISHED_RUNS, REQUEST_COUNTS } from './update-accuracy.ts';
 
 export const ENDPOINT = '/v1/messages/count_tokens';
-export const METHOD = 'One user message per text. Subtract the same-run input_tokens for "a", then add 1, assuming "a" is one Claude text token. This estimates text tokens by removing fixed message framing. TOON is the smaller count of default and tab forms. Terset is rulesFor(text), a newline, then encoded data in one message. CSV is a root record list or the only field of an object; nested cells use compact JSON, null and absent cells are empty. csvExact compares the record list with cells inferred as JSON scalar values or plain text. o200kJson is compact JSON counted locally with o200k_base for input verification. Counts do not measure answer quality.';
+export const METHOD = 'One user message per text. Subtract the same-run input_tokens for "a", then add 1, assuming "a" is one Claude text token. This estimates text tokens by removing fixed message framing. TOON is the smaller count of default and tab forms. Terset is rulesFor(text), a newline, then encoded data in one message; when rulesFor(text) is empty it is the encoded data alone. CSV is a root record list or the only field of an object; nested cells use compact JSON, null and absent cells are empty. csvExact compares the record list with cells inferred as JSON scalar values or plain text. o200kJson is compact JSON counted locally with o200k_base for input verification. Counts do not measure answer quality.';
 const OUTPUT = new URL('../src/data/claude-counts.json', import.meta.url);
 const ResponseSchema = z.object({ input_tokens: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) });
 
@@ -83,6 +83,8 @@ function csvExact(value: JsonRoot): boolean | null {
 export function formatTexts(value: JsonRoot) {
   const terset = encode(value);
   if (JSON.stringify(decode(terset)) !== JSON.stringify(value)) throw new Error('Terset round trip failed');
+  // Empty rules add nothing, so that text is sent as the data alone.
+  const rules = rulesFor(terset);
   return {
     json: JSON.stringify(value),
     jsonPretty: JSON.stringify(value, null, 2),
@@ -91,7 +93,7 @@ export function formatTexts(value: JsonRoot) {
     toonTab: toonEncode(value, { delimiter: '\t' }),
     csv: csvText(value),
     csvExact: csvExact(value),
-    terset: `${rulesFor(terset)}\n${terset}`,
+    terset: rules === '' ? terset : `${rules}\n${terset}`,
   };
 }
 

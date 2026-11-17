@@ -8,10 +8,17 @@ import unittest
 PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE / "src"))
 
-from terset import RULES, decode, rules_for
+from terset import RULES, decode, encode, rules_for
 
 
 class RulesTests(unittest.TestCase):
+    def test_root_values_and_id_cells(self):
+        self.assertEqual(rules_for(encode({"name": "Ada"})), "")
+        self.assertEqual(rules_for(encode({"value": "true"})),
+                         "JSON quotes distinguish numeric, boolean or null text from scalars.")
+        self.assertEqual(rules_for(encode([{"id": '"true"'}, {"id": "[1]"}])),
+                         "Tables use tab-separated headers and rows. A leading bare id header marks string IDs.")
+
     def test_shared_rules(self):
         cases = json.loads((PACKAGE.parent / "terset/tests/rules-cases.json").read_text(encoding="utf-8"))
         for case in cases:

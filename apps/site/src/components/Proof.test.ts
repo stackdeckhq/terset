@@ -17,9 +17,9 @@ describe('big numbers', () => {
   it('prints each value as text, wins marked, accuracy plain', () => {
     expect(html.match(/<li class="big-n win">/gu)).toHaveLength(2);
     expect(html).toContain('<li class="big-n">');
-    for (const text of ['32.0%', '26.7%', '29.2%', '25.8%']) expect(html).toContain(`<b>${text}</b>`);
-    expect(html).toContain('<b>243<span class="big-t">/244</span></b>');
-    expect(html).toContain('<b>241<span class="big-t">/244</span></b>');
+    for (const text of ['32.7%', '27.3%', '29.8%', '26.2%']) expect(html).toContain(`<b>${text}</b>`);
+    // Both models answered 242 of 244, so the same value prints twice.
+    expect(html.match(/<b>242<span class="big-t">\/244<\/span><\/b>/gu)).toHaveLength(2);
   });
 
   it('names the metric first, then one column per model with the model before its number', () => {
@@ -48,10 +48,10 @@ describe('cost bars', () => {
   it('dates every row and marks the Terset row', () => {
     const html = renderToStaticMarkup(createElement(CostBars, { file: ACCURACY, headingId: 'h', title: 'Cost' }));
     expect(html.match(/class="cost-bar terset[ "]/gu)).toHaveLength(2);
-    expect(html.match(/run 2026-11-13/gu)).toHaveLength(2);
+    expect(html.match(/run 2026-11-17/gu)).toHaveLength(2);
     expect(html.match(/run 2026-11-12/gu)).toHaveLength(6);
-    expect(html).toContain('<b>$5.69</b>');
-    expect(html).toContain('<b>$1.85</b>');
+    expect(html).toContain('<b>$5.65</b>');
+    expect(html).toContain('<b>$1.84</b>');
   });
 
   it('marks the cheapest format per model, and only the Terset number is accent', () => {
@@ -76,11 +76,11 @@ describe('data set chart', () => {
     expect(html.match(/<span class="sr">/gu)).toHaveLength(26);
   });
 
-  it('shows the nested config loss against compact JSON and the Opus tie against TOON', () => {
+  it('shows the nested config loss against compact JSON, and no tie against TOON', () => {
     expect(html.match(/<span class="dv more">/gu)).toHaveLength(2);
-    expect(html).toContain('<b class="dv-v">+5.1%</b>');
-    expect(html).toContain('<b class="dv-v">+8.8%</b>');
-    expect(html.match(/<span class="dv tie">/gu)).toHaveLength(1);
+    expect(html).toContain('<b class="dv-v">+1.5%</b>');
+    expect(html).toContain('<b class="dv-v">+5.4%</b>');
+    expect(html).not.toContain('<span class="dv tie">');
   });
 
   it('names the tokenizer per model', () => {

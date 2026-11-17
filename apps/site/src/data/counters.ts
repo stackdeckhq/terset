@@ -8,7 +8,7 @@
 // a missing or extra case, a renamed case, other input data, or prices that
 // belong to another counter.
 import type { BenchFile, CaseRow, CaseSet } from './bench.ts';
-import { benchHeadline, benchSummary, formatCount, tokenizerNote, totalsNote, underJson } from './bench.ts';
+import { FITTED_RULES_NOTE, benchHeadline, benchSummary, formatCount, tokenizerNote, totalsNote, underJson } from './bench.ts';
 import type { Trio } from './bench-schema.ts';
 import type { ClaudeCounts, ClaudeReady, ClaudeRow } from './claude-counts-schema.ts';
 import type { Price, Prices } from './prices.ts';
@@ -101,10 +101,10 @@ export function countersHeadline(bench: BenchFile, counters: Counters | null): s
 /** Which counters made the numbers, in one or two plain sentences. */
 export function countersNote(bench: BenchFile, counters: Counters | null): string {
   if (counters === null || counters.claude === null) return tokenizerNote(bench);
-  return `Tokens counted two ways: the o200k_base tokenizer and Claude's token count for ${counters.claude.price.model}. Others will differ. JSON means compact JSON, not pretty printed.`;
+  return `Tokens counted two ways: the o200k_base tokenizer and Claude's token count for ${counters.claude.price.model}. Others will differ. JSON means compact JSON, not pretty printed. ${FITTED_RULES_NOTE}`;
 }
 
-/** "o200k_base: Terset, rules line included, is under ..." for one counter. */
+/** "o200k_base: Terset, fitted rules line included, is under ..." for one counter. */
 export function counterSummary(counter: Counter): string {
   return `${counter.name}: ${benchSummary(counter)}`;
 }
@@ -197,7 +197,7 @@ export function claudeMethod(claude: ClaudeCounts): readonly string[] {
     `The Claude counts come from Anthropic's token count endpoint for \`${claude.model}\`, run on ${day} UTC.`,
     `Each text is sent as one user message. The same run also counts the one-letter text "${claude.baseline.text}", which comes back as ${formatCount(claude.baseline.inputTokens)} tokens. Its ${formatCount(claude.baseline.overheadTokens)} tokens of fixed message framing are taken off every count, assuming "${claude.baseline.text}" itself is ${formatCount(claude.baseline.assumedTextTokens)} token.`,
     claude.rulesMode === 'fitted'
-      ? 'Terset is sent as rulesFor(text), a newline and the data, in one message, so its Claude counts include the fitted rules line.'
+      ? 'Terset is sent as rulesFor(text), a newline and the data, in one message, so its Claude counts include the fitted rules line. When rulesFor(text) is empty, the text is sent as the data alone.'
       : 'Terset is sent as the full RULES line, a newline and the data, in one message, so its Claude counts include the full rules line.',
     'Every Claude case was made from the same input as the o200k_base case of the same name. The build checks this by comparing the compact JSON counted locally with o200k_base.',
   ];

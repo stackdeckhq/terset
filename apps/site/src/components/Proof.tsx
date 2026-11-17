@@ -16,7 +16,7 @@ function caption(label: string): string {
 /**
  * Three big numbers: fewer input tokens and lower cost than compact JSON, and right answers.
  * Each card names its metric first, then one column per model with the model before its number,
- * so a screen reader hears "Fewer input tokens than compact JSON, Opus 32.0%, Sol 26.7%".
+ * so a screen reader hears "Fewer input tokens than compact JSON, Opus 32.7%, Sol 27.3%".
  * The spaces keep the words apart when the text is read or copied as one run.
  */
 export function BigNumbers({ file }: { readonly file: AccuracyFile }) {

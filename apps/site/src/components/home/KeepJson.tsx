@@ -1,6 +1,7 @@
 // Where Terset does not help, and the limits the encoder enforces.
 // Every figure comes from the bench data and reads "pending" until it is published.
-import { BENCH, PENDING_LABEL, csvNote, formatCount, jsonWinsNote, pct } from '../../data/numbers.ts';
+import type { Trio } from '../../data/bench-schema.ts';
+import { BENCH, PENDING_LABEL, csvNote, formatCount, pct } from '../../data/numbers.ts';
 import { SIZE_LINE } from '../../data/size.ts';
 
 interface KeepItem {
@@ -10,13 +11,21 @@ interface KeepItem {
 }
 
 const CONFIG = BENCH.status === 'ready' ? BENCH.samples.config : null;
-const JSON_WINS = jsonWinsNote(BENCH);
 const CSV_NOTE = csvNote(BENCH);
+
+/** Why the config sample gains little. It has no table, so rulesFor gives no rules; the counts say the rest. */
+export function configWhy(config: Trio | null): string {
+  const head = 'Nothing to put in a table, so Terset sends no rules';
+  if (config === null) return `${head} and has little to save.`;
+  if (config.terset === config.json) return `${head} and ties compact JSON.`;
+  if (config.terset < config.json) return `${head} and saves little over compact JSON.`;
+  return `${head}, and compact JSON is still smaller.`;
+}
 
 const ITEMS: readonly KeepItem[] = [
   {
     title: 'Deep config, no lists',
-    why: JSON_WINS === '' ? 'Nothing to put in a table, so the rules are pure cost.' : JSON_WINS,
+    why: configWhy(CONFIG),
     figure: CONFIG === null ? `Tokens: ${PENDING_LABEL.toLowerCase()}` : `Config sample: ${formatCount(CONFIG.terset)} vs ${formatCount(CONFIG.json)} tokens, ${pct(CONFIG.terset, CONFIG.json)}`,
   },
   ...(CSV_NOTE === '' ? [] : [{ title: 'Flat lists you control', why: CSV_NOTE }]),

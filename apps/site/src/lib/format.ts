@@ -15,10 +15,10 @@ export type { JsonObject, JsonRoot, JsonValue };
 export const IMPORT_LINE = `import { encode, decode, rulesFor } from "${PACKAGE_NAME}";`;
 
 /** The two lines a caller writes. `data` is the root object or array. */
-export const USAGE_LINES: readonly string[] = ['const text = encode(data); // in the user message', 'const system = rulesFor(text); // once, in the system prompt'];
+export const USAGE_LINES: readonly string[] = ['const text = encode(data); // the data, in the user message', 'const rules = rulesFor(text); // right before the data'];
 
 /** Where the rules go, in one line. */
-export const RULES_PLACEMENT = 'Put rulesFor(text) in the system prompt once. The data itself carries no legend.';
+export const RULES_PLACEMENT = 'Send rulesFor(text) right before the data. A shared or cached system prompt for many texts takes the full RULES instead.';
 
 // Syntax
 

@@ -85,7 +85,7 @@ function use(lang: DocLang): string {
   const name = NAMES[lang];
   const sample = QUICK_START[lang];
   return [
-    `The API exports \`${name.encode}\`, \`${name.decode}\`, \`${name.rules}\` and \`${name.rulesFor}\`.\n\`${name.rulesFor}(text)\` gives the shortest valid rules sentence. \`${name.rules}\` keeps the full rules.`,
+    `The API exports \`${name.encode}\`, \`${name.decode}\`, \`${name.rules}\` and \`${name.rulesFor}\`.\n\`${name.rulesFor}(text)\` gives only the rules sentences that text needs. \`${name.rules}\` keeps the full rules.`,
     fence(LANG_FENCE[lang], sample.code),
     'Output (the gaps are tabs):',
     fence('text', sample.output),

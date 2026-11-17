@@ -16,6 +16,7 @@ describe('Terset package integration', () => {
   });
 
   it('uses the fitted package primer and supports only the four formats', () => {
+    expect(primerFor('terset', encodeTerset({ value: 'SAME-DATA' }))).toBe('');
     for (const dataset of DATASETS) {
       const text = encodeTerset(dataset.data);
       expect(primerFor('terset', text)).toBe(rulesFor(text));

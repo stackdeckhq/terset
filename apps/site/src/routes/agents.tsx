@@ -23,7 +23,7 @@ export const Route = createFileRoute('/agents')({
 
 const NEEDS: readonly (readonly [string, string])[] = [
   ['When to use it.', 'Lists of records that share keys. Keep JSON for config and tiny data.'],
-  ['How to call it.', 'encode() for the data, and rulesFor(text) for its rules sentence.'],
+  ['How to call it.', 'encode() for the data, and rulesFor(text) for the rules that text needs.'],
   ['Where the rules go.', RULES_PLACEMENT],
   ['What to ask for.', 'Answers in JSON. Terset is for reading.'],
 ];

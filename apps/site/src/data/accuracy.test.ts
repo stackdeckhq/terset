@@ -48,12 +48,12 @@ describe('accuracy', () => {
   it('shows every format with its score, interval, tokens and cost, Terset first', () => {
     expect(ACCURACY_TABLE_HEAD.slice(-2)).toEqual(['Costs more than Terset', 'Run date']);
     expect(accuracyTableRows(model('claude-opus-5-5'))).toEqual([
-      ['Terset', '243 of 244', '99.6%', '97.7% to 99.9%', '1,200,640', '$5.69', 'Reference', '2026-11-13'],
-      ['Compact JSON', '241 of 244', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.04', '+41.3%', '2026-11-12'],
-      ['JSON', '239 of 244', '98.0%', '95.3% to 99.1%', '2,303,845', '$10.20', '+79.2%', '2026-11-12'],
-      ['TOON', '242 of 244', '99.2%', '97.1% to 99.8%', '1,369,764', '$6.35', '+11.6%', '2026-11-12'],
+      ['Terset', '242 of 244', '99.2%', '97.1% to 99.8%', '1,188,659', '$5.65', 'Reference', '2026-11-17'],
+      ['Compact JSON', '241 of 244', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.04', '+42.4%', '2026-11-12'],
+      ['JSON', '239 of 244', '98.0%', '95.3% to 99.1%', '2,303,845', '$10.20', '+80.6%', '2026-11-12'],
+      ['TOON', '242 of 244', '99.2%', '97.1% to 99.8%', '1,369,764', '$6.35', '+12.5%', '2026-11-12'],
     ]);
-    expect(accuracyTableRows(model('gpt-6.1-sol')).map((row) => row[6])).toEqual(['Reference', '+34.8%', '+92.2%', '+18.3%']);
+    expect(accuracyTableRows(model('gpt-6.1-sol')).map((row) => row[6])).toEqual(['Reference', '+35.6%', '+93.3%', '+19.1%']);
   });
 
   it('works out the cost over Terset from the unrounded costs, with a minus when a format is cheaper', () => {
@@ -82,7 +82,7 @@ describe('accuracy', () => {
     });
     const first = toonCheaper.models[0];
     if (first === undefined) throw new Error('no models');
-    expect(accuracyTableRows(first).map((row) => row[6])).toEqual(['Reference', '+41.3%', '+79.2%', '−10.0%']);
+    expect(accuracyTableRows(first).map((row) => row[6])).toEqual(['Reference', '+42.4%', '+80.6%', '−10.0%']);
     expect(accuracyTableMarks(first).map((row) => row[5])).toEqual([null, 'terset-cheaper', 'terset-cheaper', 'terset-pricier']);
     expect([overTersetMark('+0.1%'), overTersetMark('−0.1%'), overTersetMark('0.0%'), overTersetMark('Reference')]).toEqual(['terset-cheaper', 'terset-pricier', null, null]);
   });
@@ -147,33 +147,33 @@ describe('accuracy', () => {
   it('keeps the result to two sentences under the tables', () => {
     expect(accuracySummary(ACCURACY)).toEqual([
       "Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.",
-      'Against compact JSON, Terset cost 29.2% less on Claude Opus 5.5 and 25.8% less on GPT 6.1 Sol.',
+      'Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.2% less on GPT 6.1 Sol.',
     ]);
   });
 
   it('shows Terset input tokens against compact JSON and TOON per kind of data, losses included', () => {
     expect(kindMarkdownHead(ACCURACY)).toEqual(['Data', 'Questions', 'vs compact JSON, Opus', 'vs compact JSON, Sol', 'vs TOON, Opus', 'vs TOON, Sol']);
     expect(kindTableRows(ACCURACY)).toEqual([
-      ['Flat tables', '41', '−41%', '−40%', '−4%', '−10%'],
-      ['Analytics', '30', '−51%', '−37%', '−6%', '−10%'],
+      ['Flat tables', '41', '−42%', '−41%', '−5%', '−11%'],
+      ['Analytics', '30', '−52%', '−39%', '−10%', '−11%'],
       ['GitHub repos', '33', '−33%', '−25%', '−2%', '−4%'],
-      ['Event logs', '30', '−33%', '−26%', '−37%', '−39%'],
-      ['Nested orders', '41', '−22%', '−18%', '−15%', '−23%'],
-      ['Nested groups', '18', '−39%', '−41%', '−3%', '−6%'],
-      ['Keyed objects', '17', '−42%', '−31%', '−5%', '−9%'],
-      ['Nested config', '29', '+5%', '+9%', '0%', '−6%'],
-      ['Structure: control', '1', '−33%', '−33%', '−6%', '−12%'],
-      ['Structure: truncated', '1', '−32%', '−31%', '−7%', '−13%'],
-      ['Structure: extra rows', '1', '−34%', '−34%', '−6%', '−12%'],
-      ['Structure: width mismatch', '1', '−33%', '−33%', '−6%', '−12%'],
-      ['Structure: missing fields', '1', '−34%', '−34%', '−7%', '−13%'],
+      ['Event logs', '30', '−33%', '−26%', '−38%', '−39%'],
+      ['Nested orders', '41', '−22%', '−19%', '−15%', '−23%'],
+      ['Nested groups', '18', '−40%', '−42%', '−5%', '−8%'],
+      ['Keyed objects', '17', '−44%', '−33%', '−9%', '−12%'],
+      ['Nested config', '29', '+1%', '+5%', '−3%', '−9%'],
+      ['Structure: control', '1', '−37%', '−37%', '−12%', '−17%'],
+      ['Structure: truncated', '1', '−36%', '−36%', '−13%', '−18%'],
+      ['Structure: extra rows', '1', '−38%', '−37%', '−11%', '−16%'],
+      ['Structure: width mismatch', '1', '−37%', '−37%', '−12%', '−17%'],
+      ['Structure: missing fields', '1', '−38%', '−37%', '−13%', '−18%'],
     ]);
     expect(wholePct(100, 100)).toBe('0%');
     expect(wholePct(99.6, 100)).toBe('0%');
   });
 
   it('adds a third line only for kinds where TOON used fewer tokens on both models', () => {
-    // Opus is 29 tokens over TOON on nested config, but Sol is under, so no kind qualifies.
+    // Terset is under TOON on every kind for both models, so no kind qualifies.
     expect(accuracyKindLine(ACCURACY)).toBeNull();
     expect(accuracyLines(ACCURACY)).toEqual(accuracySummary(ACCURACY));
     const copy = structuredClone(ACCURACY);
@@ -225,14 +225,14 @@ describe('accuracy', () => {
     const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
     expect(text).toContain('## Answer accuracy');
     expect(text).toContain('| Format | Correct | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |');
-    expect(text).toContain('| Terset | 243 of 244 | 99.6% | 97.7% to 99.9% | 1,200,640 | $5.69 | Reference | 2026-11-13 |');
-    expect(text).toContain('| JSON | 239 of 244 | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +79.2% | 2026-11-12 |');
+    expect(text).toContain('| Terset | 242 of 244 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.65 | Reference | 2026-11-17 |');
+    expect(text).toContain('| JSON | 239 of 244 | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.6% | 2026-11-12 |');
     expect(text).not.toContain('Cost vs compact JSON');
     expect(text).toContain(ACCURACY_FORMAT_NOTE);
     expect(text).toContain('### By data set');
-    expect(text).toContain('| Structure: missing fields | 1 | −34% | −34% | −7% | −13% |');
+    expect(text).toContain('| Structure: missing fields | 1 | −38% | −37% | −13% | −18% |');
     expect(text).toContain('| Data | Questions | vs compact JSON, Opus | vs compact JSON, Sol | vs TOON, Opus | vs TOON, Sol |');
-    expect(text).toContain('| Nested config | 29 | +5% | +9% | 0% | −6% |');
+    expect(text).toContain('| Nested config | 29 | +1% | +5% | −3% | −9% |');
     expect(text).toContain(ACCURACY_KIND_NOTE);
     expect(text).toContain('Input tokens, primers included, counted the same way as the tables. Minus means Terset used fewer tokens.');
     expect(text).not.toContain('TOON used fewer tokens than Terset');

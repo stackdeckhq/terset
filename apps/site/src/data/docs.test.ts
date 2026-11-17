@@ -7,9 +7,11 @@ import { readFileSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 import { runInThisContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
-import { RULES, decode, encode, rulesFor } from '../lib/format.ts';
+import { RULES, RULES_PLACEMENT, decode, encode, rulesFor } from '../lib/format.ts';
 import { API, PUBLIC_EXPORTS, exampleFence } from './docs-api.ts';
-import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, QUICK_START } from './docs.ts';
+import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, QUICK_START, RULES_INTRO, WHEN_NOT, quickStartSteps } from './docs.ts';
+import { COUNTERS } from './numbers.ts';
+import { SAMPLES } from './samples.ts';
 import type { CodeSample } from './docs.ts';
 import { README_FILES, README_IDS, expectedBlocks, h2Headings, readBlocks, sections } from './docs-readme.ts';
 import { PACKAGE_VERSION } from './site.ts';
@@ -25,6 +27,9 @@ const PER_LANGUAGE = new Set(['Install', 'Use it']);
 
 /** Built from parts so this file does not contain the phrase it bans. */
 const STALE_PYPI = ['Coming', 'soon', 'on', 'PyPI'].join(' ');
+
+/** The old advice to put the fitted rules in the system prompt. Built from parts for the same reason. */
+const STALE_PLACEMENT = ['in', 'the', 'system', 'prompt', 'once'].join(' ');
 
 describe('README blocks', () => {
   for (const id of README_IDS) {
@@ -69,6 +74,37 @@ describe('README blocks', () => {
     const text = /\.(md|ts|tsx|txt|toml|json|py|html|css)$/u;
     const hits = files.filter((path) => text.test(path) && read(path).includes(STALE_PYPI));
     expect(hits).toEqual([]);
+  });
+
+  it('sends the fitted rules right before the data and keeps RULES for a shared system prompt', () => {
+    for (const lang of ['js', 'py'] as const) {
+      const [, placement] = quickStartSteps(lang);
+      expect(placement).toContain('right before the data');
+      expect(placement).toContain('`RULES` instead');
+    }
+    expect(RULES_PLACEMENT).toContain('right before the data');
+    expect(RULES_INTRO.join(' ')).toContain('shared or cached system prompt');
+    const files = spawnSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', '*.md', 'apps/site/src'], { cwd: ROOT, encoding: 'utf8' }).stdout.split('\0').filter((path) => path !== '' && !path.startsWith('output/'));
+    expect(files.length).toBeGreaterThan(10);
+    const hits = files.filter((path) => /\.(md|ts|tsx)$/u.test(path) && read(path).includes(STALE_PLACEMENT));
+    expect(hits).toEqual([]);
+  });
+});
+
+describe('when not to use it', () => {
+  it('says what the counts show for data with no table: no rules and a few tokens saved at most', () => {
+    const [noLists] = WHEN_NOT;
+    expect(noLists?.text).toBe('Config files and deeply nested data stay JSON. Terset sends no rules for them and saves a few tokens at most.');
+    expect(rulesFor(encode(SAMPLES.config))).toBe('');
+    if (COUNTERS === null || COUNTERS.claude === null) throw new Error('the bench or the Claude counts are pending');
+    for (const counter of [COUNTERS.o200k, COUNTERS.claude]) {
+      const nested = counter.cases.find((row) => row.name === 'Deep nested config');
+      if (nested === undefined) throw new Error(`${counter.name} has no deep nested config case`);
+      for (const trio of [counter.samples.config, nested]) {
+        expect(trio.json - trio.terset, counter.name).toBeGreaterThanOrEqual(0);
+        expect(trio.json - trio.terset, counter.name).toBeLessThanOrEqual(5);
+      }
+    }
   });
 });
 

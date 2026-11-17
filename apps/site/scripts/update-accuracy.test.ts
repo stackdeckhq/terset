@@ -57,18 +57,18 @@ describe('accuracy results', () => {
     expect(file.failedCalls).toBe(0);
     expect(file.publishedRuns.map((run) => [run.runOn, run.formats])).toEqual([
       ['2026-11-12', ['json-compact', 'json-pretty', 'toon']],
-      ['2026-11-13', ['terset']],
+      ['2026-11-17', ['terset']],
     ]);
     const opus = file.models.find((model) => model.id === 'claude-opus-5-5');
     expect(opus?.rows.map((row) => [row.format, row.correct, row.inputTokens, row.runOn])).toEqual([
-      ['terset', 243, 1200640, '2026-11-13'],
+      ['terset', 242, 1188659, '2026-11-17'],
       ['json-compact', 241, 1766161, '2026-11-12'],
       ['json-pretty', 239, 2303845, '2026-11-12'],
       ['toon', 242, 1369764, '2026-11-12'],
     ]);
     const sol = file.models.find((model) => model.id === 'gpt-6.1-sol');
-    expect(sol?.rows[0]).toMatchObject({ correct: 241, inputTokens: 848844, totalCost: 1.852288, runOn: '2026-11-13' });
-    expect(opus?.rows[0]?.totalCost).toBe(5.69084);
+    expect(sol?.rows[0]).toMatchObject({ correct: 242, inputTokens: 842260, totalCost: 1.84122, runOn: '2026-11-17' });
+    expect(opus?.rows[0]?.totalCost).toBe(5.645736);
   });
 
   it.each([
@@ -112,9 +112,9 @@ describe('accuracy results', () => {
     ]);
     const keyed = file.kinds.find((item) => item.kind === 'keyed');
     expect(keyed?.models.map((model) => [model.id, model.inputTokens.terset, model.inputTokens['json-compact'], model.inputTokens.toon])).toEqual([
-      // Terset from 2026-11-13; compact JSON and TOON from 2026-11-12.
-      ['claude-opus-5-5', 21507, 36892, 22578],
-      ['gpt-6.1-sol', 16125, 23401, 17757],
+      // Terset from 2026-11-17; compact JSON and TOON from 2026-11-12.
+      ['claude-opus-5-5', 20504, 36892, 22578],
+      ['gpt-6.1-sol', 15581, 23401, 17757],
     ]);
     for (const item of file.kinds) expect(item.datasets, item.kind).toHaveLength(1);
     for (const model of file.models) {
@@ -188,7 +188,7 @@ describe('Claude input tokens from the request counts', () => {
       expect(row.inputTokens, row.format).toBe(countedSum(runId, row.format));
       expect(row.totalCost, row.format).toBeCloseTo((row.inputTokens * 4 + row.outputTokens * 20) / 1_000_000, 9);
     }
-    expect(sol?.rows[0]?.inputTokens).toBe(848844);
+    expect(sol?.rows[0]?.inputTokens).toBe(842260);
   });
 
   it('refuses a published Claude request with no count', () => {

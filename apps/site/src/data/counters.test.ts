@@ -19,6 +19,7 @@ import {
   counterSummary,
   counterTotals,
   countersHeadline,
+  countersNote,
   formatCents,
   QUALITY_NOTE,
   totalsNote,
@@ -73,7 +74,7 @@ describe('Claude counts paired with the bench file', () => {
     const text = full.slice(0, start) + full.slice(end);
     expect(text).not.toContain('Claude');
     expect(text.match(/^\| Case \| Terset \| JSON compact \| JSON pretty/gmu)).toHaveLength(1);
-    expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than TOON in 8 of 11 cases.`);
+    expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than TOON in 9 of 11 cases.`);
   });
 
   it('fails clearly on a missing case row', () => {
@@ -112,8 +113,22 @@ describe('Claude counts paired with the bench file', () => {
   it('claims in the headline only what holds on both counters', () => {
     const counters = buildCounters(bench(), claude(), PRICES);
     if (counters === null || counters.claude === null) throw new Error('should pair');
-    expect(underJson(counters.o200k)).toBe(underJson(counters.claude));
-    expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than compact JSON in ${String(underJson(counters.o200k))} of 11 cases, on both counters.`);
+    expect(underJson(counters.o200k)).toBe(10);
+    expect(underJson(counters.claude)).toBe(10);
+    expect(countersHeadline(bench(), counters)).toBe('Fewer tokens than compact JSON in 10 of 11 cases, on both counters.');
+    const lost = withRows((rows) => rows.map((row) => (row.name === 'UI text, uneven rows' ? { ...row, terset: row.json + 1 } : row)));
+    const split = buildCounters(bench(), lost, PRICES);
+    expect(countersHeadline(bench(), split)).toBe('Fewer tokens than compact JSON in 10 of 11 cases on o200k_base and 9 on Claude.');
+  });
+
+  it('says beside every headline count that Terset carries the rules line fitted to each text', () => {
+    const counters = buildCounters(bench(), claude(), PRICES);
+    if (counters === null || counters.claude === null) throw new Error('should pair');
+    const fitted = 'Each Terset count includes rulesFor(text), the rules line fitted to that text.';
+    expect(countersNote(bench(), counters)).toContain(fitted);
+    expect(countersNote(bench(), null)).toContain(fitted);
+    expect(counterSummary(counters.o200k)).toContain('Terset, fitted rules line included,');
+    expect(counterSummary(counters.claude)).toContain('Terset, fitted rules line included,');
   });
 
   it('writes both token tables and both cost tables in benchmark.md', () => {
@@ -181,7 +196,7 @@ describe('input cost at list price', () => {
         expect(centsDelta(cents(terset), cents(json))).toBe(delta);
       }
     }
-    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$236.61', '$344.41', '−$107.80']);
-    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.70', '$117.62', '−$30.92']);
+    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$234.33', '$344.41', '−$110.08']);
+    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.09', '$117.62', '−$31.53']);
   });
 });

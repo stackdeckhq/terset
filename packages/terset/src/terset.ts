@@ -10,9 +10,13 @@ const DEPTH_ERROR = "Maximum JSON depth is 500.";
 export const RULES ="Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.";
 
 const sentences = RULES.split(". ");
-const BASE_RULES = `${sentences.slice(0, 5).join(". ")}.`;
-type RuleFeature = "keyed" | "nested";
-const addedRules: readonly [feature: RuleFeature, sentence: string][] = [
+type RuleFeature = "table" | "empty" | "quoted" | "json" | "id" | "keyed" | "nested";
+const fittedRules: readonly [feature: RuleFeature, sentence: string][] = [
+  ["table", `${sentences[0]}.`],
+  ["empty", `${sentences[1]}.`],
+  ["quoted", `${sentences[2]}.`],
+  ["json", `${sentences[3]}.`],
+  ["id", `${sentences[4]}.`],
   ["keyed", `${sentences[5]}.`],
   ["nested", sentences[6]!],
 ];
@@ -21,8 +25,8 @@ const addedRules: readonly [feature: RuleFeature, sentence: string][] = [
 export function rulesFor(text: string): string {
   const features = new Set<RuleFeature>();
   parseDocument(text, features);
-  return [BASE_RULES, ...addedRules.flatMap(([feature, sentence]) =>
-    features.has(feature) ? [sentence] : [])].join(" ");
+  return fittedRules.flatMap(([feature, sentence]) =>
+    features.has(feature) ? [sentence] : []).join(" ");
 }
 
 function object(value: unknown): value is JsonObject {
@@ -320,6 +324,7 @@ function readTable(lines: string[], start: number, count: number, keyed: boolean
     if (rowDepth + path.length > MAX_JSON_DEPTH) throw new SyntaxError(DEPTH_ERROR);
     return path;
   });
+  features?.add("table");
   if (keyed) features?.add("keyed");
   if (paths.some(path => path.length > 1)) features?.add("nested");
   const trie: HeaderTrie = new Map();
@@ -341,6 +346,7 @@ function readTable(lines: string[], start: number, count: number, keyed: boolean
     }
   }
   const ids = !keyed && fields[0] === "id";
+  if (ids) features?.add("id");
   const result: JsonRoot = keyed ? {} : [];
   for (let index = 0; index < count; index++) {
     const line = lines[start + 1 + index];
@@ -352,6 +358,11 @@ function readTable(lines: string[], start: number, count: number, keyed: boolean
     for (let column = 0; column < paths.length; column++) {
       const raw = cells[column]!;
       if (column === 0 && ids && !raw) throw new SyntaxError("Missing string id.");
+      if (!(column === 0 && ids)) {
+        if (raw === "") features?.add("empty");
+        else if (raw.startsWith('"')) features?.add("quoted");
+        else if (raw.startsWith("{") || raw.startsWith("[")) features?.add("json");
+      }
       if (raw !== "") setPath(row, paths[column]!, column === 0 && ids ? raw : readCell(raw));
     }
     if (Array.isArray(result)) result.push(row);
@@ -398,6 +409,7 @@ function readDocument(text: string, features?: Set<RuleFeature>): JsonRoot {
         index += count + 1;
       } else {
         if (!rest.startsWith(" ")) throw new SyntaxError("Expected scalar field.");
+        if (rest.slice(1).startsWith('"')) features?.add("quoted");
         set(result, key, readCell(rest.slice(1)));
       }
     }

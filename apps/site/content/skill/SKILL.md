@@ -18,13 +18,13 @@ This is a skill file. Any agent harness that loads skill files can use it.
 ## Encode
 
 The package exports `encode`, `decode`, `RULES` and `rulesFor`.
-`rulesFor(text)` gives the shortest valid rules sentence.
+`rulesFor(text)` gives only the rules sentences that text needs.
 
 ```js
 {{USAGE}}
 ```
 
-Never write Terset by hand. Always use `encode`. Put the rules sentence in the system prompt once:
+Never write Terset by hand. Always use `encode`. For one text, send `rulesFor(text)` right before the data. A shared or cached system prompt for many texts takes the full rules:
 
 ```text
 {{RULES}}

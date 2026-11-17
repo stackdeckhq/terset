@@ -23,13 +23,22 @@ its Markdown report.
   The JSON and Markdown were copied unchanged after checking for keys, base URLs,
   local paths, account names and environment values. None were found. The four
   email addresses are fake values present in the frozen upstream datasets.
+  Terset got the full rules text in this run. The site no longer uses it.
+- [2026-11-17](published/2026-11-17/fitted-rules-rerun-2026-11-17.md): Claude
+  Opus 5.5 and GPT 6.1 Sol, all 244 questions in Terset with fitted rules.
+  The site's Terset row comes from this rerun. A first run the same day with the
+  same setup scored Opus 242 and Sol 238 of 244. Its
+  [report](published/2026-11-17/fitted-rules-2026-11-17.md) sits in the same
+  folder. Identical runs differ by a few questions. Both files were checked for
+  keys, base URLs, local paths and account names. None were found. The four email
+  addresses are fake values from the frozen upstream datasets.
 
-Terset rows carry the later date because its format changed in 0.2.1; the other
-formats did not change.
+Terset rows carry the later date because its format changed in 0.2.1 and its
+rules became fitted on 2026-11-17. The other formats did not change.
 
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
 published runs, and updates the accuracy blocks in the READMEs. It takes Terset
-from 2026-11-13 and compact JSON, indented JSON and TOON from 2026-11-12.
+from the 2026-11-17 rerun and compact JSON, indented JSON and TOON from 2026-11-12.
 Cost comparisons use the earlier compact JSON rows for the same model.
 It refuses differing model settings, prices, question sets, data hashes,
 upstream commits, tokenizers or per-call output caps. Whole-run budgets and
@@ -202,7 +211,9 @@ are used as scorer regressions alongside formatting variants.
 The user prompt keeps upstream's shared wording and answer requirements.
 Each JSON format and TOON receive their upstream primer, copied verbatim.
 Terset receives `rulesFor(text)`, fitted to the valid encoded data before any
-structural damage. All other instructions are identical
+structural damage. Since 2026-11-17, `rulesFor` returns only the sentences
+that text uses. The 2026-11-17 runs measure that change. The earlier runs
+predate it. All other instructions are identical
 across formats, with a common fence and a format-name line. Each format's
 primer tokens count toward its input tokens in plans and reports.
 

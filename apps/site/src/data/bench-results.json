@@ -12,7 +12,7 @@
       "toon": 814,
       "csv": 513,
       "csvExact": false,
-      "terset": 546
+      "terset": 519
     },
     {
       "name": "UI text, uniform rows",
@@ -22,7 +22,7 @@
       "toon": 518,
       "csv": 471,
       "csvExact": true,
-      "terset": 512
+      "terset": 480
     },
     {
       "name": "Translation batch",
@@ -32,7 +32,7 @@
       "toon": 1110,
       "csv": null,
       "csvExact": null,
-      "terset": 1162
+      "terset": 1139
     },
     {
       "name": "File list, short",
@@ -42,7 +42,7 @@
       "toon": 10315,
       "csv": null,
       "csvExact": null,
-      "terset": 9640
+      "terset": 9608
     },
     {
       "name": "File list, long",
@@ -52,7 +52,7 @@
       "toon": 15502,
       "csv": null,
       "csvExact": null,
-      "terset": 15061
+      "terset": 15042
     },
     {
       "name": "200 users",
@@ -62,7 +62,7 @@
       "toon": 5589,
       "csv": 5482,
       "csvExact": true,
-      "terset": 5427
+      "terset": 5404
     },
     {
       "name": "Metrics, numbers and booleans",
@@ -72,7 +72,7 @@
       "toon": 3181,
       "csv": 3004,
       "csvExact": true,
-      "terset": 2972
+      "terset": 2940
     },
     {
       "name": "Deep nested config",
@@ -82,7 +82,7 @@
       "toon": 296,
       "csv": null,
       "csvExact": null,
-      "terset": 290
+      "terset": 250
     },
     {
       "name": "Mixed-type array",
@@ -92,7 +92,7 @@
       "toon": 99,
       "csv": null,
       "csvExact": null,
-      "terset": 103
+      "terset": 63
     },
     {
       "name": "Reviews, long text",
@@ -102,7 +102,7 @@
       "toon": 3662,
       "csv": 3612,
       "csvExact": true,
-      "terset": 3723
+      "terset": 3700
     },
     {
       "name": "Orders with line items",
@@ -112,24 +112,24 @@
       "toon": 4982,
       "csv": 4769,
       "csvExact": false,
-      "terset": 3912
+      "terset": 3899
     }
   ],
   "samples": {
     "orders": {
       "json": 356,
       "toon": 405,
-      "terset": 327
+      "terset": 314
     },
     "servers": {
       "json": 420,
       "toon": 541,
-      "terset": 297
+      "terset": 284
     },
     "config": {
       "json": 99,
       "toon": 118,
-      "terset": 139
+      "terset": 99
     }
   }
 }

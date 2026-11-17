@@ -24,7 +24,7 @@ import type { ClaudeRequestCounts } from '../src/data/claude-request-counts-sche
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 export const PUBLISHED_RUNS = [
   { path: 'bench/published/2026-11-12/p4-2026-11-12.json', formats: ['json-compact', 'json-pretty', 'toon'] },
-  { path: 'bench/published/2026-11-13/v2-final-2026-11-13.json', formats: ['terset'] },
+  { path: 'bench/published/2026-11-17/fitted-rules-rerun-2026-11-17.json', formats: ['terset'] },
 ] as const;
 export const OUTPUT = fileURLToPath(new URL('../src/data/accuracy-results.json', import.meta.url));
 /** Anthropic's token count for every published Claude request. `pnpm --dir apps/site count:claude --published` writes it. */

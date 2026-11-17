@@ -79,7 +79,7 @@ Zero dependencies. Python 3.10 and up. Type hints are included.
 
 <!-- docs:use -->
 The API exports `encode`, `decode`, `RULES` and `rules_for`.
-`rules_for(text)` gives the shortest valid rules sentence. `RULES` keeps the full rules.
+`rules_for(text)` gives only the rules sentences that text needs. `RULES` keeps the full rules.
 
 ```python
 from terset import decode, encode, rules_for
@@ -95,10 +95,10 @@ data = {
 
 text = encode(data)
 
-# Send the fitted rules once in the system prompt, and the text as the data.
+# One text: send its fitted rules right before the data.
 messages = [
-    {"role": "system", "content": f"You read Terset data. {rules_for(text)}"},
-    {"role": "user", "content": f"Which users have no role?\n\n{text}"},
+    {"role": "system", "content": "You read Terset data."},
+    {"role": "user", "content": f"Which users have no role?\n\n{rules_for(text)}\n{text}"},
 ]
 
 print(text)
@@ -118,7 +118,7 @@ True
 ```
 
 1. `encode(value)` turns a JSON object or array into Terset text.
-2. Put `rules_for(text)` in the system prompt once. The data carries no legend.
+2. Send `rules_for(text)` right before the data. A shared or cached system prompt for many texts takes `RULES` instead.
 3. `decode(text)` gives back the same value. Ask the model to answer in JSON, since Terset is for reading.
 
 Never write Terset by hand. Always use `encode`.
@@ -157,49 +157,49 @@ for Claude Opus 5.5. They give different numbers for the same text.
 
 | Case | Terset | JSON compact | YAML | TOON best | Terset vs JSON compact |
 |---|---|---|---|---|---|
-| UI text, uneven rows | 546 | 697 | 812 | 814 | -21.7% |
-| UI text, uniform rows | 512 | 737 | 910 | 518 | -30.5% |
-| Translation batch | 1,162 | 1,448 | 1,674 | 1,110 | -19.8% |
-| File list, short | 9,640 | 12,808 | 15,304 | 10,315 | -24.7% |
-| File list, long | 15,061 | 19,969 | 23,966 | 15,502 | -24.6% |
-| 200 users | 5,427 | 9,051 | 10,924 | 5,589 | -40.0% |
-| Metrics, numbers and booleans | 2,972 | 4,798 | 5,999 | 3,181 | -38.1% |
-| Deep nested config | 290 | 251 | 316 | 296 | +15.5% |
-| Mixed-type array | 103 | 63 | 89 | 99 | +63.5% |
-| Reviews, long text | 3,723 | 4,308 | 5,006 | 3,662 | -13.6% |
-| Orders with line items | 3,912 | 4,678 | 5,846 | 4,982 | -16.4% |
-| Total | 43,348 | 58,808 | 70,846 | 46,068 | -26.3% |
+| UI text, uneven rows | 519 | 697 | 812 | 814 | -25.5% |
+| UI text, uniform rows | 480 | 737 | 910 | 518 | -34.9% |
+| Translation batch | 1,139 | 1,448 | 1,674 | 1,110 | -21.3% |
+| File list, short | 9,608 | 12,808 | 15,304 | 10,315 | -25.0% |
+| File list, long | 15,042 | 19,969 | 23,966 | 15,502 | -24.7% |
+| 200 users | 5,404 | 9,051 | 10,924 | 5,589 | -40.3% |
+| Metrics, numbers and booleans | 2,940 | 4,798 | 5,999 | 3,181 | -38.7% |
+| Deep nested config | 250 | 251 | 316 | 296 | -0.4% |
+| Mixed-type array | 63 | 63 | 89 | 99 | 0.0% |
+| Reviews, long text | 3,700 | 4,308 | 5,006 | 3,662 | -14.1% |
+| Orders with line items | 3,899 | 4,678 | 5,846 | 4,982 | -16.7% |
+| Total | 43,044 | 58,808 | 70,846 | 46,068 | -26.8% |
 
-Terset, rules line included, is under TOON's best in 8 of 11 cases and
-under compact JSON in 9 of 11.
+Terset, fitted rules line included, is under TOON's best in 9 of 11
+cases and under compact JSON in 10 of 11.
 
-Over all 11 cases, Terset totals 43,348 tokens: 26.3% fewer than JSON
-compact (58,808), 50.2% fewer than JSON pretty (87,020), 38.8% fewer than
-YAML (70,846), and 5.9% fewer than TOON's best (46,068).
+Over all 11 cases, Terset totals 43,044 tokens: 26.8% fewer than JSON
+compact (58,808), 50.5% fewer than JSON pretty (87,020), 39.2% fewer than
+YAML (70,846), and 6.6% fewer than TOON's best (46,068).
 
 ### Claude Opus 5.5
 
 | Case | Terset | JSON compact | YAML | TOON best | Terset vs JSON compact |
 |---|---|---|---|---|---|
-| UI text, uneven rows | 815 | 1,083 | 1,062 | 1,065 | -24.7% |
-| UI text, uniform rows | 804 | 1,253 | 1,160 | 774 | -35.8% |
-| Translation batch | 1,858 | 2,514 | 2,413 | 1,833 | -26.1% |
-| File list, short | 12,031 | 18,018 | 18,012 | 12,671 | -33.2% |
-| File list, long | 21,293 | 30,405 | 31,199 | 22,019 | -30.0% |
-| 200 users | 7,710 | 12,819 | 13,214 | 7,836 | -39.9% |
-| Metrics, numbers and booleans | 3,369 | 6,535 | 6,960 | 3,467 | -48.4% |
-| Deep nested config | 477 | 405 | 412 | 394 | +17.8% |
-| Mixed-type array | 164 | 89 | 101 | 118 | +84.3% |
-| Reviews, long text | 4,944 | 5,979 | 6,404 | 4,915 | -17.3% |
-| Orders with line items | 5,687 | 7,002 | 7,208 | 6,268 | -18.8% |
-| Total | 59,152 | 86,102 | 88,145 | 61,360 | -31.3% |
+| UI text, uneven rows | 766 | 1,083 | 1,062 | 1,065 | -29.3% |
+| UI text, uniform rows | 745 | 1,253 | 1,160 | 774 | -40.5% |
+| Translation batch | 1,813 | 2,514 | 2,413 | 1,833 | -27.9% |
+| File list, short | 11,972 | 18,018 | 18,012 | 12,671 | -33.6% |
+| File list, long | 21,259 | 30,405 | 31,199 | 22,019 | -30.1% |
+| 200 users | 7,665 | 12,819 | 13,214 | 7,836 | -40.2% |
+| Metrics, numbers and booleans | 3,310 | 6,535 | 6,960 | 3,467 | -49.3% |
+| Deep nested config | 402 | 405 | 412 | 394 | -0.7% |
+| Mixed-type array | 89 | 89 | 101 | 118 | 0.0% |
+| Reviews, long text | 4,899 | 5,979 | 6,404 | 4,915 | -18.1% |
+| Orders with line items | 5,662 | 7,002 | 7,208 | 6,268 | -19.1% |
+| Total | 58,582 | 86,102 | 88,145 | 61,360 | -32.0% |
 
-Terset, rules line included, is under TOON's best in 6 of 11 cases and
-under compact JSON in 9 of 11.
+Terset, fitted rules line included, is under TOON's best in 10 of 11
+cases and under compact JSON in 10 of 11.
 
-Over all 11 cases, Terset totals 59,152 tokens: 31.3% fewer than JSON
-compact (86,102), 47.9% fewer than JSON pretty (113,574), 32.9% fewer than
-YAML (88,145), and 3.6% fewer than TOON's best (61,360).
+Over all 11 cases, Terset totals 58,582 tokens: 32.0% fewer than JSON
+compact (86,102), 48.4% fewer than JSON pretty (113,574), 33.5% fewer than
+YAML (88,145), and 4.5% fewer than TOON's best (61,360).
 
 ### Input cost at list price
 
@@ -210,36 +210,36 @@ Claude Opus 5.5 at $4 per million input tokens, on the Claude counts:
 
 | Case | Terset | JSON compact | vs JSON compact |
 |---|---|---|---|
-| UI text, uneven rows | $3.26 | $4.33 | -$1.07 |
-| UI text, uniform rows | $3.22 | $5.01 | -$1.79 |
-| Translation batch | $7.43 | $10.06 | -$2.63 |
-| File list, short | $48.12 | $72.07 | -$23.95 |
-| File list, long | $85.17 | $121.62 | -$36.45 |
-| 200 users | $30.84 | $51.28 | -$20.44 |
-| Metrics, numbers and booleans | $13.48 | $26.14 | -$12.66 |
-| Deep nested config | $1.91 | $1.62 | +$0.29 |
-| Mixed-type array | $0.66 | $0.36 | +$0.30 |
-| Reviews, long text | $19.78 | $23.92 | -$4.14 |
-| Orders with line items | $22.75 | $28.01 | -$5.26 |
-| Total | $236.61 | $344.41 | -$107.80 |
+| UI text, uneven rows | $3.06 | $4.33 | -$1.27 |
+| UI text, uniform rows | $2.98 | $5.01 | -$2.03 |
+| Translation batch | $7.25 | $10.06 | -$2.81 |
+| File list, short | $47.89 | $72.07 | -$24.18 |
+| File list, long | $85.04 | $121.62 | -$36.58 |
+| 200 users | $30.66 | $51.28 | -$20.62 |
+| Metrics, numbers and booleans | $13.24 | $26.14 | -$12.90 |
+| Deep nested config | $1.61 | $1.62 | -$0.01 |
+| Mixed-type array | $0.36 | $0.36 | $0.00 |
+| Reviews, long text | $19.60 | $23.92 | -$4.32 |
+| Orders with line items | $22.65 | $28.01 | -$5.36 |
+| Total | $234.33 | $344.41 | -$110.08 |
 
 GPT 6.1 Sol at $2 per million input tokens, context up to 272K, on the
 `o200k_base` counts:
 
 | Case | Terset | JSON compact | vs JSON compact |
 |---|---|---|---|
-| UI text, uneven rows | $1.09 | $1.39 | -$0.30 |
-| UI text, uniform rows | $1.02 | $1.47 | -$0.45 |
-| Translation batch | $2.32 | $2.90 | -$0.58 |
-| File list, short | $19.28 | $25.62 | -$6.34 |
-| File list, long | $30.12 | $39.94 | -$9.82 |
-| 200 users | $10.85 | $18.10 | -$7.25 |
-| Metrics, numbers and booleans | $5.94 | $9.60 | -$3.66 |
-| Deep nested config | $0.58 | $0.50 | +$0.08 |
-| Mixed-type array | $0.21 | $0.13 | +$0.08 |
-| Reviews, long text | $7.45 | $8.62 | -$1.17 |
-| Orders with line items | $7.82 | $9.36 | -$1.54 |
-| Total | $86.70 | $117.62 | -$30.92 |
+| UI text, uneven rows | $1.04 | $1.39 | -$0.35 |
+| UI text, uniform rows | $0.96 | $1.47 | -$0.51 |
+| Translation batch | $2.28 | $2.90 | -$0.62 |
+| File list, short | $19.22 | $25.62 | -$6.40 |
+| File list, long | $30.08 | $39.94 | -$9.86 |
+| 200 users | $10.81 | $18.10 | -$7.29 |
+| Metrics, numbers and booleans | $5.88 | $9.60 | -$3.72 |
+| Deep nested config | $0.50 | $0.50 | $0.00 |
+| Mixed-type array | $0.13 | $0.13 | $0.00 |
+| Reviews, long text | $7.40 | $8.62 | -$1.22 |
+| Orders with line items | $7.80 | $9.36 | -$1.56 |
+| Total | $86.09 | $117.62 | -$31.53 |
 
 How it was measured:
 
@@ -265,14 +265,14 @@ How the cost was worked out:
 
 Where Terset does not win:
 
-- o200k_base: Compact JSON wins on deep nested config (251 vs 290) and mixed-type array (63 vs 103).
-- Claude: Compact JSON wins on deep nested config (405 vs 477) and mixed-type array (89 vs 164).
-- o200k_base: TOON's best is smaller than or equal to Terset in 3 of 11 cases: Translation batch (1,110 vs 1,162); Mixed-type array (99 vs 103); Reviews, long text (3,662 vs 3,723).
-- Claude: TOON's best is smaller than or equal to Terset in 5 of 11 cases: UI text, uniform rows (774 vs 804); Translation batch (1,833 vs 1,858); Deep nested config (394 vs 477); Mixed-type array (118 vs 164); Reviews, long text (4,915 vs 4,944).
-- o200k_base: Plain CSV is 41 to 111 tokens smaller on 2 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 4,769 vs 3,912.
-- Claude: Plain CSV is 81 to 83 tokens smaller on 4 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 6,490 vs 5,687.
+- o200k_base: Compact JSON is smaller than or equal to Terset on mixed-type array (63 vs 63).
+- Claude: Compact JSON is smaller than or equal to Terset on mixed-type array (89 vs 89).
+- o200k_base: TOON's best is smaller than or equal to Terset in 2 of 11 cases: Translation batch (1,110 vs 1,139); Reviews, long text (3,662 vs 3,700).
+- Claude: TOON's best is smaller than or equal to Terset in 1 of 11 cases: Deep nested config (394 vs 402).
+- o200k_base: Plain CSV is 9 to 88 tokens smaller on 2 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 4,769 vs 3,899.
+- Claude: Plain CSV is 23 to 38 tokens smaller on 4 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 6,490 vs 5,662.
 
-Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed, except UI text, uniform rows against TOON, where Terset is smaller on 985 of 1,000.
+Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed.
 
 Token counts say nothing about answer quality. Terset is about fewer tokens.
 Other tokenizers and models will give other counts. Full benchmark with pretty JSON and CSV counts:
@@ -286,33 +286,33 @@ On 244 questions and two models, accuracy is a tie. Terset used fewer input toke
 
 | Format | Correct | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Terset | 243 of 244 | 99.6% | 97.7% to 99.9% | 1,200,640 | $5.69 | Reference | 2026-11-13 |
-| Compact JSON | 241 of 244 | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.04 | +41.3% | 2026-11-12 |
-| JSON | 239 of 244 | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +79.2% | 2026-11-12 |
-| TOON | 242 of 244 | 99.2% | 97.1% to 99.8% | 1,369,764 | $6.35 | +11.6% | 2026-11-12 |
+| Terset | 242 of 244 | 99.2% | 97.1% to 99.8% | 1,188,659 | $5.65 | Reference | 2026-11-17 |
+| Compact JSON | 241 of 244 | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.04 | +42.4% | 2026-11-12 |
+| JSON | 239 of 244 | 98.0% | 95.3% to 99.1% | 2,303,845 | $10.20 | +80.6% | 2026-11-12 |
+| TOON | 242 of 244 | 99.2% | 97.1% to 99.8% | 1,369,764 | $6.35 | +12.5% | 2026-11-12 |
 
 #### GPT 6.1 Sol
 
 | Format | Correct | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Terset | 241 of 244 | 98.8% | 96.4% to 99.6% | 848,844 | $1.85 | Reference | 2026-11-13 |
-| Compact JSON | 236 of 244 | 96.7% | 93.7% to 98.3% | 1,158,229 | $2.50 | +34.8% | 2026-11-12 |
-| JSON | 237 of 244 | 97.1% | 94.2% to 98.6% | 1,696,152 | $3.56 | +92.2% | 2026-11-12 |
-| TOON | 239 of 244 | 98.0% | 95.3% to 99.1% | 1,020,628 | $2.19 | +18.3% | 2026-11-12 |
+| Terset | 242 of 244 | 99.2% | 97.1% to 99.8% | 842,260 | $1.84 | Reference | 2026-11-17 |
+| Compact JSON | 236 of 244 | 96.7% | 93.7% to 98.3% | 1,158,229 | $2.50 | +35.6% | 2026-11-12 |
+| JSON | 237 of 244 | 97.1% | 94.2% to 98.6% | 1,696,152 | $3.56 | +93.3% | 2026-11-12 |
+| TOON | 239 of 244 | 98.0% | 95.3% to 99.1% | 1,020,628 | $2.19 | +19.1% | 2026-11-12 |
 
 JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.
 
 Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.
-Against compact JSON, Terset cost 29.2% less on Claude Opus 5.5 and 25.8% less on GPT 6.1 Sol.
+Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.2% less on GPT 6.1 Sol.
 
-Cost is at API list price: input and output tokens times list prices read on 2026-11-12. Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them. Temperature 0 where the model accepts it. Terset was rerun on 2026-11-13 after its format changed in 0.2.1; the other formats did not change. Each row names its run date.
+Cost is at API list price: input and output tokens times list prices read on 2026-11-12. Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them. Temperature 0 where the model accepts it. Terset was rerun on 2026-11-17 with fitted rules, which send only the rules each text needs. The other formats did not change. Each row names its run date.
 
-Method and limits: [terset.dev/benchmark](https://terset.dev/benchmark#accuracy). Every answer and its score: [2026-11-12](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-12) and [2026-11-13](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-13).
+Method and limits: [terset.dev/benchmark](https://terset.dev/benchmark#accuracy). Every answer and its score: [2026-11-12](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-12) and [2026-11-17](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-17).
 
 ## When not to use it
 
 <!-- docs:when-not -->
-- **No lists of records.** Config files and deeply nested data stay JSON, so the rules line only adds tokens.
+- **No lists of records.** Config files and deeply nested data stay JSON. Terset sends no rules for them and saves a few tokens at most.
 - **One-row lists.** A list needs two or more objects to become a table.
 - **Mixed arrays.** A list with any item that is not an object stays JSON.
 - **Nested lists.** Lists of objects inside a record stay JSON inside their cell. Only the top level becomes tables.

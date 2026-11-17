@@ -50,19 +50,26 @@ No legend is written into the data. The package exports one rules line,
 
 > Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.
 
-`rulesFor(text)` in JavaScript and `rules_for(text)` in Python return the
-shortest valid rules sentence for canonical encoded text. The five base
-sentences above always appear. The remaining sentences appear only when
-their construct is used, in this order, joined by single spaces:
+`rulesFor(text)` in JavaScript and `rules_for(text)` in Python return only
+the sentences whose constructs appear in canonical encoded text. Sentences
+keep this order and join with single spaces:
 
-| Order | Construct | Sentence |
+| Order | Trigger | Sentence |
 | --- | --- | --- |
-| 1 | Keyed table with its `@key` header | name{N} has N entries; the @key column holds each entry's key and is not a field. |
-| 2 | Unquoted dotted header path in either table kind | Header a.b is field b in object a. |
+| 1 | Any table | Tables use tab-separated headers and rows. |
+| 2 | Any empty table cell, excluding the string id column | Empty cells mean absent. |
+| 3 | Any table cell or root field value that starts with a double quote | JSON quotes distinguish numeric, boolean or null text from scalars. |
+| 4 | Any table cell that starts with `{` or `[` | Nested cells use JSON. |
+| 5 | A list table whose first header is bare `id` | A leading bare id header marks string IDs. |
+| 6 | Keyed table with its `@key` header | name{N} has N entries; the @key column holds each entry's key and is not a field. |
+| 7 | Unquoted dotted header path in either table kind | Header a.b is field b in object a. |
 
-Cells, quoted field names and JSON values do not select extra sentences.
-Text with no tables gets only the base sentences. Invalid text raises the
-same error as `decode`. A sender may send the full `RULES` line or the fitted
+Cells in a leading bare `id` column are raw strings and do not trigger
+sentences 3 or 4. Entry keys in the `@key` column are bare text and do not
+trigger them either. Quoted header names do not trigger sentence 3. Root JSON
+arrays and objects do not trigger sentence 4. Text with no trigger returns
+the empty string `""`. Invalid text raises the same error as `decode`.
+A sender may send the full `RULES` line or the fitted
 line returned for the encoded text. List tables keep their `[N]` counts in
 the data. The decoder rejects missing or extra rows.
 
