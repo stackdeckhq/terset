@@ -6,113 +6,113 @@
   "cases": [
     {
       "name": "UI text, uneven rows",
-      "json": 695,
-      "jsonPretty": 1190,
-      "yaml": 802,
-      "toon": 846,
-      "csv": 473,
+      "json": 697,
+      "jsonPretty": 1111,
+      "yaml": 812,
+      "toon": 814,
+      "csv": 513,
       "csvExact": false,
-      "terset": 507
+      "terset": 546
     },
     {
       "name": "UI text, uniform rows",
-      "json": 742,
-      "jsonPretty": 1261,
-      "yaml": 857,
-      "toon": 539,
-      "csv": 503,
+      "json": 737,
+      "jsonPretty": 1313,
+      "yaml": 910,
+      "toon": 518,
+      "csv": 471,
       "csvExact": true,
-      "terset": 537
+      "terset": 512
     },
     {
       "name": "Translation batch",
-      "json": 1450,
-      "jsonPretty": 2396,
-      "yaml": 1623,
-      "toon": 1660,
-      "csv": 1402,
-      "csvExact": false,
-      "terset": 1228
+      "json": 1448,
+      "jsonPretty": 2242,
+      "yaml": 1674,
+      "toon": 1110,
+      "csv": null,
+      "csvExact": null,
+      "terset": 1162
     },
     {
       "name": "File list, short",
-      "json": 12806,
-      "jsonPretty": 16771,
-      "yaml": 14453,
-      "toon": 10643,
+      "json": 12808,
+      "jsonPretty": 18526,
+      "yaml": 15304,
+      "toon": 10315,
       "csv": null,
       "csvExact": null,
-      "terset": 9661
+      "terset": 9640
     },
     {
       "name": "File list, long",
-      "json": 19627,
-      "jsonPretty": 23595,
-      "yaml": 22129,
-      "toon": 17476,
+      "json": 19969,
+      "jsonPretty": 28775,
+      "yaml": 23966,
+      "toon": 15502,
       "csv": null,
       "csvExact": null,
-      "terset": 16487
+      "terset": 15061
     },
     {
       "name": "200 users",
-      "json": 6811,
-      "jsonPretty": 10610,
-      "yaml": 7983,
-      "toon": 5081,
-      "csv": 4677,
+      "json": 9051,
+      "jsonPretty": 13855,
+      "yaml": 10924,
+      "toon": 5589,
+      "csv": 5482,
       "csvExact": true,
-      "terset": 4721
+      "terset": 5427
     },
     {
       "name": "Metrics, numbers and booleans",
-      "json": 4797,
-      "jsonPretty": 7557,
-      "yaml": 6115,
-      "toon": 2654,
-      "csv": 2530,
+      "json": 4798,
+      "jsonPretty": 7038,
+      "yaml": 5999,
+      "toon": 3181,
+      "csv": 3004,
       "csvExact": true,
-      "terset": 2572
+      "terset": 2972
     },
     {
       "name": "Deep nested config",
-      "json": 371,
-      "jsonPretty": 653,
-      "yaml": 456,
-      "toon": 442,
+      "json": 251,
+      "jsonPretty": 457,
+      "yaml": 316,
+      "toon": 296,
       "csv": null,
       "csvExact": null,
-      "terset": 432
+      "terset": 290
     },
     {
       "name": "Mixed-type array",
-      "json": 85,
-      "jsonPretty": 170,
-      "yaml": 131,
-      "toon": 160,
+      "json": 63,
+      "jsonPretty": 119,
+      "yaml": 89,
+      "toon": 99,
       "csv": null,
       "csvExact": null,
-      "terset": 125
+      "terset": 103
     },
     {
       "name": "Reviews, long text",
-      "json": 4279,
-      "jsonPretty": 5119,
-      "yaml": 4787,
-      "toon": 3833,
-      "csv": 3768,
+      "json": 4308,
+      "jsonPretty": 5437,
+      "yaml": 5006,
+      "toon": 3662,
+      "csv": 3612,
       "csvExact": true,
-      "terset": 3804
+      "terset": 3723
     },
     {
       "name": "Orders with line items",
-      "json": 4585,
-      "jsonPretty": 7749,
-      "yaml": 5673,
-      "toon": 4419,
-      "csv": 4951,
+      "json": 4678,
+      "jsonPretty": 8147,
+      "yaml": 5846,
+      "toon": 4982,
+      "csv": 4769,
       "csvExact": false,
-      "terset": 3971
+      "terset": 3912
     }
   ],
   "samples": {

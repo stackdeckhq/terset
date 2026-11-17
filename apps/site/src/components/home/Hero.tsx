@@ -230,14 +230,16 @@ export function Hero() {
     <section className="hero" id="top" aria-labelledby="h-hero">
       <div className="hero-copy">
         <p className="owner">
-          <b>TER</b>se <b>SET</b>s.
+          <b>TER</b>se <b>SET</b>s. Built by <a href="https://stackdeck.dev">StackDeck</a>.
         </p>
         <h1 id="h-hero">
           Same data.
           <br />
           <span className="grad">Fewer tokens.</span>
         </h1>
-        <p className="lead">Terset writes a set of records as one terse table for a model to read.</p>
+        <p className="lead">
+          Terset writes a set of records as one terse table for a model to read. Unlike TOON, it keeps the table when records skip a field or nest a value.
+        </p>
         <div className="actions">
           <Link to="/" hash="b2" className="btn btn-lg btn-primary">
             Try your JSON <ArrowIcon />

@@ -746,7 +746,7 @@
         []
       ]
     },
-    "encoded": "empty: []\nobject: {}\none: [{\"id\":\"1\"}]\nuneven: [{\"id\":\"1\",\"a\":2},{\"id\":\"2\",\"b\":3,\"a\":4}]\nnested: [[1,[2,[]]]]\nmixed: [null,\"a\",{\"id\":\"3\"},[]]"
+    "encoded": "empty: []\nobject: {}\none: [{\"id\":\"1\"}]\nuneven[2]:\nid\tb\ta\n1\t\t2\n2\t3\t4\nnested: [[1,[2,[]]]]\nmixed: [null,\"a\",{\"id\":\"3\"},[]]"
   },
   {
     "name": "depth 500 boundary",
@@ -1179,6 +1179,51 @@
       }
     ],
     "encoded": "[{\"a\":1,\"b\":2},{\"b\":3,\"a\":4}]"
+  },
+  {
+    "name": "header fits a skipped middle field",
+    "input": [
+      {
+        "key": "a",
+        "text": "A",
+        "maxLength": 30
+      },
+      {
+        "key": "b",
+        "text": "B",
+        "description": "D",
+        "maxLength": 61
+      }
+    ],
+    "encoded": "[2]\nkey\ttext\tdescription\tmaxLength\na\tA\t\t30\nb\tB\tD\t61"
+  },
+  {
+    "name": "header led by a later field",
+    "input": [
+      {
+        "a": 1,
+        "b": 2
+      },
+      {
+        "c": 3,
+        "a": 4
+      }
+    ],
+    "encoded": "[2]\nc\ta\tb\n\t1\t2\n3\t4\t"
+  },
+  {
+    "name": "header ties go to the first-seen field",
+    "input": [
+      {
+        "a": 1,
+        "c": 2
+      },
+      {
+        "b": 3,
+        "c": 4
+      }
+    ],
+    "encoded": "[2]\na\tb\tc\n1\t\t2\n\t3\t4"
   },
   {
     "name": "wide sparse fallback",

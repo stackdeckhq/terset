@@ -253,9 +253,8 @@ export interface HomeHeadline {
 /**
  * The home page's token headline for one chart tab: the TOON result, then compact JSON on
  * a plain line, tagged with who counted. A tie with TOON is not counted as fewer.
- * o200k_base, the default tab, throws when Terset stops being under TOON in every case.
- * Both tabs throw when Terset is under TOON in no case, or under compact JSON in half the
- * cases or fewer. Claude throws when its counts are pending.
+ * Both tabs state the measured count and throw when Terset is under TOON in no case, or
+ * under compact JSON in half the cases or fewer. Claude throws when its counts are pending.
  */
 export function homeHeadline(bench: BenchFile, counters: Counters | null, id: CounterId = 'o200k'): HomeHeadline {
   if (counters === null) return { title: benchHeadline(bench), tag: null, line: null };
@@ -265,7 +264,6 @@ export function homeHeadline(bench: BenchFile, counters: Counters | null, id: Co
   const toon = underToon(counter);
   const json = underJson(counter);
   const where = `${counter.name} has it under`;
-  if (id === 'o200k' && toon !== total) throw new Error(`The home headline needs Terset under TOON in every case, but ${where} TOON in ${String(toon)} of ${String(total)}`);
   if (toon === 0) throw new Error(`The home headline needs Terset under TOON in at least one case, but ${where} TOON in 0 of ${String(total)}`);
   if (json * 2 <= total) throw new Error(`The home headline needs Terset under compact JSON in most cases, but ${where} compact JSON in ${String(json)} of ${String(total)}`);
   return {

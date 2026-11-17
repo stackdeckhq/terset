@@ -71,27 +71,36 @@ the data. The decoder rejects missing or extra rows.
 An array of two or more objects becomes a table when the header and data
 rows are strictly shorter than the array's compact JSON in UTF-8 bytes.
 This comparison excludes the count line or named table line. The count is
-added after selection. The header is built
-in row order by appending first-seen fields. Each row's keys must follow
-that order. Fields may be absent, the first field included. Empty object
-rows are allowed when the list has at least one field. No id is required.
-Numeric ids, booleans, null and mixed-type columns are supported.
+added after selection.
+
+The header holds each field once, in an order that every row's own key
+order follows. Number the fields in the order they are first seen, reading
+the rows in order and each row's keys in order. A field may be placed once
+every field before it in any row is placed. Of the fields that may be
+placed, place the lowest-numbered one next. So when first-seen order
+already fits every row, the header is first-seen order. For example, rows
+`{a, c}` then `{b, c}` give the header `a b c`, and rows `{a, b}` then
+`{c, a}` give `c a b`. Fields may be absent, the first field included.
+Empty object rows are allowed when the list has at least one field. No id
+is required. Numeric ids, booleans, null and mixed-type columns are
+supported.
 
 There is one fallback. The whole list stays compact JSON if it has fewer
-than two rows, a row that is not an object, no fields, a key order that
-does not fit the header, or a table that is not smaller. Inside a root
-object this is a `key: JSON` line. At the root it is the JSON array itself.
+than two rows, a row that is not an object, no fields, key orders that no
+one header can follow (such as `{a, b}` then `{b, a}`), or a table that is
+not smaller. Inside a root object this is a `key: JSON` line. At the root
+it is the JSON array itself.
 
 Tables are chosen only at the root or for direct fields of a root object.
-Nested lists stay compact JSON cells. Terset does no sorting, column
-reordering or constant hoisting.
+Nested lists stay compact JSON cells. Terset does no sorting, no column
+reordering beyond the header rule above, and no constant hoisting.
 
 A direct root field whose value is a map of at least two objects may use
 a keyed table. Its name is `key{N}:`. Its first header cell is the bare
 marker `@key`. That column holds each entry's key as bare text. It is not
 a field in the entry object. All other cells use ordinary typed rules,
-including an `id` field. The row header follows the same append-only rule
-as list tables. Missing fields and empty entry objects are allowed.
+including an `id` field. The row header follows the same header rule as
+list tables. Missing fields and empty entry objects are allowed.
 Root maps do not become keyed tables.
 
 Entry keys must be nonempty, have no edge whitespace or troublesome

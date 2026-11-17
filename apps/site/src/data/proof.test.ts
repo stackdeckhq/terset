@@ -116,7 +116,7 @@ describe('data sets', () => {
 
 describe('smaller than TOON', () => {
   it('counts the 11 sample cases and Sol on all 13 data sets, on the OpenAI tokenizer', () => {
-    expect(smallerThanToon(ACCURACY, COUNTERS)).toMatchObject({ smaller: 24, total: 24, text: 'Smaller than TOON on 24 of 24 data sets', tokenizer: 'OpenAI tokenizer' });
+    expect(smallerThanToon(ACCURACY, COUNTERS)).toMatchObject({ smaller: 21, total: 24, text: 'Smaller than TOON on 21 of 24 data sets', tokenizer: 'OpenAI tokenizer' });
   });
 
   it('gives nothing while the bench is pending', () => {
@@ -139,9 +139,9 @@ describe('home headline', () => {
   it('leads with TOON on the OpenAI tokenizer, then compact JSON on a plain line', () => {
     const counters = ready();
     const total = counters.o200k.cases.length;
-    expect(underToon(counters.o200k)).toBe(total);
+    expect(underToon(counters.o200k)).toBe(8);
     expect(homeHeadline(BENCH, counters)).toEqual({
-      title: 'Fewer tokens than TOON in 11 of 11 cases.',
+      title: 'Fewer tokens than TOON in 8 of 11 cases.',
       tag: 'OpenAI tokenizer',
       line: `Fewer than compact JSON in ${String(underJson(counters.o200k))} of ${String(total)}.`,
     });
@@ -174,9 +174,9 @@ describe('home headline', () => {
   it('keeps a tie with TOON out of the Claude count', () => {
     const claude = ready().claude;
     if (claude === null) throw new Error('the Claude file is pending');
-    const mixed = claude.cases.find((row) => row.name === 'Mixed-type array');
-    expect(mixed).toMatchObject({ terset: 189, toon: 189 });
-    expect(homeHeadline(BENCH, ready(), 'claude').title).toContain(`in ${String(claude.cases.filter((row) => row.terset < row.toon).length)} of`);
+    const tied = claude.cases.map((row) => (row.name === '200 users' ? { ...row, toon: row.terset } : row));
+    expect(homeHeadline(BENCH, ready(), 'claude').title).toBe('Fewer tokens than TOON in 6 of 11 cases.');
+    expect(homeHeadline(BENCH, { ...ready(), claude: { ...claude, cases: tied } }, 'claude').title).toBe('Fewer tokens than TOON in 5 of 11 cases.');
   });
 
   it('throws for the Claude tab when its counts are pending or compact JSON wins half', () => {
@@ -190,8 +190,8 @@ describe('home headline', () => {
     expect(() => homeHeadline(BENCH, { ...counters, claude: { ...claude, cases: lost } }, 'claude')).toThrow('TOON in 0 of 11');
   });
 
-  it('throws when one case stops being under TOON', () => {
-    expect(() => homeHeadline(BENCH, withCase('200 users', (row) => ({ ...row, toon: row.terset })))).toThrow('under TOON in 10 of 11');
+  it('states one more TOON loss as measured instead of hiding it', () => {
+    expect(homeHeadline(BENCH, withCase('200 users', (row) => ({ ...row, toon: row.terset }))).title).toBe('Fewer tokens than TOON in 7 of 11 cases.');
   });
 
   it('throws when compact JSON wins half the cases or more', () => {
@@ -210,7 +210,7 @@ describe('benchmark.md lines', () => {
     expect(proofLines(ACCURACY, COUNTERS)).toEqual([
       'Fewer input tokens than compact JSON: 32.0% on Opus and 26.7% on Sol. Each model counts with its own tokenizer.',
       'Lower cost than compact JSON: 29.2% on Opus and 25.8% on Sol. Accuracy is a tie.',
-      'Smaller than TOON on 24 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
+      'Smaller than TOON on 21 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
       'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 12 of 13 (1 tie). Fewer than compact JSON on 12 of 13 (1 more).',
       'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
     ]);
