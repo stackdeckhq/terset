@@ -281,7 +281,7 @@ Where Terset does not win:
 - o200k_base: Plain CSV is 9 to 88 tokens smaller on 2 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 4,769 vs 3,899.
 - Claude: Plain CSV is 23 to 38 tokens smaller on 4 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 6,490 vs 5,662.
 
-Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed.
+Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins, ties or loses against JSON compact and TOON the same way on every seed.
 
 Token counts say nothing about answer quality. Terset is about fewer tokens.
 Other tokenizers and models will give other counts. Full benchmark with pretty JSON and CSV counts:

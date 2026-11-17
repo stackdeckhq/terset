@@ -15,8 +15,12 @@ export const SweepCaseSchema = z.strictObject({
   name: z.string().min(1),
   /** Seeds where Terset has fewer tokens than TOON's best. A tie is not fewer. */
   underToon: z.number().int().nonnegative(),
+  /** Seeds where Terset has exactly as many tokens as TOON's best. */
+  tiedToon: z.number().int().nonnegative(),
   /** Seeds where Terset has fewer tokens than compact JSON. A tie is not fewer. */
   underJson: z.number().int().nonnegative(),
+  /** Seeds where Terset has exactly as many tokens as compact JSON. */
+  tiedJson: z.number().int().nonnegative(),
   vsJson: SpreadSchema,
   vsToon: SpreadSchema,
 });
@@ -30,7 +34,10 @@ export const SeedSweepSchema = z
     seeds: Seeds,
     cases: z.array(SweepCaseSchema).min(1),
   })
-  .refine((file) => file.cases.every((row) => row.underToon <= file.seeds && row.underJson <= file.seeds), 'A case cannot win on more seeds than were run');
+  .refine(
+    (file) => file.cases.every((row) => row.underToon + row.tiedToon <= file.seeds && row.underJson + row.tiedJson <= file.seeds),
+    'A case cannot win or tie on more seeds than were run',
+  );
 
 export type Spread = z.infer<typeof SpreadSchema>;
 export type SweepCase = z.infer<typeof SweepCaseSchema>;

@@ -1,6 +1,6 @@
 {
   "name": "@stackdeck/terset",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "TERse SETs. It writes a set of records as one terse table, so a model reads the same data with fewer tokens.",
   "type": "module",
   "license": "MIT",

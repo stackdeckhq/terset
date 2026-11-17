@@ -266,7 +266,7 @@ describe('bench numbers', () => {
     if (BENCH_FILE.status !== 'ready') return;
     const line = sweepReadmeLine(SWEEP, BENCH_FILE);
     expect(line).toBe(
-      'Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins or loses against JSON compact and TOON the same way on every seed.',
+      'Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins, ties or loses against JSON compact and TOON the same way on every seed.',
     );
     const list = benchmarkKeepElse(BENCH_FILE, COUNTERS).map((item) => `- ${item}`).join('\n');
     for (const path of READMES) {
