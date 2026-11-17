@@ -117,10 +117,10 @@ function sweepSection(bench: BenchFile): readonly string[] {
   return [`## ${sweepTitle(SWEEP)}, ${SWEEP.tokenizer}`, sweepIntro(SWEEP), bullets(sweepLines(SWEEP, bench)), [head, markdownRow(SWEEP_TABLE_HEAD.map(() => '---')), ...sweepTableRows(SWEEP).map(markdownRow)].join('\n')];
 }
 
-/** The real files: a title, the intro, one table, one line per file and the method. */
+/** The real files: a title, the intro, one line per file, one table and the method. The same order as the page. */
 function realSection(): readonly string[] {
   const head = markdownRow(REAL_TABLE_HEAD);
-  return [`## Real data, ${REAL.tokenizer}`, realIntro(REAL), [head, markdownRow(REAL_TABLE_HEAD.map(() => '---')), ...realTableRows(REAL).map(markdownRow)].join('\n'), bullets(realLines(REAL)), realMethod(REAL)];
+  return [`## Real data, ${REAL.tokenizer}`, realIntro(REAL), bullets(realLines(REAL)), [head, markdownRow(REAL_TABLE_HEAD.map(() => '---')), ...realTableRows(REAL).map(markdownRow)].join('\n'), realMethod(REAL)];
 }
 
 function countSections(counters: Counters): readonly string[] {

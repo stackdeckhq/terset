@@ -93,8 +93,8 @@ function BenchmarkPage() {
           <span className="tok">{REAL.tokenizer}</span>
         </h2>
         <p>{realIntro(REAL)}</p>
-        <RealTable data={REAL} />
         <Lines lines={realLines(REAL)} />
+        <RealTable data={REAL} />
         <p className="tbl-note" dangerouslySetInnerHTML={{ __html: inline(realMethod(REAL)) }} />
       </section>
       {keepElse.length > 0 && (
