@@ -335,6 +335,8 @@ Method and limits: [terset.dev/benchmark](https://terset.dev/benchmark#accuracy)
 
 <!-- docs:reference -->
 Every function, parameter, error and limit, for JavaScript and Python: [terset.dev/docs](https://terset.dev/docs).
+
+The format is frozen at 1.0. JavaScript and Python are separate implementations that both pass the conformance suite at conformance/ in the repository.
 <!-- /docs:reference -->
 
 ## For agents

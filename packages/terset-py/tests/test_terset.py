@@ -9,6 +9,7 @@ import sys
 import unittest
 
 PACKAGE = Path(__file__).resolve().parents[1]
+CONFORMANCE = PACKAGE.parents[1] / "conformance"
 sys.path.insert(0, str(PACKAGE / "src"))
 
 from terset import RULES, decode, encode  # noqa: E402
@@ -42,6 +43,16 @@ def expand_case(case):
 
 
 class ConformanceTests(unittest.TestCase):
+    def assert_value_and_key_order(self, actual, expected):
+        self.assertEqual(actual, expected)
+        if isinstance(expected, dict):
+            self.assertEqual(list(actual), list(expected))
+            for key in expected:
+                self.assert_value_and_key_order(actual[key], expected[key])
+        elif isinstance(expected, list):
+            for actual_item, expected_item in zip(actual, expected):
+                self.assert_value_and_key_order(actual_item, expected_item)
+
     def test_counted_tables(self):
         value = {"people": [{"name": "Ada"}, {"name": "Lin"}]}
         text = "people[2]:\nname\nAda\nLin"
@@ -59,16 +70,16 @@ class ConformanceTests(unittest.TestCase):
     def test_shared_cases(self):
         # Fixture numbers describe JavaScript values. Parse them as binary64,
         # including integral decimal tokens outside Python's exact-int range.
-        cases = json.loads((PACKAGE.parent / "terset/tests/cases.json").read_text(encoding="utf-8"), parse_int=float)
+        cases = json.loads((CONFORMANCE / "cases.json").read_text(encoding="utf-8"), parse_int=float)
         for case in cases:
             with self.subTest(case=case["name"]):
                 value, encoded = expand_case(case)
                 self.assertEqual(encode(value), encoded)
-                self.assertEqual(decode(encoded), value)
+                self.assert_value_and_key_order(decode(encoded), value)
                 self.assertEqual(encode(decode(encoded)), encoded)
 
     def test_shared_integer_inputs(self):
-        cases = json.loads((PACKAGE.parent / "terset/tests/cases.json").read_text(encoding="utf-8"), parse_int=fixture_integer)
+        cases = json.loads((CONFORMANCE / "cases.json").read_text(encoding="utf-8"), parse_int=fixture_integer)
         boundary = next(case for case in cases if case["name"] == "number formatting boundaries")
         self.assertIs(type(boundary["input"]["values"][0]), int)
         self.assertIs(type(boundary["input"]["values"][3]), int)
@@ -76,7 +87,7 @@ class ConformanceTests(unittest.TestCase):
             with self.subTest(case=case["name"]):
                 value, encoded = expand_case(case)
                 self.assertEqual(encode(value), encoded)
-                self.assertEqual(decode(encoded), value)
+                self.assert_value_and_key_order(decode(encoded), value)
 
     def test_equal_size_fallback(self):
         rows = [{"a": 1}, {"b": 1}, {"c": 1}, {"d": 1}, {"e": 1}, {}]
@@ -175,7 +186,7 @@ class ConformanceTests(unittest.TestCase):
         self.assertEqual(decode("x: (()=>7)()"), {"x": "(()=>7)()"})
 
     def test_shared_rejections(self):
-        texts = json.loads((PACKAGE.parent / "terset/tests/rejections.json").read_text(encoding="utf-8"))
+        texts = json.loads((CONFORMANCE / "rejections.json").read_text(encoding="utf-8"))
         for text in texts:
             with self.subTest(text=text), self.assertRaises(ValueError):
                 decode(text)

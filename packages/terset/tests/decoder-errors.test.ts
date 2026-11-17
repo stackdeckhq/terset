@@ -5,7 +5,7 @@ import { decode, encode } from "../src/index.ts";
 
 interface RejectionCase { name: string; text: string; error: string }
 
-const cases = JSON.parse(readFileSync(new URL("./rejection-errors.json", import.meta.url), "utf8")) as RejectionCase[];
+const cases = JSON.parse(readFileSync(new URL("../../../conformance/rejection-errors.json", import.meta.url), "utf8")) as RejectionCase[];
 for (const entry of cases) {
   it(`reports ${entry.name} before canonical validation`, () => {
     assert.throws(() => decode(entry.text), { name: "SyntaxError", message: entry.error });

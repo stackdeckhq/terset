@@ -14,7 +14,7 @@ it("fits the shared construct combinations and ignores quoted and cell lookalike
 });
 
 it("rejects the same strings with the same error as decode", () => {
-  const cases = JSON.parse(readFileSync(new URL("./rejection-errors.json", import.meta.url), "utf8")) as { text: string }[];
+  const cases = JSON.parse(readFileSync(new URL("../../../conformance/rejection-errors.json", import.meta.url), "utf8")) as { text: string }[];
   for (const { text } of [...cases, { text: "{2}\n@key\tname\na\tAda\nb\tLin" }]) {
     let rejection: unknown;
     try { decode(text); } catch (error) { rejection = error; }
