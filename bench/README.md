@@ -43,27 +43,39 @@ its Markdown report.
   were retried in the same run. Both failures stay in its file. All three files
   were checked for keys, base URLs, local paths and account names. None were
   found. The four email addresses are fake values from the frozen upstream
-  datasets. The Claude Opus 5.5 matched batch is not published yet.
+  datasets.
+- 2026-11-17, matched batch: Claude Opus 5.5, all 244 questions in all four
+  formats, run three times on one day with the same setup:
+  [r1](published/2026-11-17/matched-opus-2026-11-17-r1.md),
+  [r2](published/2026-11-17/matched-opus-2026-11-17-r2.md) and
+  [r3](published/2026-11-17/matched-opus-2026-11-17-r3.md). Terset scored 243
+  of 244 in each run. TOON scored 242, 242 and 241. Compact JSON and indented
+  JSON scored 241 in each run. Five attempts failed and were retried in the
+  same run: TOON q186 twice in r1, TOON q186 in r2, and TOON q186 and q200 in
+  r3. Each failure stays in its file. All three files were checked for keys,
+  base URLs, local paths and account names. None were found. The four email
+  addresses are fake values from the frozen upstream datasets.
 
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
-published runs, and updates the accuracy blocks in the READMEs. A model with a
-matched batch takes every format from that batch only. Its earlier runs stay
-published as history. A model without one takes Terset from both 2026-11-17
-fitted-rules runs and the other formats from 2026-11-12. Today that means Sol
-reads from its matched batch and Opus from the earlier runs. No run is picked.
-A format with more than one run shows the mean over its runs, with each run's
-score beside it. On Sol, Terset and TOON are level on accuracy, and Terset uses
-fewer input tokens.
+published runs, and updates the accuracy blocks in the READMEs. Each model
+takes every format from its matched batch only. The earlier runs stay
+published as history. The tables take nothing from them. No run is picked.
+Each format shows the mean over its three runs, with each run's score beside
+it. On Opus, Terset got 243, TOON about 241.7 and both JSON forms 241. On Sol,
+Terset and TOON are level at 242.0. A gap of one or two questions is within
+run-to-run noise, so these runs show no accuracy win for any format. Terset
+uses fewer input tokens on both models.
 It refuses differing model settings, prices, question sets, data hashes,
 upstream commits, tokenizers or per-call output caps. The runs in one matched
 batch must share one plan fingerprint and one date, and each must hold only its
-model. Fingerprints differ across the earlier runs, because the later ones
-measured only Terset.
+model.
 Claude input tokens come from Anthropic's token count of each request body.
-The 2026-11-12 run and the second 2026-11-17 run were counted. A run that
-borrows counts must have the same Claude settings and the same reserved and
-recorded input tokens on every row as the counted run, so it sent the same
-requests. The script checks that before it uses the counts.
+The 2026-11-12 run and the second 2026-11-17 fitted-rules run were counted.
+The Opus matched runs sent the same requests, so they reuse those counts:
+Terset from the fitted-rules run and the other formats from 2026-11-12. A run
+that borrows counts must have the same Claude settings and the same reserved
+and recorded input tokens on every row as the counted run. The script checks
+that before it uses the counts.
 Each table row records its run dates. Tests fail when the committed site file
 or a README accuracy block drifts from the published runs, or when a run file in
 `bench/published/` is left out.
