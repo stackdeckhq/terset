@@ -29,8 +29,9 @@ never changes them.
 - Fetched: 2026-11-17 20:02:00 UTC. The data says it was updated at
   2026-11-17 18:29:06 UTC.
 - What it is: the raw forecast grid data the US National Weather Service
-  publishes for one grid square in Washington, DC. Deeply nested: 68 weather
-  layers, each with its own unit and a list of timed values.
+  publishes for one grid square in Washington, DC. Deeply nested: 59 forecast
+  series, each with a list of timed values, and 20 of them with a unit. Nine
+  more fields describe the grid square.
 - License: US public domain. NWS information is a work of the US government.
   See https://www.weather.gov/disclaimer.
 - Why this one: the aim was a nested document of 20 KB to 400 KB. The
