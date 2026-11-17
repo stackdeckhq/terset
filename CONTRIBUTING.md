@@ -28,6 +28,8 @@ pnpm gate
 
 The gate runs the type check, lint, the tests, the package build, the site build and a deploy dry run. It must pass before a pull request is merged.
 
+To release: merge the release PR, push the matching version tag, and the site follows after both packages publish.
+
 ## Pull requests
 
 - Link the issue or discussion where we agreed on the change. A pull request with no linked issue or agreed discussion may be closed without review.
