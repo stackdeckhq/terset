@@ -42,8 +42,11 @@ export interface CostBar {
   readonly costText: string;
   /** The bar's length against the most expensive format for this model, 0 to 1. Bars start at zero. */
   readonly fraction: number;
-  /** Where the cost comes from: "run 2026-11-12", or "mean of 2 runs, 2026-11-17". */
-  readonly runs: string;
+  /**
+   * Where the cost comes from, one short line each so it fits beside the bar:
+   * ["run 2026-11-12"], or ["mean of 2 runs", "2026-11-17"].
+   */
+  readonly runs: readonly string[];
   readonly terset: boolean;
   /** The lowest cost for this model. Its number is bold, whichever format it is. */
   readonly cheapest: boolean;
@@ -58,7 +61,7 @@ export function costBars(model: AccuracyModel): readonly CostBar[] {
   const min = Math.min(...model.rows.map((row) => row.totalCost));
   return ACCURACY_FORMATS.map((format) => {
     const row = formatRow(model, format);
-    const runs = row.runs.length === 1 ? `run ${rowRunOn(row)}` : `mean of ${String(row.runs.length)} runs, ${rowRunOn(row)}`;
+    const runs = row.runs.length === 1 ? [`run ${rowRunOn(row)}`] : [`mean of ${String(row.runs.length)} runs`, rowRunOn(row)];
     return { format, label: BAR_LABELS[format], cost: row.totalCost, costText: usd(row.totalCost), fraction: row.totalCost / max, runs, terset: format === 'terset', cheapest: row.totalCost === min };
   });
 }

@@ -49,7 +49,8 @@ describe('cost bars', () => {
   it('dates every row, says which costs are a mean of runs, and marks the Terset row', () => {
     const html = renderToStaticMarkup(createElement(CostBars, { file: ACCURACY, headingId: 'h', title: 'Cost' }));
     expect(html.match(/class="cost-bar terset[ "]/gu)).toHaveLength(2);
-    expect(html.match(/mean of 2 runs, 2026-11-17/gu)).toHaveLength(2);
+    // One short line each, so the Terset label fits the value column beside the bar.
+    expect(html.match(/<small>mean of 2 runs<\/small><small>2026-11-17<\/small>/gu)).toHaveLength(2);
     expect(html.match(/run 2026-11-12/gu)).toHaveLength(6);
     expect(html).toContain('<b>$5.64</b>');
     expect(html).toContain('<b>$1.84</b>');

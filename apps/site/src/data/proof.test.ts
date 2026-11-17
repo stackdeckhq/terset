@@ -18,12 +18,12 @@ const SOL = model('gpt-6.1-sol');
 describe('cost bars', () => {
   it('gives each format its cost at API list price and its runs, Terset first, scaled from zero', () => {
     expect(costBars(OPUS).map((bar) => [bar.label, bar.costText, bar.runs])).toEqual([
-      ['Terset', '$5.64', 'mean of 2 runs, 2026-11-17'],
-      ['Compact JSON', '$8.04', 'run 2026-11-12'],
-      ['Pretty JSON', '$10.20', 'run 2026-11-12'],
-      ['TOON', '$6.35', 'run 2026-11-12'],
+      ['Terset', '$5.64', ['mean of 2 runs', '2026-11-17']],
+      ['Compact JSON', '$8.04', ['run 2026-11-12']],
+      ['Pretty JSON', '$10.20', ['run 2026-11-12']],
+      ['TOON', '$6.35', ['run 2026-11-12']],
     ]);
-    expect(costBars(SOL)[0]).toMatchObject({ costText: '$1.84', runs: 'mean of 2 runs, 2026-11-17', terset: true });
+    expect(costBars(SOL)[0]).toMatchObject({ costText: '$1.84', runs: ['mean of 2 runs', '2026-11-17'], terset: true });
     for (const bars of [costBars(OPUS), costBars(SOL)]) {
       expect(Math.max(...bars.map((bar) => bar.fraction))).toBe(1);
       expect(bars.every((bar) => bar.fraction > 0)).toBe(true);
