@@ -310,6 +310,8 @@ describe('accuracy', () => {
     expect(method).toContain('Tables use 5,856 answered calls from runs on 2026-11-17. Seven attempts failed and were retried in the same run.');
     expect(method).toContain("Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them.");
     expect(method).toContain('no model judge');
+    // A reader can rerun it: the harness folder holds the frozen questions and the commands.
+    expect(method).toContain('The questions and the steps to run it yourself: [bench](https://github.com/stackdeckhq/terset/tree/main/bench).');
   });
 
   it('says nothing about how the answers were paid for, and subtracts nothing', () => {
