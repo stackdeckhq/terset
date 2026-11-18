@@ -412,7 +412,7 @@ export function accuracyMethod(file: AccuracyFile): readonly string[] {
     `Questions from the open [TOON benchmark](https://github.com/toon-format/toon) (MIT), commit [${file.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${file.upstreamSha}).`,
     'Temperature 0 where the model accepts it, scored by fixed rules with no model judge.',
     `${costLine(file)} ${inputTokensLine(file)}`,
-    `Every answer and its score: ${publishedLinks(file)}. Each row names its run date.`,
+    `Every answer and its score: ${publishedLinks(file)}. Each row names its run date. The questions and the steps to run it yourself: [bench](${REPO_URL}/tree/main/bench).`,
   ];
 }
 
