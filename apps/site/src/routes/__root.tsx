@@ -1,6 +1,7 @@
-import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
+import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { OG_IMAGE_ALT, OG_IMAGE_PATH } from '../brand/og.ts';
+import { NotFound } from '../components/NotFound.tsx';
 import { SiteFooter } from '../components/SiteFooter.tsx';
 import { SiteHeader } from '../components/SiteHeader.tsx';
 import { SITE_NAME, SITE_URL, TAGLINE } from '../data/site.ts';
@@ -72,23 +73,5 @@ function RootLayout() {
       </main>
       <SiteFooter />
     </RootDocument>
-  );
-}
-
-function NotFound() {
-  return (
-    <section className="lost" aria-labelledby="h-lost">
-      <p className="code-n">404</p>
-      <h1 id="h-lost">This page is not here.</h1>
-      <p>The link may be old, or the address has a typo.</p>
-      <div className="actions">
-        <Link to="/" className="btn btn-primary">
-          Go to the home page
-        </Link>
-        <Link to="/format" className="btn btn-line">
-          Read the format
-        </Link>
-      </div>
-    </section>
   );
 }

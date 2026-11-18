@@ -11,10 +11,16 @@ import { StepConvert } from '../components/home/StepConvert.tsx';
 import { StepKeys } from '../components/home/StepKeys.tsx';
 import { StepPrompt } from '../components/home/StepPrompt.tsx';
 import { StepRoundTrip } from '../components/home/StepRoundTrip.tsx';
+import { homeJsonLd, homeMeta } from '../data/seo.ts';
 import { canonicalHead } from '../data/site.ts';
 import { useJourneyTracker } from '../lib/journey.ts';
 
-export const Route = createFileRoute('/')({ head: () => canonicalHead('/'), component: Home });
+function homeHead() {
+  const canonical = canonicalHead('/');
+  return { meta: [...homeMeta(), ...canonical.meta], links: canonical.links, scripts: homeJsonLd() };
+}
+
+export const Route = createFileRoute('/')({ head: homeHead, component: Home });
 
 function Home() {
   useJourneyTracker('journey');

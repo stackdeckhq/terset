@@ -14,10 +14,10 @@ import agentsGuide from '../generated/agents.md?raw';
 import { RULES_PLACEMENT } from '../lib/format.ts';
 import { parseMarkdown } from '../lib/markdown.ts';
 
-const DESCRIPTION = 'What a coding agent needs to use Terset: one prompt to paste, the agent guide, a skill file, the spec, llms.txt and the short-handles technique.';
+const TITLE = 'Teach your agent Terset';
 
 export const Route = createFileRoute('/agents')({
-  head: () => docHead('/agents', 'Agents', DESCRIPTION),
+  head: () => docHead('/agents', TITLE),
   component: AgentsPage,
 });
 
@@ -93,7 +93,7 @@ function SkillSection() {
 
 function AgentsPage() {
   return (
-    <DocPage kicker="For agents" title="Teach your agent Terset" lead="Paste one prompt, or point the agent at the raw files.">
+    <DocPage kicker="For agents" title={TITLE} lead="Paste one prompt, or point the agent at the raw files.">
       <PromptCard level={2} />
       <section className="doc-section" aria-labelledby="files-h">
         <h2 id="files-h">Raw files</h2>

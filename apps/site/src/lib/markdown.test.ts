@@ -2,7 +2,7 @@
 // and a date inside a link target stays a plain URL.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { inline, parseMarkdown } from './markdown.ts';
+import { inline, parseMarkdown, withoutTitle } from './markdown.ts';
 
 function html(source: string): string {
   return parseMarkdown(source)
@@ -22,6 +22,22 @@ describe('tables', () => {
   it('right-aligns a header only over a column of numbers', () => {
     const out = html('| Name | Size | About |\n| --- | --- | --- |\n| a | 1,200 | small |\n| b | 30 | large |');
     expect(out).toContain('<th scope="col">Name</th><th scope="col" class="num">Size</th><th scope="col">About</th>');
+  });
+});
+
+describe('withoutTitle', () => {
+  it('drops a leading h1, so the page h1 stays the only one', () => {
+    expect(html(withoutTitle('# Terset format\n\nFormat version 1.0\n\n## Root\n\nText.'))).toBe('<p>Format version 1.0</p><h2 id="root">Root</h2><p>Text.</p>');
+  });
+
+  it('keeps a doc that does not open with an h1 as it is', () => {
+    expect(withoutTitle('## Root\n\n# Later')).toBe('## Root\n\n# Later');
+  });
+
+  it('leaves no h1 in the spec the /format page renders', () => {
+    const spec = readFileSync(new URL('../../../../packages/terset/SPEC.md', import.meta.url), 'utf8');
+    expect(spec.startsWith('# ')).toBe(true);
+    expect(html(withoutTitle(spec))).not.toContain('<h1');
   });
 });
 

@@ -2,11 +2,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { DocsToc } from '../components/docs/DocsToc.tsx';
 import { ApiSection, CheatSheetSection, ErrorsSection, InstallSection, LinksSection, QuickStartSection, RulesSection, WhenNotSection } from '../components/docs/DocsSections.tsx';
-import { DOCS_DESCRIPTION, DOCS_LEAD, DOCS_TITLE } from '../data/docs.ts';
+import { DOCS_LEAD, DOCS_TITLE } from '../data/docs.ts';
 import { PACKAGE_VERSION } from '../data/site.ts';
 
 export const Route = createFileRoute('/docs')({
-  head: () => docHead('/docs', 'Docs', DOCS_DESCRIPTION),
+  head: () => docHead('/docs', DOCS_TITLE),
   component: DocsPage,
 });
 

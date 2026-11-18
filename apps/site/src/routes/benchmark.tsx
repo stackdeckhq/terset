@@ -17,10 +17,10 @@ import { REAL, realIntro, realLines, realMethod } from '../data/real.ts';
 import { SWEEP, sweepIntro, sweepLines, sweepTitle } from '../data/sweep.ts';
 import { inline } from '../lib/markdown.ts';
 
-const DESCRIPTION = 'Token counts for Terset, compact and pretty JSON, YAML, TOON and CSV on two counters, input cost at list price, answer accuracy on two models, the method and the limits.';
+const TITLE = 'Tokens on every case';
 
 export const Route = createFileRoute('/benchmark')({
-  head: () => docHead('/benchmark', 'Benchmark', DESCRIPTION),
+  head: () => docHead('/benchmark', TITLE),
   component: BenchmarkPage,
 });
 
@@ -42,7 +42,7 @@ function BenchmarkPage() {
   return (
     <DocPage
       kicker={BENCH.status === 'pending' ? 'Benchmark, numbers pending' : 'Benchmark'}
-      title="Tokens on every case"
+      title={TITLE}
       lead={`${countersHeadline(BENCH, COUNTERS)} ${countersNote(BENCH, COUNTERS)}`}
       actions={
         <a className="btn btn-line" href="/benchmark.md">
