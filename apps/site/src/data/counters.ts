@@ -98,10 +98,23 @@ export function countersHeadline(bench: BenchFile, counters: Counters | null): s
   return `Fewer tokens than compact JSON in ${String(open)} of ${total} cases on o200k_base and ${String(claude)} on Claude.`;
 }
 
+function countedTwoWays(claude: Counter): string {
+  return `Tokens counted two ways: the o200k_base tokenizer and Claude's token count for ${claude.price.model}. Others will differ.`;
+}
+
 /** Which counters made the numbers, in one or two plain sentences. */
 export function countersNote(bench: BenchFile, counters: Counters | null): string {
   if (counters === null || counters.claude === null) return tokenizerNote(bench);
-  return `Tokens counted two ways: the o200k_base tokenizer and Claude's token count for ${counters.claude.price.model}. Others will differ. JSON means compact JSON, not pretty printed. ${FITTED_RULES_NOTE}`;
+  return `${countedTwoWays(counters.claude)} JSON means compact JSON, not pretty printed. ${FITTED_RULES_NOTE}`;
+}
+
+/**
+ * The counters note for the /benchmark lead. That page names compact JSON and pretty JSON
+ * wherever they appear, so it leaves out what "JSON" means.
+ */
+export function countersPageNote(bench: BenchFile, counters: Counters | null): string {
+  if (counters === null || counters.claude === null) return tokenizerNote(bench);
+  return `${countedTwoWays(counters.claude)} ${FITTED_RULES_NOTE}`;
 }
 
 /** "o200k_base: Terset, fitted rules line included, is under ..." for one counter. */
@@ -127,14 +140,17 @@ export function formatCents(cents: number): string {
   return USD.format(cents / 100);
 }
 
-/** Signed difference in dollars, with a true minus sign: "−$1.60", "+$0.08", "$0.00". */
+/**
+ * The difference in dollars, in words: "$1.60 less", "$0.08 more", "the same".
+ * A signed amount beside two prices reads as a third price, so the cell says which way it goes.
+ */
 export function centsDelta(value: number, base: number): string {
   const change = value - base;
-  const sign = change > 0 ? '+' : change < 0 ? '−' : '';
-  return `${sign}${formatCents(Math.abs(change))}`;
+  if (change === 0) return 'the same';
+  return `${formatCents(Math.abs(change))} ${change < 0 ? 'less' : 'more'}`;
 }
 
-export const COST_TABLE_HEAD = ['Case', 'Terset', 'JSON compact', 'vs JSON compact'] as const;
+export const COST_TABLE_HEAD = ['Case', 'Terset', 'Compact JSON', 'Terset vs compact JSON'] as const;
 
 export type CostTableRow = readonly [name: string, terset: string, json: string, vsJson: string];
 

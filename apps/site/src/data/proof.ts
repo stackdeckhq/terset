@@ -5,7 +5,7 @@
 // checked against the data when it is built, and a claim the data no longer supports throws.
 import { ACCURACY_FORMATS } from './accuracy-ids.ts';
 import type { AccuracyFile, AccuracyFormat, AccuracyKind, AccuracyKindId, AccuracyModel } from './accuracy-schema.ts';
-import { FORMAT_LABELS, KIND_LABELS, formatMean, formatRow, inputTokensLine, intervalsOverlap, percent, rowRunOn, shortModelName, usd } from './accuracy.ts';
+import { FORMAT_LABELS, KIND_LABELS, countWord, formatMean, formatRow, inputTokensLine, percent, rowRunOn, shortModelName, usd } from './accuracy.ts';
 import { benchHeadline, formatCount, underJson, underToon } from './bench.ts';
 import type { BenchFile } from './bench.ts';
 import type { CounterId, Counters } from './numbers.ts';
@@ -52,9 +52,6 @@ export interface CostBar {
   readonly cheapest: boolean;
 }
 
-/** Bar labels. The tables say "JSON" for the indented form; next to "Compact JSON" a bar needs the full name. */
-const BAR_LABELS: Readonly<Record<AccuracyFormat, string>> = { ...FORMAT_LABELS, 'json-pretty': 'Pretty JSON' };
-
 /** Cost at API list price of each format for one model, Terset first. */
 export function costBars(model: AccuracyModel): readonly CostBar[] {
   const max = Math.max(...model.rows.map((row) => row.totalCost));
@@ -62,7 +59,7 @@ export function costBars(model: AccuracyModel): readonly CostBar[] {
   return ACCURACY_FORMATS.map((format) => {
     const row = formatRow(model, format);
     const runs = row.runs.length === 1 ? [`run ${rowRunOn(row)}`] : [`mean of ${String(row.runs.length)} runs`, rowRunOn(row)];
-    return { format, label: BAR_LABELS[format], cost: row.totalCost, costText: usd(row.totalCost), fraction: row.totalCost / max, runs, terset: format === 'terset', cheapest: row.totalCost === min };
+    return { format, label: FORMAT_LABELS[format], cost: row.totalCost, costText: usd(row.totalCost), fraction: row.totalCost / max, runs, terset: format === 'terset', cheapest: row.totalCost === min };
   });
 }
 
@@ -92,22 +89,39 @@ export interface BigNumber {
   readonly win: boolean;
 }
 
-/** Three big numbers: fewer input tokens and lower cost than compact JSON, and right answers. */
+/** The heading over the big numbers: "Fewer tokens on the 244-question test". */
+export function proofHeading(file: AccuracyFile): string {
+  return `Fewer tokens on the ${formatCount(file.questions)}-question test`;
+}
+
+/** The lowest and highest right answers of any format on one model, each a mean of that format's runs. */
+function answerRange(model: AccuracyModel): string {
+  const scores = model.rows.map((row) => row.correct);
+  const lowest = Math.min(...scores);
+  const highest = Math.max(...scores);
+  return lowest === highest ? formatMean(lowest) : `${formatMean(lowest)} to ${formatMean(highest)}`;
+}
+
+/**
+ * Three big numbers: fewer input tokens and lower cost than compact JSON, and the range of right
+ * answers across every format. The range shows that no format stands apart, not a Terset win.
+ */
 export function bigNumbers(file: AccuracyFile): readonly BigNumber[] {
   assertClaim(file.models.every((model) => formatRow(model, 'terset').inputTokens < formatRow(model, 'json-compact').inputTokens), 'fewer input tokens than compact JSON');
   assertClaim(file.models.every((model) => formatRow(model, 'terset').totalCost < formatRow(model, 'json-compact').totalCost), 'cheaper than compact JSON');
-  assertClaim(file.models.every(intervalsOverlap), 'accuracy is a tie');
+  assertClaim(file.models.every((model) => model.rows.length === ACCURACY_FORMATS.length), 'the answers card covers every format');
   const per = (parts: (model: AccuracyModel) => readonly [figure: string, tail: string]): readonly BigValue[] =>
     file.models.map((model) => {
       const [figure, tail] = parts(model);
       return { model: shortModelName(model), text: `${figure}${tail}`, figure, tail };
     });
-  const tersetRuns = [...new Set(file.models.map((model) => formatRow(model, 'terset').runs.length))];
-  const answers = tersetRuns.length === 1 && tersetRuns[0] === 1 ? 'right answers' : tersetRuns.length === 1 ? `right answers, mean of ${String(tersetRuns[0])} Terset runs` : 'right answers, mean of the Terset runs';
+  const runs = [...new Set(file.models.flatMap((model) => model.rows.map((row) => row.runs.length)))];
+  const formats = `all ${countWord(ACCURACY_FORMATS.length)} formats`;
+  const answers = runs.length === 1 && runs[0] === 1 ? `right answers across ${formats}` : runs.length === 1 ? `right answers across ${formats}, each a mean of ${String(runs[0])} runs` : `right answers across ${formats}, each a mean of its runs`;
   return [
     { id: 'tokens', values: per((model) => [percent(saving(formatRow(model, 'terset').inputTokens, formatRow(model, 'json-compact').inputTokens)), '']), label: 'fewer input tokens than compact JSON', win: true },
     { id: 'cost', values: per((model) => [percent(saving(formatRow(model, 'terset').totalCost, formatRow(model, 'json-compact').totalCost)), '']), label: 'lower cost than compact JSON', win: true },
-    { id: 'answers', values: per((model) => [formatMean(formatRow(model, 'terset').correct), `/${formatCount(file.questions)}`]), label: answers, win: false },
+    { id: 'answers', values: per((model) => [answerRange(model), ` of ${formatCount(file.questions)}`]), label: answers, win: false },
   ];
 }
 
@@ -122,7 +136,7 @@ export function bigNumbersNote(file: AccuracyFile): string {
 export const TIE_SHARE = 0.005;
 
 /** The line under the data set chart. */
-export const DATASET_NOTE = `Input tokens per data set, counted the same way as the tables. Left of zero, Terset used fewer. Within ${String(TIE_SHARE * 100)}% counts as a tie.`;
+export const DATASET_NOTE = `Input tokens per data set, counted the same way as the tables. JSON here is compact JSON. Left of zero, Terset used fewer. Within ${String(TIE_SHARE * 100)}% counts as a tie.`;
 
 export type Verdict = 'fewer' | 'tie' | 'more';
 
@@ -193,6 +207,22 @@ export function datasetSummary(rows: readonly DatasetRow[]): string {
   return `Fewer tokens ${toon} Fewer ${json}`;
 }
 
+/**
+ * The data set fold's summary: what the fold holds, then the result in one line. Models with
+ * the same result share it; otherwise each model gets its own.
+ */
+export function datasetFoldAbout(file: AccuracyFile): string {
+  const results = file.models.map((model) => ({ model, rows: datasetRows(file, model) }));
+  const sets = [...new Set(results.map(({ rows }) => rows.length))];
+  if (sets.length !== 1) throw new Error('Expected the same data sets on every model');
+  const lines = results.map(({ rows }) => datasetSummary(rows));
+  const [first] = lines;
+  if (first === undefined) throw new Error('Expected a model');
+  const what = `Input tokens on each of the ${String(sets[0])} data sets, per model, against compact JSON and TOON.`;
+  if (lines.length > 1 && lines.every((line) => line === first)) return `${what} ${lines.length === 2 ? 'Both models' : 'Every model'}: ${first}`;
+  return `${what} ${results.map(({ model }, index) => `${shortModelName(model)}: ${lines[index] ?? ''}`).join(' ')}`;
+}
+
 /** The largest saving and the largest loss across every model and both bases, as positive shares. They set the chart's shared scale. */
 export function datasetScale(file: AccuracyFile): { readonly save: number; readonly lose: number } {
   const changes = file.models.flatMap((model) => datasetRows(file, model).flatMap((row) => [row.vsToon.change, row.vsJson.change]));
@@ -209,8 +239,9 @@ export function proofLines(file: AccuracyFile, counters: Counters | null): reado
   const toon = smallerThanToon(file, counters);
   return [
     `${line(tokens)} Each model counts with its own tokenizer.`,
-    `${line(cost)} Accuracy is a tie.`,
-    ...(toon === null ? [] : [`${toon.text} (${toon.tokenizer}). ${toon.note}`]),
+    // The overlap line follows these lines in /benchmark.md, as it follows the cards on the page.
+    line(cost),
+    ...(toon === null ? [] : [smallerThanToonLine(toon)]),
     ...file.models.map((model) => `${model.name} (${modelTokenizer(model)}): ${datasetSummary(datasetRows(file, model))}`),
   ];
 }
@@ -245,6 +276,11 @@ export function smallerThanToon(file: AccuracyFile, counters: Counters | null): 
     tokenizer: OPENAI_TOKENIZER,
     note: `The ${String(cases.length)} sample cases on o200k_base and the ${String(rows.length)} benchmark data sets as ${model.name} reported them.`,
   };
+}
+
+/** The count with its tokenizer and its two sources, as one line: on /benchmark under Sample cases, and in benchmark.md. */
+export function smallerThanToonLine(toon: ToonCount): string {
+  return `${toon.text} (${toon.tokenizer}). ${toon.note}`;
 }
 
 // The home headline

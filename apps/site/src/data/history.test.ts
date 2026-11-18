@@ -1,10 +1,11 @@
 // The number history is pinned to the data: the newest value of every metric is what
 // the site shows now, and each older row hands on the value the next one starts from.
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ACCURACY, formatRow } from './accuracy.ts';
 import type { AccuracyModel } from './accuracy.ts';
 import { benchmarkMarkdown } from './benchmark-doc.ts';
-import { HISTORY, HISTORY_NOTE, HISTORY_TABLE_HEAD, historyTableRows } from './history.ts';
+import { HISTORY, HISTORY_NOTE, HISTORY_TABLE_HEAD, TUNING_NOTE, historyTableRows } from './history.ts';
 import type { HistoryMetric } from './history.ts';
 import { BENCH_FILE, CLAUDE_FILE, PRICES, benchTotals, buildCounters, underJson, underToon } from './numbers.ts';
 import type { CaseSet } from './numbers.ts';
@@ -128,5 +129,17 @@ describe('number history', () => {
     expect(text).toContain(HISTORY_NOTE);
     expect(HISTORY_NOTE).toContain('not independent checks');
     expect(HISTORY_NOTE).not.toMatch(/\d{4}-\d{2}-\d{2}/u);
+  });
+
+  it('gives the short tuning note the same facts, with counts from the data, in benchmark.md too', () => {
+    expect(TUNING_NOTE).toBe(
+      'The rules line was tuned with the 11 sample case shapes and the TOON question set behind this 244-question test in view. So these results are not independent checks of it. The stress questions were frozen before any model call. Nobody tuned the encoder or its rules line on the real data files.',
+    );
+    // Each fact is the full note's, or one the frozen data folders record in their own README.
+    expect(HISTORY_NOTE).toContain('the TOON question set in view');
+    expect(HISTORY_NOTE).toContain('frozen before any model call');
+    expect(readFileSync(new URL('../../../../bench/data/stress/README.md', import.meta.url), 'utf8')).toContain('Questions were frozen before any model call.');
+    expect(readFileSync(new URL('../../../../bench/data/real/README.md', import.meta.url), 'utf8').replace(/\s+/gu, ' ')).toContain('tuned the Terset encoder or its rules line on them');
+    expect(benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE)).toContain(TUNING_NOTE);
   });
 });

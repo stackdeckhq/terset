@@ -1,0 +1,499 @@
+{
+  "suite": "stress",
+  "aggregation": "single-run-per-model",
+  "source": {
+    "generatorSource": "bench/src/stress/generate.ts",
+    "generatorSha256": "36e8782fe7dad303057132ff4ea5e2f85ff1dce4135ba3b3b5fe05be24010cd1",
+    "seed": 20261117,
+    "referenceDate": "2026-11-17T00:00:00.000Z",
+    "dataHashes": {
+      "datasets.json": "a827116f254dcb19483e6326f85ddec07d8721cf1849c4c8a504aa562eb63cab",
+      "questions.json": "0a1e63fa6db21cc34bae61a4f6fb56aa7828bedb62854149bfbd041f41aa1c37"
+    },
+    "encoders": {
+      "@toon-format/toon": "4.4.0",
+      "@stackdeck/terset": "0.2.4"
+    },
+    "tokenizer": "o200k_base",
+    "perCallMaxOutputTokens": 16000
+  },
+  "questions": 120,
+  "datasets": 38,
+  "calls": 1440,
+  "failedCalls": 0,
+  "publishedRuns": [
+    {
+      "runId": "stress-opus-16k-2026-11-18",
+      "runOn": "2026-11-18",
+      "publishedPath": "bench/published/2026-11-18",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "runId": "stress-sol-16k-2026-11-18",
+      "runOn": "2026-11-18",
+      "publishedPath": "bench/published/2026-11-18",
+      "model": "gpt-6.1-sol"
+    },
+    {
+      "runId": "stress-haiku-16k-2026-11-18",
+      "runOn": "2026-11-18",
+      "publishedPath": "bench/published/2026-11-18",
+      "model": "claude-haiku-5-5"
+    }
+  ],
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "name": "Claude Opus 5.5",
+      "inputTokensFrom": "model-report",
+      "rows": [
+        {
+          "correct": 119,
+          "total": 120,
+          "inputTokens": 512108,
+          "format": "terset",
+          "runId": "stress-opus-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 80279,
+          "totalCost": 3.654012,
+          "groups": [
+            {
+              "correct": 29,
+              "total": 30,
+              "inputTokens": 294284,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 48967,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 94081,
+              "group": "messy"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 74776,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 116,
+          "total": 120,
+          "inputTokens": 1057589,
+          "format": "json-compact",
+          "runId": "stress-opus-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 87955,
+          "totalCost": 5.989456,
+          "groups": [
+            {
+              "correct": 29,
+              "total": 30,
+              "inputTokens": 654214,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 96988,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 134471,
+              "group": "messy"
+            },
+            {
+              "correct": 22,
+              "total": 25,
+              "inputTokens": 171916,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 117,
+          "total": 120,
+          "inputTokens": 1674107,
+          "format": "json-pretty",
+          "runId": "stress-opus-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 83490,
+          "totalCost": 8.366228,
+          "groups": [
+            {
+              "correct": 30,
+              "total": 30,
+              "inputTokens": 1059544,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 150675,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 179611,
+              "group": "messy"
+            },
+            {
+              "correct": 22,
+              "total": 25,
+              "inputTokens": 284277,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 120,
+          "total": 120,
+          "inputTokens": 592809,
+          "format": "toon",
+          "runId": "stress-opus-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 74930,
+          "totalCost": 3.869836,
+          "groups": [
+            {
+              "correct": 30,
+              "total": 30,
+              "inputTokens": 319994,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 49070,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 138821,
+              "group": "messy"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 84924,
+              "group": "damage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "name": "GPT 6.1 Sol",
+      "inputTokensFrom": "model-report",
+      "rows": [
+        {
+          "correct": 116,
+          "total": 120,
+          "inputTokens": 368136,
+          "format": "terset",
+          "runId": "stress-sol-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 30898,
+          "totalCost": 1.045252,
+          "groups": [
+            {
+              "correct": 26,
+              "total": 30,
+              "inputTokens": 206270,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 37503,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 69033,
+              "group": "messy"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 55330,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 98,
+          "total": 120,
+          "inputTokens": 756623,
+          "format": "json-compact",
+          "runId": "stress-sol-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 32526,
+          "totalCost": 1.838506,
+          "groups": [
+            {
+              "correct": 28,
+              "total": 30,
+              "inputTokens": 468540,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 69076,
+              "group": "deep"
+            },
+            {
+              "correct": 38,
+              "total": 40,
+              "inputTokens": 89003,
+              "group": "messy"
+            },
+            {
+              "correct": 7,
+              "total": 25,
+              "inputTokens": 130004,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 111,
+          "total": 120,
+          "inputTokens": 1372895,
+          "format": "json-pretty",
+          "runId": "stress-sol-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 31115,
+          "totalCost": 3.05694,
+          "groups": [
+            {
+              "correct": 25,
+              "total": 30,
+              "inputTokens": 873750,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 120867,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 136013,
+              "group": "messy"
+            },
+            {
+              "correct": 21,
+              "total": 25,
+              "inputTokens": 242265,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 119,
+          "total": 120,
+          "inputTokens": 477829,
+          "format": "toon",
+          "runId": "stress-sol-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 30824,
+          "totalCost": 1.263898,
+          "groups": [
+            {
+              "correct": 29,
+              "total": 30,
+              "inputTokens": 253430,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 42730,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 109543,
+              "group": "messy"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 72126,
+              "group": "damage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "claude-haiku-5-5",
+      "name": "Claude Haiku 5.5",
+      "inputTokensFrom": "model-report",
+      "rows": [
+        {
+          "correct": 109,
+          "total": 120,
+          "inputTokens": 512108,
+          "format": "terset",
+          "runId": "stress-haiku-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 150373,
+          "totalCost": 0.1263973,
+          "groups": [
+            {
+              "correct": 25,
+              "total": 30,
+              "inputTokens": 294284,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 48967,
+              "group": "deep"
+            },
+            {
+              "correct": 34,
+              "total": 40,
+              "inputTokens": 94081,
+              "group": "messy"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 74776,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 114,
+          "total": 120,
+          "inputTokens": 1057589,
+          "format": "json-compact",
+          "runId": "stress-haiku-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 141228,
+          "totalCost": 0.17637290000000003,
+          "groups": [
+            {
+              "correct": 27,
+              "total": 30,
+              "inputTokens": 654214,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 96988,
+              "group": "deep"
+            },
+            {
+              "correct": 40,
+              "total": 40,
+              "inputTokens": 134471,
+              "group": "messy"
+            },
+            {
+              "correct": 22,
+              "total": 25,
+              "inputTokens": 171916,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 112,
+          "total": 120,
+          "inputTokens": 1674107,
+          "format": "json-pretty",
+          "runId": "stress-haiku-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 138141,
+          "totalCost": 0.2364812,
+          "groups": [
+            {
+              "correct": 26,
+              "total": 30,
+              "inputTokens": 1059544,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 150675,
+              "group": "deep"
+            },
+            {
+              "correct": 39,
+              "total": 40,
+              "inputTokens": 179611,
+              "group": "messy"
+            },
+            {
+              "correct": 22,
+              "total": 25,
+              "inputTokens": 284277,
+              "group": "damage"
+            }
+          ]
+        },
+        {
+          "correct": 112,
+          "total": 120,
+          "inputTokens": 592809,
+          "format": "toon",
+          "runId": "stress-haiku-16k-2026-11-18",
+          "runOn": "2026-11-18",
+          "outputTokens": 157577,
+          "totalCost": 0.13806939999999998,
+          "groups": [
+            {
+              "correct": 23,
+              "total": 30,
+              "inputTokens": 319994,
+              "group": "scale"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 49070,
+              "group": "deep"
+            },
+            {
+              "correct": 39,
+              "total": 40,
+              "inputTokens": 138821,
+              "group": "messy"
+            },
+            {
+              "correct": 25,
+              "total": 25,
+              "inputTokens": 84924,
+              "group": "damage"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

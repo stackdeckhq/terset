@@ -6,7 +6,7 @@
 // instead of printing.
 import raw from './accuracy-results.json' with { type: 'json' };
 import type { AccuracyFile, AccuracyFormat, AccuracyKind, AccuracyKindId, AccuracyModel, AccuracyRow } from './accuracy-schema.ts';
-import { formatCount, pct } from './bench.ts';
+import { formatCount } from './bench.ts';
 import { REPO_URL, SITE_URL } from './site.ts';
 
 export type { AccuracyFile, AccuracyModel, AccuracyRow };
@@ -17,22 +17,25 @@ export const ACCURACY = raw as AccuracyFile;
 export const FORMAT_LABELS: Readonly<Record<AccuracyFormat, string>> = {
   terset: 'Terset',
   'json-compact': 'Compact JSON',
-  'json-pretty': 'JSON',
+  'json-pretty': 'Pretty JSON',
   toon: 'TOON',
 };
 
 /** Says what the two JSON rows mean, under the tables on the page, in /benchmark.md and in the READMEs. */
-export const ACCURACY_FORMAT_NOTE = 'JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.';
+export const ACCURACY_FORMAT_NOTE = 'Pretty JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.';
 
-export const ACCURACY_TABLE_HEAD = ['Format', 'Correct', 'Runs', 'Accuracy', '95% interval', 'Input tokens', 'Cost', 'Costs more than Terset', 'Run date'] as const;
+export const ACCURACY_TABLE_HEAD = ['Format', 'Correct', 'Runs', 'Accuracy', '95% interval', 'Input tokens', 'Cost', 'Terset costs less by', 'Run date'] as const;
 
-/** The Terset cell in the cost column, which every other row is set against. */
-export const TERSET_REFERENCE = 'Reference';
+/**
+ * The Terset cell in the cost column, which every other row is set against. A plain hyphen,
+ * so the page, /benchmark.md and the READMEs (which carry no en or em dash) show the same cell.
+ */
+export const TERSET_REFERENCE = '-';
 
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'] as const;
 
 /** Small counts as words, larger ones as figures. */
-function countWord(value: number): string {
+export function countWord(value: number): string {
   return WORDS[value] ?? formatCount(value);
 }
 
@@ -51,11 +54,21 @@ export function formatRow(model: AccuracyModel, format: AccuracyFormat): Accurac
 }
 
 /**
- * How much more a format's total cost is than Terset's, from the unrounded costs, one decimal:
- * "+33.3%" when Terset is cheaper, "−5.0%" when the format is cheaper, "0.0%" for a tie.
+ * The share of a format's total cost that Terset saves, from the unrounded costs: 1 − terset / other.
+ * The same base as the cost card, so the table and the card give one number.
  */
-export function costOverTerset(cost: number, tersetCost: number): string {
-  return pct(cost, tersetCost);
+export function tersetCostSaving(cost: number, tersetCost: number): number {
+  return 1 - tersetCost / cost;
+}
+
+/**
+ * The "Terset costs less by" cell, one decimal: "29.8%" when Terset is cheaper,
+ * "Costs 5.0% more" when the format is cheaper, "0.0%" for a tie.
+ */
+export function costLessCell(cost: number, tersetCost: number): string {
+  const saving = tersetCostSaving(cost, tersetCost);
+  if (Math.round(saving * 1000) === 0) return '0.0%';
+  return saving > 0 ? percent(saving) : `Costs ${percent(-saving)} more`;
 }
 
 const MEAN = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
@@ -101,7 +114,7 @@ export function accuracyTableRows(model: AccuracyModel): readonly (readonly stri
     `${percent(row.low)} to ${percent(row.high)}`,
     formatMean(row.inputTokens),
     usd(row.totalCost),
-    row.format === 'terset' ? TERSET_REFERENCE : costOverTerset(row.totalCost, terset.totalCost),
+    row.format === 'terset' ? TERSET_REFERENCE : costLessCell(row.totalCost, terset.totalCost),
     rowRunOn(row),
   ]);
 }
@@ -181,13 +194,15 @@ export function signMark(cell: string): SignMark {
 }
 
 /**
- * How a "Costs more than Terset" cell is marked. A plus means Terset is cheaper, a Terset win,
- * in the accent tone. A minus means that format is cheaper than Terset, plain and muted.
+ * How a "Terset costs less by" cell is marked, from the costs. A saving is a Terset win,
+ * in the accent tone. A format cheaper than Terset is plain and muted. A tie is not marked.
  */
 export type OverTersetMark = 'terset-cheaper' | 'terset-pricier' | null;
 
-export function overTersetMark(cell: string): OverTersetMark {
-  return cell.startsWith('+') ? 'terset-cheaper' : cell.startsWith('−') ? 'terset-pricier' : null;
+export function overTersetMark(cost: number, tersetCost: number): OverTersetMark {
+  const saving = tersetCostSaving(cost, tersetCost);
+  if (Math.round(saving * 1000) === 0) return null;
+  return saving > 0 ? 'terset-cheaper' : 'terset-pricier';
 }
 
 /** Any mark a per-model table cell can carry. */
@@ -201,11 +216,17 @@ export type CellMark = SignMark | OverTersetMark;
 export function accuracyTableMarks(model: AccuracyModel): readonly (readonly CellMark[])[] {
   const fewestTokens = Math.min(...model.rows.map((row) => row.inputTokens));
   const lowestCost = Math.min(...model.rows.map((row) => row.totalCost));
-  return accuracyTableRows(model).map((cells, index) => {
-    const row = model.rows[index];
-    if (row === undefined) throw new Error(`${model.name} has no row ${String(index)}`);
-    return [null, null, null, null, row.inputTokens === fewestTokens ? 'is-less' : null, row.totalCost === lowestCost ? 'is-less' : null, overTersetMark(cells[7] ?? ''), null];
-  });
+  const terset = formatRow(model, 'terset');
+  return model.rows.map((row) => [
+    null,
+    null,
+    null,
+    null,
+    row.inputTokens === fewestTokens ? 'is-less' : null,
+    row.totalCost === lowestCost ? 'is-less' : null,
+    row.format === 'terset' ? null : overTersetMark(row.totalCost, terset.totalCost),
+    null,
+  ]);
 }
 
 /** True when every format's interval overlaps every other format's. */
@@ -233,26 +254,35 @@ export function runNoiseLine(file: AccuracyFile): string {
   return `One format's score moved by up to ${countWord(spread)} ${spread === 1 ? 'question' : 'questions'} from run to run. A gap that small is noise, not a win.`;
 }
 
-/** The result in three lines under the tables. Each claim is checked against the data first. */
+/** The result in three lines under the tables. Each claim is checked against the data; the overlap line checks its own. */
 export function accuracySummary(file: AccuracyFile): readonly string[] {
-  assertClaim(file.models.every(intervalsOverlap), 'every interval overlaps');
   assertClaim(file.models.every((model) => formatRow(model, 'terset').totalCost < formatRow(model, 'json-compact').totalCost), 'Terset cost less than compact JSON');
   const savings = file.models.map((model) => {
-    const share = 1 - formatRow(model, 'terset').totalCost / formatRow(model, 'json-compact').totalCost;
+    const share = tersetCostSaving(formatRow(model, 'json-compact').totalCost, formatRow(model, 'terset').totalCost);
     return `${percent(share)} less on ${model.name}`;
   });
-  return [
-    `Accuracy is a tie. On ${formatCount(file.questions)} questions, every format's 95% interval overlaps every other format's, on ${modelsPhrase(file)}.`,
-    runNoiseLine(file),
-    `Against compact JSON, Terset cost ${savings.join(' and ')}.`,
-  ];
+  return [accuracyOverlapLine(file), runNoiseLine(file), `Against compact JSON, Terset cost ${savings.join(' and ')}.`];
 }
 
-/** One line for the home page, where the token savings are shown. */
-export function accuracyHomeLine(file: AccuracyFile): string {
+/**
+ * The one sentence every accuracy claim uses. Overlapping intervals mean the test cannot tell
+ * the formats apart; they do not show the formats are equally accurate. Throws once any two
+ * formats' intervals stop overlapping on any model.
+ */
+export function accuracyRangesOverlap(file: AccuracyFile): string {
   assertClaim(file.models.every(intervalsOverlap), 'every interval overlaps');
+  return `The 95% accuracy ranges of all ${countWord(ACCURACY_FORMAT_COUNT)} formats overlap on ${modelsPhrase(file)}.`;
+}
+
+/** The overlap sentence and what it does not prove: under the big numbers on /benchmark, and the first result line. */
+export function accuracyOverlapLine(file: AccuracyFile): string {
+  return `${accuracyRangesOverlap(file)} That does not prove the formats are equally accurate.`;
+}
+
+/** One line for the home page, where the token savings are shown: the token result first, then the overlap. */
+export function accuracyHomeLine(file: AccuracyFile): string {
   assertClaim(file.models.every((model) => formatRow(model, 'terset').inputTokens < formatRow(model, 'json-compact').inputTokens), 'Terset used fewer input tokens than compact JSON');
-  return `On ${formatCount(file.questions)} questions and ${countWord(file.models.length)} models, accuracy is a tie. Terset used fewer input tokens than compact JSON.`;
+  return `On ${formatCount(file.questions)} questions and ${countWord(file.models.length)} models, Terset used fewer input tokens than compact JSON. ${accuracyRangesOverlap(file)}`;
 }
 
 /** How each kind of data is named: in the table, and inside a sentence. */

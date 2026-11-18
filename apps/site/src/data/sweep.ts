@@ -12,7 +12,19 @@ export const SWEEP: SeedSweep = raw;
 
 const SWEEP_FILE = 'apps/site/src/data/seed-sweep.json';
 
-export const SWEEP_TABLE_HEAD = ['Case', 'Under JSON', 'vs JSON, median', 'vs JSON, 5th to 95th', 'Under TOON', 'vs TOON, median', 'vs TOON, 5th to 95th'] as const;
+/** Each header names what it compares, so no column reads on its own as a JSON or TOON count. */
+export const SWEEP_TABLE_HEAD = [
+  'Case',
+  'Seeds where Terset is smaller than compact JSON',
+  'Median change vs compact JSON',
+  '5th to 95th percentile vs compact JSON',
+  'Seeds where Terset is smaller than TOON',
+  'Median change vs TOON',
+  '5th to 95th percentile vs TOON',
+] as const;
+
+/** The line above the sweep table on /benchmark and in benchmark.md. */
+export const SWEEP_TABLE_NOTE = 'Changes compare Terset with the named format. Negative means fewer tokens.';
 
 /** One cell per SWEEP_TABLE_HEAD column, in the same order. */
 export type SweepTableRow = readonly [name: string, underJson: string, jsonMedian: string, jsonRange: string, underToon: string, toonMedian: string, toonRange: string];
@@ -125,21 +137,21 @@ function judgeSample(sweep: SeedSweep, sample: CaseSource): SampleJudgement | nu
 
 /** How often each result holds, then whether the sample seed is typical. The last line needs a sample row for every case. */
 export function sweepLines(sweep: SeedSweep, sample: CaseSource): readonly string[] {
-  const holds = [holdLine(sweep, jsonOutcome, 'JSON compact'), holdLine(sweep, toonOutcome, 'TOON')];
+  const holds = [holdLine(sweep, jsonOutcome, 'compact JSON'), holdLine(sweep, toonOutcome, 'TOON')];
   const judged = judgeSample(sweep, sample);
   if (judged === null) return holds;
   const seed = String(sweep.firstSeed);
   const last =
     judged.odd.length > 0
-      ? `Seed ${seed} is not typical for ${names(judged.odd)}: it wins, ties or loses against JSON compact or TOON the other way from most seeds.`
+      ? `Seed ${seed} is not typical for ${names(judged.odd)}: it wins, ties or loses against compact JSON or TOON the other way from most seeds.`
       : judged.even.length > 0
-        ? `Seed ${seed} wins, ties or loses against JSON compact and TOON the way most seeds do on every case except ${names(judged.even)}, where no result holds on most seeds.`
-        : `On every case, seed ${seed} wins, ties or loses against JSON compact and TOON the way most seeds do.`;
+        ? `Seed ${seed} wins, ties or loses against compact JSON and TOON the way most seeds do on every case except ${names(judged.even)}, where no result holds on most seeds.`
+        : `On every case, seed ${seed} wins, ties or loses against compact JSON and TOON the way most seeds do.`;
   return [...holds, last];
 }
 
 /**
- * One README line after the sample results. The sweep counts only JSON compact and TOON,
+ * One README line after the sample results. The sweep counts only compact JSON and TOON,
  * so the line names them: each case wins, ties or loses the same way on every seed, except
  * where the seeds split. It says "ties" only when some case ties on every seed.
  * When the sample seed is not typical, it says that instead.
@@ -147,12 +159,12 @@ export function sweepLines(sweep: SeedSweep, sample: CaseSource): readonly strin
 export function sweepReadmeLine(sweep: SeedSweep, sample: CaseSource): string {
   const head = `Across ${formatCount(sweep.seeds)} seeds of the same ${String(sweep.cases.length)} case shapes, counted with ${sweep.tokenizer},`;
   const odd = judgeSample(sweep, sample)?.odd ?? [];
-  if (odd.length > 0) return `${head} seed ${String(sweep.firstSeed)} is not typical for ${names(odd)}: most seeds win, tie or lose against JSON compact or TOON the other way.`;
+  if (odd.length > 0) return `${head} seed ${String(sweep.firstSeed)} is not typical for ${names(odd)}: most seeds win, tie or lose against compact JSON or TOON the other way.`;
   const steady = ({ under, tied }: Outcome): boolean => under === sweep.seeds || tied === sweep.seeds || (under === 0 && tied === 0);
   const comparisons = sweep.cases.flatMap((row) =>
     (
       [
-        [jsonOutcome(row), 'JSON compact'],
+        [jsonOutcome(row), 'compact JSON'],
         [toonOutcome(row), 'TOON'],
       ] as const
     ).map(([outcome, other]) => ({ name: row.name, outcome, other })),
@@ -165,7 +177,7 @@ export function sweepReadmeLine(sweep: SeedSweep, sample: CaseSource): string {
     });
   const verb = comparisons.some(({ outcome }) => outcome.tied === sweep.seeds) ? 'wins, ties or loses' : 'wins or loses';
   const except = mixed.length === 0 ? '' : `, except ${mixed.join('; and ')}`;
-  return `${head} Terset ${verb} against JSON compact and TOON the same way on every seed${except}.`;
+  return `${head} Terset ${verb} against compact JSON and TOON the same way on every seed${except}.`;
 }
 
 export function sweepMethod(sweep: SeedSweep, withClaude: boolean): string {

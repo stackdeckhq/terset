@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import fakeModel from '../fixtures/fake-model.json' with { type: 'json' };
 import { fakeClient, httpClient } from './clients.ts';
-import { selectedDatasetsSchema, selectQuestions } from './data.ts';
+import { loadSuite, selectQuestions, suiteNameSchema, SuiteUnavailableError } from './data.ts';
 import { describePlan, plan } from './plan.ts';
 import { run } from './runner.ts';
 import { configSchema, FORMATS, modelSchema, selectedFormatsSchema } from './schema.ts';
@@ -21,14 +21,14 @@ export async function main(args: string[], log: (text: string) => void = console
   const { values } = parseArgs({ args, options: {
     'dry-run': { type: 'boolean' }, fake: { type: 'boolean' }, http: { type: 'boolean' },
     config: { type: 'string' }, 'run-id': { type: 'string' }, limit: { type: 'string' },
-    formats: { type: 'string' }, datasets: { type: 'string' },
+    formats: { type: 'string' }, datasets: { type: 'string' }, suite: { type: 'string' },
     'max-calls': { type: 'string' }, 'max-input-tokens': { type: 'string' },
     'max-output-tokens': { type: 'string' }, 'per-call-max-output-tokens': { type: 'string' },
     help: { type: 'boolean' },
   } });
   if (values.help) {
     log('pnpm bench [--dry-run] [--fake | --http --config FILE] [--run-id ID] [--limit N]\n'
-      + '  --formats a,b,c --datasets a,b\n'
+      + '  --suite toon|stress --formats a,b,c --datasets a,b\n'
       + '  --max-calls N --max-input-tokens N --max-output-tokens N --per-call-max-output-tokens N\n'
       + 'Fake mode is the default. HTTP mode requires explicit config and all four budget flags.');
     return;
@@ -43,15 +43,17 @@ export async function main(args: string[], log: (text: string) => void = console
     : configSchema.parse({ models: [modelSchema.parse(fakeModel)] });
   const limit = values.limit === undefined ? undefined : integer(values.limit, 1, 'limit', false);
   const formats = values.formats === undefined ? FORMATS : selectedFormatsSchema.parse(values.formats.split(','));
-  const datasets = values.datasets === undefined ? undefined : selectedDatasetsSchema.parse(values.datasets.split(','));
-  const tasks = plan(config.models, selectQuestions(limit, datasets), formats);
-  log(describePlan(tasks, config.inputReservation));
+  const suite = loadSuite(suiteNameSchema.parse(values.suite ?? 'toon'));
+  const datasets = values.datasets?.split(',');
+  const tasks = plan(config.models, selectQuestions(limit, datasets, suite), formats, suite.datasets);
+  const perCallMaxOutputTokens = integer(values['per-call-max-output-tokens'], 128, 'per-call max output tokens', false);
+  log(describePlan(tasks, config.inputReservation, perCallMaxOutputTokens));
   if (values['dry-run']) { log('Dry run: no calls made and no results written.'); return; }
   const budgets: Budgets = {
     maxCalls: integer(values['max-calls'], 10_000, 'max calls'),
     maxInputTokens: integer(values['max-input-tokens'], 1_000_000_000, 'max input tokens'),
     maxOutputTokens: integer(values['max-output-tokens'], 1_000_000, 'max output tokens'),
-    perCallMaxOutputTokens: integer(values['per-call-max-output-tokens'], 128, 'per-call max output tokens', false),
+    perCallMaxOutputTokens,
   };
   const answers = new Map(tasks.map(t => [t.prompt.user, t.question.groundTruth]));
   const mode = values.http ? 'http' : 'fake';
@@ -59,17 +61,18 @@ export async function main(args: string[], log: (text: string) => void = console
     : fakeClient(prompt => answers.get(prompt.user) ?? 'FAKE', budgets.perCallMaxOutputTokens);
   const runId = values['run-id'] ?? `${mode}-${new Date().toISOString().replaceAll(/[^a-zA-Z0-9]/g, '')}`;
   const directory = fileURLToPath(new URL('../results/', import.meta.url));
-  const result = await run({ runId, directory, tasks, client, mode, budgets, inputReservation: config.inputReservation });
+  const result = await run({ runId, directory, tasks, client, mode, budgets, inputReservation: config.inputReservation, suite });
   log(`${result.status}: ${result.rows.length}/${result.plannedCalls} recorded; reason: ${result.reason ?? 'none'}`);
   log(`Results: ${directory}${runId}.json\nSummary: ${directory}${runId}.md`);
   if (result.reason?.startsWith('request failed')) process.exitCode = 1;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main(process.argv.slice(2)).catch(() => {
+  main(process.argv.slice(2)).catch((error: unknown) => {
     // Config and provider errors may contain user-controlled or secret text.
     // Never print raw exceptions or response bodies.
-    console.error('Benchmark failed. Check arguments, config, required TERSET_BENCH_BASE_URL / TERSET_BENCH_API_KEY, and any saved partial report. Details withheld.');
+    console.error(error instanceof SuiteUnavailableError ? error.message
+      : 'Benchmark failed. Check arguments, config, required TERSET_BENCH_BASE_URL / TERSET_BENCH_API_KEY, and any saved partial report. Details withheld.');
     process.exitCode = 1;
   });
 }

@@ -5,7 +5,7 @@
 // The runs live in bench/published/<run date>/ as the benchmark harness wrote them.
 // Every number is recomputed here from the raw rows: correct answers, Wilson 95%
 // intervals, input tokens and list-price dollars, overall and per kind of data
-// for input tokens. PUBLISHED_RUNS lists every run. Each model takes every format from
+// for input tokens. PUBLISHED_RUNS lists every TOON-suite run. Each model takes every format from
 // its matched batch's repeats. Every other run is history. Each format is shown with each
 // run and the mean over them; no run is ever picked. Each run's own
 // summary is checked against the recomputed figures, and any difference stops the script.
@@ -14,14 +14,20 @@
 // and every count must match a published row. A run that sent the same request bodies as
 // a counted run uses that run's counts, after a check of every row.
 // Other tokens are as each model reported. Importing this file writes nothing; only running it does.
+// STRESS_PUBLISHED_RUNS feeds a separate file and README block, one measured run per model.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { z } from 'zod';
 import { ACCURACY_FORMATS, ACCURACY_KINDS, AccuracyFileSchema } from '../src/data/accuracy-schema.ts';
 import type { AccuracyFile, AccuracyFormat, AccuracyKind, AccuracyKindId, AccuracyModel, AccuracyRow } from '../src/data/accuracy-schema.ts';
 import { ClaudeRequestCountsSchema, requestCountKey } from '../src/data/claude-request-counts-schema.ts';
 import type { ClaudeRequestCounts } from '../src/data/claude-request-counts-schema.ts';
+import { StressAccuracyFileSchema } from '../src/data/accuracy-stress-schema.ts';
+import { RunFile, equalField, questionSet, runScores, validateRun, wilson95 } from './accuracy-runs.ts';
+import type { InputFor, RunRow, RunScore } from './accuracy-runs.ts';
+import { STRESS_OUTPUT, STRESS_PUBLISHED_RUNS, stressAccuracyText, updateStressReadme } from './accuracy-stress.ts';
+
+export { wilson95 };
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 
@@ -82,7 +88,7 @@ export const OPUS_COUNTS_FROM: CountsFrom = {
   terset: 'fitted-rules-rerun-2026-11-17',
 };
 
-/** Every published run, in the order the site lists them. Each format is shown with all of its runs. */
+/** Every published TOON-suite run, in the order the site lists them. */
 export const PUBLISHED_RUNS: readonly PublishedSource[] = [
   { kind: 'history', path: 'bench/published/2026-11-12/p4-2026-11-12.json' },
   { kind: 'history', path: 'bench/published/2026-11-13/v2-final-2026-11-13.json' },
@@ -121,42 +127,6 @@ export function claudeCountedFormats(sources: readonly PublishedSource[], source
   return ACCURACY_FORMATS.filter((format) => (shown.includes(format) || lent.includes(format)) && borrowedCountsFrom(source, format) === undefined);
 }
 
-const Count = z.number().int().nonnegative();
-const RunRow = z.object({ model: z.string(), format: z.enum(ACCURACY_FORMATS), dataset: z.string(), questionId: z.string(), correct: z.boolean(), inputTokens: Count, outputTokens: Count, reservedInputTokens: Count });
-const RunModel = z.object({
-  id: z.string(),
-  api: z.string(),
-  temperature: z.string(),
-  outputTokenParameter: z.string(),
-  price: z.object({ inputPerMillion: z.number().positive(), outputPerMillion: z.number().positive(), sourceUrl: z.string(), dateRead: z.iso.date() }),
-});
-const RunSummary = z.object({
-  model: z.string(),
-  format: z.enum(ACCURACY_FORMATS),
-  dataset: z.string(),
-  metrics: z.object({ correct: Count, total: Count, inputTokens: Count, outputTokens: Count, totalCost: z.number(), wilson95: z.object({ lower: z.number(), upper: z.number() }).nullable() }),
-});
-/** A request that failed. The harness stops, and a rerun of the same id retries it. */
-const RunFailure = z.object({ model: z.string(), format: z.enum(ACCURACY_FORMATS), dataset: z.string(), questionId: z.string(), status: z.literal('failed') });
-const RunFile = z.object({
-  runId: z.string(),
-  fingerprint: z.string().min(1),
-  mode: z.literal('http'),
-  status: z.literal('complete'),
-  plannedCalls: Count,
-  rows: z.array(RunRow),
-  failures: z.array(RunFailure),
-  inputReservation: z.object({ margin: z.number(), allowance: Count }),
-  models: z.array(RunModel).min(1),
-  upstreamSha: z.string(),
-  dataHashes: z.record(z.string(), z.string()),
-  tokenizer: z.string(),
-  budgets: z.object({ perCallMaxOutputTokens: Count }),
-  summary: z.array(RunSummary),
-});
-type RunFile = z.infer<typeof RunFile>;
-type RunRow = z.infer<typeof RunRow>;
-
 /** One published run with the source entry that lists it. */
 interface Published {
   readonly run: RunFile;
@@ -165,29 +135,6 @@ interface Published {
   /** The formats the tables take from this run, per model. */
   readonly shown: Readonly<Record<ModelId, readonly AccuracyFormat[]>>;
 }
-
-/** The input tokens a row is published with. */
-type InputFor = (row: RunRow) => number;
-
-/**
- * Wilson score interval at 95%, the same formula the benchmark harness uses.
- * `correct` may be a mean over runs, so it may have a fraction; `total` is the question count.
- */
-export function wilson95(correct: number, total: number): { readonly low: number; readonly high: number } {
-  if (!Number.isFinite(correct) || !Number.isInteger(total) || total <= 0 || correct < 0 || correct > total) throw new Error(`Invalid score ${String(correct)} of ${String(total)}`);
-  const z = 1.959963984540054;
-  const p = correct / total;
-  const denominator = 1 + (z * z) / total;
-  const center = (p + (z * z) / (2 * total)) / denominator;
-  const margin = (z / denominator) * Math.sqrt((p * (1 - p)) / total + (z * z) / (4 * total * total));
-  // At 0 or 100% the exact bound is 0 or 1; floating point can land a hair inside it.
-  return {
-    low: correct === 0 ? 0 : Math.max(0, center - margin),
-    high: correct === total ? 1 : Math.min(1, center + margin),
-  };
-}
-
-const close = (a: number, b: number): boolean => Math.abs(a - b) < 1e-9;
 
 const mean = (values: readonly number[]): number => {
   if (values.length === 0) throw new Error('No values to average');
@@ -315,41 +262,6 @@ function assertSameRequests(item: Published, all: readonly Published[]): void {
   }
 }
 
-/** One run of one format on one model, recomputed from its rows and checked against its summary. */
-interface RunScore {
-  readonly format: AccuracyFormat;
-  readonly runId: string;
-  readonly runOn: string;
-  readonly correct: number;
-  readonly total: number;
-  readonly inputTokens: number;
-  readonly outputTokens: number;
-  readonly totalCost: number;
-}
-
-/** The scores of the formats the tables take from this run for this model. */
-function runScores(item: Published, model: RunFile['models'][number], formats: readonly AccuracyFormat[], inputFor: InputFor): RunScore[] {
-  const { run } = item;
-  const mine = run.rows.filter((row) => row.model === model.id);
-  return formats.map((format: AccuracyFormat): RunScore => {
-    const rows = mine.filter((row) => row.format === format);
-    if (new Set(rows.map((row) => row.questionId)).size !== rows.length) throw new Error(`${model.id} ${format}: a question was answered twice`);
-    const correct = rows.filter((row) => row.correct).length;
-    const outputTokens = rows.reduce((sum, row) => sum + row.outputTokens, 0);
-    const cost = (input: number): number => (input * model.price.inputPerMillion + outputTokens * model.price.outputPerMillion) / 1_000_000;
-    // The run's summary is checked against the tokens the run recorded.
-    const reportedInput = rows.reduce((sum, row) => sum + row.inputTokens, 0);
-    const { low, high } = wilson95(correct, rows.length);
-    const summary = run.summary.find((entry) => entry.model === model.id && entry.format === format && entry.dataset === 'ALL');
-    if (summary === undefined) throw new Error(`${model.id} ${format}: the run has no overall summary row`);
-    const m = summary.metrics;
-    const agrees = m.correct === correct && m.total === rows.length && m.inputTokens === reportedInput && m.outputTokens === outputTokens && close(m.totalCost, cost(reportedInput)) && m.wilson95 !== null && close(m.wilson95.lower, low) && close(m.wilson95.upper, high);
-    if (!agrees) throw new Error(`${model.id} ${format}: the run's summary differs from the figures recomputed from its rows`);
-    const inputTokens = rows.reduce((sum, row) => sum + inputFor(row), 0);
-    return { format, runId: run.runId, runOn: item.runOn, correct, total: rows.length, inputTokens, outputTokens, totalCost: cost(inputTokens) };
-  });
-}
-
 /** One format's row: every run of it, then the mean over them, with the interval of the mean score. */
 function meanRow(format: AccuracyFormat, scores: readonly RunScore[]): AccuracyRow {
   const [first] = scores;
@@ -368,14 +280,6 @@ function meanRow(format: AccuracyFormat, scores: readonly RunScore[]): AccuracyR
     outputTokens: mean(scores.map((score) => score.outputTokens)),
     totalCost: mean(scores.map((score) => score.totalCost)),
   };
-}
-
-function questionSet(rows: RunFile['rows']): string {
-  return JSON.stringify(rows.map((row) => [row.dataset, row.questionId]).sort());
-}
-
-function equalField(a: unknown, b: unknown, field: string): void {
-  if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`Published runs differ in ${field}`);
 }
 
 function isModelId(id: string): id is ModelId {
@@ -399,7 +303,7 @@ export function buildAccuracy(rawRuns: readonly unknown[], rawCounts: unknown, s
     if (source === undefined) throw new Error('Missing published source');
     const run = RunFile.parse(raw);
     if (run.runId !== sourceRunId(source)) throw new Error(`${source.path} holds run ${run.runId}, not ${sourceRunId(source)}`);
-    validateRun(run);
+    validateRun(run, MODELS);
     if (source.kind === 'matched' && (run.models.length !== 1 || run.models[0]?.id !== source.model)) {
       throw new Error(`${run.runId}: a matched run must hold only ${source.model}, and it holds ${run.models.map((model) => model.id).join(', ')}`);
     }
@@ -482,21 +386,6 @@ export function buildAccuracy(rawRuns: readonly unknown[], rawCounts: unknown, s
   });
 }
 
-/**
- * A complete run: every planned call answered, each model once, every row for a model in
- * the run. A failed request is kept in the file; it counts only when a rerun answered it.
- */
-function validateRun(run: RunFile): void {
-  if (run.rows.length !== run.plannedCalls) throw new Error(`The run recorded ${String(run.rows.length)} of ${String(run.plannedCalls)} planned calls`);
-  if (new Set(run.models.map((model) => model.id)).size !== run.models.length) throw new Error('Duplicate model id');
-  if (run.rows.some((row) => !run.models.some((model) => model.id === row.model))) throw new Error('Unknown row model');
-  if (run.models.some((model) => !isModelId(model.id))) throw new Error(`${run.runId}: no display name for a model in the run`);
-  for (const failure of run.failures) {
-    const answered = run.rows.some((row) => row.model === failure.model && row.format === failure.format && row.dataset === failure.dataset && row.questionId === failure.questionId);
-    if (!answered) throw new Error(`${run.runId}: a failed request was never answered (${failure.model} ${failure.format} ${failure.dataset} ${failure.questionId})`);
-  }
-}
-
 /** The file `pnpm accuracy` writes, as text. */
 export function accuracyText(): string {
   const runs: unknown[] = PUBLISHED_RUNS.map((source) => JSON.parse(readFileSync(`${REPO}${source.path}`, 'utf8')) as unknown);
@@ -506,12 +395,15 @@ export function accuracyText(): string {
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   writeFileSync(OUTPUT, accuracyText());
+  const stressText = stressAccuracyText();
+  writeFileSync(STRESS_OUTPUT, stressText);
+  const stress = StressAccuracyFileSchema.parse(JSON.parse(stressText));
   const { ACCURACY, accuracyReadmeBlock } = await import('../src/data/accuracy.ts');
   for (const path of ['README.md', 'packages/terset/README.md', 'packages/terset-py/README.md']) {
     const text = readFileSync(`${REPO}${path}`, 'utf8');
     if (!text.includes('### Answer accuracy')) continue;
     const updated = text.replace(/### Answer accuracy\n[\s\S]*?(?=\n## |\n### |$)/u, `${accuracyReadmeBlock(ACCURACY)}\n`);
-    writeFileSync(`${REPO}${path}`, updated);
+    writeFileSync(`${REPO}${path}`, updateStressReadme(updated, stress));
   }
-  console.log(`Updated accuracy data and README tables from all ${String(PUBLISHED_RUNS.length)} published runs.`);
+  console.log(`Updated accuracy data and README tables from ${String(PUBLISHED_RUNS.length)} TOON runs and ${String(STRESS_PUBLISHED_RUNS.length)} stress runs.`);
 }

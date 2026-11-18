@@ -10,7 +10,8 @@ import { BENCH_FIXTURE as SHIP_FIXTURE } from './bench-fixture.ship.ts';
 import { parseBench } from './bench-schema.ts';
 import type { BenchReady } from './bench-schema.ts';
 import type { CaseSet, Counter } from './numbers.ts';
-import { benchmarkKeepElse, benchmarkMarkdown } from './benchmark-doc.ts';
+import { benchmarkKeepElse, benchmarkKeepElseAll, benchmarkMarkdown } from './benchmark-doc.ts';
+import { REAL, realKeepElse } from './real.ts';
 import { SIZE_LINE } from './size.ts';
 import { SWEEP, sweepReadmeLine } from './sweep.ts';
 import {
@@ -27,7 +28,8 @@ import {
   costTableRows,
   costTotalsRow,
   priceLine,
-  toonWinsNote,
+  toonKeepNote,
+  CSV_LIMITS_LINE,
   benchHeadline,
   benchSummary,
   benchTotals,
@@ -36,6 +38,7 @@ import {
   csvCell,
   csvNote,
   formatCount,
+  jsonKeepNote,
   jsonWinsNote,
   pct,
   selectBench,
@@ -55,7 +58,7 @@ const TOON_INSTALLED = (JSON.parse(readFileSync(new URL('../../node_modules/@too
 
 /** The README's benchmark table: fewer columns than benchmark.md, a plain hyphen for minus. */
 function readmeBenchTable(bench: CaseSet): string {
-  const head = '| Case | Terset | JSON compact | YAML | TOON best | Terset vs JSON compact |\n|---|---|---|---|---|---|';
+  const head = '| Case | Terset | Compact JSON | YAML | TOON best | Terset vs compact JSON |\n|---|---|---|---|---|---|';
   const rows = bench.cases.map((row) => `| ${[row.name, formatCount(row.terset), formatCount(row.json), formatCount(row.yaml), formatCount(row.toon), pct(row.terset, row.json).replace('−', '-')].join(' | ')} |`);
   const totals = benchTotals(bench);
   const total = `| Total | ${[formatCount(totals.terset), formatCount(totals.json), formatCount(totals.yaml), formatCount(totals.toon), pct(totals.terset, totals.json).replace('−', '-')].join(' | ')} |`;
@@ -136,6 +139,61 @@ describe('bench numbers', () => {
     expect(jsonWinsNote(bench)).toBe('Compact JSON is smaller than or equal to Terset on tie (63 vs 63).');
   });
 
+  // "When to keep something else" says a tie is a tie and a smaller count is smaller, never "smaller than or equal to".
+  it('says tie for an exact tie and smaller for a smaller count, for JSON and TOON', () => {
+    const bench: BenchReady = {
+      status: 'ready',
+      tokenizer: 'o200k_base',
+      rulesTokens: 40,
+      yamlVersion: '2.9.1',
+      cases: [
+        { name: 'Win', json: 900, jsonPretty: 1500, yaml: 1100, toon: 800, csv: null, csvExact: null, terset: 700 },
+        { name: 'Tie', json: 63, jsonPretty: 90, yaml: 89, toon: 63, csv: null, csvExact: null, terset: 63 },
+        { name: 'Loss, wide', json: 90, jsonPretty: 120, yaml: 110, toon: 95, csv: null, csvExact: null, terset: 100 },
+      ],
+      samples: SAMPLES,
+    };
+    expect(jsonKeepNote(bench)).toBe('Compact JSON ties Terset on tie (63 vs 63). Compact JSON is smaller than Terset on loss, wide (90 vs 100).');
+    expect(toonKeepNote(bench)).toBe("TOON's best is smaller than Terset in 1 of 3 cases: Loss, wide (95 vs 100). TOON's best ties Terset in 1 of 3 cases: Tie (63 vs 63).");
+    expect(jsonKeepNote({ ...bench, cases: bench.cases.slice(0, 1) })).toBe('');
+    expect(toonKeepNote({ ...bench, cases: bench.cases.slice(0, 1) })).toBe('');
+  });
+
+  // The keep-else list names the CSV sizes per counter and states what CSV cannot hold once.
+  it('states the CSV limits once in the keep-else list, and keeps the home CSV note whole', () => {
+    const list = benchmarkKeepElse(BENCH_FILE, COUNTERS);
+    expect(list.filter((line) => line.includes('no types'))).toEqual([CSV_LIMITS_LINE]);
+    expect(list.at(-1)).toBe(CSV_LIMITS_LINE);
+    expect(list.filter((line) => line.includes('Plain CSV is'))).toHaveLength(2);
+    expect(list.join(' ')).not.toContain('smaller than or equal to');
+    expect(csvNote(BENCH)).toBe(
+      'Plain CSV is 9 to 88 tokens smaller on 2 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 4,769 vs 3,899.',
+    );
+  });
+
+  // The page and benchmark.md add the real files where another format wins, and the lowest stress score.
+  it('adds the real NWS file and the Claude Haiku 5.5 stress score to the full keep-else list', () => {
+    const all = benchmarkKeepElseAll(BENCH_FILE, COUNTERS);
+    expect(all.slice(0, benchmarkKeepElse(BENCH_FILE, COUNTERS).length)).toEqual(benchmarkKeepElse(BENCH_FILE, COUNTERS));
+    expect(realKeepElse(REAL)).toEqual([
+      // The same 9.7% the real data table shows, not the 8.8% the other base would give.
+      "Real data, NWS forecast grid, nested: Terset has 9.7% more tokens than TOON's best (34,068 vs 31,062). Terset has 1 more token than compact JSON (34,068 vs 34,067).",
+    ]);
+    expect(all).toContain(realKeepElse(REAL)[0]);
+    expect(all.at(-1)).toBe(
+      'Stress test: on Claude Haiku 5.5, Terset scored lowest of the four formats, with 109 of 120. Four of its six messy-data misses were on sparse data, where many cells are empty.',
+    );
+    expect(benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE)).toContain(`## When to keep something else\n\n${all.map((line) => `- ${line}`).join('\n')}\n`);
+  });
+
+  it('lists a real file where another format ties or is smaller, and skips one where Terset is smaller', () => {
+    const base = REAL.files[0];
+    if (base === undefined) throw new Error('the committed real data should hold a file');
+    const file = { ...base, name: 'x', terset: 100, json: 100, toon: 150 };
+    const data = { ...REAL, files: [file, { ...file, name: 'y', json: 150 }] };
+    expect(realKeepElse(data)).toEqual(['Real data, x: Terset ties compact JSON (100 vs 100).']);
+  });
+
   it('names the case where CSV is larger by the most', () => {
     const bench: BenchReady = {
       status: 'ready',
@@ -202,8 +260,14 @@ describe('bench numbers', () => {
     };
     expect(benchTotals(bench)).toEqual({ terset: 900, json: 1000, jsonPretty: 2000, yaml: 1000, toon: 1000 });
     expect(benchTotalsRow(bench)).toEqual(['Total', '900', '1,000', '2,000', '1,000', '1,000', 'n/a', '−10.0%', '−10.0%']);
-    expect(totalsNote(bench)).toBe("Over all 2 cases, Terset totals 900 tokens: 10.0% fewer than JSON compact (1,000), 55.0% fewer than JSON pretty (2,000), 10.0% fewer than YAML (1,000), and 10.0% fewer than TOON's best (1,000).");
+    expect(totalsNote(bench)).toBe("Over all 2 cases, Terset totals 900 tokens: 10.0% fewer than compact JSON (1,000), 55.0% fewer than pretty JSON (2,000), 10.0% fewer than YAML (1,000), and 10.0% fewer than TOON's best (1,000).");
     expect(totalsNote({ status: 'pending', reason: 'x' })).toBe('');
+  });
+
+  it('names the two JSON forms compact JSON and pretty JSON everywhere in benchmark.md', () => {
+    const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
+    expect(text).not.toMatch(/JSON compact|JSON pretty/u);
+    expect(text).not.toMatch(/\| JSON \|/u);
   });
 
   it('shows the same totals in benchmark.md as the committed file sums to', () => {
@@ -247,8 +311,8 @@ describe('bench numbers', () => {
       for (const line of [...claudeMethod(CLAUDE_FILE).filter((item) => !item.startsWith('Terset is sent')), ...costMethod(COUNTERS, PRICES.readOn)]) {
         expect(text, path).toContain(`- ${line}\n`);
       }
-      expect(text, path).toContain(`- Claude: ${jsonWinsNote(claude)}\n`);
-      expect(text, path).toContain(`- Claude: ${toonWinsNote(claude)}\n`);
+      expect(text, path).toContain(`- Claude: ${jsonKeepNote(claude)}\n`);
+      expect(text, path).toContain(`- Claude: ${toonKeepNote(claude)}\n`);
     }
   });
 
@@ -266,7 +330,7 @@ describe('bench numbers', () => {
     if (BENCH_FILE.status !== 'ready') return;
     const line = sweepReadmeLine(SWEEP, BENCH_FILE);
     expect(line).toBe(
-      'Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins, ties or loses against JSON compact and TOON the same way on every seed.',
+      'Across 1,000 seeds of the same 11 case shapes, counted with o200k_base, Terset wins, ties or loses against compact JSON and TOON the same way on every seed.',
     );
     const list = benchmarkKeepElse(BENCH_FILE, COUNTERS).map((item) => `- ${item}`).join('\n');
     for (const path of READMES) {
@@ -283,7 +347,7 @@ describe('bench numbers', () => {
     expect(benchHeadline({ status: 'pending', reason: 'x' })).toBe(PENDING_TITLE);
   });
 
-  it('puts Terset first in the benchmark.md table, then JSON compact, JSON pretty, YAML, TOON and CSV, so readers see Terset before the others', () => {
+  it('puts Terset first in the benchmark.md table, then compact JSON, pretty JSON, YAML, TOON and CSV, so readers see Terset before the others', () => {
     const bench: BenchReady = {
       status: 'ready',
       tokenizer: 'o200k_base',
@@ -293,7 +357,7 @@ describe('bench numbers', () => {
       samples: SAMPLES,
     };
     const text = benchmarkMarkdown(bench);
-    expect(text).toContain('| Case | Terset | JSON compact | JSON pretty | YAML | TOON best | CSV | vs JSON compact | vs TOON |');
+    expect(text).toContain('| Case | Terset | Compact JSON | Pretty JSON | YAML | TOON best | CSV | Terset vs compact JSON | Terset vs TOON |');
     expect(text).toContain(`| Flat | 730 | 900 | 1,500 | 1,100 | 800 | 700 | ${pct(730, 900)} | ${pct(730, 800)} |`);
     expect(text).toContain(`| Total | 730 | 900 | 1,500 | 1,100 | 800 | n/a | ${pct(730, 900)} | ${pct(730, 800)} |`);
   });

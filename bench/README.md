@@ -1,6 +1,6 @@
 # Answer accuracy benchmark
 
-Datasets and questions are adapted from the MIT-licensed TOON benchmark at
+The TOON suite's datasets and questions are adapted from the MIT-licensed benchmark at
 https://github.com/toon-format/toon, commit
 `22caca377f08d737789a2ca60ab02c425a3aa947`.
 See [the frozen input record](data/README.md) and `LICENSE-THIRD-PARTY`.
@@ -56,6 +56,19 @@ its Markdown report.
   base URLs, local paths and account names. None were found. The four email
   addresses are fake values from the frozen upstream datasets.
 
+- 2026-11-18, stress suite: one complete run per model, all 120 questions in
+  all four formats, 480 completed calls each and no failures:
+  [Opus 5.5](published/2026-11-18/stress-opus-16k-2026-11-18.md),
+  [Sol](published/2026-11-18/stress-sol-16k-2026-11-18.md) and
+  [Haiku 5.5](published/2026-11-18/stress-haiku-16k-2026-11-18.md).
+  The per-call output cap was 16,000 tokens. At 2,048, reasoning models ran out
+  of output while thinking on the scale questions and returned empty answers.
+  That earlier partial attempt is not published and feeds no table.
+  One published call also used the full 16,000 tokens: Haiku 5.5, TOON,
+  question s028. It returned no answer and was scored wrong.
+  All six JSON and Markdown files were copied unchanged after a second check
+  for keys, base URLs, local paths and account names. None were found.
+
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
 published runs, and updates the accuracy blocks in the READMEs. Each model
 takes every format from its matched batch only. The earlier runs stay
@@ -79,6 +92,20 @@ that before it uses the counts.
 Each table row records its run dates. Tests fail when the committed site file
 or a README accuracy block drifts from the published runs, or when a run file in
 `bench/published/` is left out.
+
+The stress suite has its own published list and generated file,
+`apps/site/src/data/accuracy-stress-results.json`. `pnpm accuracy` also builds
+its README blocks. It records correct answers, totals and reported input
+tokens overall and per group, with each run id and date. These are single-run
+scores per model, not three-run means. Gaps of a few questions are within
+noise. The stress checks require the same suite, data hashes, generator source
+and hash, seed, reference date, tokenizer, input reservation, per-call output
+cap and encoder versions. Each run must hold only its listed model and the
+frozen question set exactly once in every format. The checks hash the repository's
+question, dataset and generator files. They re-score every answer against the
+frozen question and take its group from the question's type. Stress input
+tokens come from each model's report, including Claude. They do not use the
+older TOON request counts.
 
 ## Local use
 
@@ -111,6 +138,26 @@ damage. The decoder rejects damaged text.
 Both flags reject unknown names and duplicates. A saved run refuses a changed
 selection. Comparisons use questions complete in every selected format.
 Savings cells stay blank when compact JSON is absent.
+
+`--suite toon|stress` selects frozen inputs. The default is `toon`, with the
+same data, questions, prompts and fingerprints as existing runs. Dataset names
+are validated within the selected suite. Results record the suite, input hashes
+and its source: an upstream commit for TOON, or the generator source hash, seed
+and reference date for stress. A saved stress run refuses a different suite.
+
+The [stress freeze record](data/stress/README.md) describes its 120 questions
+across scale, deep nesting, messy data and damage detection. To plan it:
+
+```sh
+pnpm bench --suite stress --dry-run
+```
+
+Plans also list reserved dollars per model and in total. Input cost uses
+`ceil(estimate × margin) + allowance` per call. Output cost reserves the full
+`--per-call-max-output-tokens` cap for every call, default 128. Supply the cap
+intended for the measured run, for example 2048. Prices come from the selected
+config. A reservation is a spending estimate, with the same limits described
+under Budgets and resume.
 
 Fake mode is the default. The CLI fake client returns the frozen expected
 answer to exercise the scorer and storage. It is not a model measurement.
@@ -172,7 +219,7 @@ credential route. The base is an HTTPS root without `/v1`, query parameters,
 or embedded credentials. Plain HTTP is accepted only for a server on this
 machine (`127.0.0.1`, `localhost` or `[::1]`). The client appends `/v1/messages` or
 `/v1/chat/completions`. Models in a run share the base and credential.
-Redirects are refused. Requests time out after 60 seconds. Raw transport
+Redirects are refused. Requests time out after 10 minutes. Raw transport
 errors and provider response bodies are withheld. Text and usage are validated;
 missing usage is an error. Tests use fake fetch only.
 
@@ -221,7 +268,9 @@ refuses concurrent writers with the same id.
 Reservations save before a request. Failed or interrupted requests may have
 been billed, so those reservations remain charged. A failure is recorded with
 its task identity and reserved tokens, then the run stops without automatic
-retries. Null completion content is a failure. Explicitly rerun the same id
+retries. Null completion content is a failure, with one exception: a model
+that spends its whole output cap and returns no text (`finish_reason` of
+`length`) gave an empty answer, which is recorded and scored wrong. Explicitly rerun the same id
 to retry the failed call and skip completed calls. All recorded calls and
 reservations count toward the same caps, including every failed attempt.
 A killed process can leave a lock file; remove it only after

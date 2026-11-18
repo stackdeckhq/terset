@@ -1,20 +1,21 @@
 import { DATASETS, hash } from './data.ts';
+import type { SuiteRecord } from './data.ts';
 import { encode, encodeDataset, estimateInputTokens, makePrompt, primerFor } from './formats.ts';
 import type { Prompt } from './formats.ts';
 import { FORMATS, inputReservationSchema, modelSchema, selectedFormatsSchema } from './schema.ts';
-import type { Format, InputReservation, Model, Question } from './schema.ts';
+import type { Dataset, Format, InputReservation, Model, Question } from './schema.ts';
 
 export interface Task { model: Model; format: Format; question: Question; prompt: Prompt; estimatedInputTokens: number }
 export function key(task: Pick<Task, 'model' | 'format' | 'question'>): string {
   return JSON.stringify([task.model.id, task.format, task.question.dataset, task.question.id]);
 }
 
-export function plan(models: Model[], questions: Question[], formats: readonly Format[] = FORMATS): Task[] {
+export function plan(models: Model[], questions: Question[], formats: readonly Format[] = FORMATS, datasets: Dataset[] = DATASETS): Task[] {
   formats = selectedFormatsSchema.parse(formats);
   models = models.map(model => modelSchema.parse(model));
   if (new Set(models.map(m => m.id)).size !== models.length) throw new Error('Model ids must be unique');
   const encoded = new Map<string, { data: string; primer: string }>();
-  for (const dataset of DATASETS) {
+  for (const dataset of datasets) {
     if (!questions.some(question => question.dataset === dataset.name)) continue;
     for (const format of formats) encoded.set(JSON.stringify([dataset.name, format]), {
       primer: primerFor(format, encode(format, dataset.data)),
@@ -29,8 +30,9 @@ export function plan(models: Model[], questions: Question[], formats: readonly F
   })));
 }
 
-export function fingerprint(tasks: Task[], mode: string, maxOutputTokens: number): string {
-  return hash(JSON.stringify({ version: 1, mode, maxOutputTokens, tasks }));
+export function fingerprint(tasks: Task[], mode: string, maxOutputTokens: number, suite?: SuiteRecord): string {
+  const identity = suite && suite.name !== 'toon' ? { suite: suite.name, dataHashes: suite.hashes, source: suite.source } : {};
+  return hash(JSON.stringify({ version: 1, mode, maxOutputTokens, tasks, ...identity }));
 }
 
 export function reserveInput(estimate: number, config: InputReservation): number {
@@ -39,14 +41,33 @@ export function reserveInput(estimate: number, config: InputReservation): number
   return reserved;
 }
 
-export function describePlan(tasks: Task[], inputReservation: InputReservation = inputReservationSchema.parse({})): string {
+export function estimateCost(tasks: Task[], inputReservation: InputReservation, maxOutputTokens: number): {
+  models: { model: string; reservedInputTokens: number; reservedOutputTokens: number; inputCost: number; outputCost: number; totalCost: number }[];
+  totalCost: number;
+} {
+  if (!Number.isSafeInteger(maxOutputTokens) || maxOutputTokens < 1) throw new Error('Invalid per-call output cap');
+  const models = [...new Set(tasks.map(task => task.model.id))].map(model => {
+    const rows = tasks.filter(task => task.model.id === model);
+    const price = rows[0]?.model.price;
+    if (!price) throw new Error('Missing model price');
+    const reservedInputTokens = rows.reduce((n, task) => n + reserveInput(task.estimatedInputTokens, inputReservation), 0);
+    const reservedOutputTokens = rows.length * maxOutputTokens;
+    const inputCost = reservedInputTokens * price.inputPerMillion / 1_000_000;
+    const outputCost = reservedOutputTokens * price.outputPerMillion / 1_000_000;
+    return { model, reservedInputTokens, reservedOutputTokens, inputCost, outputCost, totalCost: inputCost + outputCost };
+  });
+  return { models, totalCost: models.reduce((n, model) => n + model.totalCost, 0) };
+}
+
+export function describePlan(tasks: Task[], inputReservation: InputReservation = inputReservationSchema.parse({}), maxOutputTokens = 128): string {
   const questions = new Map(tasks.map(t => [t.question.id, t.question]));
   const lines = ['Call plan (o200k_base estimates include shared instructions and each format primer; API framing excluded)',
     `Datasets: ${new Set([...questions.values()].map(q => q.dataset)).size}; questions: ${questions.size}; planned calls: ${tasks.length}`,
     `Input reservation per call: ceil(estimate × ${inputReservation.margin}) + ${inputReservation.allowance} tokens`];
-  for (const dataset of DATASETS) {
-    const count = [...questions.values()].filter(q => q.dataset === dataset.name).length;
-    if (count) lines.push(`  ${dataset.name}: ${count} questions`);
+  const names = new Set([...DATASETS.map(dataset => dataset.name), ...[...questions.values()].map(question => question.dataset)]);
+  for (const name of names) {
+    const count = [...questions.values()].filter(q => q.dataset === name).length;
+    if (count) lines.push(`  ${name}: ${count} questions`);
   }
   for (const model of new Set(tasks.map(t => t.model.id))) {
     const subset = tasks.filter(t => t.model.id === model);
@@ -56,5 +77,8 @@ export function describePlan(tasks: Task[], inputReservation: InputReservation =
       lines.push(`  ${format}: ${rows.length} calls, ${rows.reduce((n, t) => n + t.estimatedInputTokens, 0)} estimated input tokens, ${rows.reduce((n, t) => n + reserveInput(t.estimatedInputTokens, inputReservation), 0)} reserved input tokens`);
     }
   }
+  const costs = estimateCost(tasks, inputReservation, maxOutputTokens);
+  for (const cost of costs.models) lines.push(`Reserved cost (USD), model ${cost.model}: $${cost.totalCost.toFixed(6)} (input $${cost.inputCost.toFixed(6)}; output $${cost.outputCost.toFixed(6)}; ${maxOutputTokens} output tokens per call)`);
+  lines.push(`Reserved cost (USD), total: $${costs.totalCost.toFixed(6)}`);
   return lines.join('\n');
 }

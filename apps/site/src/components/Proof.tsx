@@ -24,7 +24,7 @@ export function BigNumbers({ file }: { readonly file: AccuracyFile }) {
     <div className="big">
       <ul className="big-row">
         {bigNumbers(file).map((item) => (
-          <li key={item.id} className={item.win ? 'big-n win' : 'big-n'}>
+          <li key={item.id} className={['big-n', `big-${item.id}`, item.win ? 'win' : ''].filter(Boolean).join(' ')}>
             <span className="big-l">{caption(item.label)}</span>{' '}
             <span className="big-v">
               {item.values.map((value) => (

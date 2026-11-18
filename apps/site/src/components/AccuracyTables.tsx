@@ -1,5 +1,5 @@
-// Answer accuracy per model: one table each, Terset first, then how much more each format cost than Terset.
-// Then one table by data set: Terset input tokens against compact JSON and TOON.
+// Answer accuracy per model: one table each, Terset first, then how much less Terset cost than each format.
+// KindTable is the table by data set: Terset input tokens against compact JSON and TOON.
 // Each table scrolls sideways inside its own box on small screens, never the page.
 import {
   ACCURACY_FORMAT_NOTE,
@@ -21,7 +21,8 @@ import {
 } from '../data/accuracy.ts';
 import type { AccuracyFile, AccuracyModel, AccuracyRow } from '../data/accuracy.ts';
 
-function KindTable({ file }: { readonly file: AccuracyFile }) {
+/** Input tokens by data set: the data set chart as a table. /benchmark puts it in the data set fold. */
+export function KindTable({ file }: { readonly file: AccuracyFile }) {
   const columns = kindColumns(file);
   return (
     <div className="acc-model">
@@ -97,7 +98,7 @@ function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly mod
       <h3>{model.name}</h3>
       <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label={`Accuracy table, ${model.name}, scrolls sideways on small screens`}>
         <table className="bt">
-          <caption className="sr">{`${model.name}: correct answers out of ${String(file.questions)}, the runs behind them, accuracy, Wilson 95% interval, input tokens and cost at API list price per format, with how much more each format cost than Terset`}</caption>
+          <caption className="sr">{`${model.name}: correct answers out of ${String(file.questions)}, the runs behind them, accuracy, Wilson 95% interval, input tokens and cost at API list price per format, with how much less Terset cost than each format`}</caption>
           <thead>
             <tr>
               {ACCURACY_TABLE_HEAD.map((cell) => (
@@ -169,7 +170,6 @@ export function AccuracyTables({ file }: { readonly file: AccuracyFile }) {
       ))}
       <p className="tbl-note">{ACCURACY_FORMAT_NOTE}</p>
       <p className="tbl-note">{accuracyRunsNote(file)}</p>
-      <KindTable file={file} />
     </div>
   );
 }

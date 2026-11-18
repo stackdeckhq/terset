@@ -17,7 +17,7 @@ import {
   accuracySummary,
   accuracyTableMarks,
   accuracyTableRows,
-  costOverTerset,
+  costLessCell,
   failedCallsLine,
   formatRow,
   intervalsOverlap,
@@ -53,20 +53,28 @@ function withRows(change: (rows: AccuracyModel['rows'][number][]) => void): Accu
 describe('accuracy', () => {
   it('shows every format with its score, interval, tokens and cost, Terset first', () => {
     expect(ACCURACY_TABLE_HEAD.slice(1, 3)).toEqual(['Correct', 'Runs']);
-    expect(ACCURACY_TABLE_HEAD.slice(-2)).toEqual(['Costs more than Terset', 'Run date']);
+    expect(ACCURACY_TABLE_HEAD.slice(-2)).toEqual(['Terset costs less by', 'Run date']);
     expect(accuracyTableRows(model('claude-opus-5-5'))).toEqual([
-      ['Terset', '243 of 244', 'Mean of 3 runs: 243, 243, 243', '99.6%', '97.7% to 99.9%', '1,188,659', '$5.65', 'Reference', '2026-11-17'],
-      ['Compact JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.05', '+42.4%', '2026-11-17'],
-      ['JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '2,303,845', '$10.16', '+79.9%', '2026-11-17'],
-      ['TOON', '241.7 of 244', 'Mean of 3 runs: 242, 242, 241 (241 to 242)', '99.0%', '96.9% to 99.7%', '1,369,764', '$6.35', '+12.4%', '2026-11-17'],
+      ['Terset', '243 of 244', 'Mean of 3 runs: 243, 243, 243', '99.6%', '97.7% to 99.9%', '1,188,659', '$5.65', '-', '2026-11-17'],
+      ['Compact JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.05', '29.8%', '2026-11-17'],
+      ['Pretty JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '2,303,845', '$10.16', '44.4%', '2026-11-17'],
+      ['TOON', '241.7 of 244', 'Mean of 3 runs: 242, 242, 241 (241 to 242)', '99.0%', '96.9% to 99.7%', '1,369,764', '$6.35', '11.0%', '2026-11-17'],
     ]);
     // Both models come from their matched batches: every format is the mean of three runs on one day.
     expect(accuracyTableRows(model('gpt-6.1-sol'))).toEqual([
-      ['Terset', '242 of 244', 'Mean of 3 runs: 242, 241, 243 (241 to 243)', '99.2%', '97.1% to 99.8%', '842,260', '$1.84', 'Reference', '2026-11-17'],
-      ['Compact JSON', '235.3 of 244', 'Mean of 3 runs: 236, 234, 236 (234 to 236)', '96.4%', '93.3% to 98.1%', '1,158,229', '$2.49', '+35.3%', '2026-11-17'],
-      ['JSON', '237.3 of 244', 'Mean of 3 runs: 237, 238, 237 (237 to 238)', '97.3%', '94.4% to 98.7%', '1,696,152', '$3.56', '+93.0%', '2026-11-17'],
-      ['TOON', '242 of 244', 'Mean of 3 runs: 242, 242, 242', '99.2%', '97.1% to 99.8%', '1,020,628', '$2.20', '+19.2%', '2026-11-17'],
+      ['Terset', '242 of 244', 'Mean of 3 runs: 242, 241, 243 (241 to 243)', '99.2%', '97.1% to 99.8%', '842,260', '$1.84', '-', '2026-11-17'],
+      ['Compact JSON', '235.3 of 244', 'Mean of 3 runs: 236, 234, 236 (234 to 236)', '96.4%', '93.3% to 98.1%', '1,158,229', '$2.49', '26.1%', '2026-11-17'],
+      ['Pretty JSON', '237.3 of 244', 'Mean of 3 runs: 237, 238, 237 (237 to 238)', '97.3%', '94.4% to 98.7%', '1,696,152', '$3.56', '48.2%', '2026-11-17'],
+      ['TOON', '242 of 244', 'Mean of 3 runs: 242, 242, 242', '99.2%', '97.1% to 99.8%', '1,020,628', '$2.20', '16.1%', '2026-11-17'],
     ]);
+  });
+
+  it('gives the table the same cost saving as the summary line, on the same base', () => {
+    const summary = accuracySummary(ACCURACY).join(' ');
+    for (const item of ACCURACY.models) {
+      const compact = accuracyTableRows(item).find((row) => row[0] === 'Compact JSON')?.[7];
+      expect(summary).toContain(`${compact ?? 'missing'} less on ${item.name}`);
+    }
   });
 
   it('shows a mean with a fraction to one decimal, and a whole mean as a count', () => {
@@ -148,12 +156,12 @@ describe('accuracy', () => {
     expect(failedCallsLine({ ...ACCURACY, failedCalls: 1 })).toBe('One attempt failed and was retried in the same run. It stays in the run file.');
   });
 
-  it('works out the cost over Terset from the unrounded costs, with a minus when a format is cheaper', () => {
-    expect(costOverTerset(8.161284, 6.12266)).toBe('+33.3%');
-    expect(costOverTerset(4, 5)).toBe('−20.0%');
-    expect(costOverTerset(5, 5)).toBe('0.0%');
+  it('works out what Terset saves from the unrounded costs, and says so in words when a format is cheaper', () => {
+    expect(costLessCell(8, 6)).toBe('25.0%');
+    expect(costLessCell(4, 5)).toBe('Costs 25.0% more');
+    expect(costLessCell(5, 5)).toBe('0.0%');
     // $6.12 and $6.13 round apart on the page; the cell still comes from the full costs.
-    expect(costOverTerset(6.1249, 6.1251)).toBe('0.0%');
+    expect(costLessCell(6.1249, 6.1251)).toBe('0.0%');
   });
 
   it('marks the lowest input tokens and cost, and every format Terset cost less than, never the scores', () => {
@@ -174,9 +182,9 @@ describe('accuracy', () => {
     });
     const first = toonCheaper.models[0];
     if (first === undefined) throw new Error('no models');
-    expect(accuracyTableRows(first).map((row) => row[7])).toEqual(['Reference', '+42.4%', '+79.9%', '−10.0%']);
+    expect(accuracyTableRows(first).map((row) => row[7])).toEqual(['-', '29.8%', '44.4%', 'Costs 11.1% more']);
     expect(accuracyTableMarks(first).map((row) => row[6])).toEqual([null, 'terset-cheaper', 'terset-cheaper', 'terset-pricier']);
-    expect([overTersetMark('+0.1%'), overTersetMark('−0.1%'), overTersetMark('0.0%'), overTersetMark('Reference')]).toEqual(['terset-cheaper', 'terset-pricier', null, null]);
+    expect([overTersetMark(10.01, 10), overTersetMark(10, 10.01), overTersetMark(10, 10)]).toEqual(['terset-cheaper', 'terset-pricier', null]);
   });
 
   it('finds the lowest values from the data, not from a fixed row', () => {
@@ -209,7 +217,7 @@ describe('accuracy', () => {
     expect([signMark('−25.0%'), signMark('+26.4%'), signMark('Baseline'), signMark('0.0%')]).toEqual(['is-less', 'is-more', null, null]);
   });
 
-  it('calls accuracy a tie only because every interval overlaps', () => {
+  it('says the accuracy ranges overlap only while every interval overlaps', () => {
     expect(ACCURACY.models.every(intervalsOverlap)).toBe(true);
     const apart = withRows((rows) => {
       const toon = rows.find((row) => row.format === 'toon');
@@ -236,9 +244,13 @@ describe('accuracy', () => {
     expect(() => accuracyHomeLine(longer)).toThrow(/fewer input tokens/u);
   });
 
+  it('puts the token result first on the home line, then the overlap sentence', () => {
+    expect(accuracyHomeLine(ACCURACY)).toBe('On 244 questions and two models, Terset used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.');
+  });
+
   it('keeps the result to three lines under the tables, small gaps called noise', () => {
     expect(accuracySummary(ACCURACY)).toEqual([
-      "Accuracy is a tie. On 244 questions, every format's 95% interval overlaps every other format's, on both models.",
+      'The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate.',
       "One format's score moved by up to two questions from run to run. A gap that small is noise, not a win.",
       'Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.1% less on GPT 6.1 Sol.',
     ]);
@@ -323,14 +335,15 @@ describe('accuracy', () => {
   it('puts the accuracy tables in benchmark.md', () => {
     const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
     expect(text).toContain('## Answer accuracy');
-    expect(text).toContain('| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Costs more than Terset | Run date |');
-    expect(text).toContain('| Terset | 243 of 244 | Mean of 3 runs: 243, 243, 243 | 99.6% | 97.7% to 99.9% | 1,188,659 | $5.65 | Reference | 2026-11-17 |');
-    expect(text).toContain('| Terset | 242 of 244 | Mean of 3 runs: 242, 241, 243 (241 to 243) | 99.2% | 97.1% to 99.8% | 842,260 | $1.84 | Reference | 2026-11-17 |');
+    expect(text).toContain('| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Terset costs less by | Run date |');
+    expect(text).toContain('| Terset | 243 of 244 | Mean of 3 runs: 243, 243, 243 | 99.6% | 97.7% to 99.9% | 1,188,659 | $5.65 | - | 2026-11-17 |');
+    expect(text).toContain('| Terset | 242 of 244 | Mean of 3 runs: 242, 241, 243 (241 to 243) | 99.2% | 97.1% to 99.8% | 842,260 | $1.84 | - | 2026-11-17 |');
+    expect(text).toContain('| Compact JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.05 | 29.8% | 2026-11-17 |');
     expect(text).toContain('| matched-sol-2026-11-17-r1 | 2026-11-17 | Sol | All four | Sol: All four | 2, retried |');
     expect(text).toContain('| matched-opus-2026-11-17-r2 | 2026-11-17 | Opus | All four | Opus: All four | 1, retried |');
     expect(text).toContain('| p4-2026-11-12 | 2026-11-12 | Opus and Sol | All four | History only | 0 |');
     expect(text).toContain('| v2-final-2026-11-13 | 2026-11-13 | Opus and Sol | Terset | History only | 0 |');
-    expect(text).toContain('| JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 2,303,845 | $10.16 | +79.9% | 2026-11-17 |');
+    expect(text).toContain('| Pretty JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 2,303,845 | $10.16 | 44.4% | 2026-11-17 |');
     expect(text).toContain(accuracyRunsNote(ACCURACY));
     expect(text).not.toContain('Cost vs compact JSON');
     expect(text).toContain(ACCURACY_FORMAT_NOTE);
@@ -349,10 +362,11 @@ describe('accuracy', () => {
     expect(block).not.toContain('TOON used fewer tokens than Terset');
   });
 
-  it('labels the indented JSON row plain JSON and says what each JSON row means', () => {
+  it('names the two JSON rows Compact JSON and Pretty JSON and says what each one means', () => {
     const labels = ACCURACY.models.flatMap((item) => accuracyTableRows(item).map(([label]) => label));
-    expect(labels).not.toContain('Pretty JSON');
-    expect(ACCURACY_FORMAT_NOTE).toBe('JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.');
+    expect(new Set(labels)).toEqual(new Set(['Terset', 'Compact JSON', 'Pretty JSON', 'TOON']));
+    expect(labels).not.toContain('JSON');
+    expect(ACCURACY_FORMAT_NOTE).toBe('Pretty JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.');
     expect(accuracyReadmeBlock(ACCURACY)).toContain(ACCURACY_FORMAT_NOTE);
   });
 

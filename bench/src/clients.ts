@@ -24,6 +24,8 @@ export function fakeClient(answer: (prompt: Prompt) => string = () => 'FAKE', ma
   };
 }
 
+// Long enough for a reasoning model to use a large per-call output cap on one question.
+const REQUEST_TIMEOUT_MS = 600_000;
 const tokens = z.number().int().nonnegative();
 const anthropicSchema = z.object({
   content: z.array(z.discriminatedUnion('type', [
@@ -37,7 +39,13 @@ const anthropicSchema = z.object({
   }),
 });
 const openaiSchema = z.object({
-  choices: z.array(z.object({ message: z.object({ content: z.string() }) })).min(1),
+  // A model that spends its whole output cap on reasoning returns no text and finish_reason
+  // "length". That is an answer of nothing, scored wrong, as on the Messages API. Any other
+  // null content stays an invalid response.
+  choices: z.array(z.union([
+    z.object({ message: z.object({ content: z.string() }) }),
+    z.object({ finish_reason: z.literal('length'), message: z.object({ content: z.null() }) }),
+  ])).min(1),
   usage: z.object({ prompt_tokens: tokens, completion_tokens: tokens }),
 });
 
@@ -88,7 +96,7 @@ export function httpClient(options: {
       let response: globalThis.Response;
       try {
         response = await fetcher(`${baseUrl}/v1/${model.api === 'anthropic' ? 'messages' : 'chat/completions'}`, {
-          method: 'POST', redirect: 'error', signal: AbortSignal.timeout(60_000),
+          method: 'POST', redirect: 'error', signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
           headers: { 'Content-Type': 'application/json', ...headers },
           body: JSON.stringify(requestBody(model, prompt, options.maxOutputTokens)),
         });
@@ -110,7 +118,7 @@ export function httpClient(options: {
       if (!parsed.success) throw new Error('Invalid OpenAI Chat Completions response or missing usage');
       const first = parsed.data.choices[0];
       if (!first) throw new Error('Missing completion choice');
-      return { text: first.message.content, inputTokens: parsed.data.usage.prompt_tokens, outputTokens: parsed.data.usage.completion_tokens };
+      return { text: first.message.content ?? '', inputTokens: parsed.data.usage.prompt_tokens, outputTokens: parsed.data.usage.completion_tokens };
     },
   };
 }

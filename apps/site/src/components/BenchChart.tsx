@@ -13,7 +13,7 @@ import type { BenchFile, CaseRow, Counter, CounterId, Counters } from '../data/n
 import { useReveal } from '../lib/motion.ts';
 import { BenchTable } from './BenchTable.tsx';
 
-export const SCALE_NOTE = 'Each case is scaled to its own largest count. Bar lengths compare real token counts within a case.';
+export const SCALE_NOTE = 'JSON here is compact JSON. Each case is scaled to its own largest count. Bar lengths compare real token counts within a case.';
 type Series = 'terset' | 'json' | 'yaml' | 'toon';
 
 // Color says who, weight says who won: Terset's bar is always the accent and every

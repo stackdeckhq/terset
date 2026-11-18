@@ -19,6 +19,8 @@ import { REAL } from './real.ts';
 import { RealDataSchema } from './real-data-schema.ts';
 import { SeedSweepSchema } from './seed-sweep-schema.ts';
 import { SIZES } from './sizes.ts';
+import { StressAccuracyFileSchema } from './accuracy-stress-schema.ts';
+import { STRESS } from './stress.ts';
 import { SizesSchema } from './sizes-schema.ts';
 import { SWEEP } from './sweep.ts';
 
@@ -36,6 +38,7 @@ function check<T>(source: string, schema: z.ZodType<T>, value: NoInfer<T>): Data
 
 export const DATA_CHECKS: readonly DataCheck[] = [
   check('src/data/accuracy-results.json', AccuracyFileSchema, ACCURACY),
+  check('src/data/accuracy-stress-results.json', StressAccuracyFileSchema, STRESS),
   check('src/data/bench-results.json', BenchFileSchema, BENCH_FILE),
   check('src/data/bytes-results.json', BytesFileSchema, BYTES),
   check('src/data/claude-counts.json', ClaudeCountsSchema, CLAUDE_FILE),

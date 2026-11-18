@@ -19,6 +19,19 @@ describe('model client contract', () => {
     expect(await client.ask(model, prompt)).toEqual({ text: '42', inputTokens: estimateInputTokens(prompt), outputTokens: 1 });
     await expect(fakeClient(() => 'one two three', 1).ask(model, prompt)).rejects.toThrow('per-call output limit');
   });
+  it('returns an empty answer when the model spends its whole output cap and gives no text', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({
+      choices: [{ finish_reason: 'length', message: { content: null } }], usage: { prompt_tokens: 19, completion_tokens: 16 },
+    }));
+    const client = httpClient({ ...options, fetch: fetcher });
+    expect(await client.ask(model, prompt)).toEqual({ text: '', inputTokens: 19, outputTokens: 16 });
+  });
+  it('still fails on null content when the model did not run out of output', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({
+      choices: [{ finish_reason: 'stop', message: { content: null } }], usage: { prompt_tokens: 19, completion_tokens: 1 },
+    }));
+    await expect(httpClient({ ...options, fetch: fetcher }).ask(model, prompt)).rejects.toThrow('Invalid OpenAI');
+  });
   it('sends Chat Completions with explicit output cap and usage', async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ choices: [{ message: { content: '42' } }], usage: { prompt_tokens: 19, completion_tokens: 1 } }));
     const client = httpClient({ ...options, fetch: fetcher });

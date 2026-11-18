@@ -54,7 +54,7 @@ describe('public deploy files', () => {
     expect(png.toString('latin1', 12, 16)).toBe('IHDR');
     expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630]);
     expect(existsSync(publicUrl('og.png'))).toBe(false);
-    for (const old of ['og-v3.png', 'og-v4.png', 'og-v5.png']) expect(existsSync(publicUrl(old))).toBe(false);
+    for (const old of ['og-v3.png', 'og-v4.png', 'og-v5.png', 'og-v6.png']) expect(existsSync(publicUrl(old))).toBe(false);
   });
 });
 
