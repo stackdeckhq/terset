@@ -50,27 +50,34 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # Only release completion waits for npm and PyPI propagation (up to two minutes).
+      # A push that bumps the version lands before its tag publishes the packages. That push
+      # skips the steps below, and the run after the release deploys the site. A manual run
+      # and a run after a release still fail when the version is missing.
       - name: Check the site version is published
+        id: version
         env:
-          AFTER_RELEASE: ${{ github.event_name == 'workflow_run' }}
+          EVENT: ${{ github.event_name }}
         run: |
-          if [ "$AFTER_RELEASE" = "true" ]; then
-            node apps/site/scripts/check-published-version.ts --retry
-          else
-            node apps/site/scripts/check-published-version.ts
-          fi
+          case "$EVENT" in
+            workflow_run) node apps/site/scripts/check-published-version.ts --retry ;;
+            push) node apps/site/scripts/check-published-version.ts --skip-unpublished ;;
+            *) node apps/site/scripts/check-published-version.ts ;;
+          esac
 
       - name: Set up Python
+        if: steps.version.outputs.published == 'true'
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.10'
 
       # The gate builds the site and runs a deploy dry run, so the deploy step uploads a checked build.
       - name: Gate
+        if: steps.version.outputs.published == 'true'
         run: pnpm gate
 
       # Only this step sees the Cloudflare token.
       - name: Deploy
+        if: steps.version.outputs.published == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           WRANGLER_SEND_METRICS: 'false'
@@ -79,6 +86,7 @@ jobs:
         run: pnpm --dir apps/site run deploy
 
       - name: Check the live pages
+        if: steps.version.outputs.published == 'true'
         run: |
           for path in / /format /benchmark /agents /docs; do
             code="$(curl --silent --output /dev/null --write-out '%{http_code}' --retry 3 --retry-delay 5 --max-time 20 "https://terset.dev$path")"
