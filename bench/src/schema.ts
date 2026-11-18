@@ -10,11 +10,13 @@ export const selectedFormatsSchema = z.array(formatSchema).min(1)
 export const jsonRootSchema = z.union([z.record(z.string(), z.json()), z.array(z.json())]);
 export type JsonRoot = z.infer<typeof jsonRootSchema>;
 const recordSchema = z.record(z.string(), z.json());
+const targetKey = z.string().min(1).optional();
 export const corruptionSchema = z.discriminatedUnion('kind', [
-  z.object({ kind: z.literal('control') }),
-  z.object({ kind: z.literal('truncated'), removeRecordCount: count }),
-  z.object({ kind: z.literal('extra-rows'), appendRecords: z.array(recordSchema) }),
-  z.object({ kind: z.enum(['width-mismatch', 'missing-fields']), targetRecordIndices: z.array(count), targetFieldName: z.string() }),
+  z.object({ kind: z.literal('control'), targetKey }),
+  z.object({ kind: z.literal('truncated'), targetKey, removeRecordCount: count, startIndex: count.optional() }),
+  z.object({ kind: z.literal('extra-rows'), targetKey, appendRecords: z.array(recordSchema) }),
+  z.object({ kind: z.literal('duplicate-row'), targetKey, targetRecordIndex: count }),
+  z.object({ kind: z.enum(['width-mismatch', 'missing-fields']), targetKey, targetRecordIndices: z.array(count), targetFieldName: z.string() }),
 ]);
 export type Corruption = z.infer<typeof corruptionSchema>;
 export const datasetSchema = z.object({
@@ -80,8 +82,16 @@ export const failureSchema = z.object({
   model: z.string(), format: formatSchema, dataset: z.string(), questionId: z.string(),
   status: z.enum(['reserved', 'failed']), inputTokens: count, outputTokens: count,
 });
+// Versions of the encoders that built the prompts, read from the installed
+// packages. Optional so run files written before this field still parse.
+export const encodersSchema = z.object({
+  '@toon-format/toon': z.string().min(1), '@stackdeck/terset': z.string().min(1),
+}).strict();
+export type Encoders = z.infer<typeof encodersSchema>;
 export const resultSchema = z.object({
   version: z.literal(1), runId: runIdSchema, fingerprint: z.string(),
+  suite: z.enum(['toon', 'stress']).optional(),
+  encoders: encodersSchema.optional(),
   mode: z.enum(['fake', 'http']), status: z.enum(['partial', 'complete']),
   reason: z.string().nullable(), plannedCalls: count, budgets: budgetsSchema,
   budgetUsed: usageSchema, rows: z.array(rowSchema), failures: z.array(failureSchema).default([]),

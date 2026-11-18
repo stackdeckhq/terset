@@ -1,10 +1,10 @@
 // The chart figures match the published runs, and the losses stay in view.
 import { describe, expect, it } from 'vitest';
-import { ACCURACY } from './accuracy.ts';
+import { ACCURACY, accuracyOverlapLine, formatMean } from './accuracy.ts';
 import type { AccuracyFile, AccuracyModel } from './accuracy.ts';
 import { BENCH, COUNTERS, benchHeadline, counterSummary, underJson, underToon } from './numbers.ts';
 import type { CaseRow, Counters } from './numbers.ts';
-import { bigNumbers, bigNumbersNote, compare, costBars, costNote, datasetRows, datasetScale, datasetSummary, homeHeadline, proofLines, smallerThanToon } from './proof.ts';
+import { bigNumbers, bigNumbersNote, compare, costBars, costNote, datasetRows, datasetScale, datasetSummary, homeHeadline, proofHeading, proofLines, smallerThanToon } from './proof.ts';
 
 function model(id: string): AccuracyModel {
   const found = ACCURACY.models.find((item) => item.id === id);
@@ -39,22 +39,49 @@ describe('cost bars', () => {
 });
 
 describe('big numbers', () => {
-  it('shows fewer tokens, lower cost and right answers per model, the answers as the mean of the Terset runs', () => {
+  it('shows fewer tokens, lower cost and the range of right answers across every format per model', () => {
     expect(bigNumbers(ACCURACY).map((item) => [item.id, item.values.map((value) => `${value.model} ${value.text}`), item.win])).toEqual([
       ['tokens', ['Opus 32.7%', 'Sol 27.3%'], true],
       ['cost', ['Opus 29.8%', 'Sol 26.1%'], true],
-      ['answers', ['Opus 243/244', 'Sol 242/244'], false],
+      ['answers', ['Opus 241 to 243 of 244', 'Sol 235.3 to 242 of 244'], false],
     ]);
-    // Both models have three Terset runs, so the label names the count.
-    expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers, mean of 3 Terset runs');
+    // Every format on both models has three runs, so the label names the count.
+    expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers across all four formats, each a mean of 3 runs');
+  });
+
+  it('reads the answer range from the lowest and highest format on each model', () => {
+    const [opus, sol] = bigNumbers(ACCURACY)[2]?.values ?? [];
+    for (const [value, item] of [
+      [opus, OPUS],
+      [sol, SOL],
+    ] as const) {
+      const scores = item.rows.map((row) => row.correct);
+      expect(value?.figure.startsWith(formatMean(Math.min(...scores)))).toBe(true);
+      expect(value?.figure.endsWith(formatMean(Math.max(...scores)))).toBe(true);
+    }
   });
 
   it('splits each value into a large figure and a quiet tail that join back into the text', () => {
     for (const item of bigNumbers(ACCURACY)) for (const value of item.values) expect(`${value.figure}${value.tail}`).toBe(value.text);
     expect(bigNumbers(ACCURACY)[2]?.values.map((value) => [value.figure, value.tail])).toEqual([
-      ['243', '/244'],
-      ['242', '/244'],
+      ['241 to 243', ' of 244'],
+      ['235.3 to 242', ' of 244'],
     ]);
+  });
+
+  it('heads the cards with the question count from the data', () => {
+    expect(proofHeading(ACCURACY)).toBe('Fewer tokens on the 244-question test');
+    expect(proofHeading({ ...ACCURACY, questions: 1200 })).toBe('Fewer tokens on the 1,200-question test');
+  });
+
+  it('says the accuracy ranges overlap, that this proves no equal accuracy, and throws once they stop overlapping', () => {
+    expect(accuracyOverlapLine(ACCURACY)).toBe('The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate.');
+    const copy = structuredClone(ACCURACY) as AccuracyFile & { models: { rows: { low: number; high: number }[] }[] };
+    const first = copy.models[0]?.rows[0];
+    if (first === undefined) throw new Error('no row');
+    first.low = 0.999;
+    first.high = 1;
+    expect(() => accuracyOverlapLine(copy)).toThrow(/every interval overlaps/u);
   });
 
   it('names the tokenizer behind each model and how its input tokens were counted', () => {
@@ -214,10 +241,11 @@ describe('home headline', () => {
 });
 
 describe('benchmark.md lines', () => {
-  it('states each claim with its tokenizer and says accuracy is a tie', () => {
+  // Accuracy is left to the overlap line that follows these lines, so nothing here calls it a tie.
+  it('states each claim with its tokenizer and leaves accuracy to the overlap line', () => {
     expect(proofLines(ACCURACY, COUNTERS)).toEqual([
       'Fewer input tokens than compact JSON: 32.7% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
-      'Lower cost than compact JSON: 29.8% on Opus and 26.1% on Sol. Accuracy is a tie.',
+      'Lower cost than compact JSON: 29.8% on Opus and 26.1% on Sol.',
       'Smaller than TOON on 22 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
       'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
       'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',

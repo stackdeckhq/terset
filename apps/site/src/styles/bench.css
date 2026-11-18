@@ -110,7 +110,7 @@ table.bt { border-collapse: collapse; width: 100%; font-size: 13px; font-variant
 /* Signed marks in the kind table, and the lowest input tokens and cost in the per-model tables. */
 .acc .bt td.is-less { color: var(--accent); font-weight: 700; }
 .acc .bt td.is-more { color: var(--muted-fg); }
-/* "Costs more than Terset": a plus is a Terset win, in the accent tone; a format cheaper than Terset stays plain and muted. */
+/* "Terset costs less by": a saving is a Terset win, in the accent tone; a format cheaper than Terset stays plain and muted. */
 .acc .bt td.terset-cheaper { color: var(--accent); font-weight: 700; }
 .acc .bt td.terset-pricier { color: var(--muted-fg); }
 /* The upstream commit is 40 characters with no break point; let it wrap on phones. */
@@ -135,6 +135,8 @@ h2.with-tag { text-wrap: balance; }
 .big-c small { font-size: 12.5px; font-weight: var(--w-strong); color: var(--muted-fg); line-height: 1.2; }
 .big-c b { font-size: clamp(28px, 2.6vw, 38px); font-weight: var(--w-head); letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--fg); white-space: nowrap; }
 .big-n.win .big-c b { color: var(--accent); }
+/* The answers card holds a range, such as "235.3 to 242", so it is smaller and may wrap inside its column. */
+.big-answers .big-c b { font-size: clamp(24px, 2.1vw, 30px); line-height: 1.1; white-space: normal; text-wrap: balance; }
 .big-t { margin-left: 2px; font-size: .5em; font-weight: var(--w-strong); letter-spacing: 0; color: var(--muted-fg); }
 .big .tbl-note { margin-top: var(--s-3); text-wrap: pretty; }
 
@@ -200,10 +202,8 @@ h2.with-tag { text-wrap: balance; }
 @media (max-width: 559.98px) { .ds-axis-t .hi { display: none; } }
 .ds .tbl-note { margin-top: var(--s-4); text-wrap: pretty; }
 
-/* "Show full tables": every table on the page behind one toggle. */
-details.tbl.full { margin-top: 0; }
-details.tbl.full > summary { font-size: 15px; }
-.full-body { display: grid; gap: var(--s-5); margin-top: var(--s-4); }
+/* Full tables: every table the open page leaves out, one card after another. */
+.full-body { display: grid; gap: var(--s-5); }
 .full-bench .tbl-h { margin-top: var(--s-4); }
 
 /* Counter switch: picks which counts the bars and tables show. Two buttons, one pressed. */

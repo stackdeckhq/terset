@@ -14,7 +14,7 @@ const ONE = (terset: number, json: number, toon: number): RealData => ({
 
 describe('real data section', () => {
   it('gives one row per file, Terset first, in the head order', () => {
-    expect(REAL_TABLE_HEAD).toEqual(['File', 'Terset', 'JSON compact', 'JSON pretty', 'TOON best', 'vs JSON compact', 'vs TOON']);
+    expect(REAL_TABLE_HEAD).toEqual(['File', 'Terset', 'Compact JSON', 'Pretty JSON', 'TOON best', 'Terset vs compact JSON', 'Terset vs TOON']);
     expect(realTableRows(REAL).map((row) => row[0])).toEqual(REAL.files.map((file) => file.name));
     expect(realTableRows(ONE(90, 100, 80))).toEqual([['One file', '90', '100', '110', '80', '−10.0%', '+12.5%']]);
   });
@@ -23,8 +23,8 @@ describe('real data section', () => {
     expect(realChange(34_068, 34_067)).toBe('+1 token');
     expect(realChange(34_065, 34_067)).toBe('−2 tokens');
     expect(realChange(100, 100)).toBe('0.0%');
-    expect(realLines(ONE(34_068, 34_067, 30_000))).toEqual(['One file: Terset has 1 more token than JSON compact and 13.6% more tokens than TOON.']);
-    expect(realLines(ONE(90, 100, 90))).toEqual(['One file: Terset has 10.0% fewer tokens than JSON compact and as many tokens as TOON.']);
+    expect(realLines(ONE(34_068, 34_067, 30_000))).toEqual(['One file: Terset has 1 more token than compact JSON and 13.6% more tokens than TOON.']);
+    expect(realLines(ONE(90, 100, 90))).toEqual(['One file: Terset has 10.0% fewer tokens than compact JSON and as many tokens as TOON.']);
   });
 
   it('says where the data comes from, when it was frozen and that nothing was tuned on it', () => {

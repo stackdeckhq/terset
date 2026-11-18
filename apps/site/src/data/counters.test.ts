@@ -2,9 +2,10 @@
 // A pending Claude file degrades to the o200k_base view. A ready file that does
 // not match the bench file case for case stops the build with a clear error.
 import { describe, expect, it } from 'vitest';
-import { benchmarkMarkdown, benchmarkPageLines, benchmarkSummary } from './benchmark-doc.ts';
+import { benchmarkMarkdown, benchmarkSampleTotals, benchmarkSummary, sampleTotalsLine } from './benchmark-doc.ts';
 import type { BenchReady } from './bench-schema.ts';
 import type { ClaudeReady } from './claude-counts-schema.ts';
+import { STRESS, stressKeepElse } from './stress.ts';
 import {
   BENCH_FILE,
   CLAUDE_FILE,
@@ -20,6 +21,7 @@ import {
   counterTotals,
   countersHeadline,
   countersNote,
+  countersPageNote,
   formatCents,
   QUALITY_NOTE,
   totalsNote,
@@ -71,9 +73,12 @@ describe('Claude counts paired with the bench file', () => {
     const end = full.indexOf('## Method');
     expect(start).toBeGreaterThan(-1);
     expect(end).toBeGreaterThan(start);
-    const text = full.slice(0, start) + full.slice(end);
+    // So is the stress test, whose lowest score is on Claude Haiku 5.5 and is listed under "When to keep something else".
+    const stressLine = stressKeepElse(STRESS);
+    expect(full).toContain(stressLine);
+    const text = (full.slice(0, start) + full.slice(end)).replace(stressLine, '');
     expect(text).not.toContain('Claude');
-    expect(text.match(/^\| Case \| Terset \| JSON compact \| JSON pretty/gmu)).toHaveLength(1);
+    expect(text.match(/^\| Case \| Terset \| Compact JSON \| Pretty JSON/gmu)).toHaveLength(1);
     expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than TOON in 9 of 11 cases.`);
   });
 
@@ -127,6 +132,10 @@ describe('Claude counts paired with the bench file', () => {
     const fitted = 'Each Terset count includes rulesFor(text), the rules line fitted to that text.';
     expect(countersNote(bench(), counters)).toContain(fitted);
     expect(countersNote(bench(), null)).toContain(fitted);
+    expect(countersPageNote(bench(), counters)).toContain(fitted);
+    // The benchmark page names Compact JSON in every head, so its lead drops the gloss the home page keeps.
+    expect(countersNote(bench(), counters)).toContain('JSON means compact JSON');
+    expect(countersPageNote(bench(), counters)).not.toContain('JSON means');
     expect(counterSummary(counters.o200k)).toContain('Terset, fitted rules line included,');
     expect(counterSummary(counters.claude)).toContain('Terset, fitted rules line included,');
   });
@@ -136,7 +145,7 @@ describe('Claude counts paired with the bench file', () => {
     expect(text).toContain('## Tokens, o200k_base');
     expect(text).toContain('## Tokens, Claude');
     expect(text).toContain('## Input cost at list price');
-    expect(text.match(/^\| Case \| Terset \| JSON compact \| vs JSON compact \|$/gmu)).toHaveLength(2);
+    expect(text.match(/^\| Case \| Terset \| Compact JSON \| Terset vs compact JSON \|$/gmu)).toHaveLength(2);
     expect(text).toContain(PRICES.claude.source);
     expect(text).toContain(PRICES.o200k.source);
     expect(text).toContain('assumes that tokenizer');
@@ -144,23 +153,40 @@ describe('Claude counts paired with the bench file', () => {
 });
 
 describe('/benchmark lines under the sample cases card', () => {
-  it('leaves the per-counter summary to the card, so the page shows it once', () => {
+  it('puts the full totals per counter in the fold, and leaves the summary and the quality note out', () => {
     const counters = buildCounters(bench(), claude(), PRICES);
     if (counters === null || counters.claude === null) throw new Error('should pair');
-    const lines = benchmarkPageLines(bench(), counters);
-    for (const counter of [counters.o200k, counters.claude]) {
-      expect(lines).not.toContain(counterSummary(counter));
-      expect(lines).toContain(counterTotals(counter));
-    }
+    const lines = benchmarkSampleTotals(bench(), counters);
+    expect(lines).toEqual([counterTotals(counters.o200k), counterTotals(counters.claude)]);
     expect(lines.join(' ')).not.toContain("is under TOON's best");
-    expect(lines.at(-1)).toBe(QUALITY_NOTE);
+    expect(lines).not.toContain(QUALITY_NOTE);
     expect(benchmarkSummary(bench(), counters)).toContain(counterSummary(counters.o200k));
   });
 
   it('drops the plain summary with one counter, and shows nothing extra while pending', () => {
     const single = buildCounters(bench(), { status: 'pending' }, PRICES);
-    expect(benchmarkPageLines(bench(), single)).toEqual([totalsNote(bench()), QUALITY_NOTE]);
-    expect(benchmarkPageLines({ status: 'pending', reason: 'Not run yet.' }, null)).toEqual([]);
+    expect(benchmarkSampleTotals(bench(), single)).toEqual([totalsNote(bench())]);
+    expect(benchmarkSampleTotals({ status: 'pending', reason: 'Not run yet.' }, null)).toEqual([]);
+  });
+
+  it('states the total saving against compact JSON and TOON in one open sentence, read from the totals', () => {
+    const counters = buildCounters(bench(), claude(), PRICES);
+    if (counters === null || counters.claude === null) throw new Error('should pair');
+    const line = sampleTotalsLine(bench(), counters);
+    expect(line).toBe("Over all 11 cases, Terset totals 26.8% fewer tokens than compact JSON and 6.6% fewer than TOON's best on o200k_base, and 32.0% and 4.5% fewer on Claude.");
+    // The same rounding as the full totals in the fold.
+    expect(counterTotals(counters.o200k)).toContain('26.8% fewer than compact JSON');
+    expect(counterTotals(counters.o200k)).toContain("6.6% fewer than TOON's best");
+    expect(counterTotals(counters.claude)).toContain('32.0% fewer than compact JSON');
+    expect(counterTotals(counters.claude)).toContain("4.5% fewer than TOON's best");
+    expect(sampleTotalsLine({ status: 'pending', reason: 'Not run yet.' }, null)).toBe('');
+  });
+
+  it('refuses the sample line once Terset totals more than TOON', () => {
+    const counters = buildCounters(bench(), claude(), PRICES);
+    if (counters === null) throw new Error('should pair');
+    const heavy = { ...counters, o200k: { ...counters.o200k, cases: counters.o200k.cases.map((row) => ({ ...row, toon: Math.floor(row.terset / 2) })) } };
+    expect(() => sampleTotalsLine(bench(), heavy)).toThrow(/fewer tokens than TOON's best/u);
   });
 });
 
@@ -181,10 +207,10 @@ describe('input cost at list price', () => {
     expect(formatCents(34287)).toBe('$342.87');
   });
 
-  it('prints a signed dollar change with a true minus sign', () => {
-    expect(centsDelta(425, 585)).toBe('−$1.60');
-    expect(centsDelta(273, 244)).toBe('+$0.29');
-    expect(centsDelta(5, 5)).toBe('$0.00');
+  it('prints a dollar change in words, never as a signed price', () => {
+    expect(centsDelta(425, 585)).toBe('$1.60 less');
+    expect(centsDelta(273, 244)).toBe('$0.29 more');
+    expect(centsDelta(5, 5)).toBe('the same');
   });
 
   it('computes every shown change from the shown values, and the total from summed tokens', () => {
@@ -196,7 +222,7 @@ describe('input cost at list price', () => {
         expect(centsDelta(cents(terset), cents(json))).toBe(delta);
       }
     }
-    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$234.33', '$344.41', '−$110.08']);
-    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.09', '$117.62', '−$31.53']);
+    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$234.33', '$344.41', '$110.08 less']);
+    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.09', '$117.62', '$31.53 less']);
   });
 });

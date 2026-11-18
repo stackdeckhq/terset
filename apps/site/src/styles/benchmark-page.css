@@ -1,0 +1,53 @@
+/* /benchmark: results open, detail in folds, and one shared right edge.
+   Each section has two columns. On wide screens the heading takes the left column, running text the
+   right column, and wide blocks span both. So a paragraph ends on the same edge as the block it
+   introduces, and its lines stay at a reading measure. Small screens keep one column. */
+.bench-page .bench-sec > * { margin-block: 0; }
+.bench-page .bench-sec > * + * { margin-top: var(--s-6); }
+.bench-page .bench-sec > h2 { margin-bottom: var(--s-4); }
+.bench-page .bench-sec > h2 + .bench-text { margin-top: 0; }
+
+.bench-page .bench-text { max-width: 72ch; color: var(--fg-2); }
+.bench-page .bench-text > * + * { margin-top: var(--s-3); }
+.bench-page .bench-text .steps-list, .bench-page .bench-text .bytes-line { max-width: none; }
+.bench-page .bench-text .bytes-line { margin-top: 0; }
+.bench-page .bench-text .steps-list + .tbl-note { margin-top: var(--s-4); }
+
+@media (min-width: 1000px) {
+  .bench-page .bench-sec, .bench-page .fold-body, .bench-page .fold > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 42rem);
+    column-gap: var(--s-7);
+  }
+  .bench-page .bench-sec > *, .bench-page .fold-body > * { grid-column: 1 / -1; min-width: 0; }
+  .bench-page .bench-sec > h2 { grid-column: 1; margin-bottom: 0; align-self: baseline; }
+  .bench-page .bench-sec > h2 + .bench-text { align-self: baseline; }
+  .bench-page .bench-text, .bench-page .fold-body > .tbl-note { grid-column: 2; max-width: none; }
+}
+
+/* Folds: native details, so they open by click, by keyboard and by anchor link, with no script.
+   The look follows the quiet disclosure in base.css: a chevron that turns when open. */
+/* A hairline above each fold. The last one needs none below: the next section's hairline closes the list. */
+.bench-page .fold { border-top: 1px solid var(--line); }
+.bench-page .fold > summary { position: relative; display: grid; gap: var(--s-1); align-items: baseline; min-height: var(--hit); padding: var(--s-4) 0; cursor: pointer; list-style: none; border-radius: 8px; }
+.bench-page .fold > summary::-webkit-details-marker { display: none; }
+.bench-page .fold-t { display: inline-flex; align-items: center; flex-wrap: wrap; gap: var(--s-1) var(--s-3); font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.01em; line-height: 1.35; color: var(--fg); }
+.bench-page .fold-t .tok { margin-left: 0; }
+.bench-page .fold-t::before { content: ""; flex: none; width: 8px; height: 8px; border-right: 1.75px solid var(--fg-2); border-bottom: 1.75px solid var(--fg-2); transform: translateY(-2px) rotate(45deg); transition: transform .2s var(--ease); }
+.bench-page .fold[open] > summary .fold-t::before { transform: translateY(2px) rotate(-135deg); }
+.bench-page .fold > summary:hover .fold-t { color: var(--link); }
+.bench-page .fold-d { padding-left: 20px; font-size: 15px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
+@media (prefers-reduced-motion: reduce) { .bench-page .fold-t::before { transition: none; } }
+
+.bench-page .fold-body { padding: var(--s-2) 0 var(--s-6); }
+.bench-page .fold-body > * { margin-block: 0; }
+.bench-page .fold-body > * + * { margin-top: var(--s-5); }
+.bench-page .fold-body > .tablewrap + .tbl-note { margin-top: var(--s-2); }
+.bench-page .fold-body .steps-list { font-size: 15px; line-height: 1.6; }
+/* A link to a fold lands on its body. The margin keeps the fold's summary in view above it. */
+.bench-page .fold-body[id] { scroll-margin-top: 9rem; }
+
+@media (min-width: 1000px) {
+  .bench-page .fold-d { padding-left: 0; }
+  .bench-page .fold-body[id] { scroll-margin-top: 6rem; }
+}

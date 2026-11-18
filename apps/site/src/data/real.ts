@@ -12,7 +12,7 @@ export const REAL: RealData = raw;
 const REAL_FILE = 'apps/site/src/data/real-data.json';
 const REAL_RECORD = 'bench/data/real/README.md';
 
-export const REAL_TABLE_HEAD = ['File', 'Terset', 'JSON compact', 'JSON pretty', 'TOON best', 'vs JSON compact', 'vs TOON'] as const;
+export const REAL_TABLE_HEAD = ['File', 'Terset', 'Compact JSON', 'Pretty JSON', 'TOON best', 'Terset vs compact JSON', 'Terset vs TOON'] as const;
 
 /** One cell per REAL_TABLE_HEAD column, in the same order. */
 export type RealTableRow = readonly [name: string, terset: string, json: string, jsonPretty: string, toon: string, vsJson: string, vsToon: string];
@@ -43,7 +43,25 @@ function versus(terset: number, base: number, name: string): string {
 
 /** One line per file: Terset against compact JSON and against TOON, wins and losses alike. */
 export function realLines(data: RealData): readonly string[] {
-  return data.files.map((file) => `${file.name}: Terset has ${versus(file.terset, file.json, 'JSON compact')} and ${versus(file.terset, file.toon, 'TOON')}.`);
+  return data.files.map((file) => `${file.name}: Terset has ${versus(file.terset, file.json, 'compact JSON')} and ${versus(file.terset, file.toon, 'TOON')}.`);
+}
+
+/**
+ * One format against Terset on one file, when it ties Terset or is smaller. Null when Terset is smaller.
+ * The loss is stated from Terset's side, so the percentage is the one the table shows.
+ */
+function keepPart(name: string, other: number, terset: number): string | null {
+  if (other > terset) return null;
+  const counts = `(${formatCount(terset)} vs ${formatCount(other)})`;
+  return other === terset ? `Terset ties ${name} ${counts}` : `Terset has ${versus(terset, other, name)} ${counts}`;
+}
+
+/** One line per real file where TOON's best or compact JSON ties Terset or is smaller, for "When to keep something else". */
+export function realKeepElse(data: RealData): readonly string[] {
+  return data.files.flatMap((file) => {
+    const parts = [keepPart("TOON's best", file.toon, file.terset), keepPart('compact JSON', file.json, file.terset)].filter((part) => part !== null);
+    return parts.length === 0 ? [] : [`Real data, ${file.name}: ${parts.join('. ')}.`];
+  });
 }
 
 export function realIntro(data: RealData): string {

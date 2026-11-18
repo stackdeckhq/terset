@@ -48,6 +48,19 @@ describe('budget guards and saved results', () => {
     expect(new Set(finished.rows.map(r => r.questionId))).toEqual(new Set([tasks[0]?.question.id]));
     expect(summaries(finished.rows, tasks).filter(s => s.dataset === 'ALL').map(s => s.metrics.total)).toEqual([1, 1, 1, 1]);
   });
+  it('records the installed encoder versions and refuses a resume after they change', async () => {
+    const installed = async (name: string): Promise<unknown> => (JSON.parse(await readFile(
+      new URL(`../node_modules/${name}/package.json`, import.meta.url), 'utf8')) as { version: unknown }).version;
+    const options = { runId: 'encoders', directory: await directory(), tasks: tasks.slice(0, 1), client: client(), mode: 'fake' as const, budgets };
+    const result = await run(options);
+    const expected = { '@toon-format/toon': await installed('@toon-format/toon'), '@stackdeck/terset': await installed('@stackdeck/terset') };
+    expect(result.encoders).toEqual(expected);
+    const path = `${options.directory}/encoders.json`;
+    const saved = JSON.parse(await readFile(path, 'utf8')) as Record<string, unknown>;
+    expect(saved.encoders).toEqual(expected);
+    await writeFile(path, JSON.stringify({ ...saved, encoders: { ...expected, '@toon-format/toon': '0.0.0' } }));
+    await expect(run(options)).rejects.toThrow('Encoder versions changed');
+  });
   it('refuses a client configured with a different per-call output cap', async () => {
     const fake = fakeClient(() => '42', 256);
     const ask = vi.spyOn(fake, 'ask');

@@ -1,13 +1,30 @@
 import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Client } from './clients.ts';
-import { DATA_HASHES, UPSTREAM_SHA } from './data.ts';
+import { loadSuite } from './data.ts';
+import type { SuiteRecord } from './data.ts';
 import { fingerprint, key, reserveInput } from './plan.ts';
 import type { Task } from './plan.ts';
 import { markdown, summaries } from './report.ts';
-import { budgetsSchema, inputReservationSchema, modelSchema, responseSchema, resultSchema, runIdSchema } from './schema.ts';
-import type { Budgets, InputReservation, Result, Row, Usage } from './schema.ts';
+import { budgetsSchema, encodersSchema, inputReservationSchema, modelSchema, responseSchema, resultSchema, runIdSchema } from './schema.ts';
+import type { Budgets, Encoders, InputReservation, Result, Row, Usage } from './schema.ts';
 import { score } from './scoring.ts';
+
+async function installedVersion(name: keyof Encoders): Promise<string> {
+  const manifest = JSON.parse(await readFile(new URL(`../node_modules/${name}/package.json`, import.meta.url), 'utf8')) as unknown;
+  const version: unknown = manifest && typeof manifest === 'object' ? Reflect.get(manifest, 'version') : undefined;
+  if (!manifest || typeof manifest !== 'object' || Reflect.get(manifest, 'name') !== name || typeof version !== 'string') {
+    throw new Error(`Cannot read installed ${name}`);
+  }
+  return version;
+}
+
+export async function installedEncoders(): Promise<Encoders> {
+  return encodersSchema.parse({
+    '@toon-format/toon': await installedVersion('@toon-format/toon'),
+    '@stackdeck/terset': await installedVersion('@stackdeck/terset'),
+  });
+}
 
 export function budgetStop(used: Usage, budgets: Budgets, inputReservation: number): string | null {
   if (!Number.isSafeInteger(inputReservation) || inputReservation < 0) throw new Error('Invalid input token reservation');
@@ -23,14 +40,16 @@ function rowKey(row: Pick<Row, 'model' | 'format' | 'dataset' | 'questionId'>): 
 
 export async function run(options: {
   runId: string; directory: string; tasks: Task[]; client: Client; mode: Result['mode']; budgets: Budgets;
-  inputReservation?: InputReservation;
+  inputReservation?: InputReservation; suite?: SuiteRecord;
 }): Promise<Result> {
   const runId = runIdSchema.parse(options.runId);
   for (const task of options.tasks) modelSchema.parse(task.model);
   const budgets = budgetsSchema.parse(options.budgets);
   const inputReservation = inputReservationSchema.parse(options.inputReservation ?? {});
   if (options.client.maxOutputTokens !== budgets.perCallMaxOutputTokens) throw new Error('Client output cap must equal the run per-call output limit');
-  const digest = fingerprint(options.tasks, options.mode, budgets.perCallMaxOutputTokens);
+  const suite = options.suite ?? loadSuite();
+  const digest = fingerprint(options.tasks, options.mode, budgets.perCallMaxOutputTokens, suite);
+  const encoders = await installedEncoders();
   await mkdir(options.directory, { recursive: true });
   const jsonPath = join(options.directory, `${runId}.json`);
   const markdownPath = join(options.directory, `${runId}.md`);
@@ -54,6 +73,9 @@ export async function run(options: {
       if (!parsed.success) throw new Error('Invalid result file');
       result = parsed.data;
       if (result.fingerprint !== digest || result.runId !== runId) throw new Error('Run id belongs to a different plan, model configuration, or mode');
+      if (result.encoders && JSON.stringify(result.encoders) !== JSON.stringify(encoders)) {
+        throw new Error('Encoder versions changed since this run started; use a new run id');
+      }
       result.budgets = budgets;
     }
     const tasksByKey = new Map(options.tasks.map(task => [key(task), task]));
@@ -77,7 +99,7 @@ export async function run(options: {
     async function save(): Promise<void> {
       const document = { ...result,
         models: [...new Map(options.tasks.map(task => [task.model.id, task.model])).values()],
-        upstreamSha: UPSTREAM_SHA, dataHashes: DATA_HASHES, tokenizer: 'o200k_base',
+        ...suite.source, suite: suite.name, dataHashes: suite.hashes, tokenizer: 'o200k_base',
         summary: summaries(result.rows, options.tasks) };
       await writeFile(`${jsonPath}.tmp`, `${JSON.stringify(document, null, 2)}\n`);
       await rename(`${jsonPath}.tmp`, jsonPath);
@@ -85,6 +107,8 @@ export async function run(options: {
       await rename(`${markdownPath}.tmp`, markdownPath);
     }
     result.status = 'partial';
+    result.suite = suite.name;
+    result.encoders = encoders;
     result.reason = null;
     result.inputReservation = inputReservation;
     const questions = new Map<string, Task[]>();

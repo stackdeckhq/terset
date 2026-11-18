@@ -3,6 +3,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { OUTPUT, PUBLISHED_RUNS, REQUEST_COUNTS, accuracyText, borrowedCountsFrom, buildAccuracy, claudeCountedFormats, headlineFormats, sourceRunId, wilson95 } from './update-accuracy.ts';
+import { STRESS_OUTPUT, STRESS_PUBLISHED_RUNS } from './accuracy-stress.ts';
+import { StressAccuracyFileSchema } from '../src/data/accuracy-stress-schema.ts';
 import type { AccuracyFile, AccuracyFormat } from '../src/data/accuracy-schema.ts';
 import type { ClaudeRequestCounts } from '../src/data/claude-request-counts-schema.ts';
 
@@ -83,8 +85,9 @@ describe('every published run', () => {
 
   it('lists every run file in bench/published, in the script and in the site data, so none is left out', () => {
     expect(runFiles.length).toBeGreaterThanOrEqual(10);
-    expect([...PUBLISHED_RUNS.map((source) => source.path)].sort()).toEqual(runFiles);
-    expect(site.publishedRuns.map((run) => `${run.publishedPath}/${run.runId}.json`).sort()).toEqual(runFiles);
+    expect([...PUBLISHED_RUNS, ...STRESS_PUBLISHED_RUNS].map((source) => source.path).sort()).toEqual(runFiles);
+    const stress = StressAccuracyFileSchema.parse(JSON.parse(readFileSync(STRESS_OUTPUT, 'utf8')));
+    expect([...site.publishedRuns, ...stress.publishedRuns].map((run) => `${run.publishedPath}/${run.runId}.json`).sort()).toEqual(runFiles);
   });
 
   it('feeds every matched run file into the tables, for its model and every format', () => {

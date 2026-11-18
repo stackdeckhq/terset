@@ -35,12 +35,12 @@ function svgTexts(svg: string): readonly string[] {
 }
 
 describe('share image text follows the data', () => {
-  // The README's o200k_base totals line says "26.8% fewer than JSON compact", from the same function.
+  // The README's o200k_base totals line says "26.8% fewer than compact JSON", from the same function.
   it('shows the o200k_base total saving against compact JSON exactly as the README states it', () => {
     if (COUNTERS === null) throw new Error('the committed bench file should be ready');
     const totals = benchTotals(COUNTERS.o200k);
     expect(totals.terset).toBeLessThan(totals.json);
-    expect(totalsNote(COUNTERS.o200k)).toContain(`${stat(0).value} fewer than JSON compact`);
+    expect(totalsNote(COUNTERS.o200k)).toContain(`${stat(0).value} fewer than compact JSON`);
     expect(stat(0).label).toBe('fewer tokens than JSON');
     expect(stat(0).win).toBe(true);
   });
@@ -55,7 +55,7 @@ describe('share image text follows the data', () => {
     expect(stat(1).win).toBe(under === total);
   });
 
-  it('shows right answers from the same model and calls accuracy a tie, never a win', () => {
+  it('shows right answers from the same model and says the accuracy ranges overlap, never a win', () => {
     const model = quotedModel();
     const terset = formatRow(model, 'terset');
     // The image shows one number, so it must be what every run scored, not a picked run.
@@ -63,13 +63,19 @@ describe('share image text follows the data', () => {
     expect(terset.runs.every((run) => run.correct === terset.correct)).toBe(true);
     expect(stat(2).value).toBe(`${String(terset.correct)} of ${String(ACCURACY.questions)}`);
     expect(ACCURACY.models.every(intervalsOverlap)).toBe(true);
-    expect(stat(2).label).toContain('A tie with JSON');
+    expect(stat(2).label).toContain('Accuracy ranges overlap');
     expect(stat(2).win).toBe(false);
+  });
+
+  // Overlapping ranges do not show equal accuracy, so the image never calls it a tie or a match.
+  it('never calls accuracy a tie in the labels or the alt text', () => {
+    const sameScore = /\bti(?:e|ed|es|ing)\b|same accuracy|as accurate as|just as well|no loss in accuracy|equally accurate/iu;
+    for (const text of [...OG_TEXT.stats.map((item) => item.label), OG_IMAGE_ALT]) expect(text).not.toMatch(sameScore);
   });
 
   it('says every word in the alt text, which uses the same constant', () => {
     for (const words of [...OG_TEXT.headline, ...OG_TEXT.stats.flatMap((item) => [item.value, item.label])]) expect(OG_IMAGE_ALT).toContain(words);
-    expect(OG_IMAGE_PATH).toBe('/og-v6.png');
+    expect(OG_IMAGE_PATH).toBe('/og-v7.png');
   });
 });
 

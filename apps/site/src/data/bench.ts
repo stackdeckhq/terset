@@ -74,7 +74,7 @@ export function benchTotals(bench: CaseSet): BenchTotals {
 }
 
 /** The bench table's columns, Terset first. The page and benchmark.md both use them. */
-export const BENCH_TABLE_HEAD = ['Case', 'Terset', 'JSON compact', 'JSON pretty', 'YAML', 'TOON best', 'CSV', 'vs JSON compact', 'vs TOON'] as const;
+export const BENCH_TABLE_HEAD = ['Case', 'Terset', 'Compact JSON', 'Pretty JSON', 'YAML', 'TOON best', 'CSV', 'Terset vs compact JSON', 'Terset vs TOON'] as const;
 
 /** One cell per BENCH_TABLE_HEAD column, in the same order. */
 export type BenchTableRow = readonly [name: string, terset: string, json: string, jsonPretty: string, yaml: string, toon: string, csv: string, vsJson: string, vsToon: string];
@@ -93,7 +93,7 @@ export function benchTotalsRow(bench: CaseSet): BenchTableRow {
   return tableCells('Total', benchTotals(bench), 'n/a');
 }
 
-/** "17.2% fewer than JSON compact (53,248)", with no sign. */
+/** "17.2% fewer than compact JSON (53,248)", with no sign. */
 function totalVs(value: number, base: number, name: string): string {
   const change = Math.round(((value - base) / base) * 1000) / 10;
   const amount = change === 0 ? 'as many as' : `${Math.abs(change).toFixed(1)}% ${change < 0 ? 'fewer' : 'more'} than`;
@@ -105,8 +105,8 @@ export function totalsNote(bench: CaseSource): string {
   if (!('cases' in bench)) return '';
   const totals = benchTotals(bench);
   const versus = [
-    totalVs(totals.terset, totals.json, 'JSON compact'),
-    totalVs(totals.terset, totals.jsonPretty, 'JSON pretty'),
+    totalVs(totals.terset, totals.json, 'compact JSON'),
+    totalVs(totals.terset, totals.jsonPretty, 'pretty JSON'),
     totalVs(totals.terset, totals.yaml, 'YAML'),
     `and ${totalVs(totals.terset, totals.toon, "TOON's best")}`,
   ];
@@ -155,30 +155,66 @@ export function jsonWinsNote(bench: CaseSource): string {
   return `Compact JSON is smaller than or equal to Terset on ${list}.`;
 }
 
-/** Where TOON's best is not larger than Terset, computed from the data. Empty when Terset is under TOON everywhere. */
-export function toonWinsNote(bench: CaseSource): string {
-  if (!('cases' in bench)) return '';
-  const wins = bench.cases.filter((row) => row.toon <= row.terset);
-  if (wins.length === 0) return '';
-  // Case names hold commas, so the list uses semicolons.
-  const list = wins.map((row) => `${row.name} (${formatCount(row.toon)} vs ${formatCount(row.terset)})`).join('; ');
-  return `TOON's best is smaller than or equal to Terset in ${String(wins.length)} of ${String(bench.cases.length)} cases: ${list}.`;
+/** What plain CSV cannot hold, whatever the counter. */
+const CSV_LIMITS = 'It has no types, it merges null, absent and empty text, and it cannot hold nesting.';
+
+/** The same limits as one line of its own, for lists that give the CSV sizes per counter. */
+export const CSV_LIMITS_LINE = 'On every counter, plain CSV has no types, merges null, absent and empty text, and cannot hold nesting.';
+
+/** The CSV note, computed from the data: where it is smaller, its limits, and where it is larger. Empty when there is no CSV figure under Terset. */
+export function csvNote(bench: CaseSource): string {
+  const { smaller, larger } = csvSizes(bench);
+  return smaller === '' ? '' : `${smaller} ${CSV_LIMITS}${larger}`;
 }
 
-/** The CSV note, computed from the data. Empty when there is no CSV figure under Terset. */
-export function csvNote(bench: CaseSource): string {
-  if (!('cases' in bench)) return '';
+/**
+ * The CSV note without its limits, for "When to keep something else" on /benchmark, which
+ * states the limits once for every counter. Empty when there is no CSV figure under Terset.
+ */
+export function csvSizeNote(bench: CaseSource): string {
+  const { smaller, larger } = csvSizes(bench);
+  return smaller === '' ? '' : `${smaller}${larger}`;
+}
+
+/** Where plain CSV is smaller than Terset and where it is larger, as sentences. Empty text when there is no CSV figure under Terset. */
+function csvSizes(bench: CaseSource): { readonly smaller: string; readonly larger: string } {
+  if (!('cases' in bench)) return { smaller: '', larger: '' };
   const smaller = bench.cases.filter((row) => row.csv !== null && row.csvExact === true && row.csv < row.terset);
   // The case where CSV loses most against Terset, so the note shows the clearest cost.
   const widest = bench.cases.reduce<CaseRow | undefined>((best, row) => {
     if (row.csv === null || row.csv <= row.terset) return best;
     return best === undefined || row.csv - row.terset > (best.csv ?? 0) - best.terset ? row : best;
   }, undefined);
-  if (smaller.length === 0) return '';
+  if (smaller.length === 0) return { smaller: '', larger: '' };
   const gaps = smaller.map((row) => row.terset - (row.csv ?? row.terset));
   const range = `${String(Math.min(...gaps))} to ${String(Math.max(...gaps))}`;
   const larger = widest === undefined ? '' : ` On ${widest.name.toLowerCase()} it is larger: ${formatCount(widest.csv ?? 0)} vs ${formatCount(widest.terset)}.`;
-  return `Plain CSV is ${range} tokens smaller on ${String(smaller.length)} flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting.${larger}`;
+  return { smaller: `Plain CSV is ${range} tokens smaller on ${String(smaller.length)} flat, uniform lists, because it needs no rules line.`, larger };
+}
+
+/** The cases where compact JSON ties Terset and where it is smaller, each said as what it is. Empty when Terset is under compact JSON everywhere. */
+export function jsonKeepNote(bench: CaseSource): string {
+  if (!('cases' in bench)) return '';
+  const list = (rows: readonly CaseRow[]): string => rows.map((row) => `${row.name.toLowerCase()} (${formatCount(row.json)} vs ${formatCount(row.terset)})`).join(' and ');
+  const ties = bench.cases.filter((row) => row.json === row.terset);
+  const smaller = bench.cases.filter((row) => row.json < row.terset);
+  return [ties.length === 0 ? '' : `Compact JSON ties Terset on ${list(ties)}.`, smaller.length === 0 ? '' : `Compact JSON is smaller than Terset on ${list(smaller)}.`].filter((text) => text !== '').join(' ');
+}
+
+/** The cases where TOON's best is smaller than Terset and where it ties, each said as what it is. Empty when Terset is under TOON everywhere. */
+export function toonKeepNote(bench: CaseSource): string {
+  if (!('cases' in bench)) return '';
+  // Case names hold commas, so each list uses semicolons.
+  const list = (rows: readonly CaseRow[]): string => rows.map((row) => `${row.name} (${formatCount(row.toon)} vs ${formatCount(row.terset)})`).join('; ');
+  const total = String(bench.cases.length);
+  const smaller = bench.cases.filter((row) => row.toon < row.terset);
+  const ties = bench.cases.filter((row) => row.toon === row.terset);
+  return [
+    smaller.length === 0 ? '' : `TOON's best is smaller than Terset in ${String(smaller.length)} of ${total} cases: ${list(smaller)}.`,
+    ties.length === 0 ? '' : `TOON's best ties Terset in ${String(ties.length)} of ${total} cases: ${list(ties)}.`,
+  ]
+    .filter((text) => text !== '')
+    .join(' ');
 }
 
 /** What every Terset count holds besides the data. Every note beside a headline count says it. */
@@ -190,6 +226,15 @@ export function tokenizerNote(bench: BenchFile): string {
 }
 
 export const QUALITY_NOTE = 'Token counts say nothing about answer quality. Terset is about fewer tokens.';
+
+/** How to read a token table. */
+export const TOKENS_NOTE = 'Counts are tokens. Lower is better.';
+
+/** What the "TOON best" column holds, in the method's words. */
+export const TOON_BEST_NOTE = "TOON best is the smaller of TOON's comma and tab forms.";
+
+/** The note above each sample token table on /benchmark and in benchmark.md: how to read its columns, in the method's words. */
+export const BENCH_TABLE_NOTE = `${TOKENS_NOTE} ${TOON_BEST_NOTE} CSV is n/a when the data is not one list of records. Lossy means the CSV did not read back to the same typed data.`;
 
 /** The `@toon-format/toon` version every TOON count and size uses. numbers.test.ts checks it against the installed package. */
 export const TOON_VERSION = '4.4.0';

@@ -37,18 +37,41 @@ export function decode(format: Format, text: string): JsonRoot {
 
 function corruptJson(data: Dataset['data'], corruption: Corruption): Dataset['data'] {
   const copy = structuredClone(data);
-  const employees = copy.employees;
-  if (!Array.isArray(employees)) throw new Error('Structural fixture requires employees');
+  const targetKey = corruption.targetKey ?? 'employees';
+  const rows = copy[targetKey];
+  if (!Array.isArray(rows)) throw new Error('Invalid structural fixture: target must be a top-level list');
   switch (corruption.kind) {
     case 'control': break;
-    case 'truncated': copy.employees = employees.slice(0, -corruption.removeRecordCount); break;
-    case 'extra-rows': copy.employees = [...employees, ...corruption.appendRecords]; break;
+    case 'truncated': {
+      const start = corruption.startIndex ?? rows.length - corruption.removeRecordCount;
+      if (start < 0 || start + corruption.removeRecordCount > rows.length) throw new Error('Invalid structural fixture: removal range');
+      rows.splice(start, corruption.removeRecordCount);
+      break;
+    }
+    case 'extra-rows': {
+      // Appended rows must fit the existing table header, or TOON and Terset
+      // would print them in another layout under the original header.
+      const first: unknown = rows[0];
+      const fields = first && typeof first === 'object' && !Array.isArray(first) ? Object.keys(first).join('\n') : undefined;
+      if (corruption.appendRecords.some(record => Object.keys(record).join('\n') !== fields)) {
+        throw new Error('Invalid structural fixture: appended fields differ');
+      }
+      rows.push(...corruption.appendRecords);
+      break;
+    }
+    case 'duplicate-row': {
+      const row = rows[corruption.targetRecordIndex];
+      if (row === undefined) throw new Error('Invalid structural fixture: duplicate index');
+      rows.splice(corruption.targetRecordIndex + 1, 0, structuredClone(row));
+      break;
+    }
     case 'width-mismatch':
     case 'missing-fields':
       for (const index of corruption.targetRecordIndices) {
-        const employee = employees[index];
+        const employee = rows[index];
         if (!employee || Array.isArray(employee) || typeof employee !== 'object') throw new Error('Invalid structural fixture');
-        employees[index] = Object.fromEntries(Object.entries(employee).filter(([field]) => field !== corruption.targetFieldName));
+        if (!(corruption.targetFieldName in employee)) throw new Error('Invalid structural fixture: missing field');
+        rows[index] = Object.fromEntries(Object.entries(employee).filter(([field]) => field !== corruption.targetFieldName));
       }
   }
   return copy;
@@ -60,14 +83,25 @@ export function encodeDataset(format: Format, dataset: Dataset): string {
   const text = encode(format, dataset.data);
   const corruption = dataset.corruption;
   if (!corruption || corruption.kind === 'control') return text;
-  if (format === 'json-compact' || format === 'json-pretty') return encode(format, corruptJson(dataset.data, corruption));
+  const damaged = corruptJson(dataset.data, corruption);
+  if (format === 'json-compact' || format === 'json-pretty') return encode(format, damaged);
+  const targetKey = corruption.targetKey ?? 'employees';
+  const sourceRows = dataset.data[targetKey];
+  if (!Array.isArray(sourceRows) || Object.keys(dataset.data).length !== 1) throw new Error('Invalid structural fixture: one top-level list required');
   const lines = text.split('\n');
   const headerCount = format === 'toon' ? 1 : 2;
+  if (lines.length !== sourceRows.length + headerCount) throw new Error('Invalid structural fixture: single-line table rows required');
   const headers = lines.slice(0, headerCount);
   let rows = lines.slice(headerCount);
   switch (corruption.kind) {
-    case 'truncated': rows = rows.slice(0, -corruption.removeRecordCount); break;
-    case 'extra-rows': rows.push(...encode(format, { employees: corruption.appendRecords }).split('\n').slice(headerCount)); break;
+    case 'truncated': rows.splice(corruption.startIndex ?? rows.length - corruption.removeRecordCount, corruption.removeRecordCount); break;
+    case 'extra-rows': {
+      const extended = encode(format, damaged).split('\n');
+      if (extended[1] !== lines[1] && format === 'terset') throw new Error('Invalid structural fixture: appended fields differ');
+      rows.push(...extended.slice(headerCount + sourceRows.length));
+      break;
+    }
+    case 'duplicate-row': rows.splice(corruption.targetRecordIndex + 1, 0, ...rows.slice(corruption.targetRecordIndex, corruption.targetRecordIndex + 1)); break;
     case 'width-mismatch':
     case 'missing-fields': {
       const delimiter = format === 'toon' ? ',' : '\t';

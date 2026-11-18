@@ -1,0 +1,1049 @@
+[
+  {
+    "id": "s001",
+    "prompt": "Using zero-based list indices, what is the value at records[499].value?",
+    "groundTruth": "137",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s002",
+    "prompt": "Using zero-based list indices, what is the value at records[499].team?",
+    "groundTruth": "Amber",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s003",
+    "prompt": "Using zero-based list indices, what is the value at records[493].value?",
+    "groundTruth": "168",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s004",
+    "prompt": "Using zero-based list indices, what is the value at records[493].team?",
+    "groundTruth": "Cobalt",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s005",
+    "prompt": "How many records have team equal to \"Amber\"?",
+    "groundTruth": "153",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s006",
+    "prompt": "How many records have team equal to \"Jade\"?",
+    "groundTruth": "174",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s007",
+    "prompt": "How many records have active equal to true?",
+    "groundTruth": "233",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s008",
+    "prompt": "What is the sum of numeric values in field value?",
+    "groundTruth": "282496",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s009",
+    "prompt": "What is the sum of numeric values in field units?",
+    "groundTruth": "10020",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s010",
+    "prompt": "What is the sum of numeric values in field value for records with team equal to \"Cobalt\"?",
+    "groundTruth": "94692",
+    "type": "scale",
+    "dataset": "scale-500",
+    "answerType": "integer"
+  },
+  {
+    "id": "s011",
+    "prompt": "Using zero-based list indices, what is the value at records[749].value?",
+    "groundTruth": "720",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s012",
+    "prompt": "Using zero-based list indices, what is the value at records[749].team?",
+    "groundTruth": "Jade",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s013",
+    "prompt": "Using zero-based list indices, what is the value at records[743].value?",
+    "groundTruth": "882",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s014",
+    "prompt": "Using zero-based list indices, what is the value at records[743].team?",
+    "groundTruth": "Amber",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s015",
+    "prompt": "How many records have team equal to \"Amber\"?",
+    "groundTruth": "247",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s016",
+    "prompt": "How many records have team equal to \"Jade\"?",
+    "groundTruth": "257",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s017",
+    "prompt": "How many records have active equal to true?",
+    "groundTruth": "368",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s018",
+    "prompt": "What is the sum of numeric values in field value?",
+    "groundTruth": "406232",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s019",
+    "prompt": "What is the sum of numeric values in field units?",
+    "groundTruth": "15727",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s020",
+    "prompt": "What is the sum of numeric values in field value for records with team equal to \"Cobalt\"?",
+    "groundTruth": "139492",
+    "type": "scale",
+    "dataset": "scale-750",
+    "answerType": "integer"
+  },
+  {
+    "id": "s021",
+    "prompt": "Using zero-based list indices, what is the value at records[999].value?",
+    "groundTruth": "517",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s022",
+    "prompt": "Using zero-based list indices, what is the value at records[999].team?",
+    "groundTruth": "Jade",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s023",
+    "prompt": "Using zero-based list indices, what is the value at records[993].value?",
+    "groundTruth": "479",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s024",
+    "prompt": "Using zero-based list indices, what is the value at records[993].team?",
+    "groundTruth": "Jade",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s025",
+    "prompt": "How many records have team equal to \"Amber\"?",
+    "groundTruth": "357",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s026",
+    "prompt": "How many records have team equal to \"Jade\"?",
+    "groundTruth": "300",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s027",
+    "prompt": "How many records have active equal to true?",
+    "groundTruth": "491",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s028",
+    "prompt": "What is the sum of numeric values in field value?",
+    "groundTruth": "552725",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s029",
+    "prompt": "What is the sum of numeric values in field units?",
+    "groundTruth": "20275",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s030",
+    "prompt": "What is the sum of numeric values in field value for records with team equal to \"Cobalt\"?",
+    "groundTruth": "182765",
+    "type": "scale",
+    "dataset": "scale-1000",
+    "answerType": "integer"
+  },
+  {
+    "id": "s031",
+    "prompt": "What is the value at root.child.child.child.child.child.value?",
+    "groundTruth": "9972",
+    "type": "deep",
+    "dataset": "deep-object-6",
+    "answerType": "integer"
+  },
+  {
+    "id": "s032",
+    "prompt": "What is the value at root.child.child.child.child.child.name?",
+    "groundTruth": "leaf-6-9071",
+    "type": "deep",
+    "dataset": "deep-object-6",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s033",
+    "prompt": "What is the value at root.value?",
+    "groundTruth": "9973",
+    "type": "deep",
+    "dataset": "deep-object-6",
+    "answerType": "integer"
+  },
+  {
+    "id": "s034",
+    "prompt": "What is the value at root.child.value?",
+    "groundTruth": "9974",
+    "type": "deep",
+    "dataset": "deep-object-6",
+    "answerType": "integer"
+  },
+  {
+    "id": "s035",
+    "prompt": "What is the value at root.child.child.child.child.child.child.child.value?",
+    "groundTruth": "8910",
+    "type": "deep",
+    "dataset": "deep-object-8",
+    "answerType": "integer"
+  },
+  {
+    "id": "s036",
+    "prompt": "What is the value at root.child.child.child.child.child.child.child.name?",
+    "groundTruth": "leaf-8-69",
+    "type": "deep",
+    "dataset": "deep-object-8",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s037",
+    "prompt": "What is the value at root.value?",
+    "groundTruth": "8911",
+    "type": "deep",
+    "dataset": "deep-object-8",
+    "answerType": "integer"
+  },
+  {
+    "id": "s038",
+    "prompt": "What is the value at root.child.value?",
+    "groundTruth": "8912",
+    "type": "deep",
+    "dataset": "deep-object-8",
+    "answerType": "integer"
+  },
+  {
+    "id": "s039",
+    "prompt": "What is the value at root.child.child.child.child.child.child.child.child.child.value?",
+    "groundTruth": "5152",
+    "type": "deep",
+    "dataset": "deep-object-10",
+    "answerType": "integer"
+  },
+  {
+    "id": "s040",
+    "prompt": "What is the value at root.child.child.child.child.child.child.child.child.child.name?",
+    "groundTruth": "leaf-10-2123",
+    "type": "deep",
+    "dataset": "deep-object-10",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s041",
+    "prompt": "What is the value at root.value?",
+    "groundTruth": "5153",
+    "type": "deep",
+    "dataset": "deep-object-10",
+    "answerType": "integer"
+  },
+  {
+    "id": "s042",
+    "prompt": "What is the value at root.child.value?",
+    "groundTruth": "5154",
+    "type": "deep",
+    "dataset": "deep-object-10",
+    "answerType": "integer"
+  },
+  {
+    "id": "s043",
+    "prompt": "Using zero-based list indices, what is the value at records[47].branch.child.child.child.child.child.value?",
+    "groundTruth": "2856",
+    "type": "deep",
+    "dataset": "deep-records-7",
+    "answerType": "integer"
+  },
+  {
+    "id": "s044",
+    "prompt": "Using zero-based list indices, what is the value at records[47].branch.child.child.child.child.child.name?",
+    "groundTruth": "leaf-7-47-764",
+    "type": "deep",
+    "dataset": "deep-records-7",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s045",
+    "prompt": "Using zero-based list indices, what is the value at records[39].branch.child.child.child.child.child.value?",
+    "groundTruth": "9575",
+    "type": "deep",
+    "dataset": "deep-records-7",
+    "answerType": "integer"
+  },
+  {
+    "id": "s046",
+    "prompt": "Using zero-based list indices, what is the value at records[39].branch.child.child.child.child.child.name?",
+    "groundTruth": "leaf-7-39-280",
+    "type": "deep",
+    "dataset": "deep-records-7",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s047",
+    "prompt": "Using zero-based list indices, what is the value at records[47].branch.child.child.child.child.child.child.value?",
+    "groundTruth": "8616",
+    "type": "deep",
+    "dataset": "deep-records-8",
+    "answerType": "integer"
+  },
+  {
+    "id": "s048",
+    "prompt": "Using zero-based list indices, what is the value at records[47].branch.child.child.child.child.child.child.name?",
+    "groundTruth": "leaf-8-47-988",
+    "type": "deep",
+    "dataset": "deep-records-8",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s049",
+    "prompt": "Using zero-based list indices, what is the value at records[39].branch.child.child.child.child.child.child.value?",
+    "groundTruth": "7169",
+    "type": "deep",
+    "dataset": "deep-records-8",
+    "answerType": "integer"
+  },
+  {
+    "id": "s050",
+    "prompt": "Using zero-based list indices, what is the value at records[39].branch.child.child.child.child.child.child.name?",
+    "groundTruth": "leaf-8-39-367",
+    "type": "deep",
+    "dataset": "deep-records-8",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s051",
+    "prompt": "Using zero-based list indices, what is the value at records[47].branch.child.child.child.child.child.child.child.value?",
+    "groundTruth": "5460",
+    "type": "deep",
+    "dataset": "deep-records-9",
+    "answerType": "integer"
+  },
+  {
+    "id": "s052",
+    "prompt": "Using zero-based list indices, what is the value at records[47].branch.child.child.child.child.child.child.child.name?",
+    "groundTruth": "leaf-9-47-476",
+    "type": "deep",
+    "dataset": "deep-records-9",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s053",
+    "prompt": "Using zero-based list indices, what is the value at records[39].branch.child.child.child.child.child.child.child.value?",
+    "groundTruth": "5363",
+    "type": "deep",
+    "dataset": "deep-records-9",
+    "answerType": "integer"
+  },
+  {
+    "id": "s054",
+    "prompt": "Using zero-based list indices, what is the value at records[39].branch.child.child.child.child.child.child.child.name?",
+    "groundTruth": "leaf-9-39-61",
+    "type": "deep",
+    "dataset": "deep-records-9",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s055",
+    "prompt": "Using zero-based list indices, what is the value at records[47].id?",
+    "groundTruth": "48",
+    "type": "deep",
+    "dataset": "deep-records-9",
+    "answerType": "integer"
+  },
+  {
+    "id": "s056",
+    "prompt": "How many records are missing the score field entirely?",
+    "groundTruth": "34",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s057",
+    "prompt": "How many records include a score field, counting null and empty values?",
+    "groundTruth": "86",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s058",
+    "prompt": "How many records are missing the note field entirely?",
+    "groundTruth": "37",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s059",
+    "prompt": "How many records include a note field, counting null and empty values?",
+    "groundTruth": "83",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s060",
+    "prompt": "How many records are missing the tag field entirely?",
+    "groundTruth": "39",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s061",
+    "prompt": "How many records include a tag field, counting null and empty values?",
+    "groundTruth": "81",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s062",
+    "prompt": "What is the sum of numeric values in field score?",
+    "groundTruth": "45206",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s063",
+    "prompt": "Using zero-based list indices, what is the value at records[118].score?",
+    "groundTruth": "500",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "integer"
+  },
+  {
+    "id": "s064",
+    "prompt": "Using zero-based list indices, what is the value at records[119].note?",
+    "groundTruth": "note-119-208",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s065",
+    "prompt": "Using zero-based list indices, what is the value at records[119].tag?",
+    "groundTruth": "null",
+    "type": "messy",
+    "dataset": "messy-sparse",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s066",
+    "prompt": "How many records are missing the text field entirely?",
+    "groundTruth": "15",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s067",
+    "prompt": "How many records include a text field, counting null and empty values?",
+    "groundTruth": "81",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s068",
+    "prompt": "How many records have a null text?",
+    "groundTruth": "32",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s069",
+    "prompt": "How many records have an empty string in text?",
+    "groundTruth": "9",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s070",
+    "prompt": "How many records have literal equal to \"007\"?",
+    "groundTruth": "27",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s071",
+    "prompt": "How many records have literal equal to \"1e5\"?",
+    "groundTruth": "20",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s072",
+    "prompt": "How many records have literal equal to \"true\"?",
+    "groundTruth": "23",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s073",
+    "prompt": "How many records have literal equal to \"null\"?",
+    "groundTruth": "26",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "integer"
+  },
+  {
+    "id": "s074",
+    "prompt": "Using zero-based list indices, what is the value at records[92].literal?",
+    "groundTruth": "007",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s075",
+    "prompt": "Using zero-based list indices, what is the value at records[95].literal?",
+    "groundTruth": "007",
+    "type": "messy",
+    "dataset": "messy-states",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s076",
+    "prompt": "How many records have kind equal to \"sensor\"?",
+    "groundTruth": "36",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "integer"
+  },
+  {
+    "id": "s077",
+    "prompt": "How many records have kind equal to \"person\"?",
+    "groundTruth": "31",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "integer"
+  },
+  {
+    "id": "s078",
+    "prompt": "How many records have kind equal to \"event\"?",
+    "groundTruth": "23",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "integer"
+  },
+  {
+    "id": "s079",
+    "prompt": "What is the sum of numeric values in field temp?",
+    "groundTruth": "584",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "integer"
+  },
+  {
+    "id": "s080",
+    "prompt": "What is the sum of numeric values in field credits?",
+    "groundTruth": "5609",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "integer"
+  },
+  {
+    "id": "s081",
+    "prompt": "What is the sum of numeric values in field amount?",
+    "groundTruth": "5995",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "integer"
+  },
+  {
+    "id": "s082",
+    "prompt": "Using zero-based list indices, what is the value at records[88].temp?",
+    "groundTruth": "40",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "integer"
+  },
+  {
+    "id": "s083",
+    "prompt": "Using zero-based list indices, what is the value at records[89].name?",
+    "groundTruth": "person-21614",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s084",
+    "prompt": "Using zero-based list indices, what is the value at records[86].code?",
+    "groundTruth": "E149",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s085",
+    "prompt": "Using zero-based list indices, what is the value at records[86].at?",
+    "groundTruth": "2026-11-17T00:00:00.000Z",
+    "type": "messy",
+    "dataset": "messy-shapes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s086",
+    "prompt": "Using zero-based list indices, what is the first line of records[0].text, the text before its first line break?",
+    "groundTruth": "Entry 1: commas, inside, text; \"quoted words\" and a backslash \\ here.",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s087",
+    "prompt": "Using zero-based list indices, what is the first line of records[11].text, the text before its first line break?",
+    "groundTruth": "Entry 12: commas, inside, text; \"quoted words\" and a backslash \\ here.",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s088",
+    "prompt": "Using zero-based list indices, what number follows the word \"End\" in records[5].text?",
+    "groundTruth": "91222",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "integer"
+  },
+  {
+    "id": "s089",
+    "prompt": "Using zero-based list indices, what number follows the word \"End\" in records[17].text?",
+    "groundTruth": "62266",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "integer"
+  },
+  {
+    "id": "s090",
+    "prompt": "Using zero-based list indices, what is the value at records[0].literal?",
+    "groundTruth": "007",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s091",
+    "prompt": "Using zero-based list indices, what is the value at records[1].literal?",
+    "groundTruth": "1e5",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s092",
+    "prompt": "Using zero-based list indices, what is the value at records[2].literal?",
+    "groundTruth": "true",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s093",
+    "prompt": "Using zero-based list indices, what is the value at records[3].literal?",
+    "groundTruth": "null",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s094",
+    "prompt": "What is the sum of numeric values in field tabs?",
+    "groundTruth": "714",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "integer"
+  },
+  {
+    "id": "s095",
+    "prompt": "Using zero-based list indices, what is the value at records[23].language?",
+    "groundTruth": "हिन्दी",
+    "type": "messy",
+    "dataset": "messy-text",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "s096",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-1",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s097",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-2",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s098",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-3",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s099",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-4",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s100",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-5",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s101",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-6",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s102",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-7",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s103",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-8",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s104",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-9",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s105",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-10",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s106",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-11",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s107",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "YES",
+    "type": "structural-validation",
+    "dataset": "damage-control-12",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s108",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-end-1",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s109",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-end-9",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s110",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-end-17",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s111",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-middle-70",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s112",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-middle-150",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s113",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-middle-220",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s114",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-extra-1",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s115",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-extra-3",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s116",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-fields-0",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s117",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-fields-150",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s118",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-fields-299",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s119",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-duplicate-74",
+    "answerType": "boolean"
+  },
+  {
+    "id": "s120",
+    "prompt": "Is this data complete and valid? Answer only YES or NO.",
+    "groundTruth": "NO",
+    "type": "structural-validation",
+    "dataset": "damage-duplicate-299",
+    "answerType": "boolean"
+  }
+]

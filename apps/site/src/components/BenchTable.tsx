@@ -56,24 +56,49 @@ function Table({ label, caption, head, rows, totals }: TableProps) {
   );
 }
 
-/** One counter's token table and cost table, with no toggle around them. */
-export function BenchTables({ counter }: { readonly counter: Counter }) {
+/** The column names for one pair of tables: the tokens, then the cost. */
+interface Heads {
+  readonly bench: readonly string[];
+  readonly cost: readonly string[];
+}
+
+/**
+ * The home page table keeps the column names it had. /benchmark and benchmark.md use
+ * BENCH_TABLE_HEAD and COST_TABLE_HEAD. The columns and their order are the same.
+ */
+const HOME_HEADS: Heads = {
+  bench: ['Case', 'Terset', 'JSON compact', 'JSON pretty', 'YAML', 'TOON best', 'CSV', 'Terset vs JSON compact', 'Terset vs TOON'],
+  cost: ['Case', 'Terset', 'JSON compact', 'Terset vs JSON compact'],
+};
+
+const PAGE_HEADS: Heads = { bench: BENCH_TABLE_HEAD, cost: COST_TABLE_HEAD };
+
+/**
+ * One counter's token table and cost table, with no toggle around them. With a lead note,
+ * the note sits above the token table and holds the lossy line, so the note below drops it.
+ * The home page passes no lead note and keeps its notes as they were.
+ */
+export function BenchTables({ counter, heads = PAGE_HEADS, lead }: { readonly counter: Counter; readonly heads?: Heads; readonly lead?: string }) {
   return (
     <>
+      {lead === undefined ? null : <p className="tbl-note">{lead}</p>}
       <Table
         label={`Bench table, ${counter.name} tokens, scrolls sideways on small screens`}
         caption={`${counter.name} tokens per case for Terset, compact JSON, pretty JSON, YAML, TOON best variant and plain CSV, with totals`}
-        head={BENCH_TABLE_HEAD}
+        head={heads.bench}
         rows={benchTableRows(counter)}
         totals={benchTotalsRow(counter)}
       />
-      <p className="tbl-note">CSV marked lossy did not read back to the same typed data. {FITTED_RULES_NOTE} Pretty JSON is in this table only, not in the chart.</p>
+      <p className="tbl-note">
+        {lead === undefined ? 'CSV marked lossy did not read back to the same typed data. ' : null}
+        {FITTED_RULES_NOTE} Pretty JSON is in this table only, not in the chart.
+      </p>
       <h4 className="tbl-h">Input cost at list price</h4>
       <p className="tbl-note">{costCaption(counter)}</p>
       <Table
         label={`Cost table, ${counter.price.model}, scrolls sideways on small screens`}
         caption={costCaption(counter)}
-        head={COST_TABLE_HEAD}
+        head={heads.cost}
         rows={costTableRows(counter)}
         totals={costTotalsRow(counter)}
       />
@@ -81,6 +106,7 @@ export function BenchTables({ counter }: { readonly counter: Counter }) {
   );
 }
 
+/** The home page's table toggle. */
 export function BenchTable({ counter, open = false }: { readonly counter: Counter; readonly open?: boolean }) {
   return (
     <details className="tbl" open={open}>
@@ -90,7 +116,7 @@ export function BenchTable({ counter, open = false }: { readonly counter: Counte
         <span className="tbl-show">{BENCH_TABLE_TOGGLE.show}</span>
         <span className="tbl-hide">{BENCH_TABLE_TOGGLE.hide}</span>
       </summary>
-      <BenchTables counter={counter} />
+      <BenchTables counter={counter} heads={HOME_HEADS} />
     </details>
   );
 }

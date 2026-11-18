@@ -2,7 +2,7 @@
 
 > TERse SETs. It writes a set of records as one terse table, so a model reads the same data with fewer tokens.
 
-The format is frozen at 1.0. JavaScript and Python are separate implementations that both pass the conformance suite at `conformance/` in the repository.
+The format is frozen at format version 1.0. That number is separate from the package version, which is still 0.x. JavaScript and Python are separate implementations that both pass the conformance suite at `conformance/` in the repository.
 
 {{RELEASE}}. Install it with `{{PNPMADD}}`.
 
