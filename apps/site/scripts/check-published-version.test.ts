@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { checkPublishedVersion, readVersionSources } from './check-published-version.ts';
+import { checkPublishedVersion, readVersionSources, UnpublishedVersionError } from './check-published-version.ts';
 
 const versions = { site: '0.2.3', npm: '0.2.3', python: '0.2.3' };
 const published = () => Promise.resolve(new Response(JSON.stringify({
@@ -36,6 +36,14 @@ describe('published site version', () => {
     await expect(checkPublishedVersion(versions, { fetch: lookup })).rejects.toThrow(
       `Site names 0.2.3 but ${registry} has 0.2.2. Push tag v0.2.3 to publish, then rerun this deploy.`,
     );
+  });
+
+  it('marks a missing version apart from every other failure, so a push before the release can skip the deploy', async () => {
+    const missing: typeof fetch = () => Promise.resolve(new Response(JSON.stringify({ versions: {}, 'dist-tags': { latest: '0.2.2' } })));
+    await expect(checkPublishedVersion(versions, { fetch: missing })).rejects.toBeInstanceOf(UnpublishedVersionError);
+    const down: typeof fetch = () => { throw new Error('Connection refused'); };
+    await expect(checkPublishedVersion(versions, { fetch: down })).rejects.not.toBeInstanceOf(UnpublishedVersionError);
+    await expect(checkPublishedVersion({ ...versions, python: '0.2.2' }, { fetch: missing })).rejects.not.toBeInstanceOf(UnpublishedVersionError);
   });
 
   it('fails before any lookup when the three version sources disagree', async () => {

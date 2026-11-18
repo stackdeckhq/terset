@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { PACKAGE_VERSION } from '../src/data/site.ts';
@@ -16,7 +16,10 @@ interface Options {
   readonly version?: string;
 }
 
-const npmSchema = z.object({ versions: z.record(z.string(), z.unknown()), 'dist-tags': z.object({ latest: z.string() }) });
+/** The site names a version a registry does not have yet. Every other failure is a plain Error. */
+export class UnpublishedVersionError extends Error {}
+
+const npmSchema =z.object({ versions: z.record(z.string(), z.unknown()), 'dist-tags': z.object({ latest: z.string() }) });
 const pypiSchema = z.object({ releases: z.record(z.string(), z.array(z.unknown())), info: z.object({ version: z.string() }) });
 
 export function readVersionSources(): Versions {
@@ -69,21 +72,37 @@ export async function checkPublishedVersion(versions: Versions, options: Options
     if (remaining <= 0) break;
     await new Promise((resolve) => setTimeout(resolve, Math.min(10_000, remaining)));
   } while (Date.now() < deadline);
-  throw new Error(failure);
+  throw new UnpublishedVersionError(failure);
+}
+
+/** Tells the deploy workflow whether to go on. A no-op outside GitHub Actions. */
+function reportPublished(published: boolean): void {
+  const output = process.env['GITHUB_OUTPUT'];
+  if (output !== undefined && output !== '') appendFileSync(output, `published=${String(published)}\n`);
 }
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
     const args = process.argv.slice(2);
     const versionArg = args.find((arg) => arg.startsWith('--version='));
-    if (args.some((arg) => arg !== '--retry' && arg !== versionArg)) throw new Error('Use --retry or --version=<version> for a manual registry probe.');
+    if (args.some((arg) => arg !== '--retry' && arg !== '--skip-unpublished' && arg !== versionArg)) {
+      throw new Error('Use --retry, --skip-unpublished, or --version=<version> for a manual registry probe.');
+    }
     const sources = readVersionSources();
     const version = versionArg?.slice('--version='.length) ?? sources.site;
     if (!/^\d+\.\d+\.\d+(?:-[\w.-]+)?$/u.test(version)) throw new Error('Provide a valid package version for the registry probe.');
     await checkPublishedVersion(sources, { version, retryMs: args.includes('--retry') ? 120_000 : 0 });
+    reportPublished(true);
     console.log(`PASS: ${version} exists on npm and PyPI${versionArg === undefined ? '' : ' (manual version override)'}.`);
   } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 1;
+    // A push that bumps the version lands before the tag publishes it. That is not a failure:
+    // the deploy that follows the release publishes the site.
+    if (error instanceof UnpublishedVersionError && process.argv.includes('--skip-unpublished')) {
+      reportPublished(false);
+      console.log(`::notice::Deploy skipped. ${error.message}`);
+    } else {
+      console.error(error instanceof Error ? error.message : String(error));
+      process.exitCode = 1;
+    }
   }
 }
