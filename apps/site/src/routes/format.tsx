@@ -3,13 +3,14 @@ import { DocPage, docHead } from '../components/DocPage.tsx';
 import { Markdown } from '../components/Markdown.tsx';
 import { PACKAGE_VERSION } from '../data/site.ts';
 import spec from '../generated/spec.md?raw';
-import { parseMarkdown } from '../lib/markdown.ts';
+import { parseMarkdown, withoutTitle } from '../lib/markdown.ts';
 
-const DOC = parseMarkdown(spec);
-const DESCRIPTION = 'Every rule of the Terset format: the root object or array, counted and keyed tables, dotted columns, cells, quoting, nested values and decoding.';
+// The page shows its own h1, so the spec's title is left out here. /spec.md keeps it.
+const DOC = parseMarkdown(withoutTitle(spec));
+const TITLE = 'The Terset format';
 
 export const Route = createFileRoute('/format')({
-  head: () => docHead('/format', 'Format', DESCRIPTION),
+  head: () => docHead('/format', TITLE),
   component: FormatPage,
 });
 
@@ -17,7 +18,7 @@ function FormatPage() {
   return (
     <DocPage
       kicker={`Spec for ${PACKAGE_VERSION}`}
-      title="The Terset format"
+      title={TITLE}
       lead="One table for a set of records. Every rule is here. The raw file is at /spec.md."
       headings={DOC.headings}
       actions={

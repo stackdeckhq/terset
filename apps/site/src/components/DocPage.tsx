@@ -1,7 +1,8 @@
 // The frame every doc page shares: a heading block, an optional contents list, then the body.
 import type { ReactNode } from 'react';
+import { docJsonLd, seoMeta } from '../data/seo.ts';
 import { canonicalHead } from '../data/site.ts';
-import type { PagePath } from '../data/site.ts';
+import type { DocPagePath } from '../data/site.ts';
 import type { Heading } from '../lib/markdown.ts';
 
 export interface DocPageProps {
@@ -46,17 +47,12 @@ export function DocPage({ kicker, title, lead, actions, headings, toc: ownToc, c
   );
 }
 
-/** Title and description meta for one doc page. */
-export function docHead(path: PagePath, title: string, description: string) {
+/** Title, description, canonical and JSON-LD for one doc page. `headline` is the page's h1. The copy lives in seo.ts. */
+export function docHead(path: DocPagePath, headline: string) {
   const canonical = canonicalHead(path);
   return {
-    meta: [
-      { title: `${title} | Terset` },
-      { name: 'description', content: description },
-      { property: 'og:title', content: `${title} | Terset` },
-      { property: 'og:description', content: description },
-      ...canonical.meta,
-    ],
+    meta: [...seoMeta(path), ...canonical.meta],
     links: canonical.links,
+    scripts: docJsonLd(path, headline),
   };
 }

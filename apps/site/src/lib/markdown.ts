@@ -97,6 +97,11 @@ function list(items: readonly Item[]): string {
   return `<${tag}>${items.map((item) => `<li>${inline(item.text)}</li>`).join('')}</${tag}>`;
 }
 
+/** The doc without its opening `# ` title, for a page that shows its own h1. */
+export function withoutTitle(source: string): string {
+  return source.replace(/^# [^\r\n]*\r?\n?/u, '');
+}
+
 export function parseMarkdown(source: string): Doc {
   const lines = source.replace(/\r\n?/gu, '\n').split('\n');
   const blocks: Block[] = [];

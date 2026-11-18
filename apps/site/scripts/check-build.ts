@@ -6,7 +6,10 @@
 // 2. the dev-only fake bench fixture reached the output,
 // 3. the committed bench is pending but the output lacks the pending text,
 // 4. a banned name appears in the output, source maps included,
-// 5. zod reached the browser code. The site data is checked on the server and in tests.
+// 5. zod reached the browser code. The site data is checked on the server and in tests,
+// 6. a page breaks a search rule: it needs exactly one h1, a canonical link to its own URL,
+//    a title and a description within the limits and used by no other page, JSON-LD that
+//    parses, and no noindex (see check-pages.ts).
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +19,8 @@ import { PENDING_TITLE } from '../src/data/bench.ts';
 import { PAGE_PATHS, RAW_FILES } from '../src/data/site.ts';
 import { THEME_COLORS } from '../src/theme.ts';
 import { BANNED_NAMES, BANNED_NOTE } from './banned.ts';
+import { pageHeadProblems } from './check-pages.ts';
+import type { BuiltPage } from './check-pages.ts';
 
 const SITE = fileURLToPath(new URL('../', import.meta.url));
 const DIST = join(SITE, 'dist');
@@ -66,6 +71,7 @@ for (const path of REQUIRED) {
 // Every page is prerendered to static HTML (see vite.config.ts): / to index.html, /docs to docs.html.
 // Each page carries one theme-color meta per scheme, with its media query (see __root.tsx).
 const THEME_METAS = (['light', 'dark'] as const).map((scheme) => `${THEME_COLORS[scheme]} (prefers-color-scheme: ${scheme})`);
+const builtPages: BuiltPage[] = [];
 for (const page of PAGE_PATHS) {
   const path = join(CLIENT, page === '/' ? 'index.html' : `${page.slice(1)}.html`);
   const html = existsSync(path) ? readFileSync(path, 'utf8') : null;
@@ -74,8 +80,10 @@ for (const page of PAGE_PATHS) {
   else {
     const metas = themeColorMetas(html);
     if (metas.join('; ') !== THEME_METAS.join('; ')) failures.push(`${path.slice(SITE.length)}: theme-color metas are [${metas.join('; ')}], expected [${THEME_METAS.join('; ')}]`);
+    builtPages.push({ path: page, html });
   }
 }
+failures.push(...pageHeadProblems(builtPages));
 // The raw agent files stay with the worker, which sets their content type and cache.
 for (const { path } of RAW_FILES) {
   if (existsSync(join(CLIENT, path.slice(1)))) failures.push(`dist/client${path}: a static copy would bypass the worker`);
@@ -108,4 +116,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log(`check-build PASS: ${String(texts.length)} output files; Workers layout and deploy config ok; no fixture, no zod in the browser, no banned name (${BANNED_NOTE}); bench ${bench.status}.`);
+console.log(`check-build PASS: ${String(texts.length)} output files; Workers layout and deploy config ok; ${String(builtPages.length)} pages keep the search rules; no fixture, no zod in the browser, no banned name (${BANNED_NOTE}); bench ${bench.status}.`);
