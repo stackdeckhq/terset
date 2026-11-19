@@ -30,7 +30,7 @@ const ITEMS: readonly KeepItem[] = [
   },
   ...(CSV_NOTE === '' ? [] : [{ title: 'Flat lists you control', why: CSV_NOTE }]),
   { title: 'The model writes it back', why: 'Terset is for reading. Ask the model to answer in JSON.' },
-  { title: 'Other parsers read it', why: 'Only the reference decoder reads Terset today.' },
+  { title: 'Other parsers read it', why: 'Only the Terset packages for JavaScript and Python read it today.' },
 ];
 
 const LIMITS: readonly string[] = [

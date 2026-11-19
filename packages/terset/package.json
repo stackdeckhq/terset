@@ -1,7 +1,7 @@
 {
   "name": "@stackdeck/terset",
   "version": "0.3.0",
-  "description": "TERse SETs. It writes a set of records as one terse table, so a model reads the same data with fewer tokens.",
+  "description": "A compact text format for JSON records in LLM prompts. Same data, fewer input tokens.",
   "type": "module",
   "license": "MIT",
   "author": "StackDeck",

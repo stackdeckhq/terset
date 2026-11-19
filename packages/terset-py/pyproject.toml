@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "terset"
 version = "0.3.0"
-description = "Encode JSON records as compact, typed tables."
+description = "A compact text format for JSON records in LLM prompts. Same data, fewer input tokens."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

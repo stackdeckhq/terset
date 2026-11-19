@@ -4,8 +4,37 @@
 //   ...
 //   <!-- /docs:install -->
 // scripts/update-readmes.ts rewrites them. docs.test.ts fails on any drift.
-import { BADGES, INSTALL, LANG_FENCE, LANG_LABELS, LANG_NOTES, NAMES, NEVER_BY_HAND, OFFICIAL_LINE, QUICK_START, README_REFERENCE, WHEN_NOT, quickStartSteps } from './docs.ts';
+import benchRaw from './bench-results.json' with { type: 'json' };
+import claudeRaw from './claude-counts.json' with { type: 'json' };
+import { ACCURACY, accuracyOverlapLine } from './accuracy.ts';
+import { TOON_BEST_NOTE, benchTotals, formatCount, underJson, underToon } from './bench.ts';
+import type { BenchFile } from './bench.ts';
+import type { ClaudeCounts } from './claude-counts-schema.ts';
+import { buildCounters } from './counters.ts';
+import type { Counter } from './counters.ts';
+import {
+  BADGES,
+  COMPARE_CSV,
+  COMPARE_TOON_SHAPE,
+  FAQ_NAME,
+  FAQ_RULES,
+  FAQ_STABLE,
+  INSTALL,
+  LANG_FENCE,
+  LANG_LABELS,
+  LANG_NOTES,
+  NAMES,
+  NEVER_BY_HAND,
+  OFFICIAL_LINE,
+  PITCH_HIGHLIGHTS,
+  PITCH_INTRO,
+  QUICK_START,
+  README_REFERENCE,
+  WHEN_NOT,
+  quickStartSteps,
+} from './docs.ts';
 import type { DocLang } from './docs.ts';
+import { PRICES } from './prices.ts';
 import { SITE_URL, TAGLINE } from './site.ts';
 import { WORKED_EXAMPLE, WORKED_README_PLACEMENT } from './worked-example.ts';
 
@@ -18,7 +47,7 @@ export const README_FILES = {
 export type ReadmeId = keyof typeof README_FILES;
 export const README_IDS: readonly ReadmeId[] = ['root', 'js', 'py'];
 
-export type BlockName = 'header' | 'contents' | 'see-it' | 'install' | 'install-py' | 'use' | 'use-py' | 'when-not' | 'reference' | 'agents';
+export type BlockName = 'header' | 'pitch' | 'contents' | 'see-it' | 'install' | 'install-py' | 'use' | 'use-py' | 'compare' | 'bench-summary' | 'when-not' | 'faq' | 'reference' | 'agents';
 
 /** The raw agent files the READMEs list, in order. */
 const AGENT_FILES: readonly (readonly [path: string, about: string])[] = [
@@ -44,7 +73,7 @@ function header(lang: DocLang): string {
     '',
     `<p align="center">${OFFICIAL_LINE[lang]}</p>`,
     '',
-    `<p align="center">Terset: ${TAGLINE}</p>`,
+    `<p align="center">${TAGLINE}</p>`,
     '',
     '<p align="center">',
     ...badges,
@@ -112,6 +141,75 @@ function seeIt(): string {
   ].join('\n\n');
 }
 
+/** Both counters from the committed files. The READMEs state numbers, so a pending file is an error here. */
+function readmeCounters(): { readonly o200k: Counter; readonly claude: Counter } {
+  const counters = buildCounters(benchRaw as BenchFile, claudeRaw as ClaudeCounts, PRICES);
+  if (counters === null || counters.claude === null) throw new Error('The README numbers need both bench-results.json and claude-counts.json to be ready');
+  return { o200k: counters.o200k, claude: counters.claude };
+}
+
+/** "26.5%": how much smaller `value` is than `base`. Throws when it is not smaller, so no README line can claim a saving that is not there. */
+function fewer(value: number, base: number): string {
+  if (value >= base) throw new Error(`Expected ${String(value)} to be under ${String(base)}`);
+  return `${(Math.round(((base - value) / base) * 1000) / 10).toFixed(1)}%`;
+}
+
+/** "in 10 of 11 cases on both counters", or each counter named when they differ. */
+function inCases(count: (counter: Counter) => number, o200k: Counter, claude: Counter): string {
+  const total = String(o200k.cases.length);
+  if (count(o200k) === count(claude)) return `in ${String(count(o200k))} of ${total} cases on both counters`;
+  return `in ${String(count(o200k))} of ${total} cases on ${o200k.name} and ${String(count(claude))} on Claude`;
+}
+
+/** The problem, the idea and the highlights, right under the title. */
+function pitch(): string {
+  const { o200k, claude } = readmeCounters();
+  const open = benchTotals(o200k);
+  const own = benchTotals(claude);
+  const tokens = `- **Fewer tokens.** Over the ${String(o200k.cases.length)} benchmark cases, Terset used ${fewer(open.terset, open.json)} fewer tokens than compact JSON and ${fewer(open.terset, open.toon)} fewer than TOON's best form, counted with the \`${o200k.name}\` tokenizer. Claude's own count for ${claude.label} gives ${fewer(own.terset, own.json)} and ${fewer(own.terset, own.toon)}. [See the benchmark](#benchmark).`;
+  return [PITCH_INTRO, [tokens, ...PITCH_HIGHLIGHTS.map((item) => `- **${item.title}** ${item.text}`)].join('\n')].join('\n\n');
+}
+
+/** One honest line per alternative, with the counts that back it. */
+function compare(): string {
+  const { o200k, claude } = readmeCounters();
+  const open = benchTotals(o200k);
+  const toonWins = (counter: Counter): number => counter.cases.filter((row) => row.toon < row.terset).length;
+  const csvWins = (counter: Counter): number => counter.cases.filter((row) => row.csv !== null && row.csv < row.terset).length;
+  if (csvWins(o200k) === 0 && csvWins(claude) === 0) throw new Error('The CSV line says CSV is smaller in some cases, but it is smaller in none');
+  return [
+    `- **Compact JSON** is the baseline here. Terset is smaller ${inCases(underJson, o200k, claude)}.`,
+    `- **TOON** is another table format for prompts. Terset is smaller ${inCases(underToon, o200k, claude)}. TOON's best form is smaller in ${String(toonWins(o200k))} on ${o200k.name} and ${String(toonWins(claude))} on Claude, all listed in the benchmark below. ${COMPARE_TOON_SHAPE}`,
+    `- **CSV** needs no rules line, so it is smaller than Terset ${inCases(csvWins, o200k, claude)}. ${COMPARE_CSV}`,
+    `- **YAML and pretty JSON** are easy for people to read and cost the most in total here. Over all ${String(o200k.cases.length)} cases on ${o200k.name}, Terset is ${fewer(open.terset, open.yaml)} smaller than YAML and ${fewer(open.terset, open.jsonPretty)} smaller than pretty JSON.`,
+  ].join('\n');
+}
+
+/** The totals table at the top of the Benchmark section. The full ledger follows it. */
+function benchSummary(): string {
+  const { o200k, claude } = readmeCounters();
+  const open = benchTotals(o200k);
+  const own = benchTotals(claude);
+  const rows: readonly (readonly [name: string, key: keyof typeof open])[] = [
+    ['Terset', 'terset'],
+    ['TOON best', 'toon'],
+    ['Compact JSON', 'json'],
+    ['YAML', 'yaml'],
+    ['Pretty JSON', 'jsonPretty'],
+  ];
+  return [
+    `Total tokens over all ${String(o200k.cases.length)} cases. Lower is better. Terset counts include its fitted rules line. ${TOON_BEST_NOTE}`,
+    [`| Format | ${o200k.name} | ${claude.label} |`, '| --- | --- | --- |', ...rows.map(([name, key]) => `| ${name} | ${formatCount(open[key])} | ${formatCount(own[key])} |`)].join('\n'),
+    `The two counters are the \`${o200k.name}\` tokenizer and Claude's own token count for ${claude.label}. They give different numbers for the same text. Open the section below for every case, the input cost and the method.`,
+  ].join('\n\n');
+}
+
+/** Short answers to the questions a new reader asks first. */
+function faq(): string {
+  const accuracy = `**Does it change answer accuracy?** Each model answered the same ${formatCount(ACCURACY.questions)} questions in each format. ${accuracyOverlapLine(ACCURACY)} See [Answer accuracy](#answer-accuracy).`;
+  return [FAQ_STABLE, accuracy, FAQ_RULES, FAQ_NAME].join('\n\n');
+}
+
 function whenNot(): string {
   return WHEN_NOT.map((item) => `- **${item.title}** ${item.text}`).join('\n');
 }
@@ -123,7 +221,17 @@ function agents(): string {
 
 /** The blocks one README carries, rendered from the source. `text` gives the README's own headings for its contents list. */
 export function expectedBlocks(id: ReadmeId, text: string): Partial<Record<BlockName, string>> {
-  const shared = { contents: contents(h2Headings(text)), 'see-it': seeIt(), 'when-not': whenNot(), reference: README_REFERENCE, agents: agents() };
+  const shared = {
+    pitch: pitch(),
+    contents: contents(h2Headings(text)),
+    'see-it': seeIt(),
+    compare: compare(),
+    'bench-summary': benchSummary(),
+    'when-not': whenNot(),
+    faq: faq(),
+    reference: README_REFERENCE,
+    agents: agents(),
+  };
   if (id === 'root') return { ...shared, install: install('js'), use: use('js'), 'install-py': install('py'), 'use-py': use('py') };
   return { ...shared, header: header(id), install: install(id), use: use(id) };
 }
