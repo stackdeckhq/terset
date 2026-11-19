@@ -5,6 +5,7 @@
 // Inline text may use `code`, **bold** and [links](https://terset.dev).
 import type { JsonRoot } from '../lib/format.ts';
 import { INSTALL_COMMANDS, NPM_URL, PACKAGE_MANAGERS, PACKAGE_NAME, PACKAGE_VERSION, SITE_URL } from './site.ts';
+import { CONFORMANCE_SUITES, DEFAULT_FORMAT, FROZEN_FORMAT, VERSIONS_TEXT } from './versions.ts';
 
 export const DOC_LANGS = ['js', 'py'] as const;
 export type DocLang = (typeof DOC_LANGS)[number];
@@ -36,7 +37,15 @@ export const NAMES: PerLang<{ readonly rulesFor: string; readonly encode: string
 export const DOCS_TITLE = 'Terset docs';
 export const DOCS_DESCRIPTION = 'Install Terset for JavaScript or Python, encode your first table, and look up every function, error and limit.';
 export const DOCS_LEAD = 'Install, a quick start, a cheat sheet and the full API for JavaScript and Python.';
-export const FORMAT_LINE = 'The encoder writes format version 1.1 by default. Text written in format 1.0 still decodes, and `encode` can still write it. That number is separate from the package version, which is still 0.x. JavaScript and Python are separate implementations that both pass the conformance suite at conformance/ in the repository.';
+
+/** "0.x". The lines that use it say the API can still change, which holds only before 1.0. */
+const PACKAGE_SERIES = ((): string => {
+  const major = PACKAGE_VERSION.split('.')[0];
+  if (major !== '0') throw new Error(`Package ${PACKAGE_VERSION} is past 0.x, so the lines that say the API can still change no longer hold`);
+  return `${major}.x`;
+})();
+
+export const FORMAT_LINE = `The encoder writes format version ${DEFAULT_FORMAT} by default. Text written in format ${FROZEN_FORMAT} still decodes, and \`encode\` can still write it. That number is separate from the package version, which is still ${PACKAGE_SERIES}.`;
 export const VERSION_LINE = `Version ${PACKAGE_VERSION} for JavaScript and Python. ${FORMAT_LINE}`;
 
 /** The sections of /docs, in order. The page, its contents list and /docs.md share them. */
@@ -121,6 +130,40 @@ export const INSTALL: PerLang<InstallInfo> = {
     note: 'Zero dependencies. Python 3.10 and up. Type hints are included.',
   },
 };
+
+/** Each language's package name and its registry page. */
+export const PACKAGE_NAMES: PerLang<string> = { js: PACKAGE_NAME, py: PYPI_NAME };
+export const REGISTRY_URLS: PerLang<string> = { js: NPM_URL, py: PYPI_URL };
+
+export interface Implementation {
+  readonly language: string;
+  readonly packageName: string;
+  readonly href: string;
+  /** The first install line. */
+  readonly install: string;
+}
+
+function implementation(lang: DocLang): Implementation {
+  const install = INSTALL[lang].commands[0]?.command;
+  if (install === undefined) throw new Error(`${LANG_LABELS[lang]} has no install command`);
+  return { language: LANG_LABELS[lang], packageName: PACKAGE_NAMES[lang], href: REGISTRY_URLS[lang], install };
+}
+
+/** One row per package. versions.test.ts checks that each package's tests run every conformance suite. */
+export const IMPLEMENTATIONS: readonly Implementation[] = DOC_LANGS.map(implementation);
+
+export const IMPLEMENTATIONS_CAPTION = 'Implementations';
+export const IMPLEMENTATIONS_HEAD: readonly string[] = ['Language', 'Package', 'Install', 'Conformance'];
+export const IMPLEMENTATIONS_ROWS: readonly (readonly string[])[] = IMPLEMENTATIONS.map((row) => [row.language, `[${row.packageName}](${row.href})`, `\`${row.install}\``, `Passes the ${VERSIONS_TEXT} suites`]);
+
+/** Where the suites live, with a link to each. */
+export const IMPLEMENTATIONS_NOTE = `The two packages are separate code. Both run the shared suites in the repository: ${CONFORMANCE_SUITES.map((suite) => `[${suite.path}](${suite.url}) for ${suite.version}`).join(' and ')}.`;
+
+/** The list as Markdown, for /docs.md and the READMEs. */
+export function implementationsMarkdown(): string {
+  const line = (cells: readonly string[]): string => `| ${cells.join(' | ')} |`;
+  return [[line(IMPLEMENTATIONS_HEAD), line(IMPLEMENTATIONS_HEAD.map(() => '---')), ...IMPLEMENTATIONS_ROWS.map(line)].join('\n'), IMPLEMENTATIONS_NOTE].join('\n\n');
+}
 
 // 2. Quick start
 
@@ -349,7 +392,7 @@ export const COMPARE_TOON_SHAPE = 'When records skip a field or hold a list, TOO
 export const COMPARE_CSV = 'It has no types and cannot tell null, a missing field and empty text apart, so its text does not always read back to the same JSON. Nested values fit only as JSON inside a cell.';
 
 /** The FAQ answers that need no numbers. The accuracy answer is built from the data. */
-export const FAQ_STABLE = '**Is it stable?** Format 1.0 is frozen, and its text still decodes. The encoder writes format 1.1. The packages are at 0.x, so their API can still change.';
+export const FAQ_STABLE = `**Is it stable?** Format ${FROZEN_FORMAT} is frozen, and its text still decodes. The encoder writes format ${DEFAULT_FORMAT}. The packages are at ${PACKAGE_SERIES}, so their API can still change.`;
 
 export const FAQ_RULES = '**Do I have to explain the format to the model?** Yes, once per prompt. Send `rulesFor(text)` (`rules_for` in Python) right before the data. It holds only the rules that text needs, and it is empty when the text needs none. For one cached system prompt that serves many texts, send the full `RULES` there instead.';
 

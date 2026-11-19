@@ -76,10 +76,23 @@ function Legend() {
   );
 }
 
-/** The counter switch: one button per counter, the pressed one is shown. */
-function CounterSwitch({ counters, current, onPick }: { readonly counters: readonly Counter[]; readonly current: CounterId; readonly onPick: (id: CounterId) => void }) {
+/**
+ * The counter switch: one button per counter, the pressed one is shown. The totals chart on home
+ * uses it too, with its own `label`, so the two groups on that page have different names.
+ */
+export function CounterSwitch({
+  counters,
+  current,
+  onPick,
+  label = 'Count tokens with',
+}: {
+  readonly counters: readonly Counter[];
+  readonly current: CounterId;
+  readonly onPick: (id: CounterId) => void;
+  readonly label?: string;
+}) {
   return (
-    <div className="ctr" role="group" aria-label="Count tokens with">
+    <div className="ctr" role="group" aria-label={label}>
       {counters.map((counter) => (
         <button
           key={counter.id}

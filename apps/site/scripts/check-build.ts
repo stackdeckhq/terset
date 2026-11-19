@@ -5,20 +5,26 @@
 //    lacks its prerendered HTML or either theme-color meta, or a raw agent file has a static copy,
 // 2. the dev-only fake bench fixture reached the output,
 // 3. the committed bench is pending but the output lacks the pending text,
-// 4. a banned name appears in the output, source maps included,
+// 4. a banned name appears in the output, source maps included (the tokenizer chunk may match a
+//    name only as often as the vendored o200k_base table does, see banned.ts),
 // 5. zod reached the browser code. The site data is checked on the server and in tests,
 // 6. a page breaks a search rule: it needs exactly one h1, a canonical link to its own URL,
 //    a title and a description within the limits and used by no other page, JSON-LD that
-//    parses, and no noindex (see check-pages.ts).
+//    parses, and no noindex (see check-pages.ts),
+// 7. the o200k_base rank table is not in exactly one browser chunk of its own, or a page or a
+//    static import loads that chunk, or the worker output holds it, or its gzipped size no longer rounds to the size the
+//    "Show tokens" toggle states. It must load only on the first click.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 import { z } from 'zod';
 import { parseBench } from '../src/data/bench-schema.ts';
 import { PENDING_TITLE } from '../src/data/bench.ts';
 import { PAGE_PATHS, RAW_FILES } from '../src/data/site.ts';
+import { TOKENIZER_DOWNLOAD_MB } from '../src/lib/live-tokenizer.ts';
 import { THEME_COLORS } from '../src/theme.ts';
-import { BANNED_NAMES, BANNED_NOTE } from './banned.ts';
+import { BANNED_NOTE, RANK_TABLE_MARKER, bannedIn } from './banned.ts';
 import { pageHeadProblems } from './check-pages.ts';
 import type { BuiltPage } from './check-pages.ts';
 
@@ -103,9 +109,28 @@ const texts = files.map((path) => ({ path: path.slice(SITE.length), text: readFi
 for (const { path, text } of texts) {
   if (text.includes(FIXTURE_MARKER)) failures.push(`${path}: holds the dev-only bench fixture`);
   if (path.startsWith('dist/client/') && path.endsWith('.js') && text.includes(ZOD_MARKER)) failures.push(`${path}: ships zod to the browser`);
-  for (const [pattern, name] of BANNED_NAMES) {
-    if (pattern.test(text)) failures.push(`${path}: contains ${name}`);
+  for (const name of bannedIn(path, text)) failures.push(`${path}: contains ${name}`);
+}
+
+for (const { path, text } of texts) {
+  if (path.startsWith('dist/server/') && text.includes(RANK_TABLE_MARKER)) failures.push(`${path}: the worker carries the rank table, which only the browser loads`);
+}
+const clientScripts = texts.filter(({ path }) => path.startsWith('dist/client/') && path.endsWith('.js'));
+const rankChunks = clientScripts.filter(({ text }) => text.includes(RANK_TABLE_MARKER));
+let rankNote = 'rank table missing';
+if (rankChunks.length !== 1) failures.push(`the o200k_base rank table is in ${String(rankChunks.length)} browser chunks, expected exactly 1: ${rankChunks.map(({ path }) => path).join(', ')}`);
+for (const chunk of rankChunks) {
+  const name = basename(chunk.path);
+  for (const page of builtPages) {
+    if (page.html.includes(name)) failures.push(`${chunk.path}: the ${page.path} page loads the rank table chunk before any click`);
   }
+  const staticImport = new RegExp(`(?:from|import)\\s*["']\\./${name.replaceAll('.', '\\.')}["']`, 'u');
+  for (const other of clientScripts) {
+    if (other.path !== chunk.path && staticImport.test(other.text)) failures.push(`${other.path}: imports the rank table chunk statically`);
+  }
+  const megabytes = gzipSync(chunk.text).length / 1_000_000;
+  if (Math.round(megabytes) !== TOKENIZER_DOWNLOAD_MB) failures.push(`${chunk.path}: is ${megabytes.toFixed(2)} MB gzipped, but the toggle says about ${String(TOKENIZER_DOWNLOAD_MB)} MB`);
+  rankNote = `rank table alone in ${name}, ${megabytes.toFixed(2)} MB gzipped`;
 }
 
 const bench = parseBench(JSON.parse(readFileSync(join(SITE, 'src/data/bench-results.json'), 'utf8')));
@@ -116,4 +141,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log(`check-build PASS: ${String(texts.length)} output files; Workers layout and deploy config ok; ${String(builtPages.length)} pages keep the search rules; no fixture, no zod in the browser, no banned name (${BANNED_NOTE}); bench ${bench.status}.`);
+console.log(`check-build PASS: ${String(texts.length)} output files; Workers layout and deploy config ok; ${String(builtPages.length)} pages keep the search rules; no fixture, no zod in the browser, no banned name (${BANNED_NOTE}); ${rankNote}; bench ${bench.status}.`);

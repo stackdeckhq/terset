@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
 import { RULES, RULES_PLACEMENT, decode, encode, rulesFor } from '../lib/format.ts';
 import { API, PUBLIC_EXPORTS, exampleFence } from './docs-api.ts';
 import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, QUICK_START, RULES_INTRO, WHEN_NOT, quickStartSteps } from './docs.ts';
-import { COUNTERS } from './numbers.ts';
+import { COUNTERS, counterLosses } from './numbers.ts';
 import { SAMPLES } from './samples.ts';
 import type { CodeSample } from './docs.ts';
 import { README_FILES, README_IDS, expectedBlocks, h2Headings, readBlocks, sections } from './docs-readme.ts';
@@ -43,6 +43,14 @@ describe('README blocks', () => {
       }
     });
   }
+
+  it('puts the losses line of each counter in the benchmark summary of every README', () => {
+    if (COUNTERS === null || COUNTERS.claude === null) throw new Error('the committed counters should be ready');
+    for (const id of README_IDS) {
+      const summary = expectedBlocks(id, read(README_FILES[id]))['bench-summary'] ?? '';
+      expect(summary, README_FILES[id]).toContain(`- ${counterLosses(COUNTERS.o200k)}\n- ${counterLosses(COUNTERS.claude)}`);
+    }
+  });
 
   it('gives both package READMEs the same headings, in the agreed order', () => {
     expect(h2Headings(read(README_FILES.js))).toEqual(PACKAGE_README_HEADINGS);

@@ -8,11 +8,13 @@ import type { SampleId } from '../../data/samples.ts';
 import { STATUSES, convert, statusOf } from '../../lib/convert.ts';
 import type { ConvertResult, Status } from '../../lib/convert.ts';
 import { highlight } from '../../lib/format.ts';
+import { LIVE_TOKENIZER } from '../../lib/live-tokenizer.ts';
 import { esc } from '../../lib/text.ts';
 import { CopyButton } from '../CopyButton.tsx';
 import { Stack } from '../Stack.tsx';
 import type { StackItem } from '../Stack.tsx';
 import { Step } from './Step.tsx';
+import { TokenView } from './TokenView.tsx';
 
 const DEBOUNCE_MS = 150;
 const SAMPLE_JSON: Readonly<Record<SampleId, string>> = {
@@ -39,7 +41,7 @@ function tokenKey(result: ConvertResult): TokenKey {
   return sampleFor(result) ?? 'bytes';
 }
 
-/** The sample's counts on every counter, one sentence each. Live text has no token count. */
+/** The sample's counts on every counter, one sentence each. Pasted text gets its live count from Show tokens. */
 function sampleLine(sample: SampleId): ReactNode {
   if (COUNTERS === null) return PENDING_TITLE;
   const list = counterList(COUNTERS);
@@ -61,7 +63,7 @@ function sampleLine(sample: SampleId): ReactNode {
 // Every line the token row can show, so the row keeps the height of the longest.
 const TOKEN_ITEMS: readonly StackItem<TokenKey>[] = [
   { key: 'invalid', node: 'Sizes return when the JSON parses.' },
-  { key: 'bytes', node: 'Live sizes are in bytes. Token counts show for the samples.' },
+  { key: 'bytes', node: `Live sizes are in bytes. Show tokens counts them with ${LIVE_TOKENIZER}.` },
   ...SAMPLE_IDS.map((sample) => ({ key: sample, node: sampleLine(sample) })),
 ];
 const STATUS_ITEMS: readonly StackItem<Status>[] = STATUSES.map((status) => ({ key: status, node: status }));
@@ -196,6 +198,7 @@ export function StepConvert() {
           </div>
         </div>
         <Meter result={result} />
+        <TokenView result={result} />
       </div>
     </Step>
   );

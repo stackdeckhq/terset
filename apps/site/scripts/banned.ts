@@ -6,6 +6,8 @@
 // A second local list, apps/site/.banned-agent-files.local.json, holds names that only
 // the raw agent files must avoid. The repo and the site may still carry them, for
 // example the package scope and the legal lines, so the repo-wide scans skip it.
+// A built browser chunk that holds the o200k_base rank table may match a name as often
+// as the vendored table does by chance, and no more (see bannedIn).
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,7 +18,8 @@ const AGENT_FILE_LIST = '.banned-agent-files.local.json';
 export const DEFAULT_BANNED_FILE = fileURLToPath(new URL(`../${LOCAL_LIST}`, import.meta.url));
 export const DEFAULT_AGENT_FILE_BANNED_FILE = fileURLToPath(new URL(`../${AGENT_FILE_LIST}`, import.meta.url));
 
-const FLAGS = /^[dgimsuvy]*$/u;
+// No g or y: those keep lastIndex between test() calls, so a reused pattern would skip matches.
+const FLAGS = /^[dimsuv]*$/u;
 const BannedFileSchema = z.array(z.tuple([z.string().min(1), z.string().regex(FLAGS), z.string().min(1)]));
 
 export interface BannedList {
@@ -51,6 +54,38 @@ export function loadAgentFileBannedNames(
   return loadBannedNames(path, 'agent-file names', AGENT_FILE_LIST);
 }
 
+type Names = readonly (readonly [RegExp, string])[];
+
+/** One word from the o200k_base rank table, so a chunk that holds the table can be found. */
+export const RANK_TABLE_MARKER = 'parâmetros';
+const RANK_TABLE = fileURLToPath(new URL('../node_modules/gpt-tokenizer/esm/bpeRanks/o200k_base.js', import.meta.url));
+let rankTable: string | null = null;
+
+/** The vendored o200k_base rank table, as the package ships it. */
+export function rankTableText(): string {
+  rankTable ??= readFileSync(RANK_TABLE, 'utf8');
+  return rankTable;
+}
+
+function countMatches(pattern: RegExp, text: string): number {
+  return text.match(new RegExp(pattern.source, `${pattern.flags}g`))?.length ?? 0;
+}
+
+/** True for a built browser script that holds the rank table. Source files never qualify. */
+function holdsRankTable(path: string, text: string): boolean {
+  return /(?:^|\/)dist\/client\/.+\.js$/u.test(path) && text.includes(RANK_TABLE_MARKER);
+}
+
+/**
+ * The banned names `text` holds. The rank table is 200k subword pieces, so a pattern can match
+ * a piece by chance. A browser chunk that holds the table may match each name as often as the
+ * vendored table does, and no more, so a real name anywhere else in that chunk still fails.
+ */
+export function bannedIn(path: string, text: string, names: Names = BANNED_NAMES): readonly string[] {
+  const table = holdsRankTable(path, text) ? rankTableText() : '';
+  return names.filter(([pattern]) => countMatches(pattern, text) > countMatches(pattern, table)).map(([, name]) => name);
+}
+
 const SKIP_DIRS = new Set(['node_modules']);
 const BINARY = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.woff', '.woff2']);
 const LOCAL_LISTS = new Set([LOCAL_LIST, AGENT_FILE_LIST]);
@@ -80,9 +115,12 @@ export function scanBanned(root: string, only?: (path: string) => boolean, names
   const files = walk(root).filter((path) => only === undefined || only(relative(root, path)));
   const hits: BannedHit[] = [];
   for (const path of files) {
-    const lines = readFileSync(path, 'utf8').split('\n');
-    lines.forEach((text, index) => {
-      for (const [pattern, name] of names) {
+    const file = relative(root, path);
+    const content = readFileSync(path, 'utf8');
+    const found = new Set(bannedIn(file, content, names));
+    const fileNames = names.filter(([, name]) => found.has(name));
+    content.split('\n').forEach((text, index) => {
+      for (const [pattern, name] of fileNames) {
         if (pattern.test(text)) hits.push({ file: relative(root, path), line: index + 1, name });
       }
     });

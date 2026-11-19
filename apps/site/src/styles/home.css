@@ -204,6 +204,18 @@
 .tokline b { color: var(--fg); font-variant-numeric: tabular-nums; }
 .tokline .tok-c { display: block; }
 
+/* The "Show tokens" view. The toggle needs the script, so it stays hidden until the boot script ran.
+   Each token gets one of two soft shades on the dark code background, readable in both themes. */
+html:not(.js) .tokv { display: none; }
+.tokv { display: grid; gap: var(--s-4); margin-top: var(--s-6); max-width: 760px; }
+.tokv:has(.tokv-panes) { max-width: none; }
+.tokv-bar .card-note b { color: var(--fg); font-variant-numeric: tabular-nums; }
+.tokv-msg { margin: 0; font-size: 14px; color: var(--fg-2); }
+.tokv-out .tk { border-radius: 3px; background: color-mix(in srgb, var(--c-field) 24%, transparent); }
+.tokv-out .tk.b { background: color-mix(in srgb, var(--c-count) 24%, transparent); }
+.tokv-out .lgd .tk { color: var(--code-fg); }
+.tokv-cut { display: block; margin-top: 10px; font-family: var(--sans); color: var(--code-dim); white-space: normal; }
+
 /* Step 3: anatomy */
 /* The tall line height leaves room between lines, so each numbered marker sits in that gap and never covers text. */
 .anat pre { font-size: 13px; line-height: 2.6; }

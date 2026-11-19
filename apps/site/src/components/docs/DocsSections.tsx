@@ -12,6 +12,10 @@ import {
   ERROR_KINDS,
   ERROR_MESSAGES,
   EXPORTS_LINE,
+  IMPLEMENTATIONS_CAPTION,
+  IMPLEMENTATIONS_HEAD,
+  IMPLEMENTATIONS_NOTE,
+  IMPLEMENTATIONS_ROWS,
   INSTALL,
   LANG_LABELS,
   LANG_NOTES,
@@ -65,7 +69,9 @@ export function InstallSection() {
   const [lang] = useDocLang();
   return (
     <Section id="install">
-      <p>{VERSION_LINE}</p>
+      <Inline as="p" text={VERSION_LINE} />
+      <DataTable caption={IMPLEMENTATIONS_CAPTION} head={IMPLEMENTATIONS_HEAD} rows={IMPLEMENTATIONS_ROWS} />
+      <Inline as="p" className="docs-note-line" text={IMPLEMENTATIONS_NOTE} />
       <LangSwitch />
       {lang === 'js' ? <InstallLine /> : <PipLine />}
       <p className="docs-note-line">{INSTALL[lang].note}</p>

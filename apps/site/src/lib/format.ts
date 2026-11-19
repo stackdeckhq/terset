@@ -3,13 +3,13 @@
 // package. When the format changes, this file and the generated samples are
 // what change. Everything below "Syntax" mirrors packages/terset/SPEC.md.
 import { RULES, decode, encode, rulesFor } from '@stackdeck/terset';
-import type { JsonObject, JsonRoot, JsonValue } from '@stackdeck/terset';
+import type { FormatVersion, JsonObject, JsonRoot, JsonValue } from '@stackdeck/terset';
 import { PACKAGE_NAME } from '../data/site.ts';
 import { hlJson, NUM, span } from './highlight.ts';
 import { esc } from './text.ts';
 
 export { RULES, decode, encode, rulesFor };
-export type { JsonObject, JsonRoot, JsonValue };
+export type { FormatVersion, JsonObject, JsonRoot, JsonValue };
 
 /** The package's import line, as the docs and the prompt step show it. */
 export const IMPORT_LINE = `import { encode, decode, rulesFor } from "${PACKAGE_NAME}";`;

@@ -200,6 +200,9 @@ Total tokens over all 11 cases. Lower is better. Terset counts include its fitte
 | YAML | 70,846 | 88,145 |
 | Pretty JSON | 87,020 | 113,574 |
 
+- o200k_base: TOON's best is smaller than Terset on 2 cases: Translation batch; Reviews, long text. The 2 file-list cases hold 57% of Terset's total. Per case, the median saving is 21.5% against compact JSON and 7.3% against TOON's best.
+- Claude: TOON's best is smaller than Terset on 1 case: Deep nested config. The 2 file-list cases hold 56% of Terset's total. Per case, the median saving is 27.9% against compact JSON and 3.5% against TOON's best.
+
 The two counters are the `o200k_base` tokenizer and Claude's own token count for Claude Opus 5.5. They give different numbers for the same text. Open the section below for every case, the input cost and the method.
 <!-- /docs:bench-summary -->
 
@@ -408,8 +411,17 @@ Of Terset's 10 misses across the three models, 9 were on long lists. On Claude H
 <!-- docs:reference -->
 Every function, parameter, error and limit, for JavaScript and Python: [terset.dev/docs](https://terset.dev/docs).
 
-The encoder writes format version 1.1 by default. Text written in format 1.0 still decodes, and `encode` can still write it. That number is separate from the package version, which is still 0.x. JavaScript and Python are separate implementations that both pass the conformance suite at conformance/ in the repository.
+The encoder writes format version 1.1 by default. Text written in format 1.0 still decodes, and `encode` can still write it. That number is separate from the package version, which is still 0.x.
 <!-- /docs:reference -->
+
+<!-- docs:implementations -->
+| Language | Package | Install | Conformance |
+| --- | --- | --- | --- |
+| JavaScript | [@stackdeck/terset](https://www.npmjs.com/package/@stackdeck/terset) | `pnpm add @stackdeck/terset` | Passes the 1.0 and 1.1 suites |
+| Python | [terset](https://pypi.org/project/terset/) | `pip install terset` | Passes the 1.0 and 1.1 suites |
+
+The two packages are separate code. Both run the shared suites in the repository: [conformance/](https://github.com/stackdeckhq/terset/tree/main/conformance) for 1.0 and [conformance/1.1/](https://github.com/stackdeckhq/terset/tree/main/conformance/1.1) for 1.1.
+<!-- /docs:implementations -->
 
 ## For agents
 

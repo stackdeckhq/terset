@@ -26,6 +26,7 @@ import {
   RULES_PARTS,
   VERSION_LINE,
   WHEN_NOT,
+  implementationsMarkdown,
   quickStartSteps,
   sectionTitle,
 } from './docs.ts';
@@ -49,6 +50,7 @@ function install(): string {
   return [
     h2('install'),
     VERSION_LINE,
+    implementationsMarkdown(),
     ...DOC_LANGS.map((lang) => [`### ${LANG_LABELS[lang]}`, ...INSTALL[lang].commands.map((item) => fence('sh', item.command)), INSTALL[lang].note].join('\n\n')),
   ].join('\n\n');
 }

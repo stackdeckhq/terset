@@ -1,11 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { Markdown } from '../components/Markdown.tsx';
+import { formatDoc } from '../data/versions.ts';
 import spec from '../generated/spec.md?raw';
-import { parseMarkdown, withoutTitle } from '../lib/markdown.ts';
 
 // The page shows its own h1, so the spec's title is left out here. /spec.md keeps it.
-const DOC = parseMarkdown(withoutTitle(spec));
+// The versions table and the worked example go between the spec's opening and its first section.
+const DOC = formatDoc(spec);
 const TITLE = 'The Terset format';
 
 export const Route = createFileRoute('/format')({

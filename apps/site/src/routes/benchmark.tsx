@@ -12,7 +12,7 @@ import { SweepTable } from '../components/SweepTable.tsx';
 import { BigNumbers, CostBars, DatasetChart } from '../components/Proof.tsx';
 import { ACCURACY, accuracyIntro, accuracyMethod, accuracyOverlapLine } from '../data/accuracy.ts';
 import { BYTES, bytesLine } from '../data/bytes.ts';
-import { benchmarkCostMethod, benchmarkKeepElseAll, benchmarkLimits, benchmarkMethod, benchmarkSampleTotals, sampleTotalsLine } from '../data/benchmark-doc.ts';
+import { benchmarkCostMethod, benchmarkKeepElseAll, benchmarkLimits, benchmarkLosses, benchmarkMethod, benchmarkSampleTotals, sampleTotalsLine } from '../data/benchmark-doc.ts';
 import { BENCH, BENCH_FILE, CLAUDE, COUNTERS, countersHeadline, countersPageNote } from '../data/numbers.ts';
 import { datasetFoldAbout, proofHeading, smallerThanToon, smallerThanToonLine } from '../data/proof.ts';
 import { REAL, realIntro, realLines, realMethod } from '../data/real.ts';
@@ -89,6 +89,7 @@ function BenchmarkPage() {
   const costMethod = benchmarkCostMethod(COUNTERS);
   const toon = smallerThanToon(ACCURACY, COUNTERS);
   const sampleLine = sampleTotalsLine(BENCH, COUNTERS);
+  const losses = benchmarkLosses(BENCH, COUNTERS);
   return (
     <DocPage
       kicker={BENCH.status === 'pending' ? 'Benchmark, numbers pending' : 'Benchmark'}
@@ -138,9 +139,12 @@ function BenchmarkPage() {
             <p>Made-up data in common shapes, all drawn from one fixed seed.</p>
           </Text>
           <BenchChart bench={BENCH} counters={COUNTERS} headingId="bench-h" flat table={false} />
-          {sampleLine === '' && toon === null ? null : (
+          {sampleLine === '' && losses.length === 0 && toon === null ? null : (
             <Text>
               {sampleLine === '' ? null : <p>{sampleLine}</p>}
+              {losses.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
               {toon === null ? null : <p>{smallerThanToonLine(toon)}</p>}
             </Text>
           )}
@@ -223,7 +227,7 @@ function BenchmarkPage() {
             <Fold title="Published runs" about="Every accuracy run, with what the tables take from it." bodyId="published-runs">
               <PublishedRunsTable file={ACCURACY} />
             </Fold>
-            <Fold title="Method" about="How each token count was made, how each format was written, and how the seed sweep ran.">
+            <Fold title="Method" about="How each token count was made, how each format was written, and how the seed sweep ran." bodyId="method">
               <Text>
                 <Lines lines={benchmarkMethod(BENCH, CLAUDE)} />
               </Text>
