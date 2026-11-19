@@ -11,15 +11,15 @@ export const OG_TEXT = {
   headline: ['Same data.', 'Fewer tokens.'],
   sub: 'Open source. On npm and PyPI.',
   stats: [
-    { value: '26.8%', label: 'fewer tokens than JSON', win: true },
+    { value: '26.5%', label: 'fewer tokens than JSON', win: true },
     { value: '9 of 11', label: 'cases smaller than TOON', win: false },
     // Overlapping ranges do not prove equal accuracy, so the label states only the overlap.
-    { value: '243 of 244', label: 'right. Accuracy ranges overlap.', win: false },
+    { value: '242 of 244', label: 'right. Accuracy ranges overlap.', win: false },
   ],
 } as const;
 
 /** The file name changes with the content, so link previews never show a cached old image. */
-export const OG_IMAGE_PATH = '/og-v7.png';
+export const OG_IMAGE_PATH = '/og-v8.png';
 
 export const OG_IMAGE_ALT = [
   `${OG_TEXT.name.charAt(0).toUpperCase()}${OG_TEXT.name.slice(1)}.`,

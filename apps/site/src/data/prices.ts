@@ -7,7 +7,7 @@ import type { Price, Prices } from './prices-schema.ts';
 export type { Price, Prices };
 
 export const PRICES: Prices = {
-  readOn: '2026-11-12',
+  readOn: '2026-11-17',
   o200k: {
     model: 'GPT 6.1 Sol',
     counter: 'o200k_base',

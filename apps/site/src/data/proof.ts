@@ -5,7 +5,7 @@
 // checked against the data when it is built, and a claim the data no longer supports throws.
 import { ACCURACY_FORMATS } from './accuracy-ids.ts';
 import type { AccuracyFile, AccuracyFormat, AccuracyKind, AccuracyKindId, AccuracyModel } from './accuracy-schema.ts';
-import { FORMAT_LABELS, KIND_LABELS, countWord, formatMean, formatRow, inputTokensLine, percent, rowRunOn, shortModelName, usd } from './accuracy.ts';
+import { FORMAT_LABELS, INPUT_TOKENS_LINE, KIND_LABELS, countWord, formatRow, percent, shortModelName, usd } from './accuracy.ts';
 import { benchHeadline, formatCount, underJson, underToon } from './bench.ts';
 import type { BenchFile } from './bench.ts';
 import type { CounterId, Counters } from './numbers.ts';
@@ -42,10 +42,7 @@ export interface CostBar {
   readonly costText: string;
   /** The bar's length against the most expensive format for this model, 0 to 1. Bars start at zero. */
   readonly fraction: number;
-  /**
-   * Where the cost comes from, one short line each so it fits beside the bar:
-   * ["run 2026-11-17"] for a single run, or ["mean of 3 runs", "2026-11-17"].
-   */
+  /** Where the cost comes from, one short line each so it fits beside the bar: ["run 2026-11-19"]. */
   readonly runs: readonly string[];
   readonly terset: boolean;
   /** The lowest cost for this model. Its number is bold, whichever format it is. */
@@ -53,12 +50,14 @@ export interface CostBar {
 }
 
 /** Cost at API list price of each format for one model, Terset first. */
-export function costBars(model: AccuracyModel): readonly CostBar[] {
+export function costBars(file: AccuracyFile, model: AccuracyModel): readonly CostBar[] {
   const max = Math.max(...model.rows.map((row) => row.totalCost));
   const min = Math.min(...model.rows.map((row) => row.totalCost));
+  const run = file.publishedRuns.find((item) => item.model === model.id);
+  if (run === undefined) throw new Error(`No published run for ${model.id}`);
+  const runs = [`run ${run.runOn}`];
   return ACCURACY_FORMATS.map((format) => {
     const row = formatRow(model, format);
-    const runs = row.runs.length === 1 ? [`run ${rowRunOn(row)}`] : [`mean of ${String(row.runs.length)} runs`, rowRunOn(row)];
     return { format, label: FORMAT_LABELS[format], cost: row.totalCost, costText: usd(row.totalCost), fraction: row.totalCost / max, runs, terset: format === 'terset', cheapest: row.totalCost === min };
   });
 }
@@ -94,12 +93,12 @@ export function proofHeading(file: AccuracyFile): string {
   return `Fewer tokens on the ${formatCount(file.questions)}-question test`;
 }
 
-/** The lowest and highest right answers of any format on one model, each a mean of that format's runs. */
+/** The lowest and highest right answers of any format on one model. */
 function answerRange(model: AccuracyModel): string {
   const scores = model.rows.map((row) => row.correct);
   const lowest = Math.min(...scores);
   const highest = Math.max(...scores);
-  return lowest === highest ? formatMean(lowest) : `${formatMean(lowest)} to ${formatMean(highest)}`;
+  return lowest === highest ? formatCount(lowest) : `${formatCount(lowest)} to ${formatCount(highest)}`;
 }
 
 /**
@@ -115,9 +114,7 @@ export function bigNumbers(file: AccuracyFile): readonly BigNumber[] {
       const [figure, tail] = parts(model);
       return { model: shortModelName(model), text: `${figure}${tail}`, figure, tail };
     });
-  const runs = [...new Set(file.models.flatMap((model) => model.rows.map((row) => row.runs.length)))];
-  const formats = `all ${countWord(ACCURACY_FORMATS.length)} formats`;
-  const answers = runs.length === 1 && runs[0] === 1 ? `right answers across ${formats}` : runs.length === 1 ? `right answers across ${formats}, each a mean of ${String(runs[0])} runs` : `right answers across ${formats}, each a mean of its runs`;
+  const answers = `right answers across all ${countWord(ACCURACY_FORMATS.length)} formats`;
   return [
     { id: 'tokens', values: per((model) => [percent(saving(formatRow(model, 'terset').inputTokens, formatRow(model, 'json-compact').inputTokens)), '']), label: 'fewer input tokens than compact JSON', win: true },
     { id: 'cost', values: per((model) => [percent(saving(formatRow(model, 'terset').totalCost, formatRow(model, 'json-compact').totalCost)), '']), label: 'lower cost than compact JSON', win: true },
@@ -127,7 +124,7 @@ export function bigNumbers(file: AccuracyFile): readonly BigNumber[] {
 
 /** Which tokenizer the token numbers use, in one line. */
 export function bigNumbersNote(file: AccuracyFile): string {
-  return `Input tokens: ${file.models.map((model) => `${model.name} on the ${modelTokenizer(model)}`).join(', ')}. ${inputTokensLine(file)}`;
+  return `Input tokens: ${file.models.map((model) => `${model.name} on the ${modelTokenizer(model)}`).join(', ')}. ${INPUT_TOKENS_LINE}`;
 }
 
 // Data sets

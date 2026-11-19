@@ -1,0 +1,21 @@
+[
+  "[2]\na\tname=value\n1\ta=2\n3",
+  "[2]\na\tname=value\n1\tb\n3",
+  "[2]\na\tname=value\n1\tb=\n3",
+  "[2]\na\tname=value\n1\tb=2\tc=3\n4\tc=5\tb=6",
+  "[2]\na\tname=value\n1\t\n3",
+  "[2]\na\tb\tname=value\n1\t2\n3\t4",
+  "[2]\nname=value\na\tb=2\nb=3",
+  "[2]\na\tname=value\n1\tb=2\t\n3",
+  "x[2]:\na\tname=value\n1\tb=2\n3\ny[2]:\na\tb\n1\t2\n3\t",
+  "[2]\na\tname=value\n1\tb.c=2\n3\tb=4",
+  "[2]\na\tname=value\n1\tb.c=2\n3",
+  "[2]\nname=value\n\"id\"=1\ta=1\na=2",
+  "[2]\nk\tname=value\nx\tv=1\n",
+  "[2]\na\tname=value\n1\tb c=2\n3",
+  "[2]\na\tname=value\n1\t\"b\"=2\n3",
+  "[2]\na\tname=value\n1\tb=02\n3",
+  "[2]\nname=value\n\n",
+  "[2]\na\tname=value\tname=value\n1\tb=2\n3",
+  "[2]\na\tname=value\n1\t\"b=2\n3"
+]

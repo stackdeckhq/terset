@@ -17,8 +17,9 @@ describe("terset", () => {
       { id: "2", n: 0, s: "007", yes: false, text: "false", nil: "null", empty: "" },
     ] };
     const text = roundTrip(value);
-    assert.equal(text, 'items[2]:\nid\tn\ts\tyes\ttext\tnil\tempty\tmissing\n1\t2024\t"2024"\ttrue\t"true"\tnull\t""\tpresent\n2\t0\t"007"\tfalse\t"false"\t"null"\t""\t');
-    assert.equal(RULES, "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.");
+    assert.equal(text, 'items[2]:\nid\tn\ts\tyes\ttext\tnil\tempty\tname=value\n1\t2024\t"2024"\ttrue\t"true"\tnull\t""\tmissing=present\n2\t0\t"007"\tfalse\t"false"\t"null"\t""');
+    assert.equal(encode(value, { format: "1.0" }), 'items[2]:\nid\tn\ts\tyes\ttext\tnil\tempty\tmissing\n1\t2024\t"2024"\ttrue\t"true"\tnull\t""\tpresent\n2\t0\t"007"\tfalse\t"false"\t"null"\t""\t');
+    assert.equal(RULES, "Tables use tab-separated headers and rows. Empty cells mean absent. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.");
   });
 
   it("keeps empty, absent and null fields separate", () => {
@@ -33,7 +34,8 @@ describe("terset", () => {
     const value = JSON.parse('{"10":10,"2":2,"z":[{"id":"1","b":2},{"id":"2","b":3,"c":4}],"a":{"z":1,"a":2}}') as JsonObject;
     roundTrip(value);
     // A later row may add a field before ones an earlier row already has.
-    assert.equal(roundTrip({ list: [{ id: "1", b: 1 }, { id: "2", a: 2, b: 3 }] }), "list[2]:\nid\ta\tb\n1\t\t1\n2\t2\t3");
+    assert.equal(roundTrip({ list: [{ id: "1", b: 1 }, { id: "2", a: 2, b: 3 }] }), "list[2]:\nid\tname=value\n1\tb=1\n2\ta=2\tb=3");
+    assert.equal(encode({ list: [{ id: "1", b: 1 }, { id: "2", a: 2, b: 3 }] }, { format: "1.0" }), "list[2]:\nid\ta\tb\n1\t\t1\n2\t2\t3");
     for (const list of [
       [{ id: "1", a: 1, b: 2 }, { id: "2", b: 3, a: 4 }],
       [{ a: 1, id: "1" }, { id: "2", a: 2 }],

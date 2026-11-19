@@ -1,231 +1,30 @@
 {
   "publishedRuns": [
     {
-      "runId": "p4-2026-11-12",
-      "runOn": "2026-11-12",
-      "publishedPath": "bench/published/2026-11-12",
-      "models": [
-        "claude-opus-5-5",
-        "gpt-6.1-sol"
-      ],
-      "formats": [
-        "terset",
-        "json-compact",
-        "json-pretty",
-        "toon"
-      ],
-      "failedRequests": 0,
-      "inTables": []
+      "runId": "accuracy-opus-2026-11-19",
+      "runOn": "2026-11-19",
+      "publishedPath": "bench/published/2026-11-19",
+      "model": "claude-opus-5-5",
+      "failedRequests": 1
     },
     {
-      "runId": "v2-final-2026-11-13",
-      "runOn": "2026-11-13",
-      "publishedPath": "bench/published/2026-11-13",
-      "models": [
-        "claude-opus-5-5",
-        "gpt-6.1-sol"
-      ],
-      "formats": [
-        "terset"
-      ],
-      "failedRequests": 0,
-      "inTables": []
-    },
-    {
-      "runId": "fitted-rules-2026-11-17",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "claude-opus-5-5",
-        "gpt-6.1-sol"
-      ],
-      "formats": [
-        "terset"
-      ],
-      "failedRequests": 0,
-      "inTables": []
-    },
-    {
-      "runId": "fitted-rules-rerun-2026-11-17",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "claude-opus-5-5",
-        "gpt-6.1-sol"
-      ],
-      "formats": [
-        "terset"
-      ],
-      "failedRequests": 0,
-      "inTables": []
-    },
-    {
-      "runId": "matched-sol-2026-11-17-r1",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "gpt-6.1-sol"
-      ],
-      "formats": [
-        "terset",
-        "json-compact",
-        "json-pretty",
-        "toon"
-      ],
-      "failedRequests": 2,
-      "inTables": [
-        {
-          "model": "gpt-6.1-sol",
-          "formats": [
-            "terset",
-            "json-compact",
-            "json-pretty",
-            "toon"
-          ]
-        }
-      ]
-    },
-    {
-      "runId": "matched-sol-2026-11-17-r2",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "gpt-6.1-sol"
-      ],
-      "formats": [
-        "terset",
-        "json-compact",
-        "json-pretty",
-        "toon"
-      ],
-      "failedRequests": 0,
-      "inTables": [
-        {
-          "model": "gpt-6.1-sol",
-          "formats": [
-            "terset",
-            "json-compact",
-            "json-pretty",
-            "toon"
-          ]
-        }
-      ]
-    },
-    {
-      "runId": "matched-sol-2026-11-17-r3",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "gpt-6.1-sol"
-      ],
-      "formats": [
-        "terset",
-        "json-compact",
-        "json-pretty",
-        "toon"
-      ],
-      "failedRequests": 0,
-      "inTables": [
-        {
-          "model": "gpt-6.1-sol",
-          "formats": [
-            "terset",
-            "json-compact",
-            "json-pretty",
-            "toon"
-          ]
-        }
-      ]
-    },
-    {
-      "runId": "matched-opus-2026-11-17-r1",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "formats": [
-        "terset",
-        "json-compact",
-        "json-pretty",
-        "toon"
-      ],
-      "failedRequests": 2,
-      "inTables": [
-        {
-          "model": "claude-opus-5-5",
-          "formats": [
-            "terset",
-            "json-compact",
-            "json-pretty",
-            "toon"
-          ]
-        }
-      ]
-    },
-    {
-      "runId": "matched-opus-2026-11-17-r2",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "formats": [
-        "terset",
-        "json-compact",
-        "json-pretty",
-        "toon"
-      ],
-      "failedRequests": 1,
-      "inTables": [
-        {
-          "model": "claude-opus-5-5",
-          "formats": [
-            "terset",
-            "json-compact",
-            "json-pretty",
-            "toon"
-          ]
-        }
-      ]
-    },
-    {
-      "runId": "matched-opus-2026-11-17-r3",
-      "runOn": "2026-11-17",
-      "publishedPath": "bench/published/2026-11-17",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "formats": [
-        "terset",
-        "json-compact",
-        "json-pretty",
-        "toon"
-      ],
-      "failedRequests": 2,
-      "inTables": [
-        {
-          "model": "claude-opus-5-5",
-          "formats": [
-            "terset",
-            "json-compact",
-            "json-pretty",
-            "toon"
-          ]
-        }
-      ]
+      "runId": "accuracy-sol-2026-11-19",
+      "runOn": "2026-11-19",
+      "publishedPath": "bench/published/2026-11-19",
+      "model": "gpt-6.1-sol",
+      "failedRequests": 1
     }
   ],
   "upstreamSha": "22caca377f08d737789a2ca60ab02c425a3aa947",
   "questions": 244,
   "datasets": 13,
-  "calls": 5856,
-  "failedCalls": 7,
+  "calls": 1952,
+  "failedCalls": 2,
   "models": [
     {
       "id": "claude-opus-5-5",
       "name": "Claude Opus 5.5",
-      "inputTokensFrom": "anthropic-token-count",
+      "inputTokensFrom": "model-report",
       "inputPerMillion": 4,
       "outputPerMillion": 20,
       "priceSource": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -233,147 +32,43 @@
       "rows": [
         {
           "format": "terset",
-          "runs": [
-            {
-              "runId": "matched-opus-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 243,
-              "inputTokens": 1188659,
-              "outputTokens": 44481,
-              "totalCost": 5.644256
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 243,
-              "inputTokens": 1188659,
-              "outputTokens": 44447,
-              "totalCost": 5.643576
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 243,
-              "inputTokens": 1188659,
-              "outputTokens": 45271,
-              "totalCost": 5.660056
-            }
-          ],
-          "correct": 243,
+          "correct": 242,
           "total": 244,
-          "low": 0.9771544911855791,
-          "high": 0.9992761719952722,
-          "inputTokens": 1188659,
-          "outputTokens": 44733,
-          "totalCost": 5.6492960000000005
+          "low": 0.9706117105007331,
+          "high": 0.9977492777777971,
+          "inputTokens": 1220011,
+          "outputTokens": 43496,
+          "totalCost": 5.749964
         },
         {
           "format": "json-compact",
-          "runs": [
-            {
-              "runId": "matched-opus-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 1766161,
-              "outputTokens": 49471,
-              "totalCost": 8.054064
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 1766161,
-              "outputTokens": 48552,
-              "totalCost": 8.035684
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 1766161,
-              "outputTokens": 49362,
-              "totalCost": 8.051884
-            }
-          ],
           "correct": 241,
           "total": 244,
           "low": 0.964481398748853,
           "high": 0.9958099146273562,
-          "inputTokens": 1766161,
-          "outputTokens": 49128.333333333336,
-          "totalCost": 8.047210666666667
+          "inputTokens": 1796661,
+          "outputTokens": 48770,
+          "totalCost": 8.162044
         },
         {
           "format": "json-pretty",
-          "runs": [
-            {
-              "runId": "matched-opus-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 2303845,
-              "outputTokens": 46924,
-              "totalCost": 10.15386
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 2303845,
-              "outputTokens": 48623,
-              "totalCost": 10.18784
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 2303845,
-              "outputTokens": 46865,
-              "totalCost": 10.15268
-            }
-          ],
           "correct": 241,
           "total": 244,
           "low": 0.964481398748853,
           "high": 0.9958099146273562,
-          "inputTokens": 2303845,
-          "outputTokens": 47470.666666666664,
-          "totalCost": 10.164793333333334
+          "inputTokens": 2334345,
+          "outputTokens": 48313,
+          "totalCost": 10.30364
         },
         {
           "format": "toon",
-          "runs": [
-            {
-              "runId": "matched-opus-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 242,
-              "inputTokens": 1369764,
-              "outputTokens": 44705,
-              "totalCost": 6.373156
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 242,
-              "inputTokens": 1369764,
-              "outputTokens": 43660,
-              "totalCost": 6.352256
-            },
-            {
-              "runId": "matched-opus-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 1369764,
-              "outputTokens": 42006,
-              "totalCost": 6.319176
-            }
-          ],
-          "correct": 241.66666666666666,
+          "correct": 242,
           "total": 244,
-          "low": 0.968532126515029,
-          "high": 0.9971389701293941,
-          "inputTokens": 1369764,
-          "outputTokens": 43457,
-          "totalCost": 6.348195999999999
+          "low": 0.9706117105007331,
+          "high": 0.9977492777777971,
+          "inputTokens": 1400264,
+          "outputTokens": 43078,
+          "totalCost": 6.462616
         }
       ]
     },
@@ -388,147 +83,43 @@
       "rows": [
         {
           "format": "terset",
-          "runs": [
-            {
-              "runId": "matched-sol-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 242,
-              "inputTokens": 842260,
-              "outputTokens": 15342,
-              "totalCost": 1.83794
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 241,
-              "inputTokens": 842260,
-              "outputTokens": 15968,
-              "totalCost": 1.8442
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 243,
-              "inputTokens": 842260,
-              "outputTokens": 16091,
-              "totalCost": 1.84543
-            }
-          ],
-          "correct": 242,
+          "correct": 243,
           "total": 244,
-          "low": 0.9706117105007331,
-          "high": 0.9977492777777971,
-          "inputTokens": 842260,
-          "outputTokens": 15800.333333333334,
-          "totalCost": 1.8425233333333333
+          "low": 0.9771544911855791,
+          "high": 0.9992761719952722,
+          "inputTokens": 843325,
+          "outputTokens": 15402,
+          "totalCost": 1.84067
         },
         {
           "format": "json-compact",
-          "runs": [
-            {
-              "runId": "matched-sol-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 236,
-              "inputTokens": 1158229,
-              "outputTokens": 17978,
-              "totalCost": 2.496238
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 234,
-              "inputTokens": 1158229,
-              "outputTokens": 17458,
-              "totalCost": 2.491038
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 236,
-              "inputTokens": 1158229,
-              "outputTokens": 17653,
-              "totalCost": 2.492988
-            }
-          ],
-          "correct": 235.33333333333334,
+          "correct": 237,
           "total": 244,
-          "low": 0.9331401236564472,
-          "high": 0.9814230319399426,
+          "low": 0.94197743468984,
+          "high": 0.9860351790770849,
           "inputTokens": 1158229,
-          "outputTokens": 17696.333333333332,
-          "totalCost": 2.4934213333333335
+          "outputTokens": 18464,
+          "totalCost": 2.501098
         },
         {
           "format": "json-pretty",
-          "runs": [
-            {
-              "runId": "matched-sol-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 237,
-              "inputTokens": 1696152,
-              "outputTokens": 16258,
-              "totalCost": 3.554884
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 238,
-              "inputTokens": 1696152,
-              "outputTokens": 16907,
-              "totalCost": 3.561374
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 237,
-              "inputTokens": 1696152,
-              "outputTokens": 15951,
-              "totalCost": 3.551814
-            }
-          ],
-          "correct": 237.33333333333334,
+          "correct": 238,
           "total": 244,
-          "low": 0.9437736573758427,
-          "high": 0.9869288480251891,
+          "low": 0.9473998127592713,
+          "high": 0.9886824759099744,
           "inputTokens": 1696152,
-          "outputTokens": 16372,
-          "totalCost": 3.5560240000000003
+          "outputTokens": 17258,
+          "totalCost": 3.564884
         },
         {
           "format": "toon",
-          "runs": [
-            {
-              "runId": "matched-sol-2026-11-17-r1",
-              "runOn": "2026-11-17",
-              "correct": 242,
-              "inputTokens": 1020628,
-              "outputTokens": 15081,
-              "totalCost": 2.192066
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r2",
-              "runOn": "2026-11-17",
-              "correct": 242,
-              "inputTokens": 1020628,
-              "outputTokens": 15751,
-              "totalCost": 2.198766
-            },
-            {
-              "runId": "matched-sol-2026-11-17-r3",
-              "runOn": "2026-11-17",
-              "correct": 242,
-              "inputTokens": 1020628,
-              "outputTokens": 15710,
-              "totalCost": 2.198356
-            }
-          ],
-          "correct": 242,
+          "correct": 238,
           "total": 244,
-          "low": 0.9706117105007331,
-          "high": 0.9977492777777971,
+          "low": 0.9473998127592713,
+          "high": 0.9886824759099744,
           "inputTokens": 1020628,
-          "outputTokens": 15514,
-          "totalCost": 2.196396
+          "outputTokens": 15273,
+          "totalCost": 2.193986
         }
       ]
     }
@@ -544,10 +135,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 161125,
-            "json-compact": 275433,
-            "json-pretty": 374284,
-            "toon": 169612
+            "terset": 166250,
+            "json-compact": 280558,
+            "json-pretty": 379409,
+            "toon": 174737
           }
         },
         {
@@ -571,10 +162,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 46934,
-            "json-compact": 98774,
-            "json-pretty": 138704,
-            "toon": 52004
+            "terset": 50684,
+            "json-compact": 102524,
+            "json-pretty": 142454,
+            "toon": 55754
           }
         },
         {
@@ -598,10 +189,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 372177,
-            "json-compact": 557967,
-            "json-pretty": 677295,
-            "toon": 381153
+            "terset": 376302,
+            "json-compact": 562092,
+            "json-pretty": 681420,
+            "toon": 385278
           }
         },
         {
@@ -625,16 +216,16 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 144929,
-            "json-compact": 217409,
-            "json-pretty": 278759,
-            "toon": 232559
+            "terset": 149009,
+            "json-compact": 221159,
+            "json-pretty": 282509,
+            "toon": 236309
           }
         },
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 108793,
+            "terset": 109423,
             "json-compact": 147793,
             "json-pretty": 206773,
             "toon": 178393
@@ -652,10 +243,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 362100,
-            "json-compact": 466404,
-            "json-pretty": 632249,
-            "toon": 426675
+            "terset": 367225,
+            "json-compact": 471529,
+            "json-pretty": 637374,
+            "toon": 431800
           }
         },
         {
@@ -679,10 +270,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 44537,
-            "json-compact": 74669,
-            "json-pretty": 103667,
-            "toon": 47093
+            "terset": 46787,
+            "json-compact": 76919,
+            "json-pretty": 105917,
+            "toon": 49343
           }
         },
         {
@@ -706,10 +297,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 20504,
-            "json-compact": 36892,
-            "json-pretty": 46582,
-            "toon": 22578
+            "terset": 22629,
+            "json-compact": 39017,
+            "json-pretty": 48707,
+            "toon": 24703
           }
         },
         {
@@ -733,16 +324,16 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 31772,
-            "json-compact": 31308,
-            "json-pretty": 42560,
-            "toon": 32874
+            "terset": 35919,
+            "json-compact": 34933,
+            "json-pretty": 46185,
+            "toon": 36499
           }
         },
         {
           "id": "gpt-6.1-sol",
           "inputTokens": {
-            "terset": 20214,
+            "terset": 20649,
             "json-compact": 19170,
             "json-pretty": 29523,
             "toon": 22128
@@ -760,10 +351,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 926,
-            "json-compact": 1474,
-            "json-pretty": 1965,
-            "toon": 1053
+            "terset": 1051,
+            "json-compact": 1599,
+            "json-pretty": 2090,
+            "toon": 1178
           }
         },
         {
@@ -787,10 +378,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 820,
-            "json-compact": 1284,
-            "json-pretty": 1703,
-            "toon": 944
+            "terset": 945,
+            "json-compact": 1409,
+            "json-pretty": 1828,
+            "toon": 1069
           }
         },
         {
@@ -814,10 +405,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 1042,
-            "json-compact": 1674,
-            "json-pretty": 2237,
-            "toon": 1172
+            "terset": 1167,
+            "json-compact": 1799,
+            "json-pretty": 2362,
+            "toon": 1297
           }
         },
         {
@@ -841,10 +432,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 923,
-            "json-compact": 1467,
-            "json-pretty": 1955,
-            "toon": 1050
+            "terset": 1048,
+            "json-compact": 1592,
+            "json-pretty": 2080,
+            "toon": 1175
           }
         },
         {
@@ -868,10 +459,10 @@
         {
           "id": "claude-opus-5-5",
           "inputTokens": {
-            "terset": 870,
-            "json-compact": 1406,
-            "json-pretty": 1885,
-            "toon": 997
+            "terset": 995,
+            "json-compact": 1531,
+            "json-pretty": 2010,
+            "toon": 1122
           }
         },
         {

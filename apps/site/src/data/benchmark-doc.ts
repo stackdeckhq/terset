@@ -10,7 +10,6 @@ import type { ClaudeCounts } from './claude-counts-schema.ts';
 import { COST_TABLE_HEAD, buildCounters, claudeMethod, costCaption, costMethod, costTableRows, costTotalsRow, counterList, counterSummary, counterTotals } from './counters.ts';
 import type { Counter, Counters } from './counters.ts';
 import { BYTES, bytesLine } from './bytes.ts';
-import { HISTORY, HISTORY_NOTE, HISTORY_TABLE_HEAD, TUNING_NOTE, historyTableRows, prLabel, prUrl } from './history.ts';
 import { PRICES } from './prices.ts';
 import { proofLines } from './proof.ts';
 import { REAL, REAL_TABLE_HEAD, realIntro, realKeepElse, realLines, realMethod, realTableRows } from './real.ts';
@@ -19,6 +18,8 @@ import { SIZE_LINE } from './size.ts';
 import { STRESS, stressKeepElse, stressMarkdown } from './stress.ts';
 import type { StressAccuracyFile } from './stress.ts';
 import { SWEEP, SWEEP_TABLE_HEAD, SWEEP_TABLE_NOTE, sweepIntro, sweepLines, sweepMethod, sweepTableRows, sweepTitle } from './sweep.ts';
+import { TUNING_DETAIL, TUNING_NOTE } from './tuning.ts';
+import { workedExampleMarkdown } from './worked-example.ts';
 
 export const BENCHMARK_TITLE = 'Terset benchmark';
 
@@ -182,20 +183,11 @@ function accuracyMarkdown(file: AccuracyFile, counters: Counters | null): readon
     bullets(accuracyLines(file)),
     '## Accuracy method',
     bullets(accuracyMethod(file)),
+    TUNING_DETAIL,
     '### Published runs',
     publishedRunsMarkdownTable(file),
     PUBLISHED_RUNS_NOTE,
   ];
-}
-
-/** Every published number that moved, as one table, then the note on what the numbers are not checked against. */
-function historyMarkdown(): readonly string[] {
-  const rows = historyTableRows(HISTORY).map(([date, changed, why], index) => {
-    const pr = HISTORY[index]?.pr ?? null;
-    const url = prUrl(pr);
-    return markdownRow([date, changed, why, url === null ? prLabel(pr) : `[${prLabel(pr)}](${url})`]);
-  });
-  return ['## Number history', [markdownRow(HISTORY_TABLE_HEAD), markdownRow(HISTORY_TABLE_HEAD.map(() => '---')), ...rows].join('\n'), HISTORY_NOTE];
 }
 
 /** The benchmark as Markdown, for /benchmark.md and llms-full.txt. Terset comes first in every comparison. */
@@ -209,6 +201,7 @@ export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CL
     `# ${BENCHMARK_TITLE}`,
     benchmarkSummary(bench, counters).join(' '),
     bytesLine(BYTES),
+    ...workedExampleMarkdown(counters !== null && counters.claude !== null),
     ...counts,
     ...cost,
     ...(keepElse.length > 0 ? ['## When to keep something else', bullets(keepElse)] : []),
@@ -219,7 +212,5 @@ export function benchmarkMarkdown(bench: BenchFile, claude: ClaudeCounts = NO_CL
     ...(costLines.length > 0 ? ['## Cost method', bullets(costLines)] : []),
     '## Limits',
     bullets(benchmarkLimits(counters)),
-    // The history names both counters, so it shows only when both are ready.
-    ...(counters === null || counters.claude === null ? [] : historyMarkdown()),
   ].join('\n\n');
 }

@@ -36,7 +36,7 @@ export const NAMES: PerLang<{ readonly rulesFor: string; readonly encode: string
 export const DOCS_TITLE = 'Terset docs';
 export const DOCS_DESCRIPTION = 'Install Terset for JavaScript or Python, encode your first table, and look up every function, error and limit.';
 export const DOCS_LEAD = 'Install, a quick start, a cheat sheet and the full API for JavaScript and Python.';
-export const FORMAT_LINE = 'The format is frozen at format version 1.0. That number is separate from the package version, which is still 0.x. JavaScript and Python are separate implementations that both pass the conformance suite at conformance/ in the repository.';
+export const FORMAT_LINE = 'The encoder writes format version 1.1 by default. Text written in format 1.0 still decodes, and `encode` can still write it. That number is separate from the package version, which is still 0.x. JavaScript and Python are separate implementations that both pass the conformance suite at conformance/ in the repository.';
 export const VERSION_LINE = `Version ${PACKAGE_VERSION} for JavaScript and Python. ${FORMAT_LINE}`;
 
 /** The sections of /docs, in order. The page, its contents list and /docs.md share them. */
@@ -61,8 +61,8 @@ export const QUICK_START_INTRO = 'Encode the data, send the fitted rules with it
 export const CHEAT_INTRO = 'Common shapes, as JSON and as the text `encode` writes for them. The Terset side is made by the encoder when the site builds. The gaps are tabs.';
 export const API_INTRO = 'Every public name in both packages. Pick a language to see its signatures, errors and examples.';
 export const EXPORTS_LINE: PerLang<string> = {
-  js: `\`${PACKAGE_NAME}\` exports \`encode\`, \`decode\`, \`rulesFor\`, \`RULES\` and the types \`JsonValue\`, \`JsonObject\` and \`JsonRoot\`.`,
-  py: '`terset` exports `encode`, `decode`, `rules_for`, `RULES` and the type aliases `JsonValue`, `JsonObject`, `JsonRoot`, `JsonInputValue` and `JsonInputRoot`.',
+  js: `\`${PACKAGE_NAME}\` exports \`encode\`, \`decode\`, \`rulesFor\`, \`RULES\` and the types \`JsonValue\`, \`JsonObject\`, \`JsonRoot\`, \`FormatVersion\` and \`EncodeOptions\`.`,
+  py: '`terset` exports `encode`, `decode`, `rules_for`, `RULES` and the type aliases `JsonValue`, `JsonObject`, `JsonRoot`, `JsonInputValue`, `JsonInputRoot` and `FormatVersion`.',
 };
 
 /** The first line of each package README. */
@@ -145,7 +145,7 @@ const messages = [
 
 console.log(text);
 console.log(JSON.stringify(decode(text)) === JSON.stringify(data)); // true`,
-    output: 'team: core\nusers[3]:\nid\tname\trole\nu1\tAda\tadmin\nu2\tBen\tops\nu3\tChen\t\ntrue',
+    output: 'team: core\nusers[3]:\nid\tname\tname=value\nu1\tAda\trole=admin\nu2\tBen\trole=ops\nu3\tChen\ntrue',
   },
   py: {
     code: `from terset import decode, encode, rules_for
@@ -169,7 +169,7 @@ messages = [
 
 print(text)
 print(decode(text) == data)  # True`,
-    output: 'team: core\nusers[3]:\nid\tname\trole\nu1\tAda\tadmin\nu2\tBen\tops\nu3\tChen\t\nTrue',
+    output: 'team: core\nusers[3]:\nid\tname\tname=value\nu1\tAda\trole=admin\nu2\tBen\trole=ops\nu3\tChen\nTrue',
   },
 };
 
@@ -226,7 +226,7 @@ export const CHEAT_SHEET: readonly CheatInput[] = [
   {
     id: 'uneven',
     title: 'Uneven rows',
-    about: 'A missing field is an empty cell. The header holds every field once.',
+    about: 'Fields every row has are columns. The other fields follow as `name=value` cells, only in the rows that have them.',
     value: {
       users: [
         { id: 'u1', name: 'Ada', role: 'admin' },
@@ -277,7 +277,8 @@ export const RULES_INTRO: readonly string[] = [
 
 export const RULES_PARTS: readonly { readonly when: string; readonly adds: string }[] = [
   { when: 'Any table is present', adds: 'The tables sentence.' },
-  { when: 'A table cell is empty', adds: 'The empty cells sentence.' },
+  { when: 'A table cell is empty (format 1.0 text)', adds: 'The empty cells sentence.' },
+  { when: 'A table header ends with `name=value`', adds: 'The `name=value` sentence.' },
   { when: 'A table cell or root value is a quoted string', adds: 'The quotes sentence.' },
   { when: 'A table cell holds a JSON array or object', adds: 'The nested cells sentence.' },
   { when: 'A list table starts with a bare `id` header', adds: 'The `id` header sentence.' },

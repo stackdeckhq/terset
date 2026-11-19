@@ -214,10 +214,7 @@
 .mk.cn, .mk.rk { background: color-mix(in srgb, var(--c-count) 14%, transparent); color: var(--c-count); }
 .mk.cs, .mk.id { background: color-mix(in srgb, var(--c-const) 14%, transparent); color: var(--c-const); }
 .mk.sh, .mk.shl, .mk.js { background: color-mix(in srgb, var(--c-shape) 12%, transparent); color: var(--c-shape); }
-.mk.ab { color: var(--code-dim); box-shadow: none; padding: 0; margin: 0; }
-/* The empty-cell box rides higher than the text, so its marker starts lower to stay in the gap between lines. */
-.mk.ab::after { top: -8px; }
-.mk.hd { background: color-mix(in srgb, var(--c-field) 12%, transparent); color: var(--c-field); }
+.mk.hd, .mk.nm { background: color-mix(in srgb, var(--c-field) 12%, transparent); color: var(--c-field); }
 .mk.qt { background: color-mix(in srgb, var(--c-quote) 12%, transparent); color: var(--c-quote); }
 .keys li code .json { color: var(--c-shape); }
 .keys { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 28px 32px; grid-template-columns: 1fr; }
@@ -241,7 +238,6 @@
 .case .arrow::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
 .case .t { margin: 0; background: var(--code-bg); color: var(--code-fg); padding: 14px 16px; border-radius: var(--r-md); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; font-family: var(--mono); word-break: normal; overflow-wrap: anywhere; box-shadow: 0 0 0 1px var(--code-ring); }
 .case .t em { font-style: normal; background: color-mix(in srgb, var(--c-count) 20%, transparent); box-shadow: inset 0 -2px 0 var(--c-count); border-radius: 3px; color: var(--c-count-hi); padding: 0 1px; }
-.case .t em.ab { background: color-mix(in srgb, var(--code-dim) 10%, transparent); box-shadow: none; padding: 0; }
 /* A visible tab mark between cells, so the split reads without real tab characters. */
 .case .t .cell { white-space: nowrap; }
 .case .t .tb { display: inline-block; width: 2.4ch; text-align: center; color: var(--code-punct); }

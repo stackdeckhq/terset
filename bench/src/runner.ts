@@ -7,7 +7,7 @@ import { fingerprint, key, reserveInput } from './plan.ts';
 import type { Task } from './plan.ts';
 import { markdown, summaries } from './report.ts';
 import { budgetsSchema, encodersSchema, inputReservationSchema, modelSchema, responseSchema, resultSchema, runIdSchema } from './schema.ts';
-import type { Budgets, Encoders, InputReservation, Result, Row, Usage } from './schema.ts';
+import type { Budgets, Encoders, InputReservation, Result, Row, TersetFormat, Usage } from './schema.ts';
 import { score } from './scoring.ts';
 
 async function installedVersion(name: keyof Encoders): Promise<string> {
@@ -41,6 +41,8 @@ function rowKey(row: Pick<Row, 'model' | 'format' | 'dataset' | 'questionId'>): 
 export async function run(options: {
   runId: string; directory: string; tasks: Task[]; client: Client; mode: Result['mode']; budgets: Budgets;
   inputReservation?: InputReservation; suite?: SuiteRecord;
+  /** The Terset format the tasks were planned with. The fingerprint already covers the prompts. */
+  tersetFormat?: TersetFormat;
 }): Promise<Result> {
   const runId = runIdSchema.parse(options.runId);
   for (const task of options.tasks) modelSchema.parse(task.model);
@@ -109,6 +111,7 @@ export async function run(options: {
     result.status = 'partial';
     result.suite = suite.name;
     result.encoders = encoders;
+    result.tersetFormat = options.tersetFormat ?? '1.1';
     result.reason = null;
     result.inputReservation = inputReservation;
     const questions = new Map<string, Task[]>();

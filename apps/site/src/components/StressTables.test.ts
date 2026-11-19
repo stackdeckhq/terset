@@ -4,9 +4,12 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { STRESS, STRESS_DAMAGE_NOTE, STRESS_GROUP_LABELS, STRESS_QUOTED_NOTE, stressGroupRows, stressGroups, stressHeadlineNote, stressTableRows } from '../data/stress.ts';
+import { STRESS_FIXTURE } from '../data/accuracy-fixtures.ts';
+import { STRESS_DAMAGE_NOTE, STRESS_GROUP_LABELS, STRESS_QUOTED_NOTE, stressGroupRows, stressGroups, stressHeadlineNote, stressTableRows } from '../data/stress.ts';
 import { StressGroupTables, StressHeadline } from './StressTables.tsx';
 
+// The tables render a small hand-written stress file.
+const STRESS = STRESS_FIXTURE;
 const headline = renderToStaticMarkup(createElement(StressHeadline, { file: STRESS }));
 const groups = renderToStaticMarkup(createElement(StressGroupTables, { file: STRESS }));
 const html = headline + groups;
@@ -22,7 +25,7 @@ describe('stress tables', () => {
 
   it('marks the fewest input tokens on each model and leaves every score plain', () => {
     expect(html.match(/class="[^"]*is-less[^"]*"/gu)).toEqual(['class="is-less"', 'class="is-less"', 'class="is-less"']);
-    expect(html).toContain('<td class="grp-start">109 of 120</td><td class="is-less">512,108</td>');
+    expect(html).toContain('<td class="grp-start">113 of 120</td><td class="is-less">500,000</td>');
     expect(html).not.toMatch(/is-more|terset-cheaper|terset-pricier/u);
   });
 
@@ -30,7 +33,7 @@ describe('stress tables', () => {
     expect(html.match(/<div class="tablewrap scroll-x on-light" tabindex="0" role="region"/gu)).toHaveLength(1 + stressGroups(STRESS).length);
   });
 
-  it('carries the damage note in the fold, the quote-mark note under the open table, and the three run report links', () => {
+  it('carries the damage note in the fold, the quote-mark note under the open table, and every run report link', () => {
     expect(groups).toContain(STRESS_DAMAGE_NOTE);
     // The quote-mark note explains the compact JSON score in the open table, so it sits right under it, once.
     expect(headline).toContain(`</table></div><p class="tbl-note">${stressHeadlineNote(STRESS)}</p><p class="tbl-note">${STRESS_QUOTED_NOTE}</p>`);
@@ -39,6 +42,6 @@ describe('stress tables', () => {
   });
 
   it('keeps the lowest Terset score and its token count in the open card', () => {
-    expect(headline).toContain('<td class="grp-start">109 of 120</td><td class="is-less">512,108</td>');
+    expect(headline).toContain('<td class="grp-start">113 of 120</td><td class="is-less">500,000</td>');
   });
 });

@@ -50,10 +50,10 @@ describe("audit regressions", () => {
     }
   });
 
-  it("does not build a wide sparse table that JSON beats", () => {
+  it("does not build a wide sparse 1.0 table that JSON beats", () => {
     const wide = Array.from({ length: 20_000 }, (_, index) => ({ [`field_${String(index)}`]: index }));
     const text = JSON.stringify(wide);
-    assert.equal(encode(wide), text);
+    assert.equal(encode(wide, { format: "1.0" }), text);
     let decoded: JsonRoot = {};
     const ms = elapsedMs(() => { decoded = decode(text); });
     assert.deepEqual(decoded, wide);
@@ -107,9 +107,10 @@ describe("spec rules", () => {
       const json = JSON.stringify(list);
       if (text !== json) assert.ok(utf8.encode(text.slice(text.indexOf("\n") + 1)).length < utf8.encode(json).length, json);
     }
-    // Counting characters picks JSON here. Counting bytes picks the table.
+    // Counting characters picks JSON here. Counting bytes picks the 1.0 table.
     const wideKeys = Array.from({ length: 9 }, (_, index) => ({ [`中中${String(index)}`]: 1, [`中中${String(index + 1)}`]: 1 }));
-    const table = roundTrip(wideKeys);
+    const table = encode(wideKeys, { format: "1.0" });
+    assert.deepEqual(decode(table), wideKeys);
     assert.ok(table.startsWith("[9]\n"), "table form");
     assert.ok(table.length > JSON.stringify(wideKeys).length, "longer in characters");
     assert.equal(utf8.encode(table).length, 211);

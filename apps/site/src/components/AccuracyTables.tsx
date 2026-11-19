@@ -15,11 +15,10 @@ import {
   kindColumns,
   kindTableRows,
   publishedRunsRows,
-  runsCellLines,
   shortModelName,
   signMark,
 } from '../data/accuracy.ts';
-import type { AccuracyFile, AccuracyModel, AccuracyRow } from '../data/accuracy.ts';
+import type { AccuracyFile, AccuracyModel } from '../data/accuracy.ts';
 
 /** Input tokens by data set: the data set chart as a table. /benchmark puts it in the data set fold. */
 export function KindTable({ file }: { readonly file: AccuracyFile }) {
@@ -76,20 +75,6 @@ export function KindTable({ file }: { readonly file: AccuracyFile }) {
   );
 }
 
-/** The runs cell as stacked lines: the mean, then each run's score. Falls back to the one-line cell. */
-function RunsLines({ row, cell }: { readonly row: AccuracyRow | undefined; readonly cell: string }) {
-  if (row === undefined) return <>{cell}</>;
-  return (
-    <>
-      {runsCellLines(row).map((line) => (
-        <span key={line} className="bt-line">
-          {line}
-        </span>
-      ))}
-    </>
-  );
-}
-
 /** One model's table. The lowest input tokens and cost are marked like the kind table, and so is every format Terset cost less than. */
 function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly model: AccuracyModel }) {
   const marks = accuracyTableMarks(model);
@@ -98,7 +83,7 @@ function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly mod
       <h3>{model.name}</h3>
       <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label={`Accuracy table, ${model.name}, scrolls sideways on small screens`}>
         <table className="bt">
-          <caption className="sr">{`${model.name}: correct answers out of ${String(file.questions)}, the runs behind them, accuracy, Wilson 95% interval, input tokens and cost at API list price per format, with how much less Terset cost than each format`}</caption>
+          <caption className="sr">{`${model.name}: correct answers out of ${String(file.questions)}, accuracy, Wilson 95% interval, input tokens and cost at API list price per format, with how much less Terset cost than each format`}</caption>
           <thead>
             <tr>
               {ACCURACY_TABLE_HEAD.map((cell) => (
@@ -114,7 +99,7 @@ function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly mod
                 <th scope="row">{name}</th>
                 {cells.map((cell, index) => (
                   <td key={ACCURACY_TABLE_HEAD[index + 1]} className={marks[rowIndex]?.[index] ?? undefined}>
-                    {ACCURACY_TABLE_HEAD[index + 1] === 'Runs' ? <RunsLines row={model.rows[rowIndex]} cell={cell} /> : cell}
+                    {cell}
                   </td>
                 ))}
               </tr>
@@ -129,13 +114,13 @@ function ModelTable({ file, model }: { readonly file: AccuracyFile; readonly mod
   );
 }
 
-/** Every published run, with what the tables take from it. A run the tables do not use reads "History only". */
+/** The one published run behind each model's table. */
 export function PublishedRunsTable({ file }: { readonly file: AccuracyFile }) {
   return (
     <>
       <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label="Published runs table, scrolls sideways on small screens">
         <table className="bt bt-text">
-          <caption className="sr">Every published accuracy run, oldest first, with its date, models, formats, what the tables take from it and its failed requests</caption>
+          <caption className="sr">The published accuracy run of each model, with its date and its failed requests</caption>
           <thead>
             <tr>
               {ACCURACY_RUNS_HEAD.map((cell) => (

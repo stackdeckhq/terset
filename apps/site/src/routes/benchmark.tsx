@@ -2,9 +2,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { AccuracyTables, KindTable, PublishedRunsTable } from '../components/AccuracyTables.tsx';
 import { BenchChart } from '../components/BenchChart.tsx';
+import { CodeBlock, colorize } from '../components/CodeBlock.tsx';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { Fold } from '../components/Fold.tsx';
-import { HistoryTable } from '../components/HistoryTable.tsx';
 import { RealTable } from '../components/RealTable.tsx';
 import { SampleTables } from '../components/SampleTables.tsx';
 import { StressGroupTables, StressHeadline } from '../components/StressTables.tsx';
@@ -13,13 +13,16 @@ import { BigNumbers, CostBars, DatasetChart } from '../components/Proof.tsx';
 import { ACCURACY, accuracyIntro, accuracyMethod, accuracyOverlapLine } from '../data/accuracy.ts';
 import { BYTES, bytesLine } from '../data/bytes.ts';
 import { benchmarkCostMethod, benchmarkKeepElseAll, benchmarkLimits, benchmarkMethod, benchmarkSampleTotals, sampleTotalsLine } from '../data/benchmark-doc.ts';
-import { HISTORY_NOTE, TUNING_NOTE } from '../data/history.ts';
 import { BENCH, BENCH_FILE, CLAUDE, COUNTERS, countersHeadline, countersPageNote } from '../data/numbers.ts';
 import { datasetFoldAbout, proofHeading, smallerThanToon, smallerThanToonLine } from '../data/proof.ts';
 import { REAL, realIntro, realLines, realMethod } from '../data/real.ts';
 import { STRESS, STRESS_FREEZE_NOTE, stressFoldAbout, stressLimitDetail, stressPageIntro } from '../data/stress.ts';
 import { SWEEP, sweepIntro, sweepLines, sweepTitle } from '../data/sweep.ts';
+import { TUNING_DETAIL, TUNING_NOTE } from '../data/tuning.ts';
+import { WORKED_EXAMPLE, WORKED_INTRO, WORKED_PROMPT_ABOUT, WORKED_PROMPT_TITLE, WORKED_TITLE, workedPlacement } from '../data/worked-example.ts';
+import { highlight } from '../lib/format.ts';
 import { inline } from '../lib/markdown.ts';
+import { esc } from '../lib/text.ts';
 
 const TITLE = 'Tokens on every case';
 
@@ -42,6 +45,39 @@ function Lines({ lines }: { readonly lines: readonly string[] }) {
 /** Running text. On wide screens it sits in the right column, so it ends on the same edge as the blocks. */
 function Text({ children }: { readonly children: ReactNode }) {
   return <div className="bench-text">{children}</div>;
+}
+
+/**
+ * One JSON input, the Terset text and rules line that come out, and where each goes.
+ * The full prompt sits in a fold. The Terset tabs stay real tabs, drawn as column gaps.
+ */
+function WorkedExampleSection() {
+  const example = WORKED_EXAMPLE;
+  const userHtml = `${esc(example.userParts.before)}${highlight(example.terset, { align: true })}${esc(example.userParts.after)}`;
+  return (
+    <section className="doc-section bench-sec" id="what-gets-sent" aria-labelledby="sent-h">
+      <h2 id="sent-h">{WORKED_TITLE}</h2>
+      <Text>
+        <p>{WORKED_INTRO}</p>
+      </Text>
+      <div className="sent-pair">
+        <CodeBlock label="JSON in" text={example.json} html={colorize('json', example.json)} />
+        <CodeBlock label="Terset out" text={example.terset} html={highlight(example.terset, { align: true })} wrap={false} />
+      </div>
+      <CodeBlock label="Rules line for this text" text={example.rules} />
+      <Text>
+        {workedPlacement(COUNTERS !== null && COUNTERS.claude !== null).map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </Text>
+      <div className="folds">
+        <Fold title={WORKED_PROMPT_TITLE} about={WORKED_PROMPT_ABOUT}>
+          <CodeBlock label="System prompt" text={example.prompt.system} />
+          <CodeBlock label="User message" text={example.prompt.user} html={userHtml} wrap={false} />
+        </Fold>
+      </div>
+    </section>
+  );
 }
 
 /**
@@ -88,6 +124,7 @@ function BenchmarkPage() {
             </Fold>
           </div>
         </section>
+        <WorkedExampleSection />
         <section className="doc-section bench-sec" aria-labelledby="cost-bars-h">
           <h2 id="cost-bars-h">Cost per format</h2>
           <Text>
@@ -174,13 +211,13 @@ function BenchmarkPage() {
         <section className="doc-section bench-sec" aria-labelledby="record-h">
           <h2 id="record-h">Method and record</h2>
           <Text>
-            <p>How each number was made, the runs behind it, its limits and every change to it.</p>
+            <p>How each number was made, the runs behind it and its limits.</p>
           </Text>
           <div className="folds">
             <Fold title="Accuracy method" about="Where the questions come from, how answers were scored and priced, and every answer on file.">
               <Text>
                 <Lines lines={accuracyMethod(ACCURACY)} />
-                <p>{HISTORY_NOTE}</p>
+                <p>{TUNING_DETAIL}</p>
               </Text>
             </Fold>
             <Fold title="Published runs" about="Every accuracy run, with what the tables take from it." bodyId="published-runs">
@@ -203,12 +240,6 @@ function BenchmarkPage() {
                 <Lines lines={benchmarkLimits(COUNTERS)} />
               </Text>
             </Fold>
-            {/* The history names both counters, so it shows only when both are ready. */}
-            {COUNTERS !== null && COUNTERS.claude !== null && (
-              <Fold title="Number history" about="Every published number that moved, why, and the pull request that moved it." bodyId="history">
-                <HistoryTable />
-              </Fold>
-            )}
           </div>
         </section>
       </div>

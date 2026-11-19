@@ -124,5 +124,17 @@
     "text": "map{2}:\n@key\ta.b\tvalue\ttext\none\t1\t[1]\t\"true\"\ntwo\t2\t[2]\t\nlist[2]:\nid\n1\n2",
     "features": ["table", "empty", "quoted", "json", "id", "keyed", "nested"],
     "rules": "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
+  },
+  {
+    "name": "named list table",
+    "text": "[2]\na\tname=value\n1\tb=2\tc=3\n4\tc=6",
+    "features": ["table", "named"],
+    "rules": "Tables use tab-separated headers and rows. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent."
+  },
+  {
+    "name": "all format 1.1 constructs in fixed order",
+    "text": "map{3}:\n@key\ta.b\tname=value\none\t1\tv=\"true\"\ttext=[1]\ntwo\t2\nthree\t3\tv=x\nlist[2]:\nid\tname=value\nu1\tn=1\nu2",
+    "features": ["table", "named", "quoted", "json", "id", "keyed", "nested"],
+    "rules": "Tables use tab-separated headers and rows. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
   }
 ]

@@ -167,12 +167,12 @@ describe('bench numbers', () => {
     expect(list.filter((line) => line.includes('Plain CSV is'))).toHaveLength(2);
     expect(list.join(' ')).not.toContain('smaller than or equal to');
     expect(csvNote(BENCH)).toBe(
-      'Plain CSV is 9 to 88 tokens smaller on 2 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 4,769 vs 3,899.',
+      'Plain CSV is 9 to 88 tokens smaller on 2 flat, uniform lists, because it needs no rules line. It has no types, it merges null, absent and empty text, and it cannot hold nesting. On orders with line items it is larger: 4,769 vs 4,055.',
     );
   });
 
-  // The page and benchmark.md add the real files where another format wins, and the lowest stress score.
-  it('adds the real NWS file and the Claude Haiku 5.5 stress score to the full keep-else list', () => {
+  // The page and benchmark.md add the real files where another format wins, and the stable stress misses.
+  it('adds the real NWS file and the Claude Haiku 5.5 long-list misses to the full keep-else list', () => {
     const all = benchmarkKeepElseAll(BENCH_FILE, COUNTERS);
     expect(all.slice(0, benchmarkKeepElse(BENCH_FILE, COUNTERS).length)).toEqual(benchmarkKeepElse(BENCH_FILE, COUNTERS));
     expect(realKeepElse(REAL)).toEqual([
@@ -180,9 +180,7 @@ describe('bench numbers', () => {
       "Real data, NWS forecast grid, nested: Terset has 9.7% more tokens than TOON's best (34,068 vs 31,062). Terset has 1 more token than compact JSON (34,068 vs 34,067).",
     ]);
     expect(all).toContain(realKeepElse(REAL)[0]);
-    expect(all.at(-1)).toBe(
-      'Stress test: on Claude Haiku 5.5, Terset scored lowest of the four formats, with 109 of 120. Four of its six messy-data misses were on sparse data, where many cells are empty.',
-    );
+    expect(all.at(-1)).toBe('Long lists on Haiku: Terset got 24 of 30 questions, where pretty JSON got 27.');
     expect(benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE)).toContain(`## When to keep something else\n\n${all.map((line) => `- ${line}`).join('\n')}\n`);
   });
 

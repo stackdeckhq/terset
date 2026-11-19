@@ -21,13 +21,19 @@ it("keeps conformance fixtures out of both packages' private tests", () => {
   }
 });
 
-it("keeps the conformance manifest and specification on the same format version", () => {
-  const manifest: unknown = JSON.parse(readFileSync(new URL("conformance/manifest.json", root), "utf8"));
+function formatVersion(directory: string): unknown {
+  const manifest: unknown = JSON.parse(readFileSync(new URL(`${directory}manifest.json`, root), "utf8"));
   assert.ok(typeof manifest === "object" && manifest !== null && "formatVersion" in manifest);
+  return manifest.formatVersion;
+}
+
+it("keeps each format version's own suite, with the newest one matching the specification", () => {
   const spec = readFileSync(new URL("packages/terset/SPEC.md", root), "utf8");
   const version = /^Format version (\d+\.\d+)$/m.exec(spec)?.[1];
   assert.ok(version, "SPEC.md must state its format version");
-  assert.equal(manifest.formatVersion, version);
-  assert.deepEqual(readdirSync(new URL("conformance/", root)).filter(file => file.endsWith(".json")).sort(),
-    [...fixtures, "manifest.json"].sort(), "Every fixture file must have JavaScript and Python runners");
+  assert.equal(formatVersion("conformance/"), "1.0");
+  assert.equal(formatVersion("conformance/1.1/"), version);
+  const jsonFiles = (directory: string) => readdirSync(new URL(directory, root)).filter(file => file.endsWith(".json")).sort();
+  assert.deepEqual(jsonFiles("conformance/"), [...fixtures, "manifest.json"].sort(), "Every fixture file must have JavaScript and Python runners");
+  assert.deepEqual(jsonFiles("conformance/1.1/"), ["cases.json", "manifest.json", "rejections.json"], "Every fixture file must have JavaScript and Python runners");
 });

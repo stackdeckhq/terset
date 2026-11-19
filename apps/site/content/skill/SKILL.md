@@ -32,7 +32,7 @@ Never write Terset by hand. Always use `encode`. For one text, send `rulesFor(te
 
 ## How to read it
 
-A list starts with `key[N]:` and a keyed table with `key{N}:`, where `N` is the row count. A keyed table's first header is `@key`, and each row starts with its key. Each table has a tab-separated header and one row per record. Empty cells mean absent. Bare `id` means string ids; quoted `"id"` means typed cells. JSON quotes protect text that looks like a scalar. Uniform nested objects use dotted columns; other nested values stay JSON.
+A list starts with `key[N]:` and a keyed table with `key{N}:`, where `N` is the row count. A keyed table's first header is `@key`, and each row starts with its key. Each table has a tab-separated header and one row per record. When the header ends with `name=value`, each row lists its other fields after the columns as `name=value` cells, and a field a row does not list is absent. In older text, empty cells mean absent. Bare `id` means string ids; quoted `"id"` means typed cells. JSON quotes protect text that looks like a scalar. Uniform nested objects use dotted columns; other nested values stay JSON.
 
 {{EXAMPLE:users}}
 

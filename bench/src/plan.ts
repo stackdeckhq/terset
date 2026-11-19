@@ -3,14 +3,14 @@ import type { SuiteRecord } from './data.ts';
 import { encode, encodeDataset, estimateInputTokens, makePrompt, primerFor } from './formats.ts';
 import type { Prompt } from './formats.ts';
 import { FORMATS, inputReservationSchema, modelSchema, selectedFormatsSchema } from './schema.ts';
-import type { Dataset, Format, InputReservation, Model, Question } from './schema.ts';
+import type { Dataset, Format, InputReservation, Model, Question, TersetFormat } from './schema.ts';
 
 export interface Task { model: Model; format: Format; question: Question; prompt: Prompt; estimatedInputTokens: number }
 export function key(task: Pick<Task, 'model' | 'format' | 'question'>): string {
   return JSON.stringify([task.model.id, task.format, task.question.dataset, task.question.id]);
 }
 
-export function plan(models: Model[], questions: Question[], formats: readonly Format[] = FORMATS, datasets: Dataset[] = DATASETS): Task[] {
+export function plan(models: Model[], questions: Question[], formats: readonly Format[] = FORMATS, datasets: Dataset[] = DATASETS, tersetFormat: TersetFormat = '1.1'): Task[] {
   formats = selectedFormatsSchema.parse(formats);
   models = models.map(model => modelSchema.parse(model));
   if (new Set(models.map(m => m.id)).size !== models.length) throw new Error('Model ids must be unique');
@@ -18,8 +18,8 @@ export function plan(models: Model[], questions: Question[], formats: readonly F
   for (const dataset of datasets) {
     if (!questions.some(question => question.dataset === dataset.name)) continue;
     for (const format of formats) encoded.set(JSON.stringify([dataset.name, format]), {
-      primer: primerFor(format, encode(format, dataset.data)),
-      data: encodeDataset(format, dataset),
+      primer: primerFor(format, encode(format, dataset.data, tersetFormat)),
+      data: encodeDataset(format, dataset, tersetFormat),
     });
   }
   return questions.flatMap(question => models.flatMap(model => formats.map(format => {

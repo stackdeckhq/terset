@@ -1,82 +1,85 @@
-// The chart figures match the published runs, and the losses stay in view.
+// The chart figures come from the accuracy file, and the losses stay in view.
+// The accuracy figures use a small hand-written file; the headline uses the committed counters.
 import { describe, expect, it } from 'vitest';
-import { ACCURACY, accuracyOverlapLine, formatMean } from './accuracy.ts';
+import { ACCURACY_FIXTURE } from './accuracy-fixtures.ts';
+import { accuracyOverlapLine } from './accuracy.ts';
 import type { AccuracyFile, AccuracyModel } from './accuracy.ts';
 import { BENCH, COUNTERS, benchHeadline, counterSummary, underJson, underToon } from './numbers.ts';
 import type { CaseRow, Counters } from './numbers.ts';
 import { bigNumbers, bigNumbersNote, compare, costBars, costNote, datasetRows, datasetScale, datasetSummary, homeHeadline, proofHeading, proofLines, smallerThanToon } from './proof.ts';
 
-function model(id: string): AccuracyModel {
-  const found = ACCURACY.models.find((item) => item.id === id);
+const FIXTURE = ACCURACY_FIXTURE;
+
+function model(file: AccuracyFile, id: string): AccuracyModel {
+  const found = file.models.find((item) => item.id === id);
   if (found === undefined) throw new Error(`no ${id}`);
   return found;
 }
 
-const OPUS = model('claude-opus-5-5');
-const SOL = model('gpt-6.1-sol');
+const OPUS = model(FIXTURE, 'claude-opus-5-5');
+const SOL = model(FIXTURE, 'gpt-6.1-sol');
+
+/** A copy of the fixture with Opus's keyed data set changed. */
+function withOpusKeyed(terset: number): AccuracyFile {
+  const copy = structuredClone(FIXTURE);
+  const tokens = copy.kinds.find((item) => item.kind === 'keyed')?.models.find((item) => item.id === 'claude-opus-5-5');
+  if (tokens === undefined) throw new Error('no keyed tokens');
+  tokens.inputTokens = { ...tokens.inputTokens, terset };
+  return copy;
+}
 
 describe('cost bars', () => {
-  it('gives each format its cost at API list price and its runs, Terset first, scaled from zero', () => {
-    // Each model has a matched batch, so every format is a mean of its three runs on one day.
-    expect(costBars(OPUS).map((bar) => [bar.label, bar.costText, bar.runs])).toEqual([
-      ['Terset', '$5.65', ['mean of 3 runs', '2026-11-17']],
-      ['Compact JSON', '$8.05', ['mean of 3 runs', '2026-11-17']],
-      ['Pretty JSON', '$10.16', ['mean of 3 runs', '2026-11-17']],
-      ['TOON', '$6.35', ['mean of 3 runs', '2026-11-17']],
+  it('gives each format its cost at API list price and its run date, Terset first, scaled from zero', () => {
+    expect(costBars(FIXTURE, OPUS).map((bar) => [bar.label, bar.costText, bar.runs])).toEqual([
+      ['Terset', '$4.80', ['run 2099-01-01']],
+      ['Compact JSON', '$6.80', ['run 2099-01-01']],
+      ['Pretty JSON', '$8.80', ['run 2099-01-01']],
+      ['TOON', '$5.60', ['run 2099-01-01']],
     ]);
-    expect(costBars(SOL).map((bar) => [bar.label, bar.costText, bar.runs])).toEqual([
-      ['Terset', '$1.84', ['mean of 3 runs', '2026-11-17']],
-      ['Compact JSON', '$2.49', ['mean of 3 runs', '2026-11-17']],
-      ['Pretty JSON', '$3.56', ['mean of 3 runs', '2026-11-17']],
-      ['TOON', '$2.20', ['mean of 3 runs', '2026-11-17']],
+    expect(costBars(FIXTURE, SOL).map((bar) => [bar.label, bar.costText])).toEqual([
+      ['Terset', '$1.80'],
+      ['Compact JSON', '$2.40'],
+      ['Pretty JSON', '$3.40'],
+      ['TOON', '$2.20'],
     ]);
-    expect(costBars(SOL)[0]?.terset).toBe(true);
-    for (const bars of [costBars(OPUS), costBars(SOL)]) {
+    expect(costBars(FIXTURE, SOL)[0]?.terset).toBe(true);
+    for (const bars of [costBars(FIXTURE, OPUS), costBars(FIXTURE, SOL)]) {
       expect(Math.max(...bars.map((bar) => bar.fraction))).toBe(1);
       expect(bars.every((bar) => bar.fraction > 0)).toBe(true);
     }
+  });
+
+  it('throws for a model with no published run', () => {
+    expect(() => costBars({ ...FIXTURE, publishedRuns: [] }, OPUS)).toThrow('No published run for claude-opus-5-5');
   });
 });
 
 describe('big numbers', () => {
   it('shows fewer tokens, lower cost and the range of right answers across every format per model', () => {
-    expect(bigNumbers(ACCURACY).map((item) => [item.id, item.values.map((value) => `${value.model} ${value.text}`), item.win])).toEqual([
-      ['tokens', ['Opus 32.7%', 'Sol 27.3%'], true],
-      ['cost', ['Opus 29.8%', 'Sol 26.1%'], true],
-      ['answers', ['Opus 241 to 243 of 244', 'Sol 235.3 to 242 of 244'], false],
+    expect(bigNumbers(FIXTURE).map((item) => [item.id, item.values.map((value) => `${value.model} ${value.text}`), item.win])).toEqual([
+      ['tokens', ['Opus 33.3%', 'Sol 27.3%'], true],
+      ['cost', ['Opus 29.4%', 'Sol 25.0%'], true],
+      ['answers', ['Opus 241 to 243 of 244', 'Sol 236 to 242 of 244'], false],
     ]);
-    // Every format on both models has three runs, so the label names the count.
-    expect(bigNumbers(ACCURACY)[2]?.label).toBe('right answers across all four formats, each a mean of 3 runs');
-  });
-
-  it('reads the answer range from the lowest and highest format on each model', () => {
-    const [opus, sol] = bigNumbers(ACCURACY)[2]?.values ?? [];
-    for (const [value, item] of [
-      [opus, OPUS],
-      [sol, SOL],
-    ] as const) {
-      const scores = item.rows.map((row) => row.correct);
-      expect(value?.figure.startsWith(formatMean(Math.min(...scores)))).toBe(true);
-      expect(value?.figure.endsWith(formatMean(Math.max(...scores)))).toBe(true);
-    }
+    expect(bigNumbers(FIXTURE)[2]?.label).toBe('right answers across all four formats');
   });
 
   it('splits each value into a large figure and a quiet tail that join back into the text', () => {
-    for (const item of bigNumbers(ACCURACY)) for (const value of item.values) expect(`${value.figure}${value.tail}`).toBe(value.text);
-    expect(bigNumbers(ACCURACY)[2]?.values.map((value) => [value.figure, value.tail])).toEqual([
+    for (const item of bigNumbers(FIXTURE)) for (const value of item.values) expect(`${value.figure}${value.tail}`).toBe(value.text);
+    expect(bigNumbers(FIXTURE)[2]?.values.map((value) => [value.figure, value.tail])).toEqual([
       ['241 to 243', ' of 244'],
-      ['235.3 to 242', ' of 244'],
+      ['236 to 242', ' of 244'],
     ]);
   });
 
   it('heads the cards with the question count from the data', () => {
-    expect(proofHeading(ACCURACY)).toBe('Fewer tokens on the 244-question test');
-    expect(proofHeading({ ...ACCURACY, questions: 1200 })).toBe('Fewer tokens on the 1,200-question test');
+    expect(proofHeading(FIXTURE)).toBe('Fewer tokens on the 244-question test');
+    expect(proofHeading({ ...FIXTURE, questions: 1200 })).toBe('Fewer tokens on the 1,200-question test');
   });
 
   it('says the accuracy ranges overlap, that this proves no equal accuracy, and throws once they stop overlapping', () => {
-    expect(accuracyOverlapLine(ACCURACY)).toBe('The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate.');
-    const copy = structuredClone(ACCURACY) as AccuracyFile & { models: { rows: { low: number; high: number }[] }[] };
+    expect(accuracyOverlapLine(FIXTURE)).toBe('The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate.');
+    const copy = structuredClone(FIXTURE) as AccuracyFile & { models: { rows: { low: number; high: number }[] }[] };
     const first = copy.models[0]?.rows[0];
     if (first === undefined) throw new Error('no row');
     first.low = 0.999;
@@ -85,15 +88,15 @@ describe('big numbers', () => {
   });
 
   it('names the tokenizer behind each model and how its input tokens were counted', () => {
-    expect(bigNumbersNote(ACCURACY)).toBe("Input tokens: Claude Opus 5.5 on the Claude tokenizer, GPT 6.1 Sol on the OpenAI tokenizer. Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them.");
+    expect(bigNumbersNote(FIXTURE)).toBe('Input tokens: Claude Opus 5.5 on the Claude tokenizer, GPT 6.1 Sol on the OpenAI tokenizer. Input tokens are as each model reported them.');
   });
 
   it('says cost is at API list price with the price read date', () => {
-    expect(costNote(ACCURACY)).toBe('Cost for all 244 questions at API list price: input and output tokens times list prices read on 2026-11-17.');
+    expect(costNote(FIXTURE)).toBe('Cost for all 244 questions at API list price: input and output tokens times list prices read on 2026-11-17.');
   });
 
   it('refuses to print when Terset no longer costs less than compact JSON', () => {
-    const copy = structuredClone(ACCURACY) as AccuracyFile & { models: { rows: { totalCost: number }[] }[] };
+    const copy = structuredClone(FIXTURE) as AccuracyFile & { models: { rows: { totalCost: number }[] }[] };
     const row = copy.models[0]?.rows[0];
     if (row === undefined) throw new Error('no row');
     row.totalCost = 100;
@@ -102,44 +105,34 @@ describe('big numbers', () => {
 });
 
 describe('data sets', () => {
-  it('lists all 13 data sets for each model', () => {
-    expect(datasetRows(ACCURACY, OPUS)).toHaveLength(13);
-    expect(datasetRows(ACCURACY, SOL)).toHaveLength(13);
+  it('lists every data set for each model, against TOON and compact JSON', () => {
+    expect(datasetRows(FIXTURE, OPUS).map((row) => [row.kind, row.questions, row.vsToon.text, row.vsJson.text])).toEqual([
+      ['tabular', 41, '−7.7%', '−40.0%'],
+      ['nested-group', 18, '−6.3%', '−40.0%'],
+      ['keyed', 17, '−9.1%', '−44.4%'],
+    ]);
+    expect(datasetRows(FIXTURE, SOL)).toHaveLength(3);
   });
 
-  it('puts Terset under TOON on 13 of 13 for both models, nested config included', () => {
-    expect(datasetRows(ACCURACY, SOL).every((row) => row.vsToon.verdict === 'fewer')).toBe(true);
-    const opus = datasetRows(ACCURACY, OPUS);
-    expect(opus.filter((row) => row.vsToon.verdict === 'fewer')).toHaveLength(13);
-    const config = opus.find((row) => row.kind === 'nested-config');
-    expect(config?.terset).toBe(config === undefined ? 0 : config.toon - 1102);
-    expect(config?.vsToon).toMatchObject({ verdict: 'fewer', text: '−3.4%' });
-  });
-
-  it('shows the nested config loss against compact JSON plainly on both models', () => {
-    const loss = (item: AccuracyModel) => datasetRows(ACCURACY, item).filter((row) => row.vsJson.verdict === 'more').map((row) => [row.kind, row.vsJson.text]);
-    expect(loss(OPUS)).toEqual([['nested-config', '+1.5%']]);
-    expect(loss(SOL)).toEqual([['nested-config', '+5.4%']]);
-  });
-
-  it('sums the data sets to each model total', () => {
-    for (const item of [OPUS, SOL]) {
-      const rows = datasetRows(ACCURACY, item);
-      expect(rows.reduce((sum, row) => sum + row.terset, 0)).toBe(item.rows[0]?.inputTokens);
-      expect(rows.reduce((sum, row) => sum + row.questions, 0)).toBe(ACCURACY.questions);
-    }
+  it('shows a loss against compact JSON plainly, on the one model that has it', () => {
+    const file = withOpusKeyed(190);
+    const loss = (item: AccuracyModel) => datasetRows(file, item).filter((row) => row.vsJson.verdict === 'more').map((row) => [row.kind, row.vsJson.text]);
+    expect(loss(model(file, 'claude-opus-5-5'))).toEqual([['keyed', '+5.6%']]);
+    expect(loss(model(file, 'gpt-6.1-sol'))).toEqual([]);
   });
 
   it('says the result per model in one line', () => {
-    expect(datasetSummary(datasetRows(ACCURACY, OPUS))).toBe('Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).');
-    expect(datasetSummary(datasetRows(ACCURACY, SOL))).toBe('Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).');
+    expect(datasetSummary(datasetRows(FIXTURE, OPUS))).toBe('Fewer tokens than TOON on 3 of 3. Fewer than compact JSON on 3 of 3.');
+    const file = withOpusKeyed(190);
+    expect(datasetSummary(datasetRows(file, model(file, 'claude-opus-5-5')))).toBe('Fewer tokens than TOON on 2 of 3 (1 more). Fewer than compact JSON on 2 of 3 (1 more).');
   });
 
   it('shares one scale from zero, wide enough for the largest saving and loss', () => {
-    const scale = datasetScale(ACCURACY);
-    // Analytics on Opus saves 52.5% against compact JSON, so the scale rounds up to 55%.
-    expect(scale.save).toBeCloseTo(0.55, 9);
-    expect(scale.lose).toBeCloseTo(0.1, 9);
+    // Keyed data saves 44.4% against compact JSON, so the scale rounds up to 45%. With no loss, it keeps one 5% step.
+    expect(datasetScale(FIXTURE).save).toBeCloseTo(0.45, 9);
+    expect(datasetScale(FIXTURE).lose).toBeCloseTo(0.05, 9);
+    // A 72.7% loss against TOON rounds up to 75%.
+    expect(datasetScale(withOpusKeyed(190)).lose).toBeCloseTo(0.75, 9);
   });
 
   it('calls a gap under half a percent a tie', () => {
@@ -150,12 +143,13 @@ describe('data sets', () => {
 });
 
 describe('smaller than TOON', () => {
-  it('counts the 11 sample cases and Sol on all 13 data sets, on the OpenAI tokenizer', () => {
-    expect(smallerThanToon(ACCURACY, COUNTERS)).toMatchObject({ smaller: 22, total: 24, text: 'Smaller than TOON on 22 of 24 data sets', tokenizer: 'OpenAI tokenizer' });
+  it('counts the 11 sample cases and every Sol data set, on the OpenAI tokenizer', () => {
+    // 9 of the 11 committed sample cases, and 3 of the 3 fixture data sets.
+    expect(smallerThanToon(FIXTURE, COUNTERS)).toMatchObject({ smaller: 12, total: 14, text: 'Smaller than TOON on 12 of 14 data sets', tokenizer: 'OpenAI tokenizer' });
   });
 
   it('gives nothing while the bench is pending', () => {
-    expect(smallerThanToon(ACCURACY, null)).toBeNull();
+    expect(smallerThanToon(FIXTURE, null)).toBeNull();
   });
 });
 
@@ -243,12 +237,12 @@ describe('home headline', () => {
 describe('benchmark.md lines', () => {
   // Accuracy is left to the overlap line that follows these lines, so nothing here calls it a tie.
   it('states each claim with its tokenizer and leaves accuracy to the overlap line', () => {
-    expect(proofLines(ACCURACY, COUNTERS)).toEqual([
-      'Fewer input tokens than compact JSON: 32.7% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
-      'Lower cost than compact JSON: 29.8% on Opus and 26.1% on Sol.',
-      'Smaller than TOON on 22 of 24 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 13 benchmark data sets as GPT 6.1 Sol reported them.',
-      'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
-      'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 13 of 13. Fewer than compact JSON on 12 of 13 (1 more).',
+    expect(proofLines(FIXTURE, COUNTERS)).toEqual([
+      'Fewer input tokens than compact JSON: 33.3% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
+      'Lower cost than compact JSON: 29.4% on Opus and 25.0% on Sol.',
+      'Smaller than TOON on 12 of 14 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 3 benchmark data sets as GPT 6.1 Sol reported them.',
+      'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 3 of 3. Fewer than compact JSON on 3 of 3.',
+      'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 3 of 3. Fewer than compact JSON on 3 of 3.',
     ]);
   });
 });

@@ -1,16 +1,22 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { it } from "node:test";
-import { decode, RULES, rulesFor } from "../src/index.ts";
-import { encoderRules } from "./rules-truth.ts";
+import { decode, encode, RULES, rulesFor } from "../src/index.ts";
+import { encoderRules, SENTENCES } from "./rules-truth.ts";
 
 it("fits the shared construct combinations and ignores quoted and cell lookalikes", () => {
-  const cases = JSON.parse(readFileSync(new URL("./rules-cases.json", import.meta.url), "utf8")) as { name: string; text: string; rules: string }[];
+  const cases = JSON.parse(readFileSync(new URL("./rules-cases.json", import.meta.url), "utf8")) as { name: string; text: string; features: string[]; rules: string }[];
+  const fitted = (features: string[]): string => Object.entries(SENTENCES)
+    .flatMap(([feature, sentence]) => features.includes(feature) ? [sentence] : []).join(" ");
   for (const entry of cases) {
-    assert.equal(encoderRules(decode(entry.text)), entry.rules, `${entry.name}: source oracle`);
+    const format = encode(decode(entry.text)) === entry.text ? "1.1" : "1.0";
+    assert.equal(encoderRules(decode(entry.text), format), entry.rules, `${entry.name}: source oracle`);
     assert.equal(rulesFor(entry.text), entry.rules, entry.name);
+    assert.equal(fitted(entry.features), entry.rules, `${entry.name}: features`);
   }
-  assert.equal(cases.at(-1)?.rules, RULES);
+  // One document is either 1.0 or 1.1, so the cases cover RULES together.
+  assert.deepEqual(new Set(cases.flatMap(entry => entry.features)), new Set(Object.keys(SENTENCES)));
+  assert.equal(RULES, Object.values(SENTENCES).join(" "));
 });
 
 it("rejects the same strings with the same error as decode", () => {

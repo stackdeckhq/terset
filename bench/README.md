@@ -12,100 +12,40 @@ accuracy. Fake responses verify the harness and are not model measurements.
 
 `bench/results/` is ignored by git. Runs that the site and the READMEs quote are
 copied unchanged into `bench/published/<date>/`, with the run's JSON file and
-its Markdown report.
+its Markdown report. Only the current runs are published. Older runs are
+removed, not kept as history.
 
-- [2026-11-12](published/2026-11-12/p4-2026-11-12.md): Claude Opus 5.5 and
-  GPT 6.1 Sol, every question in all four formats. The file was checked for keys, base URLs, local paths and account
-  names before it was committed. It holds none, so nothing was removed. The
-  four email addresses in it are fake values from the upstream datasets.
-- [2026-11-13](published/2026-11-13/v2-final-2026-11-13.md): Claude Opus 5.5 and
-  GPT 6.1 Sol, all 244 questions in Terset, 488 completed calls and no failures.
-  The JSON and Markdown were copied unchanged after checking for keys, base URLs,
-  local paths, account names and environment values. None were found. The four
-  email addresses are fake values present in the frozen upstream datasets.
-  Terset got the full rules text in this run. The site no longer uses it.
-- 2026-11-17: Claude Opus 5.5 and GPT 6.1 Sol, all 244 questions in Terset with
-  fitted rules, run twice with the same setup.
-  The [first run](published/2026-11-17/fitted-rules-2026-11-17.md) scored Opus
-  242 and Sol 238 of 244. The
-  [second run](published/2026-11-17/fitted-rules-rerun-2026-11-17.md) scored
-  Opus 242 and Sol 242 of 244. Identical runs differ by a few questions. Both
-  files were checked for keys, base URLs, local paths and account names. None
-  were found. The four email addresses are fake values from the frozen upstream
-  datasets.
-- 2026-11-17, matched batch: GPT 6.1 Sol, all 244 questions in all four
-  formats, run three times on one day with the same setup:
-  [r1](published/2026-11-17/matched-sol-2026-11-17-r1.md),
-  [r2](published/2026-11-17/matched-sol-2026-11-17-r2.md) and
-  [r3](published/2026-11-17/matched-sol-2026-11-17-r3.md). Terset scored 242,
-  241 and 243 of 244. TOON scored 242 in each run. Compact JSON scored 236, 234
-  and 236. Indented JSON scored 237, 238 and 237. Two requests in r1 failed and
-  were retried in the same run. Both failures stay in its file. All three files
-  were checked for keys, base URLs, local paths and account names. None were
-  found. The four email addresses are fake values from the frozen upstream
-  datasets.
-- 2026-11-17, matched batch: Claude Opus 5.5, all 244 questions in all four
-  formats, run three times on one day with the same setup:
-  [r1](published/2026-11-17/matched-opus-2026-11-17-r1.md),
-  [r2](published/2026-11-17/matched-opus-2026-11-17-r2.md) and
-  [r3](published/2026-11-17/matched-opus-2026-11-17-r3.md). Terset scored 243
-  of 244 in each run. TOON scored 242, 242 and 241. Compact JSON and indented
-  JSON scored 241 in each run. Five attempts failed and were retried in the
-  same run: TOON q186 twice in r1, TOON q186 in r2, and TOON q186 and q200 in
-  r3. Each failure stays in its file. All three files were checked for keys,
-  base URLs, local paths and account names. None were found. The four email
-  addresses are fake values from the frozen upstream datasets.
-
-- 2026-11-18, stress suite: one complete run per model, all 120 questions in
-  all four formats, 480 completed calls each and no failures:
-  [Opus 5.5](published/2026-11-18/stress-opus-16k-2026-11-18.md),
-  [Sol](published/2026-11-18/stress-sol-16k-2026-11-18.md) and
-  [Haiku 5.5](published/2026-11-18/stress-haiku-16k-2026-11-18.md).
-  The per-call output cap was 16,000 tokens. At 2,048, reasoning models ran out
-  of output while thinking on the scale questions and returned empty answers.
-  That earlier partial attempt is not published and feeds no table.
-  One published call also used the full 16,000 tokens: Haiku 5.5, TOON,
-  question s028. It returned no answer and was scored wrong.
-  All six JSON and Markdown files were copied unchanged after a second check
-  for keys, base URLs, local paths and account names. None were found.
+- 2026-11-19, format 1.1. The TOON suite runs are
+  `accuracy-opus-2026-11-19` and `accuracy-sol-2026-11-19`, 244 questions in
+  four formats. Terset got 242 of 244 on Claude Opus 5.5 and 243 of 244 on
+  GPT 6.1 Sol. The stress suite runs are `stress-opus-2026-11-19`,
+  `stress-sol-2026-11-19` and `stress-haiku-2026-11-19`, 120 questions in four
+  formats. Terset got 119, 118 and 113 of 120. Three calls failed, none of
+  them Terset's: pretty JSON q235 on Opus, TOON q219 on Sol and compact JSON
+  s096 on Sol. Each was asked again, and the second answer is the one scored.
+  The failed attempts stay listed in their run files.
 
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
-published runs, and updates the accuracy blocks in the READMEs. Each model
-takes every format from its matched batch only. The earlier runs stay
-published as history. The tables take nothing from them. No run is picked.
-Each format shows the mean over its three runs, with each run's score beside
-it. On Opus, Terset got 243, TOON about 241.7 and both JSON forms 241. On Sol,
-Terset and TOON are level at 242.0. A gap of one or two questions is within
-run-to-run noise, so these runs show no accuracy win for any format. Terset
-uses fewer input tokens on both models.
-It refuses differing model settings, prices, question sets, data hashes,
-upstream commits, tokenizers or per-call output caps. The runs in one matched
-batch must share one plan fingerprint and one date, and each must hold only its
-model.
-Claude input tokens come from Anthropic's token count of each request body.
-The 2026-11-12 run and the second 2026-11-17 fitted-rules run were counted.
-The Opus matched runs sent the same requests, so they reuse those counts:
-Terset from the fitted-rules run and the other formats from 2026-11-12. A run
-that borrows counts must have the same Claude settings and the same reserved
-and recorded input tokens on every row as the counted run. The script checks
-that before it uses the counts.
-Each table row records its run dates. Tests fail when the committed site file
+published runs, and updates the accuracy blocks in the READMEs. It takes one
+run per model, and each run must hold only its model. No run is picked.
+Input tokens are as each model reported them, including Claude.
+The runs must share data hashes, the upstream commit, the tokenizer, the
+per-call output cap, the input reservation and the question set.
+Each table row records its run date. Tests fail when the committed site file
 or a README accuracy block drifts from the published runs, or when a run file in
 `bench/published/` is left out.
 
 The stress suite has its own published list and generated file,
 `apps/site/src/data/accuracy-stress-results.json`. `pnpm accuracy` also builds
 its README blocks. It records correct answers, totals and reported input
-tokens overall and per group, with each run id and date. These are single-run
-scores per model, not three-run means. Gaps of a few questions are within
-noise. The stress checks require the same suite, data hashes, generator source
+tokens overall and per group, with each run id and date. Each model shows one
+run. Gaps of a few questions are within noise. The stress checks require the same suite, data hashes, generator source
 and hash, seed, reference date, tokenizer, input reservation, per-call output
 cap and encoder versions. Each run must hold only its listed model and the
 frozen question set exactly once in every format. The checks hash the repository's
 question, dataset and generator files. They re-score every answer against the
 frozen question and take its group from the question's type. Stress input
-tokens come from each model's report, including Claude. They do not use the
-older TOON request counts.
+tokens come from each model's report, including Claude.
 
 ## Local use
 
@@ -295,8 +235,7 @@ The user prompt keeps upstream's shared wording and answer requirements.
 Each JSON format and TOON receive their upstream primer, copied verbatim.
 Terset receives `rulesFor(text)`, fitted to the valid encoded data before any
 structural damage. Since 2026-11-17, `rulesFor` returns only the sentences
-that text uses. The 2026-11-17 runs measure that change. The earlier runs
-predate it. All other instructions are identical
+that text uses. All other instructions are identical
 across formats, with a common fence and a format-name line. Each format's
 primer tokens count toward its input tokens in plans and reports.
 

@@ -1,7 +1,8 @@
-// The accuracy copy states only what the data supports, the tables come from the
-// committed file, and both READMEs carry the same block word for word.
+// The accuracy copy states only what the data supports, checked on a small fixture file.
+// The README blocks and /benchmark.md must match the committed file.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { ACCURACY_FIXTURE } from './accuracy-fixtures.ts';
 import {
   ACCURACY,
   ACCURACY_FORMAT_NOTE,
@@ -11,6 +12,7 @@ import {
   accuracyHomeLine,
   accuracyKindLine,
   accuracyLines,
+  accuracyMarkdownTable,
   accuracyMethod,
   accuracyReadmeBlock,
   accuracyRunsNote,
@@ -19,141 +21,90 @@ import {
   accuracyTableRows,
   costLessCell,
   failedCallsLine,
-  formatRow,
   intervalsOverlap,
   kindMarkdownHead,
+  kindMarkdownTable,
   kindTableRows,
   overTersetMark,
+  publishedRunsMarkdownTable,
   publishedRunsRows,
-  runsCellLines,
   signMark,
   wholePct,
 } from './accuracy.ts';
 import type { AccuracyFile, AccuracyModel } from './accuracy.ts';
+import type { AccuracyFormat } from './accuracy-schema.ts';
 import { benchmarkMarkdown } from './benchmark-doc.ts';
 import { BENCH_FILE, CLAUDE_FILE } from './numbers.ts';
 
 const READMES = ['../../../../README.md', '../../../../packages/terset/README.md'] as const;
 
-function model(id: string): AccuracyModel {
-  const found = ACCURACY.models.find((item) => item.id === id);
+type MutableRow = AccuracyModel['rows'][number];
+type MutableFile = AccuracyFile & { models: (AccuracyModel & { rows: MutableRow[] })[] };
+
+const FIXTURE = ACCURACY_FIXTURE;
+
+function model(file: AccuracyFile, id: string): AccuracyModel {
+  const found = file.models.find((item) => item.id === id);
   if (found === undefined) throw new Error(`no model ${id}`);
   return found;
 }
 
-/** A copy of the committed file with one model's rows changed. */
-function withRows(change: (rows: AccuracyModel['rows'][number][]) => void): AccuracyFile {
-  const copy = structuredClone(ACCURACY) as AccuracyFile & { models: (AccuracyModel & { rows: AccuracyModel['rows'][number][] })[] };
+const OPUS = model(FIXTURE, 'claude-opus-5-5');
+
+/** A copy of the fixture with the first model's rows changed. */
+function withRows(change: (rows: MutableRow[]) => void): MutableFile {
+  const copy = structuredClone(FIXTURE) as MutableFile;
   const first = copy.models[0];
   if (first === undefined) throw new Error('no models');
   change(first.rows);
   return copy;
 }
 
+function rowOf(rows: readonly MutableRow[], format: AccuracyFormat): MutableRow {
+  const row = rows.find((item) => item.format === format);
+  if (row === undefined) throw new Error(`missing ${format} row`);
+  return row;
+}
+
 describe('accuracy', () => {
   it('shows every format with its score, interval, tokens and cost, Terset first', () => {
-    expect(ACCURACY_TABLE_HEAD.slice(1, 3)).toEqual(['Correct', 'Runs']);
-    expect(ACCURACY_TABLE_HEAD.slice(-2)).toEqual(['Terset costs less by', 'Run date']);
-    expect(accuracyTableRows(model('claude-opus-5-5'))).toEqual([
-      ['Terset', '243 of 244', 'Mean of 3 runs: 243, 243, 243', '99.6%', '97.7% to 99.9%', '1,188,659', '$5.65', '-', '2026-11-17'],
-      ['Compact JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '1,766,161', '$8.05', '29.8%', '2026-11-17'],
-      ['Pretty JSON', '241 of 244', 'Mean of 3 runs: 241, 241, 241', '98.8%', '96.4% to 99.6%', '2,303,845', '$10.16', '44.4%', '2026-11-17'],
-      ['TOON', '241.7 of 244', 'Mean of 3 runs: 242, 242, 241 (241 to 242)', '99.0%', '96.9% to 99.7%', '1,369,764', '$6.35', '11.0%', '2026-11-17'],
-    ]);
-    // Both models come from their matched batches: every format is the mean of three runs on one day.
-    expect(accuracyTableRows(model('gpt-6.1-sol'))).toEqual([
-      ['Terset', '242 of 244', 'Mean of 3 runs: 242, 241, 243 (241 to 243)', '99.2%', '97.1% to 99.8%', '842,260', '$1.84', '-', '2026-11-17'],
-      ['Compact JSON', '235.3 of 244', 'Mean of 3 runs: 236, 234, 236 (234 to 236)', '96.4%', '93.3% to 98.1%', '1,158,229', '$2.49', '26.1%', '2026-11-17'],
-      ['Pretty JSON', '237.3 of 244', 'Mean of 3 runs: 237, 238, 237 (237 to 238)', '97.3%', '94.4% to 98.7%', '1,696,152', '$3.56', '48.2%', '2026-11-17'],
-      ['TOON', '242 of 244', 'Mean of 3 runs: 242, 242, 242', '99.2%', '97.1% to 99.8%', '1,020,628', '$2.20', '16.1%', '2026-11-17'],
+    expect(ACCURACY_TABLE_HEAD).toEqual(['Format', 'Correct', 'Accuracy', '95% interval', 'Input tokens', 'Cost', 'Terset costs less by']);
+    expect(accuracyTableRows(OPUS)).toEqual([
+      ['Terset', '243 of 244', '99.6%', '97.7% to 99.9%', '1,000,000', '$4.80', '-'],
+      ['Compact JSON', '241 of 244', '98.8%', '96.4% to 99.6%', '1,500,000', '$6.80', '29.4%'],
+      ['Pretty JSON', '241 of 244', '98.8%', '96.4% to 99.6%', '2,000,000', '$8.80', '45.5%'],
+      ['TOON', '242 of 244', '99.2%', '97.1% to 99.8%', '1,200,000', '$5.60', '14.3%'],
     ]);
   });
 
   it('gives the table the same cost saving as the summary line, on the same base', () => {
-    const summary = accuracySummary(ACCURACY).join(' ');
-    for (const item of ACCURACY.models) {
-      const compact = accuracyTableRows(item).find((row) => row[0] === 'Compact JSON')?.[7];
+    const summary = accuracySummary(FIXTURE).join(' ');
+    for (const item of FIXTURE.models) {
+      const compact = accuracyTableRows(item).find((row) => row[0] === 'Compact JSON')?.[6];
       expect(summary).toContain(`${compact ?? 'missing'} less on ${item.name}`);
     }
   });
 
-  it('shows a mean with a fraction to one decimal, and a whole mean as a count', () => {
-    const half = withRows((rows) => {
-      const terset = rows.find((row) => row.format === 'terset');
-      if (terset === undefined) throw new Error('missing row');
-      terset.correct = 240.5;
-    });
-    expect(accuracyTableRows(half.models[0] ?? model('claude-opus-5-5'))[0]?.[1]).toBe('240.5 of 244');
+  it('says each model ran once, and throws once a model has more runs or none', () => {
+    expect(accuracyRunsNote(FIXTURE)).toBe('Each model ran once, with every format, on 2099-01-01. Each table shows that one run.');
+    const [first, second] = FIXTURE.publishedRuns;
+    if (first === undefined || second === undefined) throw new Error('no runs');
+    expect(() => accuracyRunsNote({ ...FIXTURE, publishedRuns: [first, { ...first, runId: 'again' }, second] })).toThrow(/ran once/u);
+    expect(() => accuracyRunsNote({ ...FIXTURE, publishedRuns: [first] })).toThrow(/ran once/u);
   });
 
-  it('splits the runs cell into the mean line and the scores line, so the page column stays narrow', () => {
-    const lines = (id: string, format: string): readonly string[] => {
-      const row = model(id).rows.find((item) => item.format === format);
-      if (row === undefined) throw new Error(`no ${format} row`);
-      return runsCellLines(row);
-    };
-    expect(lines('gpt-6.1-sol', 'terset')).toEqual(['Mean of 3 runs', '242, 241, 243 (241 to 243)']);
-    expect(lines('gpt-6.1-sol', 'toon')).toEqual(['Mean of 3 runs', '242, 242, 242']);
-    expect(lines('claude-opus-5-5', 'terset')).toEqual(['Mean of 3 runs', '243, 243, 243']);
-    expect(lines('claude-opus-5-5', 'toon')).toEqual(['Mean of 3 runs', '242, 242, 241 (241 to 242)']);
-    const single = formatRow(model('claude-opus-5-5'), 'toon');
-    expect(runsCellLines({ ...single, runs: single.runs.slice(0, 1) })).toEqual(['1 run']);
-  });
-
-  it('says every format on both models ran three times on one day, and throws once that no longer holds', () => {
-    expect(accuracyRunsNote(ACCURACY)).toBe(
-      "On both models, every format ran three times on 2026-11-17. Each model's runs are one matched batch with the same setup. " +
-        "No run is picked. Each row shows the mean of its runs, and the Runs column lists each run's score.",
-    );
-    const oneRun = withRows((rows) => {
-      for (const row of rows) row.runs = row.runs.slice(0, 1);
-    });
-    expect(() => accuracyRunsNote(oneRun)).toThrow(/same repeats/u);
-  });
-
-  it('throws when a format has other repeats or another day than the rest', () => {
-    const solRows = (change: (rows: AccuracyModel['rows'][number][]) => void): AccuracyFile => {
-      const copy = structuredClone(ACCURACY) as AccuracyFile & { models: (AccuracyModel & { rows: AccuracyModel['rows'][number][] })[] };
-      const sol = copy.models.find((item) => item.id === 'gpt-6.1-sol');
-      if (sol === undefined) throw new Error('no Sol');
-      change(sol.rows);
-      return copy;
-    };
-    const uneven = solRows((rows) => {
-      const toon = rows.find((row) => row.format === 'toon');
-      if (toon === undefined) throw new Error('missing row');
-      toon.runs = toon.runs.slice(0, 2);
-    });
-    expect(() => accuracyRunsNote(uneven)).toThrow(/same repeats/u);
-    const twoDays = solRows((rows) => {
-      const toon = rows.find((row) => row.format === 'toon');
-      const run = toon?.runs[0];
-      if (toon === undefined || run === undefined) throw new Error('missing row');
-      toon.runs = [{ ...run, runOn: '2026-11-18' }, ...toon.runs.slice(1)];
-    });
-    expect(() => accuracyRunsNote(twoDays)).toThrow(/ran on one day/u);
-  });
-
-  it('lists every published run with what the tables take from it, older runs as history', () => {
-    expect(ACCURACY_RUNS_HEAD).toEqual(['Run', 'Date', 'Models', 'Formats', 'In the tables', 'Failed attempts']);
-    expect(publishedRunsRows(ACCURACY)).toEqual([
-      ['p4-2026-11-12', '2026-11-12', 'Opus and Sol', 'All four', 'History only', '0'],
-      ['v2-final-2026-11-13', '2026-11-13', 'Opus and Sol', 'Terset', 'History only', '0'],
-      ['fitted-rules-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'History only', '0'],
-      ['fitted-rules-rerun-2026-11-17', '2026-11-17', 'Opus and Sol', 'Terset', 'History only', '0'],
-      ['matched-sol-2026-11-17-r1', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '2, retried'],
-      ['matched-sol-2026-11-17-r2', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '0'],
-      ['matched-sol-2026-11-17-r3', '2026-11-17', 'Sol', 'All four', 'Sol: All four', '0'],
-      ['matched-opus-2026-11-17-r1', '2026-11-17', 'Opus', 'All four', 'Opus: All four', '2, retried'],
-      ['matched-opus-2026-11-17-r2', '2026-11-17', 'Opus', 'All four', 'Opus: All four', '1, retried'],
-      ['matched-opus-2026-11-17-r3', '2026-11-17', 'Opus', 'All four', 'Opus: All four', '2, retried'],
+  it('lists the one published run of each model', () => {
+    expect(ACCURACY_RUNS_HEAD).toEqual(['Run', 'Date', 'Model', 'Failed attempts']);
+    expect(publishedRunsRows(FIXTURE)).toEqual([
+      ['fixture-opus', '2099-01-01', 'Claude Opus 5.5', '0'],
+      ['fixture-sol', '2099-01-01', 'GPT 6.1 Sol', '2, retried'],
     ]);
   });
 
   it('says how many attempts failed and that they stay in the run files', () => {
-    expect(failedCallsLine(ACCURACY)).toBe('Seven attempts failed and were retried in the same run. Each stays in its run file.');
-    expect(failedCallsLine({ ...ACCURACY, failedCalls: 0 })).toBe('None failed.');
-    expect(failedCallsLine({ ...ACCURACY, failedCalls: 1 })).toBe('One attempt failed and was retried in the same run. It stays in the run file.');
+    expect(failedCallsLine(FIXTURE)).toBe('Two attempts failed and were retried in the same run. Each stays in its run file.');
+    expect(failedCallsLine({ ...FIXTURE, failedCalls: 0 })).toBe('None failed.');
+    expect(failedCallsLine({ ...FIXTURE, failedCalls: 1 })).toBe('One attempt failed and was retried in the same run. It stays in the run file.');
   });
 
   it('works out what Terset saves from the unrounded costs, and says so in words when a format is cheaper', () => {
@@ -165,52 +116,45 @@ describe('accuracy', () => {
   });
 
   it('marks the lowest input tokens and cost, and every format Terset cost less than, never the scores', () => {
-    expect(accuracyTableMarks(model('claude-opus-5-5'))).toEqual([
-      [null, null, null, null, 'is-less', 'is-less', null, null],
-      [null, null, null, null, null, null, 'terset-cheaper', null],
-      [null, null, null, null, null, null, 'terset-cheaper', null],
-      [null, null, null, null, null, null, 'terset-cheaper', null],
+    expect(accuracyTableMarks(OPUS)).toEqual([
+      [null, null, null, 'is-less', 'is-less', null],
+      [null, null, null, null, null, 'terset-cheaper'],
+      [null, null, null, null, null, 'terset-cheaper'],
+      [null, null, null, null, null, 'terset-cheaper'],
     ]);
   });
 
-  it('shows a format cheaper than Terset with a minus, plain and muted', () => {
+  it('shows a format cheaper than Terset in words, plain and muted', () => {
     const toonCheaper = withRows((rows) => {
-      const terset = rows.find((row) => row.format === 'terset');
-      const toon = rows.find((row) => row.format === 'toon');
-      if (terset === undefined || toon === undefined) throw new Error('missing rows');
-      toon.totalCost = terset.totalCost * 0.9;
+      rowOf(rows, 'toon').totalCost = rowOf(rows, 'terset').totalCost * 0.9;
     });
     const first = toonCheaper.models[0];
     if (first === undefined) throw new Error('no models');
-    expect(accuracyTableRows(first).map((row) => row[7])).toEqual(['-', '29.8%', '44.4%', 'Costs 11.1% more']);
-    expect(accuracyTableMarks(first).map((row) => row[6])).toEqual([null, 'terset-cheaper', 'terset-cheaper', 'terset-pricier']);
+    expect(accuracyTableRows(first).map((row) => row[6])).toEqual(['-', '29.4%', '45.5%', 'Costs 11.1% more']);
+    expect(accuracyTableMarks(first).map((row) => row[5])).toEqual([null, 'terset-cheaper', 'terset-cheaper', 'terset-pricier']);
     expect([overTersetMark(10.01, 10), overTersetMark(10, 10.01), overTersetMark(10, 10)]).toEqual(['terset-cheaper', 'terset-pricier', null]);
   });
 
   it('finds the lowest values from the data, not from a fixed row', () => {
     const toonCheapest = withRows((rows) => {
-      const toon = rows.find((row) => row.format === 'toon');
-      if (toon === undefined) throw new Error('missing row');
+      const toon = rowOf(rows, 'toon');
       toon.inputTokens = 1;
       toon.totalCost = 0.01;
     });
     const first = toonCheapest.models[0];
     if (first === undefined) throw new Error('no models');
     const marks = accuracyTableMarks(first);
+    expect(marks.map((row) => row[3])).toEqual([null, null, null, 'is-less']);
     expect(marks.map((row) => row[4])).toEqual([null, null, null, 'is-less']);
-    expect(marks.map((row) => row[5])).toEqual([null, null, null, 'is-less']);
   });
 
   it('marks every row that ties for the lowest value', () => {
     const tied = withRows((rows) => {
-      const terset = rows.find((row) => row.format === 'terset');
-      const toon = rows.find((row) => row.format === 'toon');
-      if (terset === undefined || toon === undefined) throw new Error('missing rows');
-      toon.inputTokens = terset.inputTokens;
+      rowOf(rows, 'toon').inputTokens = rowOf(rows, 'terset').inputTokens;
     });
     const first = tied.models[0];
     if (first === undefined) throw new Error('no models');
-    expect(accuracyTableMarks(first).map((row) => row[4])).toEqual(['is-less', null, null, 'is-less']);
+    expect(accuracyTableMarks(first).map((row) => row[3])).toEqual(['is-less', null, null, 'is-less']);
   });
 
   it('marks a signed change by its sign only', () => {
@@ -218,12 +162,9 @@ describe('accuracy', () => {
   });
 
   it('says the accuracy ranges overlap only while every interval overlaps', () => {
-    expect(ACCURACY.models.every(intervalsOverlap)).toBe(true);
+    expect(FIXTURE.models.every(intervalsOverlap)).toBe(true);
     const apart = withRows((rows) => {
-      const toon = rows.find((row) => row.format === 'toon');
-      const terset = rows.find((row) => row.format === 'terset');
-      if (toon === undefined || terset === undefined) throw new Error('missing rows');
-      toon.low = terset.high + 0.001;
+      rowOf(rows, 'toon').low = rowOf(rows, 'terset').high + 0.001;
     });
     expect(() => accuracySummary(apart)).toThrow(/every interval overlaps/u);
     expect(() => accuracyHomeLine(apart)).toThrow(/every interval overlaps/u);
@@ -231,50 +172,32 @@ describe('accuracy', () => {
 
   it('claims fewer tokens and a lower cost only while the data says so', () => {
     const pricier = withRows((rows) => {
-      const terset = rows.find((row) => row.format === 'terset');
-      if (terset === undefined) throw new Error('missing row');
-      terset.totalCost = 100;
+      rowOf(rows, 'terset').totalCost = 100;
     });
     expect(() => accuracySummary(pricier)).toThrow(/cost less than compact JSON/u);
     const longer = withRows((rows) => {
-      const terset = rows.find((row) => row.format === 'terset');
-      if (terset === undefined) throw new Error('missing row');
-      terset.inputTokens = 10_000_000;
+      rowOf(rows, 'terset').inputTokens = 10_000_000;
     });
     expect(() => accuracyHomeLine(longer)).toThrow(/fewer input tokens/u);
   });
 
   it('puts the token result first on the home line, then the overlap sentence', () => {
-    expect(accuracyHomeLine(ACCURACY)).toBe('On 244 questions and two models, Terset used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.');
+    expect(accuracyHomeLine(FIXTURE)).toBe('On 244 questions and two models, Terset used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.');
   });
 
-  it('keeps the result to three lines under the tables, small gaps called noise', () => {
-    expect(accuracySummary(ACCURACY)).toEqual([
+  it('keeps the result to two lines under the tables', () => {
+    expect(accuracySummary(FIXTURE)).toEqual([
       'The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate.',
-      "One format's score moved by up to two questions from run to run. A gap that small is noise, not a win.",
-      'Against compact JSON, Terset cost 29.8% less on Claude Opus 5.5 and 26.1% less on GPT 6.1 Sol.',
+      'Against compact JSON, Terset cost 29.4% less on Claude Opus 5.5 and 25.0% less on GPT 6.1 Sol.',
     ]);
-    const steady = structuredClone(ACCURACY) as AccuracyFile & { models: (AccuracyModel & { rows: AccuracyModel['rows'][number][] })[] };
-    for (const item of steady.models) for (const row of item.rows) row.runs = row.runs.map((run) => ({ ...run, correct: row.runs[0]?.correct ?? run.correct }));
-    expect(() => accuracySummary(steady)).toThrow(/moved between its runs/u);
   });
 
   it('shows Terset input tokens against compact JSON and TOON per kind of data, losses included', () => {
-    expect(kindMarkdownHead(ACCURACY)).toEqual(['Data', 'Questions', 'vs compact JSON, Opus', 'vs compact JSON, Sol', 'vs TOON, Opus', 'vs TOON, Sol']);
-    expect(kindTableRows(ACCURACY)).toEqual([
-      ['Flat tables', '41', '−42%', '−41%', '−5%', '−11%'],
-      ['Analytics', '30', '−52%', '−39%', '−10%', '−11%'],
-      ['GitHub repos', '33', '−33%', '−25%', '−2%', '−4%'],
-      ['Event logs', '30', '−33%', '−26%', '−38%', '−39%'],
-      ['Nested orders', '41', '−22%', '−19%', '−15%', '−23%'],
-      ['Nested groups', '18', '−40%', '−42%', '−5%', '−8%'],
-      ['Keyed objects', '17', '−44%', '−33%', '−9%', '−12%'],
-      ['Nested config', '29', '+1%', '+5%', '−3%', '−9%'],
-      ['Structure: control', '1', '−37%', '−37%', '−12%', '−17%'],
-      ['Structure: truncated', '1', '−36%', '−36%', '−13%', '−18%'],
-      ['Structure: extra rows', '1', '−38%', '−37%', '−11%', '−16%'],
-      ['Structure: width mismatch', '1', '−37%', '−37%', '−12%', '−17%'],
-      ['Structure: missing fields', '1', '−38%', '−37%', '−13%', '−18%'],
+    expect(kindMarkdownHead(FIXTURE)).toEqual(['Data', 'Questions', 'vs compact JSON, Opus', 'vs compact JSON, Sol', 'vs TOON, Opus', 'vs TOON, Sol']);
+    expect(kindTableRows(FIXTURE)).toEqual([
+      ['Flat tables', '41', '−40%', '−40%', '−8%', '−8%'],
+      ['Nested groups', '18', '−40%', '−40%', '−6%', '−6%'],
+      ['Keyed objects', '17', '−44%', '−44%', '−9%', '−9%'],
     ]);
     expect(wholePct(100, 100)).toBe('0%');
     expect(wholePct(99.6, 100)).toBe('0%');
@@ -282,13 +205,13 @@ describe('accuracy', () => {
 
   it('adds a third line only for kinds where TOON used fewer tokens on both models', () => {
     // Terset is under TOON on every kind for both models, so no kind qualifies.
-    expect(accuracyKindLine(ACCURACY)).toBeNull();
-    expect(accuracyLines(ACCURACY)).toEqual(accuracySummary(ACCURACY));
-    const copy = structuredClone(ACCURACY);
+    expect(accuracyKindLine(FIXTURE)).toBeNull();
+    expect(accuracyLines(FIXTURE)).toEqual(accuracySummary(FIXTURE));
+    const copy = structuredClone(FIXTURE);
     const set = (kind: string, modelIndex: number, toon: number): void => {
       const entry = copy.kinds.find((item) => item.kind === kind)?.models[modelIndex];
       if (entry === undefined) throw new Error(`no ${kind}`);
-      entry.inputTokens.toon = toon;
+      entry.inputTokens = { ...entry.inputTokens, toon };
     };
     set('keyed', 0, 1);
     expect(accuracyKindLine(copy)).toBeNull();
@@ -297,77 +220,61 @@ describe('accuracy', () => {
     set('nested-group', 0, 1);
     set('nested-group', 1, 1);
     // Largest gap first: nested groups have more Terset tokens over the same TOON count.
-    expect(accuracyLines(copy)).toEqual([...accuracySummary(ACCURACY), 'TOON used fewer tokens than Terset on nested groups and keyed objects.']);
+    expect(accuracyLines(copy)).toEqual([...accuracySummary(FIXTURE), 'TOON used fewer tokens than Terset on nested groups and keyed objects.']);
   });
 
   it('never says the layout gives better answers', () => {
-    const text = [...accuracyLines(ACCURACY), ACCURACY_KIND_NOTE, accuracyHomeLine(ACCURACY), ...accuracyMethod(ACCURACY)].join(' ');
+    const text = [...accuracyLines(FIXTURE), ACCURACY_KIND_NOTE, accuracyHomeLine(FIXTURE), ...accuracyMethod(FIXTURE)].join(' ');
     expect(text).not.toMatch(/\b(better|improves?|more accurate|higher accuracy)\b/iu);
     expect(text).not.toMatch(/[–—]/u);
   });
 
-  it('names the run, the upstream commit, how tokens were counted and the published results in at most five lines', () => {
-    const lines = accuracyMethod(ACCURACY);
+  it('names the runs, the upstream commit, how tokens were counted and the published results in at most five lines', () => {
+    const lines = accuracyMethod(FIXTURE);
     expect(lines.length).toBeLessThanOrEqual(5);
     const method = lines.join('\n');
-    for (const run of ACCURACY.publishedRuns) {
-      expect(method).toContain(run.runOn);
-      expect(method).toContain(`https://github.com/stackdeckhq/terset/tree/main/${run.publishedPath}`);
-    }
-    expect(method).toContain(ACCURACY.upstreamSha);
+    expect(method).toContain('[2099-01-01](https://github.com/stackdeckhq/terset/tree/main/bench/published/2099-01-01)');
     // A 40-character hash cannot fit a 390 px column, so the text shows the short hash
     // and the link carries the full one.
-    expect(method).toContain(`commit [${ACCURACY.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${ACCURACY.upstreamSha})`);
-    expect(method).toContain('Cost is at API list price: input and output tokens times list prices read on 2026-11-17.');
-    expect(method).toContain('Tables use 5,856 answered calls from runs on 2026-11-17. Seven attempts failed and were retried in the same run.');
-    expect(method).toContain("Claude Opus 5.5 input tokens were counted with Anthropic's token counting endpoint over the exact request; GPT 6.1 Sol input tokens are as the model reported them.");
+    expect(method).toContain(`commit [0123456](https://github.com/toon-format/toon/commit/${FIXTURE.upstreamSha})`);
+    expect(method).toContain('Cost is at API list price: input and output tokens times list prices read on 2026-11-17. Input tokens are as each model reported them.');
+    expect(method).toContain('Tables use 1,952 answered calls from runs on 2099-01-01. Two attempts failed and were retried in the same run.');
     expect(method).toContain('no model judge');
     // A reader can rerun it: the harness folder holds the frozen questions and the commands.
     expect(method).toContain('The questions and the steps to run it yourself: [bench](https://github.com/stackdeckhq/terset/tree/main/bench).');
   });
 
   it('says nothing about how the answers were paid for, and subtracts nothing', () => {
-    const text = [...accuracyMethod(ACCURACY), accuracyReadmeBlock(ACCURACY), ACCURACY_KIND_NOTE].join('\n');
+    const text = [...accuracyMethod(FIXTURE), accuracyReadmeBlock(FIXTURE), ACCURACY_KIND_NOTE].join('\n');
     expect(text).not.toMatch(/subscription|\broute\b|API-equivalent|what was paid|\b127\b/iu);
     expect(text).not.toMatch(/[–—]/u);
   });
 
-  it('puts the accuracy tables in benchmark.md', () => {
-    const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
-    expect(text).toContain('## Answer accuracy');
-    expect(text).toContain('| Format | Correct | Runs | Accuracy | 95% interval | Input tokens | Cost | Terset costs less by | Run date |');
-    expect(text).toContain('| Terset | 243 of 244 | Mean of 3 runs: 243, 243, 243 | 99.6% | 97.7% to 99.9% | 1,188,659 | $5.65 | - | 2026-11-17 |');
-    expect(text).toContain('| Terset | 242 of 244 | Mean of 3 runs: 242, 241, 243 (241 to 243) | 99.2% | 97.1% to 99.8% | 842,260 | $1.84 | - | 2026-11-17 |');
-    expect(text).toContain('| Compact JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 1,766,161 | $8.05 | 29.8% | 2026-11-17 |');
-    expect(text).toContain('| matched-sol-2026-11-17-r1 | 2026-11-17 | Sol | All four | Sol: All four | 2, retried |');
-    expect(text).toContain('| matched-opus-2026-11-17-r2 | 2026-11-17 | Opus | All four | Opus: All four | 1, retried |');
-    expect(text).toContain('| p4-2026-11-12 | 2026-11-12 | Opus and Sol | All four | History only | 0 |');
-    expect(text).toContain('| v2-final-2026-11-13 | 2026-11-13 | Opus and Sol | Terset | History only | 0 |');
-    expect(text).toContain('| Pretty JSON | 241 of 244 | Mean of 3 runs: 241, 241, 241 | 98.8% | 96.4% to 99.6% | 2,303,845 | $10.16 | 44.4% | 2026-11-17 |');
-    expect(text).toContain(accuracyRunsNote(ACCURACY));
-    expect(text).not.toContain('Cost vs compact JSON');
-    expect(text).toContain(ACCURACY_FORMAT_NOTE);
-    expect(text).toContain('### By data set');
-    expect(text).toContain('| Structure: missing fields | 1 | −38% | −37% | −13% | −18% |');
-    expect(text).toContain('| Data | Questions | vs compact JSON, Opus | vs compact JSON, Sol | vs TOON, Opus | vs TOON, Sol |');
-    expect(text).toContain('| Nested config | 29 | +1% | +5% | −3% | −9% |');
-    expect(text).toContain(ACCURACY_KIND_NOTE);
-    expect(text).toContain('Input tokens, primers included, counted the same way as the tables. Minus means Terset used fewer tokens.');
-    expect(text).not.toContain('TOON used fewer tokens than Terset');
-  });
-
   it('keeps the kind table and its line out of the READMEs', () => {
-    const block = accuracyReadmeBlock(ACCURACY);
+    const block = accuracyReadmeBlock(FIXTURE);
     expect(block).not.toContain('By data set');
     expect(block).not.toContain('TOON used fewer tokens than Terset');
   });
 
   it('names the two JSON rows Compact JSON and Pretty JSON and says what each one means', () => {
-    const labels = ACCURACY.models.flatMap((item) => accuracyTableRows(item).map(([label]) => label));
+    const labels = FIXTURE.models.flatMap((item) => accuracyTableRows(item).map(([label]) => label));
     expect(new Set(labels)).toEqual(new Set(['Terset', 'Compact JSON', 'Pretty JSON', 'TOON']));
     expect(labels).not.toContain('JSON');
     expect(ACCURACY_FORMAT_NOTE).toBe('Pretty JSON is indented with 2 spaces. Compact JSON has no spaces or line breaks.');
-    expect(accuracyReadmeBlock(ACCURACY)).toContain(ACCURACY_FORMAT_NOTE);
+    expect(accuracyReadmeBlock(FIXTURE)).toContain(ACCURACY_FORMAT_NOTE);
+  });
+
+  it('puts the committed accuracy tables in benchmark.md', () => {
+    const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
+    expect(text).toContain('## Answer accuracy');
+    for (const item of ACCURACY.models) expect(text).toContain(accuracyMarkdownTable(item));
+    expect(text).toContain(publishedRunsMarkdownTable(ACCURACY));
+    expect(text).toContain(accuracyRunsNote(ACCURACY));
+    expect(text).toContain(ACCURACY_FORMAT_NOTE);
+    expect(text).toContain('### By data set');
+    expect(text).toContain(kindMarkdownTable(ACCURACY));
+    expect(text).toContain(ACCURACY_KIND_NOTE);
+    expect(text).not.toContain('Cost vs compact JSON');
   });
 
   it('keeps the README accuracy block equal to the committed data, in both READMEs', () => {

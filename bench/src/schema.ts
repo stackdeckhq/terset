@@ -88,10 +88,14 @@ export const encodersSchema = z.object({
   '@toon-format/toon': z.string().min(1), '@stackdeck/terset': z.string().min(1),
 }).strict();
 export type Encoders = z.infer<typeof encodersSchema>;
+/** The Terset format version a run encoded with. Runs without the field predate 1.1 and used 1.0. */
+export const tersetFormatSchema = z.enum(['1.0', '1.1']);
+export type TersetFormat = z.infer<typeof tersetFormatSchema>;
 export const resultSchema = z.object({
   version: z.literal(1), runId: runIdSchema, fingerprint: z.string(),
   suite: z.enum(['toon', 'stress']).optional(),
   encoders: encodersSchema.optional(),
+  tersetFormat: tersetFormatSchema.optional(),
   mode: z.enum(['fake', 'http']), status: z.enum(['partial', 'complete']),
   reason: z.string().nullable(), plannedCalls: count, budgets: budgetsSchema,
   budgetUsed: usageSchema, rows: z.array(rowSchema), failures: z.array(failureSchema).default([]),

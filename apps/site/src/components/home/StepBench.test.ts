@@ -89,7 +89,7 @@ describe('step 6 markup', () => {
     expect(off('claude')).toEqual([`${claude.headline.title} <span class="tok">Claude Opus 5.5</span>`, claude.headline.line, ...trio(counters.claude.samples.orders), claude.foot]);
     expect(on('claude')).toEqual([]);
     expect(off('o200k')).toEqual([]);
-    expect(trio(counters.o200k.samples.orders)).toEqual(['314', '−11.8% against JSON', '356', '405']);
+    expect(trio(counters.o200k.samples.orders)).toEqual(['342', '−3.9% against JSON', '356', '405']);
     expect(html).toContain('data-counter="o200k"><div class="chart-top">');
   });
 

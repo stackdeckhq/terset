@@ -13,6 +13,13 @@
 .bench-page .bench-text .bytes-line { margin-top: 0; }
 .bench-page .bench-text .steps-list + .tbl-note { margin-top: var(--s-4); }
 
+/* What gets sent: JSON in and Terset out side by side, each window as tall as the row. */
+.bench-page .sent-pair { display: grid; gap: var(--s-3); }
+.bench-page .sent-pair .code { display: flex; flex-direction: column; }
+.bench-page .sent-pair .code pre { flex: 1 0 auto; }
+.bench-page .bench-sec > .sent-pair + .code { margin-top: var(--s-3); }
+@media (min-width: 760px) { .bench-page .sent-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+
 @media (min-width: 1000px) {
   .bench-page .bench-sec, .bench-page .fold-body, .bench-page .fold > summary {
     display: grid;

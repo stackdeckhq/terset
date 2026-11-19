@@ -38,13 +38,8 @@ export const RunFile = z.object({
 });
 export type RunFile = z.infer<typeof RunFile>;
 export type RunRow = z.infer<typeof RunRow>;
-/** The input tokens a row is published with. */
-export type InputFor = (row: RunRow) => number;
 
-/**
- * Wilson score interval at 95%, the same formula the benchmark harness uses.
- * `correct` may be a mean over runs, so it may have a fraction; `total` is the question count.
- */
+/** Wilson score interval at 95%, the same formula the benchmark harness uses. `total` is the question count. */
 export function wilson95(correct: number, total: number): { readonly low: number; readonly high: number } {
   if (!Number.isFinite(correct) || !Number.isInteger(total) || total <= 0 || correct < 0 || correct > total) throw new Error(`Invalid score ${String(correct)} of ${String(total)}`);
   const z = 1.959963984540054;
@@ -64,35 +59,32 @@ const close = (a: number, b: number): boolean => Math.abs(a - b) < 1e-9;
 /** One run of one format on one model, recomputed from its rows and checked against its summary. */
 export interface RunScore {
   readonly format: AccuracyFormat;
-  readonly runId: string;
-  readonly runOn: string;
   readonly correct: number;
   readonly total: number;
+  readonly low: number;
+  readonly high: number;
   readonly inputTokens: number;
   readonly outputTokens: number;
   readonly totalCost: number;
 }
 
-/** The scores of the formats the tables take from this run for this model. */
-export function runScores(item: { readonly run: Pick<RunFile, 'rows' | 'summary' | 'runId'>; readonly runOn: string }, model: RunFile['models'][number], formats: readonly AccuracyFormat[], inputFor: InputFor): RunScore[] {
-  const { run } = item;
+/** The score of each format for this model, recomputed from the run's rows. */
+export function runScores(run: Pick<RunFile, 'rows' | 'summary'>, model: RunFile['models'][number], formats: readonly AccuracyFormat[]): RunScore[] {
   const mine = run.rows.filter((row) => row.model === model.id);
   return formats.map((format: AccuracyFormat): RunScore => {
     const rows = mine.filter((row) => row.format === format);
     if (new Set(rows.map((row) => row.questionId)).size !== rows.length) throw new Error(`${model.id} ${format}: a question was answered twice`);
     const correct = rows.filter((row) => row.correct).length;
+    const inputTokens = rows.reduce((sum, row) => sum + row.inputTokens, 0);
     const outputTokens = rows.reduce((sum, row) => sum + row.outputTokens, 0);
-    const cost = (input: number): number => (input * model.price.inputPerMillion + outputTokens * model.price.outputPerMillion) / 1_000_000;
-    // The run's summary is checked against the tokens the run recorded.
-    const reportedInput = rows.reduce((sum, row) => sum + row.inputTokens, 0);
+    const totalCost = (inputTokens * model.price.inputPerMillion + outputTokens * model.price.outputPerMillion) / 1_000_000;
     const { low, high } = wilson95(correct, rows.length);
     const summary = run.summary.find((entry) => entry.model === model.id && entry.format === format && entry.dataset === 'ALL');
     if (summary === undefined) throw new Error(`${model.id} ${format}: the run has no overall summary row`);
     const m = summary.metrics;
-    const agrees = m.correct === correct && m.total === rows.length && m.inputTokens === reportedInput && m.outputTokens === outputTokens && close(m.totalCost, cost(reportedInput)) && m.wilson95 !== null && close(m.wilson95.lower, low) && close(m.wilson95.upper, high);
+    const agrees = m.correct === correct && m.total === rows.length && m.inputTokens === inputTokens && m.outputTokens === outputTokens && close(m.totalCost, totalCost) && m.wilson95 !== null && close(m.wilson95.lower, low) && close(m.wilson95.upper, high);
     if (!agrees) throw new Error(`${model.id} ${format}: the run's summary differs from the figures recomputed from its rows`);
-    const inputTokens = rows.reduce((sum, row) => sum + inputFor(row), 0);
-    return { format, runId: run.runId, runOn: item.runOn, correct, total: rows.length, inputTokens, outputTokens, totalCost: cost(inputTokens) };
+    return { format, correct, total: rows.length, low, high, inputTokens, outputTokens, totalCost };
   });
 }
 

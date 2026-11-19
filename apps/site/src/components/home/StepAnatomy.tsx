@@ -42,14 +42,7 @@ export function StepAnatomy() {
             <li key={mark.id}>
               <code>
                 <i>{mark.n}</i>
-                {mark.sample === '' ? (
-                  <>
-                    <span className="ab" />
-                    &nbsp;empty cell
-                  </>
-                ) : (
-                  <span className={mark.sampleClass}>{mark.sample}</span>
-                )}
+                <span className={mark.sampleClass}>{mark.sample}</span>
               </code>
               {mark.about}
             </li>

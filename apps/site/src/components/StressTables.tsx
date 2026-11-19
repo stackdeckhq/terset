@@ -13,6 +13,7 @@ import {
   stressGroups,
   stressHeadlineNote,
   stressReportsLine,
+  stressRunsNote,
   stressTableMarks,
   stressTableRows,
 } from '../data/stress.ts';
@@ -26,7 +27,7 @@ function HeadlineTable({ file }: { readonly file: StressAccuracyFile }) {
       <h3>{`All ${String(file.questions)} questions`}</h3>
       <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label="Stress test table, scrolls sideways on small screens">
         <table className="bt bt-kind">
-          <caption className="sr">{`Stress test: correct answers out of ${String(file.questions)} and input tokens per format and model, one run each`}</caption>
+          <caption className="sr">{`Stress test: correct answers out of ${String(file.questions)} and input tokens per format and model. ${stressRunsNote(file)}`}</caption>
           <thead>
             <tr>
               <th scope="col" rowSpan={2}>
@@ -78,7 +79,7 @@ function GroupTable({ file, group }: { readonly file: StressAccuracyFile; readon
       <p className="tbl-note">{tests}</p>
       <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label={`Stress test, ${label}, scrolls sideways on small screens`}>
         <table className="bt">
-          <caption className="sr">{`Stress test, ${label}: correct answers per format and model, one run each`}</caption>
+          <caption className="sr">{`Stress test, ${label}: correct answers per format and model. ${stressRunsNote(file)}`}</caption>
           <thead>
             <tr>
               <th scope="col">Format</th>

@@ -7,7 +7,7 @@ import json
 import math
 import re
 from collections.abc import Mapping, Sequence
-from typing import TypeAlias, cast
+from typing import Literal, TypeAlias, cast
 
 JsonValue: TypeAlias = "None | bool | int | float | str | list[JsonValue] | dict[str, JsonValue]"
 JsonObject: TypeAlias = dict[str, JsonValue]
@@ -20,18 +20,23 @@ _MAX_HEADER_SEGMENTS = 8
 _DEPTH_ERROR = "Maximum JSON depth is 500."
 _HeaderTrie: TypeAlias = "dict[str, _HeaderTrie | None]"
 
-RULES = "Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
+FormatVersion: TypeAlias = Literal["1.0", "1.1"]
 
-_SENTENCES = RULES.split(". ")
 _FITTED_RULES = [
-    ("table", _SENTENCES[0] + "."),
-    ("empty", _SENTENCES[1] + "."),
-    ("quoted", _SENTENCES[2] + "."),
-    ("json", _SENTENCES[3] + "."),
-    ("id", _SENTENCES[4] + "."),
-    ("keyed", _SENTENCES[5] + "."),
-    ("nested", _SENTENCES[6]),
+    ("table", "Tables use tab-separated headers and rows."),
+    ("empty", "Empty cells mean absent."),
+    ("named", "After the header columns, a row lists its other fields as name=value. A field a row does not list is absent."),
+    ("quoted", "JSON quotes distinguish numeric, boolean or null text from scalars."),
+    ("json", "Nested cells use JSON."),
+    ("id", "A leading bare id header marks string IDs."),
+    ("keyed", "name{N} has N entries; the @key column holds each entry's key and is not a field."),
+    ("nested", "Header a.b is field b in object a."),
 ]
+
+RULES = " ".join(sentence for _, sentence in _FITTED_RULES)
+
+# Ends the header of a table whose rows carry name=value cells.
+_NAMED_MARKER = "name=value"
 
 
 def rules_for(text: str) -> str:
@@ -250,30 +255,50 @@ def _header(rows: list[JsonObject]) -> list[str] | None:
     return order if len(order) == len(fields) else None
 
 
-def _table(value: list[JsonObject], keyed: bool, entry_keys: list[str] | None = None, max_bytes: int | float = math.inf) -> str | None:
+def _first_sparse(rows: list[JsonObject], fields: list[str]) -> int:
+    """Index of the first header field that some row lacks, or the field count."""
+    counts: dict[str, int] = {}
+    for row in rows:
+        for key in row:
+            counts[key] = counts.get(key, 0) + 1
+    return next((index for index, field in enumerate(fields) if counts.get(field) != len(rows)), len(fields))
+
+
+def _table(value: list[JsonObject], keyed: bool, named: bool, entry_keys: list[str] | None = None, max_bytes: int | float = math.inf) -> str | None:
     if len(value) < 2:
         return None
     rows = [{_unicode(key): child for key, child in row.items()} for row in value]
     fields = _header(rows)
     if fields is None:
         return None
-    if len(rows) * (len(fields) - 1) >= max_bytes:
+    # Format 1.1 keeps the fields before the first sparse one as positional
+    # columns and writes every later field a row has as a name=value cell.
+    split = _first_sparse(rows, fields) if named else len(fields)
+    has_named = split < len(fields)
+    # Flattening can only add columns. Tabs alone rule out wide sparse tables.
+    # Named cells write only present fields, so their size stays linear.
+    if not has_named and len(rows) * (len(fields) - 1) >= max_bytes:
         return None
     columns: list[_Column] = []
-    for field in fields:
+    for field in fields[:split]:
         columns.extend(_flatten([field], [row.get(field, _MISSING) for row in rows]))
-    ids = not keyed and len(columns[0][0]) == 1 and fields[0] == "id" and all(
+    lone = len(columns) == 1
+    ids = not keyed and bool(columns) and len(columns[0][0]) == 1 and fields[0] == "id" and all(
         _keys(row)[:1] == ["id"] and isinstance(row.get("id"), str)
         and _safe_id(cast(str, row["id"]))
-        and (len(columns) != 1 or not _ENTRY.fullmatch(cast(str, row["id"]))) for row in rows
+        and (not lone or not _ENTRY.fullmatch(cast(str, row["id"]))) for row in rows
     )
     headings = []
     for index, (path, _) in enumerate(columns):
         field = path[0]
         headings.append(".".join(path) if len(path) > 1 else _quote(field)
                         if "." in field or (index == 0 and field == "id" and not ids and not keyed) else _key(field))
+    if has_named:
+        headings.append(_NAMED_MARKER)
     if keyed:
         headings.insert(0, "@key")
+    # A name is one field, never a path, so dotted names need quotes.
+    names = {field: field if _segment(field) else _quote(field) for field in fields[split:]}
     lines = ["\t".join(headings)]
     for row_index in range(len(rows)):
         cells: list[str] = []
@@ -283,10 +308,15 @@ def _table(value: list[JsonObject], keyed: bool, entry_keys: list[str] | None = 
                 cells.append("")
             elif index == 0 and ids:
                 cells.append(_unicode(cast(str, entry)))
-            elif not keyed and len(columns) == 1 and isinstance(entry, str) and _ENTRY.fullmatch(entry):
+            elif not keyed and lone and isinstance(entry, str) and _ENTRY.fullmatch(entry):
                 cells.append(_quote(entry))
             else:
                 cells.append(_cell(cast(JsonValue, entry)))
+        if has_named:
+            # Each row's own key order fits the header, so its positional
+            # fields come first and its other fields follow in header order.
+            row = rows[row_index]
+            cells.extend(f"{names[key]}={_cell(row[key])}" for key in _keys(row)[split:])
         if keyed:
             if entry_keys is None:
                 raise TypeError("Missing entry keys.")
@@ -295,26 +325,32 @@ def _table(value: list[JsonObject], keyed: bool, entry_keys: list[str] | None = 
     return "\n".join(lines)
 
 
-def _list_table(value: JsonValue) -> str | None:
+def _list_table(value: JsonValue, named: bool) -> str | None:
     if not isinstance(value, list) or not all(isinstance(row, dict) for row in value):
         return None
     size = len(_json(value).encode("utf-8"))
-    text = _table(cast(list[JsonObject], value), False, max_bytes=size)
+    text = _table(cast(list[JsonObject], value), False, named, max_bytes=size)
     return text if text is not None and len(text.encode("utf-8")) < size else None
 
 
-def encode(value: JsonInputRoot) -> str:
+def encode(value: JsonInputRoot, *, format: FormatVersion = "1.1") -> str:
     """Encode a JSON object or list. Invalid data raises TypeError.
+
+    format "1.1" (default) writes sparse fields as name=value cells; "1.0"
+    writes empty cells. Version 1.0 text still decodes.
 
     Numbers use JavaScript binary64 semantics. Integers must be exactly
     representable as binary64; negative zero and non-finite values fail.
     """
+    if not isinstance(format, str) or format not in ("1.0", "1.1"):
+        raise TypeError('format must be "1.0" or "1.1".')
+    named = format == "1.1"
     _validate(value)
     # Validation restricts the read-only input interface to JSON's concrete
     # built-in containers. The decoder always returns those concrete types.
     root = cast(JsonRoot, value)
     if isinstance(root, list):
-        table = _list_table(root)
+        table = _list_table(root, named)
         return f"[{len(root)}]\n{table}" if table is not None else _json(root)
     if not isinstance(root, dict):
         raise TypeError("Terset requires a root object or array.")
@@ -324,7 +360,7 @@ def encode(value: JsonInputRoot) -> str:
     for key in _keys(root):
         entry = root[key]
         name = _key(key)
-        table = _list_table(entry)
+        table = _list_table(entry, named)
         if table is not None and isinstance(entry, list):
             lines.append(f"{name}[{len(entry)}]:\n{table}")
             continue
@@ -333,7 +369,7 @@ def encode(value: JsonInputRoot) -> str:
             keys = _keys(entry)
             rows = [entry[entry_key] for entry_key in keys]
             if len(keys) >= 2 and all(_safe_id(entry_key) and not _ENTRY.fullmatch(entry_key) for entry_key in keys) and all(isinstance(row, dict) for row in rows):
-                body = _table(cast(list[JsonObject], rows), True, keys, len(fallback.encode("utf-8")))
+                body = _table(cast(list[JsonObject], rows), True, named, keys, len(fallback.encode("utf-8")))
                 if body is not None:
                     candidate = f"{name}{{{len(keys)}}}:\n{body}"
                     if len(candidate.encode("utf-8")) < len(fallback.encode("utf-8")):
@@ -417,13 +453,56 @@ def _set_path(target: JsonObject, path: list[str], value: JsonValue) -> None:
         target = nested
 
 
+def _quoted_end(text: str) -> int:
+    """Index just past the closing quote of a leading quoted key, or -1."""
+    end = 1
+    while end < len(text) and text[end] != '"':
+        if text[end] == "\\":
+            end += 1
+            if end == len(text) or text[end] in "\n\r  ":
+                return -1
+        end += 1
+    return -1 if end == len(text) else end + 1
+
+
+def _note_cell(raw: str, features: set[str] | None) -> None:
+    if features is None:
+        return
+    if not raw:
+        features.add("empty")
+    elif raw.startswith('"'):
+        features.add("quoted")
+    elif raw.startswith(("{", "[")):
+        features.add("json")
+
+
+def _read_named_cell(text: str) -> tuple[str, str]:
+    """Split a name=value cell. The name is one field: bare, or a JSON string."""
+    if text.startswith('"'):
+        end = _quoted_end(text)
+        if end < 0:
+            raise ValueError("Invalid field name.")
+    else:
+        end = text.find("=")
+        if end < 0:
+            raise ValueError("Expected name=value cell.")
+        if not _segment(text[:end]):
+            raise ValueError("Invalid field name.")
+    if text[end:end + 1] != "=":
+        raise ValueError("Expected name=value cell.")
+    return _read_key(text[:end]), text[end + 1:]
+
+
 def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth: int, features: set[str] | None = None) -> JsonRoot:
     if start >= len(lines):
         raise ValueError("Missing table header.")
     fields = lines[start].split("\t")
     if keyed and fields.pop(0) != "@key":
         raise ValueError("Missing @key marker.")
-    if not fields:
+    named = bool(fields) and fields[-1] == _NAMED_MARKER
+    if named:
+        fields.pop()
+    if not fields and not named:
         raise ValueError("Missing table fields.")
     paths: list[list[str]] = []
     for field in fields:
@@ -435,6 +514,8 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
         paths.append(path)
     if features is not None:
         features.add("table")
+        if named:
+            features.add("named")
         if keyed:
             features.add("keyed")
         if any(len(path) > 1 for path in paths):
@@ -458,7 +539,7 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
                 child = {}
                 node[segment] = child
                 node = child
-    ids = not keyed and fields[0] == "id"
+    ids = not keyed and bool(fields) and fields[0] == "id"
     if ids and features is not None:
         features.add("id")
     result: JsonRoot = {} if keyed else []
@@ -466,23 +547,26 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
         if start + 1 + index >= len(lines):
             raise ValueError("Row count mismatch.")
         line = lines[start + 1 + index]
-        cells = line.split("\t")
-        if len(cells) != len(fields) + int(keyed):
+        # A named list row with no positional columns and no fields is empty.
+        cells = [] if named and line == "" else line.split("\t")
+        expected = len(fields) + int(keyed)
+        if (len(cells) < expected) if named else (len(cells) != expected):
             raise ValueError("Wrong cell count.")
         entry_key = cells.pop(0) if keyed else None
         row: JsonObject = {}
         for column, (path, raw) in enumerate(zip(paths, cells)):
             if column == 0 and ids and not raw:
                 raise ValueError("Missing string id.")
-            if features is not None and not (column == 0 and ids):
-                if not raw:
-                    features.add("empty")
-                elif raw.startswith('"'):
-                    features.add("quoted")
-                elif raw.startswith(("{", "[")):
-                    features.add("json")
+            if named and not raw:
+                raise ValueError("Empty values are allowed only as absent table cells.")
+            if not (column == 0 and ids):
+                _note_cell(raw, features)
             if raw:
                 _set_path(row, path, raw if column == 0 and ids else _read_cell(raw))
+        for raw_cell in cells[len(paths):]:
+            key, raw = _read_named_cell(raw_cell)
+            _note_cell(raw, features)
+            _set(row, key, _read_cell(raw))
         if isinstance(result, list):
             result.append(row)
         else:
@@ -551,10 +635,11 @@ def _read_document(text: str, features: set[str] | None = None) -> JsonRoot:
                 if features is not None and rest[1:].startswith('"'):
                     features.add("quoted")
                 _set(result, key, _read_cell(rest[1:]))
+    # Canonical 1.1 text, or canonical 1.0 text from before named cells.
     try:
-        canonical = encode(result)
+        canonical = encode(result) == text or encode(result, format="1.0") == text
     except (TypeError, RecursionError) as error:
         raise ValueError(str(error)) from error
-    if canonical != text:
+    if not canonical:
         raise ValueError("Noncanonical Terset text.")
     return result

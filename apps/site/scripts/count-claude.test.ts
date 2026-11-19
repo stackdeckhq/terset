@@ -1,12 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ClaudeCountsSchema, ClaudeReadySchema } from '../src/data/claude-counts-schema.ts';
-import { anthropicInput, requestBody } from '../../../bench/src/clients.ts';
 import {
-  adjustedCount, countClaude, countPublished, csvText, ENDPOINT, formatTexts, main, METHOD,
-  parseArgs, publicInputs, publishedRequests, requestPlan, settingsFromEnv,
+  adjustedCount, countClaude, csvText, ENDPOINT, formatTexts, main, METHOD,
+  parseArgs, publicInputs, requestPlan, settingsFromEnv,
 } from './count-claude.ts';
-import { PUBLISHED_RUNS, claudeCountedFormats, sourceRunId } from './update-accuracy.ts';
 import { NeutralInputsSchema, parseNeutralInputs } from './claude-inputs.ts';
 import { encode as o200kTokens } from 'gpt-tokenizer/encoding/o200k_base';
 import { encode as toonEncode } from '@toon-format/toon';
@@ -316,86 +314,5 @@ describe('private benchmark inputs', () => {
     expect(result.requests).toBe(8);
     expect(parseNeutralInputs('{"cases":[{"name":"Empty array","data":[]}]}')[0]?.value).toEqual([]);
     expect(parseNeutralInputs('{"cases":[{"name":"Mixed array","data":[1,null,{"x":true}]}]}')[0]?.value).toEqual([1, null, { x: true }]);
-  });
-});
-
-describe('published Claude requests', () => {
-  const runs = PUBLISHED_RUNS.map((source) => ({
-    source, raw: JSON.parse(readFileSync(new URL(`../../../${source.path}`, import.meta.url), 'utf8')) as unknown,
-  }));
-  const requests = publishedRequests(runs.filter(({ source }) => sourceRunId(source) === 'p4-2026-11-12'));
-  const claude = (count: number) => ({ ...options(vi.fn<typeof globalThis.fetch>().mockImplementation(() => Promise.resolve(response(count))), 2000), model: 'claude-opus-5-5' });
-
-  it('rebuilds all 976 published requests, fitted Terset primers included, and refuses the older full-rules Terset run', () => {
-    expect(requests).toHaveLength(732);
-    const all = publishedRequests(runs);
-    expect(all).toHaveLength(976);
-    const tally = Object.fromEntries(['terset', 'json-compact', 'json-pretty', 'toon'].map((format) => [format, all.filter((request) => request.format === format).length]));
-    expect(tally).toEqual({ terset: 244, 'json-compact': 244, 'json-pretty': 244, toon: 244 });
-    expect(new Set(all.map((request) => request.body.model))).toEqual(new Set(['claude-opus-5-5']));
-    // The 2026-11-13 run sent the full rules text, so today's fitted primers no longer match it.
-    const terset = runs.find(({ source }) => claudeCountedFormats(PUBLISHED_RUNS, source).includes('terset'));
-    if (terset === undefined) throw new Error('no counted Terset run');
-    const older = runs.find(({ source }) => sourceRunId(source) === 'v2-final-2026-11-13');
-    if (older === undefined) throw new Error('no 2026-11-13 run');
-    expect(() => publishedRequests([{ source: terset.source, raw: older.raw }])).toThrow('a rebuilt prompt differs from the one the run reserved for');
-  });
-
-  it('skips runs with no counts of their own: borrowed, history only, or no Claude model', () => {
-    const skipped = runs.filter(({ source }) => claudeCountedFormats(PUBLISHED_RUNS, source).length === 0);
-    expect(skipped.map(({ source }) => sourceRunId(source))).toEqual([
-      'v2-final-2026-11-13', 'fitted-rules-2026-11-17',
-      'matched-sol-2026-11-17-r1', 'matched-sol-2026-11-17-r2', 'matched-sol-2026-11-17-r3',
-      'matched-opus-2026-11-17-r1', 'matched-opus-2026-11-17-r2', 'matched-opus-2026-11-17-r3',
-    ]);
-    expect(publishedRequests(skipped)).toEqual([]);
-  });
-
-  it('counts the exact body the benchmark sent, built by the same function (no drift)', async () => {
-    const config = claude(500);
-    const sample = requests.slice(0, 3);
-    const result = await countPublished(sample, config);
-    const sent = vi.mocked(config.fetch).mock.calls.map((call) => call[1]?.body);
-    expect(sent[0]).toBe(JSON.stringify({ model: 'claude-opus-5-5', messages: [{ role: 'user', content: 'a' }] }));
-    sample.forEach((request, index) => {
-      const model = {
-        id: 'claude-opus-5-5', api: 'anthropic', temperature: 'zero', outputTokenParameter: 'max_completion_tokens',
-        price: { inputPerMillion: 4, outputPerMillion: 20, sourceUrl: 'https://price.invalid', dateRead: '2026-11-12' },
-      } as const;
-      const benchBody = JSON.stringify(requestBody(model, { system: request.body.system, user: request.body.messages[0]?.content ?? '' }, 2048));
-      const counted = sent[index + 1];
-      if (typeof counted !== 'string') throw new Error('Expected a JSON request body');
-      expect(counted).toBe(JSON.stringify(anthropicInput(model, { system: request.body.system, user: request.body.messages[0]?.content ?? '' })));
-      // The benchmark body is the counted body plus the output cap and temperature, byte for byte.
-      expect(benchBody).toBe(`${counted.slice(0, -1)},"max_tokens":2048,"temperature":0}`);
-    });
-    expect(result).toMatchObject({ model: 'claude-opus-5-5', endpoint: ENDPOINT, baseline: { text: 'a', inputTokens: 500 }, requests: 4 });
-    expect(result.rows.map((row) => row.inputTokens)).toEqual([500, 500, 500]);
-  });
-
-  it('stops before counting requests when the baseline is not the expected one', async () => {
-    const config = claude(10);
-    await expect(countPublished(requests.slice(0, 2), { ...config, expectedBaseline: 9 })).rejects.toThrow('Baseline "a" counted 10, expected 9');
-    expect(config.fetch).toHaveBeenCalledTimes(1);
-  });
-
-  it('retries once on a network error only, and never on an HTTP error', async () => {
-    const network = claude(9);
-    vi.mocked(network.fetch).mockRejectedValueOnce(new Error(KEY));
-    expect((await countPublished(requests.slice(0, 1), network)).requests).toBe(3);
-    const twice = claude(9);
-    vi.mocked(twice.fetch).mockResolvedValueOnce(response(9)).mockRejectedValueOnce(new Error(KEY)).mockRejectedValueOnce(new Error(KEY));
-    await expect(countPublished(requests.slice(0, 1), twice)).rejects.toThrow('no response received');
-    expect(twice.fetch).toHaveBeenCalledTimes(3);
-    const http = claude(9);
-    vi.mocked(http.fetch).mockResolvedValueOnce(response(9)).mockResolvedValueOnce(new Response(KEY, { status: 503 }));
-    await expect(countPublished(requests.slice(0, 1), http)).rejects.toThrow('HTTP 503');
-    expect(http.fetch).toHaveBeenCalledTimes(2);
-  });
-
-  it('refuses a model that differs from the requests before any request', async () => {
-    const config = { ...claude(9), model: 'claude-other' };
-    await expect(countPublished(requests.slice(0, 1), config)).rejects.toThrow('model');
-    expect(config.fetch).not.toHaveBeenCalled();
   });
 });

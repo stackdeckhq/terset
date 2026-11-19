@@ -1,7 +1,7 @@
 {
   "status": "ready",
   "tokenizer": "o200k_base",
-  "rulesTokens": 73,
+  "rulesTokens": 98,
   "yamlVersion": "2.9.1",
   "cases": [
     {
@@ -12,7 +12,7 @@
       "toon": 814,
       "csv": 513,
       "csvExact": false,
-      "terset": 519
+      "terset": 547
     },
     {
       "name": "UI text, uniform rows",
@@ -112,19 +112,19 @@
       "toon": 4982,
       "csv": 4769,
       "csvExact": false,
-      "terset": 3899
+      "terset": 4055
     }
   ],
   "samples": {
     "orders": {
       "json": 356,
       "toon": 405,
-      "terset": 314
+      "terset": 342
     },
     "servers": {
       "json": 420,
       "toon": 541,
-      "terset": 284
+      "terset": 303
     },
     "config": {
       "json": 99,

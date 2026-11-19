@@ -4,7 +4,7 @@ Terset writes JSON records as one terse table. Decoding gives the same JSON back
 
 ## When to use it
 
-- Use it for a root object or array that holds lists of records sharing keys.
+- Use it for a root object or array holding lists of records.
 - {{BENCH}}
 - CSV notes and every count: https://terset.dev/benchmark.md
 
@@ -31,7 +31,7 @@ A shared or cached system prompt for many texts takes the full rules below.
 
 ## How to read it
 
-A root field is `key: value`. Tables start with `key[N]:`, or `key{N}:` when keyed; `N` counts rows. Keyed rows start with their key, under an `@key` header. Uniform nested objects use dotted columns like `ship.city`. Bare `id` means string ids; quoted `"id"` means typed cells. Scalar-like text is JSON-quoted.
+A root field is `key: value`. Tables start with `key[N]:`, or `key{N}:` when keyed; `N` counts rows. Fields every row has are columns. The rest follow as `name=value` in the rows that have them.
 
 {{EXAMPLE:users}}
 
@@ -41,11 +41,11 @@ A root table starts with `[N]`:
 
 ## Ask for JSON back
 
-Terset is for reading. Ask the model to answer in JSON.
+Terset is for reading. Ask for answers in JSON.
 
 ## Technique: short handles
 
-Your code can swap long ids for 1, 2, 3 before the prompt, then map answers back. Reject unknown handles. This technique is outside the package.
+Outside the package, your code can swap long ids for 1, 2, 3 before the prompt, map answers back and reject unknown handles.
 
 {{QUALITY}}
 
@@ -53,5 +53,4 @@ Your code can swap long ids for 1, 2, 3 before the prompt, then map answers back
 
 - The root must be an object or an array.
 - A numeric `-0` and nesting deeper than 500 levels are explicit errors.
-- Lists inside a record stay JSON in their cell.
 - Terset saves tokens. It claims no gain in answer quality.

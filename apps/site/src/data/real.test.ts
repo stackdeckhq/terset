@@ -2,9 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { benchmarkMarkdown } from './benchmark-doc.ts';
 import { BENCH_FILE, CLAUDE_FILE } from './numbers.ts';
-import { HISTORY_NOTE } from './history.ts';
 import { REAL, REAL_TABLE_HEAD, realChange, realLines, realMethod, realTableRows } from './real.ts';
 import type { RealData } from './real-data-schema.ts';
+import { TUNING_DETAIL } from './tuning.ts';
 
 const ONE = (terset: number, json: number, toon: number): RealData => ({
   tokenizer: 'o200k_base',
@@ -35,13 +35,13 @@ describe('real data section', () => {
     expect(method).toContain('rulesFor(text)');
   });
 
-  it('puts the section in benchmark.md, and the history note points at it without a date', () => {
+  it('puts the section in benchmark.md, and the tuning note points back at it without a date', () => {
     const text = benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE);
     expect(text).toContain(`## Real data, ${REAL.tokenizer}`);
     expect(text).toContain(`| ${REAL_TABLE_HEAD.join(' | ')} |`);
     for (const line of realLines(REAL)) expect(text).toContain(line);
-    expect(text.indexOf('## Real data')).toBeLessThan(text.indexOf('## Number history'));
-    expect(HISTORY_NOTE).toContain('Real data');
-    expect(HISTORY_NOTE).not.toContain('real-world data are in progress');
+    expect(text.indexOf('## Real data')).toBeLessThan(text.indexOf(TUNING_DETAIL));
+    expect(TUNING_DETAIL).toContain('Real data');
+    expect(TUNING_DETAIL).not.toContain('real-world data are in progress');
   });
 });

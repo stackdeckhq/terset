@@ -1,6 +1,6 @@
 # Terset format
 
-Format version 1.0
+Format version 1.1
 
 TERse SETs. Terset writes a JSON object or array as short lines. Any list of
 two or more objects becomes one tab-separated table when that is smaller
@@ -20,10 +20,20 @@ reject valid 1.0 text, requires Format 2.0. A purely additive change that
 its own fixtures. The language-neutral 1.0 suite lives in `conformance/`
 at the repository root. Format versions are separate from package versions.
 
+Format 1.1 adds named cells for sparse table fields (see "Named cells").
+A 1.0 decoder rejects 1.1 named tables, because `name=value` is not a valid
+header column. A 1.1 encoder writes 1.1 text by default and writes 1.0 text
+on request. A 1.1 decoder accepts the canonical 1.1 text of a value and the
+canonical 1.0 text of the same value. It rejects a document that mixes the
+two. The 1.1 suite lives in `conformance/1.1/`. Every rule below applies to
+both versions unless it names one.
+
 The rules line, `RULES`, `rulesFor` and `rules_for` output, and prompt text
 for models are outside this freeze. They remain tunable and are versioned
-by date. The current guidance below is dated 2026-11-17. Performance and
-package APIs are also outside the freeze.
+by date. The current guidance below is dated 2026-11-19. Performance and
+package APIs are also outside the freeze. In the current packages,
+`encode(value, { format: "1.0" })` in JavaScript and
+`encode(value, format="1.0")` in Python write 1.0 text.
 
 Error message wording is outside the freeze. The current package tests pin
 JavaScript `SyntaxError` and Python `ValueError` for rejected text. The
@@ -66,9 +76,9 @@ LF. There is no added final LF. An absent final one-column cell is an empty
 row, so that text ends with LF. Simple keys match
 `[A-Za-z_$][A-Za-z0-9_$.-]*`. Other keys are JSON strings.
 
-A table has one tab-separated header, with any first field. Each row has
-exactly that many tab-separated cells, including trailing empty cells.
-An empty cell means the field is absent. Empty text is `""`. Null is `null`.
+A table has one tab-separated header, with any first field. In a table
+without named cells, each row has exactly that many tab-separated cells,
+including trailing empty cells. An empty cell means the field is absent. Empty text is `""`. Null is `null`.
 Numbers, booleans and null keep their types in every ordinary column.
 
 A leading bare `id` header marks string ids. Its cells are bare strings,
@@ -178,7 +188,36 @@ This extra quoting applies only to one-column list tables. Keyed entry
 keys must avoid these lookalikes regardless of table width. String ids
 in wider list tables may contain them as raw text.
 Root field lines hold no raw tabs. Read exactly N rows after the header.
-Every row must have the exact header width.
+Every row must have the exact header width, apart from named cells.
+
+### Named cells (format 1.1)
+
+A 1.1 table splits its header at the first header field that some row
+lacks. The fields before that point are positional columns. Every rule
+above applies to them, including nested columns, the `id` modes and the
+one-column lookalike quoting, which counts positional columns only. A
+table with no sparse field is the same in both versions.
+
+When a field is sparse, the header ends with the literal marker cell
+`name=value`, after the positional columns. The marker comes after `@key`
+in a keyed table. There may be no positional columns, so the header may be
+`name=value` alone. Each row writes its positional cells, then one
+`name=value` cell for each later field the row has. Those cells follow
+header order, which is also the row's own key order. An absent field
+writes nothing. A row with no positional columns and no named cells is an
+empty line.
+
+A name is one field, never a path. It is bare when it is a simple key with
+no dot. Otherwise it is a JSON string, as in `"a.b"=1`. The value follows
+the ordinary typed cell rules and is never empty. Named values are never
+flattened, so an object value is a JSON cell, as in `o={"x":1}`. A
+positional first `id` column is the only `id` mode. A sparse `id` field is
+an ordinary named cell, as in `id=1`.
+
+Table selection and fallback are unchanged. The 1.1 table must still be
+strictly shorter than compact JSON. Named cells can be longer than empty
+cells, so a few lists that are tables in 1.0 stay compact JSON in 1.1, and
+the reverse.
 
 ## Grammar
 
@@ -189,19 +228,29 @@ with no leading zero. `LF` is a line feed and `TAB` is a tab.
 ```text
 document    = "{}" | compact-array | root-table | fields
 root-table  = "[" count "]" LF header (LF row){count}
+            | "[" count "]" LF named-header (LF named-row){count}
 fields      = field (LF field)*
 field       = key ": " cell
             | key "[" count "]:" LF header (LF row){count}
+            | key "[" count "]:" LF named-header (LF named-row){count}
             | key "{" count "}:" LF "@key" TAB header (LF keyed-row){count}
+            | key "{" count "}:" LF "@key" TAB named-header (LF keyed-named-row){count}
 header      = column (TAB column)*
+named-header = [header TAB] "name=value"
 column      = quoted-key | segment ("." segment)*
 row         = optional-cell (TAB optional-cell)*
 keyed-row   = entry-key TAB row
+named-row   = "" | item (TAB item)*
+keyed-named-row = entry-key (TAB item)*
+item        = cell | name "=" cell
+name        = segment | quoted-key
 ```
 
 `key` is a simple key or JSON string. `segment` is a simple key without
-a dot. A quoted column always names one literal field. There is no format
-switch or reader for uncounted tables.
+a dot. A quoted column always names one literal field. In a named row, the
+items are one nonempty cell per positional column, then the named cells.
+The empty `named-row` is allowed only when there are no positional columns.
+There is no format switch or reader for uncounted tables.
 
 ## Decoder
 
@@ -227,6 +276,13 @@ the encoder would choose JSON. An LF that represents an absent final
 one-column cell is data and must be kept. A decoder may implement canonical
 validation without calling an encoder, but must accept the same texts.
 
+A header whose last cell is `name=value` marks a named table. A decoder
+must reject an empty positional cell, a named cell without `=`, a bare name
+that is not a simple key without a dot, an empty value, a field named twice
+in one row, named cells out of header order and a marker the encoder would
+not write. Text is accepted when it equals the canonical 1.1 text or the
+canonical 1.0 text of the decoded value.
+
 ## Limits
 
 Header paths have at most 8 segments. Deeper object values stay JSON cells
@@ -240,13 +296,13 @@ finite numbers keep their IEEE-754 value. Precision lost before encoding
 cannot come back. NFC and NFD text stay different code units, in values and
 in keys. Available memory and runtime stack limits also constrain input size.
 
-## Rules guidance, 2026-11-17
+## Rules guidance, 2026-11-19
 
-This section is outside Format 1.0. No legend is written into the data.
-The package exports one rules line, `RULES`, to put once in a shared system
-prompt, outside the data:
+This section is outside the format freeze. No legend is written into the
+data. The package exports one rules line, `RULES`, to put once in a shared
+system prompt, outside the data:
 
-> Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.
+> Tables use tab-separated headers and rows. Empty cells mean absent. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.
 
 `rulesFor(text)` in JavaScript and `rules_for(text)` in Python return only
 the sentences whose constructs appear in canonical encoded text. Sentences
@@ -256,16 +312,18 @@ keep this order and join with single spaces:
 | --- | --- | --- |
 | 1 | Any table | Tables use tab-separated headers and rows. |
 | 2 | Any empty table cell, excluding the string id column | Empty cells mean absent. |
-| 3 | Any table cell or root field value that starts with a double quote | JSON quotes distinguish numeric, boolean or null text from scalars. |
-| 4 | Any table cell that starts with `{` or `[` | Nested cells use JSON. |
-| 5 | A list table whose first header is bare `id` | A leading bare id header marks string IDs. |
-| 6 | Keyed table with its `@key` header | name{N} has N entries; the @key column holds each entry's key and is not a field. |
-| 7 | Unquoted dotted header path in either table kind | Header a.b is field b in object a. |
+| 3 | Any table header that ends with `name=value` | After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. |
+| 4 | Any table cell, named value or root field value that starts with a double quote | JSON quotes distinguish numeric, boolean or null text from scalars. |
+| 5 | Any table cell or named value that starts with `{` or `[` | Nested cells use JSON. |
+| 6 | A list table whose first header is bare `id` | A leading bare id header marks string IDs. |
+| 7 | Keyed table with its `@key` header | name{N} has N entries; the @key column holds each entry's key and is not a field. |
+| 8 | Unquoted dotted header path in either table kind | Header a.b is field b in object a. |
 
 Cells in a leading bare `id` column are raw strings and do not trigger
-sentences 3 or 4. Entry keys in the `@key` column are bare text and do not
-trigger them either. Quoted header names do not trigger sentence 3. Root JSON
-arrays and objects do not trigger sentence 4. Text with no trigger returns
+sentences 4 or 5. Entry keys in the `@key` column are bare text and do not
+trigger them either. Quoted header names and quoted names in named cells do
+not trigger sentence 4. Root JSON
+arrays and objects do not trigger sentence 5. Text with no trigger returns
 the empty string `""`. Invalid text raises the same error as `decode`.
 A sender may send the full `RULES` line or the fitted line returned for the
 encoded text. Rules fixtures stay in `packages/terset/tests/rules-cases.json`

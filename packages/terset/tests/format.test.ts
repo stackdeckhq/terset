@@ -47,7 +47,7 @@ it("keeps nested objects with missing, empty, dotted or differently ordered keys
   }
 });
 
-it("uses compact JSON at the exact keyed-table byte boundary", () => {
+it("uses compact JSON at the exact 1.0 keyed-table byte boundary", () => {
   const map = { k0: { a: 1 }, k1: { b: 1 }, k2: { c: 1 }, k3: { d: 1 }, k4: { e: 1 }, k5: { f: 1 } };
   const fields = ["a", "b", "c", "d", "e", "f"];
   const body = ["@key\t" + fields.join("\t"), ...Object.entries(map).map(([key, row]) =>
@@ -55,8 +55,9 @@ it("uses compact JSON at the exact keyed-table byte boundary", () => {
   const fallback = `map: ${JSON.stringify(map)}`;
   const candidate = `map{6}:\n${body}`;
   assert.equal(Buffer.byteLength(candidate), Buffer.byteLength(fallback));
-  assert.equal(encode({ map }), fallback);
-  assert.ok(encode({ map: { ...map, k0: { a: 1, b: 1 } } }).startsWith("map{6}:\n"));
+  assert.equal(encode({ map }, { format: "1.0" }), fallback);
+  assert.ok(encode({ map: { ...map, k0: { a: 1, b: 1 } } }, { format: "1.0" }).startsWith("map{6}:\n"));
+  assert.equal(encode({ map }), "map{6}:\n@key\tname=value\nk0\ta=1\nk1\tb=1\nk2\tc=1\nk3\td=1\nk4\te=1\nk5\tf=1");
 });
 
 it("rejects every shared damaged or noncanonical text", () => {
