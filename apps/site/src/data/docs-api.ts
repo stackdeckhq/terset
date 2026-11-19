@@ -53,20 +53,28 @@ export const API: readonly ApiEntry[] = [
     id: 'encode',
     name: { js: 'encode', py: 'encode' },
     summary: 'Turns a JSON object or array into Terset text. Lists of records become tables only when that is smaller than JSON.',
-    signature: { js: 'encode(value: JsonRoot): string', py: 'encode(value: JsonInputRoot) -> str' },
+    signature: { js: 'encode(value: JsonRoot, options?: EncodeOptions): string', py: 'encode(value: JsonInputRoot, *, format: FormatVersion = "1.1") -> str' },
     params: {
-      js: [{ name: 'value', type: 'JsonRoot', about: 'A plain JSON object or array.' }],
-      py: [{ name: 'value', type: 'JsonInputRoot', about: 'A `dict` or `list` of JSON values.' }],
+      js: [
+        { name: 'value', type: 'JsonRoot', about: 'A plain JSON object or array.' },
+        { name: 'options.format', type: '"1.0" | "1.1"', about: 'The format version to write. The default is `"1.1"`. `"1.0"` writes empty cells instead of `name=value` cells.' },
+      ],
+      py: [
+        { name: 'value', type: 'JsonInputRoot', about: 'A `dict` or `list` of JSON values.' },
+        { name: 'format', type: 'FormatVersion', about: 'Keyword only. The format version to write. The default is `"1.1"`. `"1.0"` writes empty cells instead of `name=value` cells.' },
+      ],
     },
     returns: { js: '`string`: Terset text. A root array that cannot be a table is written as JSON.', py: '`str`: Terset text. A root list that cannot be a table is written as JSON.' },
     errors: {
       js: [
         { type: 'TypeError', when: 'The root is not an object or array, or a value is not JSON: a class instance, a symbol key, a sparse array or a cycle.' },
         { type: 'TypeError', when: 'A number is `NaN`, infinite or `-0`, or the data nests deeper than 500 levels.' },
+        { type: 'TypeError', when: '`options` is not an object, or `options.format` is not `"1.0"` or `"1.1"`.' },
       ],
       py: [
         { type: 'TypeError', when: 'The root is not a `dict` or `list`, or a value is not JSON: another type, a key that is not a string, or a cycle.' },
         { type: 'TypeError', when: 'A number is `nan`, infinite or `-0`, an `int` is not exact as a float, or the data nests deeper than 500 levels.' },
+        { type: 'TypeError', when: '`format` is not `"1.0"` or `"1.1"`, or is passed by position.' },
       ],
     },
     jsFence: 'js',
@@ -206,12 +214,15 @@ print(rules_for("name: Ada") == "")  # True, no table means no rules`,
     signature: {
       js: `type JsonValue = null | boolean | number | string | JsonValue[] | JsonObject;
 type JsonObject = { [key: string]: JsonValue };
-type JsonRoot = JsonObject | JsonValue[];`,
+type JsonRoot = JsonObject | JsonValue[];
+type FormatVersion = "1.0" | "1.1";
+type EncodeOptions = { format?: FormatVersion };`,
       py: `JsonValue = None | bool | int | float | str | list[JsonValue] | dict[str, JsonValue]
 JsonObject = dict[str, JsonValue]
 JsonRoot = JsonObject | list[JsonValue]
 JsonInputValue = None | bool | int | float | str | Sequence[JsonInputValue] | Mapping[str, JsonInputValue]
-JsonInputRoot = Mapping[str, JsonInputValue] | Sequence[JsonInputValue]`,
+JsonInputRoot = Mapping[str, JsonInputValue] | Sequence[JsonInputValue]
+FormatVersion = Literal["1.0", "1.1"]`,
     },
     params: { js: [], py: [] },
     returns: { js: 'Types only. Nothing exists at run time.', py: 'Type aliases, importable at run time.' },
@@ -235,7 +246,7 @@ print(encode(data))`,
       },
     },
     differs: {
-      js: 'Three types, imported with `import type`.',
+      js: 'Five types, imported with `import type`.',
       py: 'Two more aliases, `JsonInputValue` and `JsonInputRoot`, accept read-only `Mapping` and `Sequence` input.',
     },
   },
@@ -243,8 +254,8 @@ print(encode(data))`,
 
 /** Every name each package exports, in the order the reference lists them. */
 export const PUBLIC_EXPORTS: PerLang<readonly string[]> = {
-  js: ['encode', 'decode', 'rulesFor', 'RULES', 'JsonValue', 'JsonObject', 'JsonRoot'],
-  py: ['encode', 'decode', 'rules_for', 'RULES', 'JsonValue', 'JsonObject', 'JsonRoot', 'JsonInputValue', 'JsonInputRoot'],
+  js: ['encode', 'decode', 'rulesFor', 'RULES', 'JsonValue', 'JsonObject', 'JsonRoot', 'FormatVersion', 'EncodeOptions'],
+  py: ['encode', 'decode', 'rules_for', 'RULES', 'JsonValue', 'JsonObject', 'JsonRoot', 'JsonInputValue', 'JsonInputRoot', 'FormatVersion'],
 };
 
 /** The fence tag for one entry's example in one language. */

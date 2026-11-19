@@ -2,7 +2,7 @@ import { rulesFor, decode as decodeTerset, encode as encodeTerset } from '@stack
 import { decode as decodeToon, encode as encodeToon } from '@toon-format/toon';
 import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
 import { jsonRootSchema } from './schema.ts';
-import type { Corruption, Dataset, Format, JsonRoot, Question } from './schema.ts';
+import type { Corruption, Dataset, Format, JsonRoot, Question, TersetFormat } from './schema.ts';
 
 // JSON and TOON primers are copied verbatim from the upstream benchmark.
 export const PRIMERS = {
@@ -17,12 +17,12 @@ export function primerFor(format: Format, validText: string): string {
   return PRIMERS[format];
 }
 
-export function encode(format: Format, data: JsonRoot): string {
+export function encode(format: Format, data: JsonRoot, tersetFormat: TersetFormat = '1.1'): string {
   switch (format) {
     case 'json-compact': return JSON.stringify(data);
     case 'json-pretty': return JSON.stringify(data, null, 2);
     case 'toon': return encodeToon(data);
-    case 'terset': return encodeTerset(data);
+    case 'terset': return encodeTerset(data, { format: tersetFormat });
   }
 }
 
@@ -79,8 +79,8 @@ function corruptJson(data: Dataset['data'], corruption: Corruption): Dataset['da
 
 // Keep table headers intact while editing the encoded record rows. This mirrors
 // the upstream corruption seam. JSON keeps valid framing after the edit.
-export function encodeDataset(format: Format, dataset: Dataset): string {
-  const text = encode(format, dataset.data);
+export function encodeDataset(format: Format, dataset: Dataset, tersetFormat: TersetFormat = '1.1'): string {
+  const text = encode(format, dataset.data, tersetFormat);
   const corruption = dataset.corruption;
   if (!corruption || corruption.kind === 'control') return text;
   const damaged = corruptJson(dataset.data, corruption);
@@ -96,7 +96,7 @@ export function encodeDataset(format: Format, dataset: Dataset): string {
   switch (corruption.kind) {
     case 'truncated': rows.splice(corruption.startIndex ?? rows.length - corruption.removeRecordCount, corruption.removeRecordCount); break;
     case 'extra-rows': {
-      const extended = encode(format, damaged).split('\n');
+      const extended = encode(format, damaged, tersetFormat).split('\n');
       if (extended[1] !== lines[1] && format === 'terset') throw new Error('Invalid structural fixture: appended fields differ');
       rows.push(...extended.slice(headerCount + sourceRows.length));
       break;

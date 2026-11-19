@@ -1,7 +1,7 @@
 {
   "status": "ready",
   "model": "claude-opus-5-5",
-  "countedAt": "2026-11-17T14:46:01Z",
+  "countedAt": "2026-11-19T10:07:55Z",
   "endpoint": "/v1/messages/count_tokens",
   "baseline": {
     "text": "a",
@@ -24,7 +24,7 @@
       "csv": 474,
       "csvExact": false,
       "o200kJson": 356,
-      "terset": 478
+      "terset": 531
     },
     {
       "id": "sample:servers",
@@ -37,7 +37,7 @@
       "csv": 339,
       "csvExact": false,
       "o200kJson": 420,
-      "terset": 378
+      "terset": 392
     },
     {
       "id": "sample:config",
@@ -63,7 +63,7 @@
       "csv": null,
       "csvExact": null,
       "o200kJson": 45,
-      "terset": 122
+      "terset": 147
     },
     {
       "id": "example:shipments",
@@ -76,7 +76,7 @@
       "csv": 95,
       "csvExact": false,
       "o200kJson": 67,
-      "terset": 164
+      "terset": 187
     },
     {
       "id": "example:rows",
@@ -89,7 +89,7 @@
       "csv": 24,
       "csvExact": false,
       "o200kJson": 36,
-      "terset": 84
+      "terset": 111
     },
     {
       "id": "benchmark:ui-text-uneven-rows",
@@ -102,7 +102,7 @@
       "csv": 782,
       "csvExact": false,
       "o200kJson": 697,
-      "terset": 766
+      "terset": 831
     },
     {
       "id": "benchmark:ui-text-uniform-rows",
@@ -232,7 +232,7 @@
       "csv": 6490,
       "csvExact": false,
       "o200kJson": 4678,
-      "terset": 5662
+      "terset": 6062
     }
   ]
 }

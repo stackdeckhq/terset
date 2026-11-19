@@ -67,6 +67,9 @@ it("round-trips 30,000 seeded JSON object and array roots weighted toward genera
       assert.equal(JSON.stringify(decode(text)), JSON.stringify(input));
       assert.deepEqual(decode(Buffer.from(text, "utf8").toString("utf8")), input);
       assert.equal(encode(input), text);
+      const legacy = encode(input, { format: "1.0" });
+      assert.equal(rulesFor(legacy), encoderRules(input, "1.0"));
+      assert.equal(JSON.stringify(decode(legacy)), JSON.stringify(input));
     } catch (error) {
       throw new Error(`seed ${SEED}, case ${index}, input ${JSON.stringify(input)}`, { cause: error });
     }

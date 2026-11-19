@@ -67,5 +67,6 @@ const inputs: SharedInput[] = [
 ];
 
 export function sharedCases(): string {
-  return `${JSON.stringify(inputs.map((entry) => "recipe" in entry ? entry : { ...entry, encoded: encode(entry.input) }), null, 2)}\n`;
+  // conformance/cases.json is the frozen format 1.0 suite.
+  return `${JSON.stringify(inputs.map((entry) => "recipe" in entry ? entry : { ...entry, encoded: encode(entry.input, { format: "1.0" }) }), null, 2)}\n`;
 }

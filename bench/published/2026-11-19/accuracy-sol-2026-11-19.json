@@ -1,21 +1,27 @@
 {
   "version": 1,
-  "runId": "matched-sol-2026-11-17-r2",
-  "fingerprint": "bff674b0dc4b32aca4a8c544bbe3a21801f985e58ed4852a3ffe24a778fb5b3f",
+  "runId": "accuracy-sol-2026-11-19",
+  "fingerprint": "e86a7fb194ae9bd9db986e749c04cc0911d4977d201a4dc693d9118df6c994c4",
+  "suite": "toon",
+  "encoders": {
+    "@toon-format/toon": "4.4.0",
+    "@stackdeck/terset": "0.3.0"
+  },
+  "tersetFormat": "1.1",
   "mode": "http",
   "status": "complete",
   "reason": null,
   "plannedCalls": 976,
   "budgets": {
-    "maxCalls": 976,
-    "maxInputTokens": 8000000,
-    "maxOutputTokens": 1000000,
+    "maxCalls": 980,
+    "maxInputTokens": 4950000,
+    "maxOutputTokens": 90000,
     "perCallMaxOutputTokens": 2048
   },
   "budgetUsed": {
-    "calls": 976,
-    "inputTokens": 4717269,
-    "outputTokens": 66084
+    "calls": 977,
+    "inputTokens": 4721718,
+    "outputTokens": 68445
   },
   "rows": [
     {
@@ -117,7 +123,7 @@
     {
       "text": "\"ofelia33@hotmail.com\"",
       "inputTokens": 4041,
-      "outputTokens": 23,
+      "outputTokens": 11,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -597,7 +603,7 @@
     {
       "text": "17",
       "inputTokens": 4038,
-      "outputTokens": 23,
+      "outputTokens": 22,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -609,7 +615,7 @@
     {
       "text": "17",
       "inputTokens": 6445,
-      "outputTokens": 28,
+      "outputTokens": 22,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -626,102 +632,6 @@
       "format": "toon",
       "dataset": "tabular",
       "questionId": "q13",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 3378
-    },
-    {
-      "text": "17",
-      "inputTokens": 2374,
-      "outputTokens": 5,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "tabular",
-      "questionId": "q13",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 3019
-    },
-    {
-      "text": "17",
-      "inputTokens": 4038,
-      "outputTokens": 57,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "tabular",
-      "questionId": "q14",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 5099
-    },
-    {
-      "text": "17",
-      "inputTokens": 6445,
-      "outputTokens": 22,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "tabular",
-      "questionId": "q14",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 8108
-    },
-    {
-      "text": "17",
-      "inputTokens": 2661,
-      "outputTokens": 26,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "tabular",
-      "questionId": "q14",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 3378
-    },
-    {
-      "text": "17",
-      "inputTokens": 2374,
-      "outputTokens": 22,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "tabular",
-      "questionId": "q14",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 3019
-    },
-    {
-      "text": "17",
-      "inputTokens": 4038,
-      "outputTokens": 5,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "tabular",
-      "questionId": "q15",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 5099
-    },
-    {
-      "text": "17",
-      "inputTokens": 6445,
-      "outputTokens": 5,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "tabular",
-      "questionId": "q15",
-      "expected": "17",
-      "correct": true,
-      "reservedInputTokens": 8108
-    },
-    {
-      "text": "17",
-      "inputTokens": 2661,
-      "outputTokens": 24,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "tabular",
-      "questionId": "q15",
       "expected": "17",
       "correct": true,
       "reservedInputTokens": 3378
@@ -733,6 +643,102 @@
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
+      "questionId": "q13",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 3019
+    },
+    {
+      "text": "17",
+      "inputTokens": 4038,
+      "outputTokens": 30,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "tabular",
+      "questionId": "q14",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 5099
+    },
+    {
+      "text": "17",
+      "inputTokens": 6445,
+      "outputTokens": 25,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "tabular",
+      "questionId": "q14",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 8108
+    },
+    {
+      "text": "17",
+      "inputTokens": 2661,
+      "outputTokens": 34,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "tabular",
+      "questionId": "q14",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 3378
+    },
+    {
+      "text": "17",
+      "inputTokens": 2374,
+      "outputTokens": 24,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "tabular",
+      "questionId": "q14",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 3019
+    },
+    {
+      "text": "17",
+      "inputTokens": 4038,
+      "outputTokens": 23,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "tabular",
+      "questionId": "q15",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 5099
+    },
+    {
+      "text": "17",
+      "inputTokens": 6445,
+      "outputTokens": 23,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "tabular",
+      "questionId": "q15",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 8108
+    },
+    {
+      "text": "17",
+      "inputTokens": 2661,
+      "outputTokens": 29,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "tabular",
+      "questionId": "q15",
+      "expected": "17",
+      "correct": true,
+      "reservedInputTokens": 3378
+    },
+    {
+      "text": "17",
+      "inputTokens": 2374,
+      "outputTokens": 5,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "tabular",
       "questionId": "q15",
       "expected": "17",
       "correct": true,
@@ -741,7 +747,7 @@
     {
       "text": "90",
       "inputTokens": 4043,
-      "outputTokens": 77,
+      "outputTokens": 87,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -753,7 +759,7 @@
     {
       "text": "90",
       "inputTokens": 6450,
-      "outputTokens": 55,
+      "outputTokens": 89,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -765,7 +771,7 @@
     {
       "text": "90",
       "inputTokens": 2666,
-      "outputTokens": 82,
+      "outputTokens": 85,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -789,7 +795,7 @@
     {
       "text": "70",
       "inputTokens": 4043,
-      "outputTokens": 202,
+      "outputTokens": 160,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -801,7 +807,7 @@
     {
       "text": "71",
       "inputTokens": 6450,
-      "outputTokens": 205,
+      "outputTokens": 229,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -813,7 +819,7 @@
     {
       "text": "71",
       "inputTokens": 2666,
-      "outputTokens": 232,
+      "outputTokens": 229,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -825,7 +831,7 @@
     {
       "text": "70",
       "inputTokens": 2379,
-      "outputTokens": 153,
+      "outputTokens": 217,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -835,21 +841,21 @@
       "reservedInputTokens": 3026
     },
     {
-      "text": "51",
+      "text": "52",
       "inputTokens": 4043,
-      "outputTokens": 202,
+      "outputTokens": 199,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
       "questionId": "q18",
       "expected": "52",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 5106
     },
     {
       "text": "52",
       "inputTokens": 6450,
-      "outputTokens": 199,
+      "outputTokens": 198,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -933,7 +939,7 @@
     {
       "text": "102543.19",
       "inputTokens": 4040,
-      "outputTokens": 739,
+      "outputTokens": 736,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -945,7 +951,7 @@
     {
       "text": "102543.19",
       "inputTokens": 6447,
-      "outputTokens": 738,
+      "outputTokens": 728,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -969,7 +975,7 @@
     {
       "text": "102543.19",
       "inputTokens": 2376,
-      "outputTokens": 737,
+      "outputTokens": 743,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -981,7 +987,7 @@
     {
       "text": "83",
       "inputTokens": 4037,
-      "outputTokens": 55,
+      "outputTokens": 54,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -1005,7 +1011,7 @@
     {
       "text": "83",
       "inputTokens": 2660,
-      "outputTokens": 55,
+      "outputTokens": 54,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1017,7 +1023,7 @@
     {
       "text": "83",
       "inputTokens": 2373,
-      "outputTokens": 55,
+      "outputTokens": 52,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1041,7 +1047,7 @@
     {
       "text": "17",
       "inputTokens": 6444,
-      "outputTokens": 52,
+      "outputTokens": 53,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -1065,7 +1071,7 @@
     {
       "text": "17",
       "inputTokens": 2373,
-      "outputTokens": 51,
+      "outputTokens": 55,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1077,7 +1083,7 @@
     {
       "text": "12",
       "inputTokens": 4045,
-      "outputTokens": 82,
+      "outputTokens": 81,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -1089,7 +1095,7 @@
     {
       "text": "12",
       "inputTokens": 6452,
-      "outputTokens": 70,
+      "outputTokens": 77,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -1101,7 +1107,7 @@
     {
       "text": "12",
       "inputTokens": 2668,
-      "outputTokens": 80,
+      "outputTokens": 78,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1113,7 +1119,7 @@
     {
       "text": "12",
       "inputTokens": 2381,
-      "outputTokens": 66,
+      "outputTokens": 81,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1137,11 +1143,59 @@
     {
       "text": "12",
       "inputTokens": 6452,
+      "outputTokens": 81,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "tabular",
+      "questionId": "q24",
+      "expected": "12",
+      "correct": true,
+      "reservedInputTokens": 8117
+    },
+    {
+      "text": "12",
+      "inputTokens": 2668,
       "outputTokens": 59,
       "model": "gpt-6.1-sol",
-      "format": "json-pretty",
+      "format": "toon",
       "dataset": "tabular",
       "questionId": "q24",
+      "expected": "12",
+      "correct": true,
+      "reservedInputTokens": 3387
+    },
+    {
+      "text": "12",
+      "inputTokens": 2381,
+      "outputTokens": 61,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "tabular",
+      "questionId": "q24",
+      "expected": "12",
+      "correct": true,
+      "reservedInputTokens": 3028
+    },
+    {
+      "text": "12",
+      "inputTokens": 4045,
+      "outputTokens": 81,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "tabular",
+      "questionId": "q25",
+      "expected": "12",
+      "correct": true,
+      "reservedInputTokens": 5108
+    },
+    {
+      "text": "12",
+      "inputTokens": 6452,
+      "outputTokens": 80,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "tabular",
+      "questionId": "q25",
       "expected": "12",
       "correct": true,
       "reservedInputTokens": 8117
@@ -1149,23 +1203,23 @@
     {
       "text": "12",
       "inputTokens": 2668,
+      "outputTokens": 81,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "tabular",
+      "questionId": "q25",
+      "expected": "12",
+      "correct": true,
+      "reservedInputTokens": 3387
+    },
+    {
+      "text": "12",
+      "inputTokens": 2381,
       "outputTokens": 82,
       "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "tabular",
-      "questionId": "q24",
-      "expected": "12",
-      "correct": true,
-      "reservedInputTokens": 3387
-    },
-    {
-      "text": "12",
-      "inputTokens": 2381,
-      "outputTokens": 68,
-      "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
-      "questionId": "q24",
+      "questionId": "q25",
       "expected": "12",
       "correct": true,
       "reservedInputTokens": 3028
@@ -1177,54 +1231,6 @@
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
-      "questionId": "q25",
-      "expected": "12",
-      "correct": true,
-      "reservedInputTokens": 5108
-    },
-    {
-      "text": "12",
-      "inputTokens": 6452,
-      "outputTokens": 81,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "tabular",
-      "questionId": "q25",
-      "expected": "12",
-      "correct": true,
-      "reservedInputTokens": 8117
-    },
-    {
-      "text": "12",
-      "inputTokens": 2668,
-      "outputTokens": 81,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "tabular",
-      "questionId": "q25",
-      "expected": "12",
-      "correct": true,
-      "reservedInputTokens": 3387
-    },
-    {
-      "text": "12",
-      "inputTokens": 2381,
-      "outputTokens": 80,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "tabular",
-      "questionId": "q25",
-      "expected": "12",
-      "correct": true,
-      "reservedInputTokens": 3028
-    },
-    {
-      "text": "12",
-      "inputTokens": 4045,
-      "outputTokens": 83,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "tabular",
       "questionId": "q26",
       "expected": "12",
       "correct": true,
@@ -1233,7 +1239,7 @@
     {
       "text": "12",
       "inputTokens": 6452,
-      "outputTokens": 81,
+      "outputTokens": 80,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -1245,7 +1251,7 @@
     {
       "text": "12",
       "inputTokens": 2668,
-      "outputTokens": 80,
+      "outputTokens": 78,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1281,7 +1287,7 @@
     {
       "text": "10",
       "inputTokens": 6452,
-      "outputTokens": 84,
+      "outputTokens": 111,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -1293,7 +1299,7 @@
     {
       "text": "10",
       "inputTokens": 2668,
-      "outputTokens": 78,
+      "outputTokens": 76,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1305,7 +1311,7 @@
     {
       "text": "10",
       "inputTokens": 2381,
-      "outputTokens": 77,
+      "outputTokens": 78,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1315,45 +1321,45 @@
       "reservedInputTokens": 3028
     },
     {
-      "text": "59",
+      "text": "60",
       "inputTokens": 4044,
-      "outputTokens": 292,
+      "outputTokens": 268,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
       "questionId": "q28",
       "expected": "60",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 5107
     },
     {
-      "text": "60",
+      "text": "61",
       "inputTokens": 6451,
-      "outputTokens": 287,
+      "outputTokens": 285,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
       "questionId": "q28",
       "expected": "60",
-      "correct": true,
+      "correct": false,
       "reservedInputTokens": 8116
     },
     {
-      "text": "60",
+      "text": "61",
       "inputTokens": 2667,
-      "outputTokens": 315,
+      "outputTokens": 128,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
       "questionId": "q28",
       "expected": "60",
-      "correct": true,
+      "correct": false,
       "reservedInputTokens": 3386
     },
     {
       "text": "60",
       "inputTokens": 2380,
-      "outputTokens": 318,
+      "outputTokens": 117,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1363,19 +1369,19 @@
       "reservedInputTokens": 3027
     },
     {
-      "text": "42",
+      "text": "43",
       "inputTokens": 4044,
-      "outputTokens": 271,
+      "outputTokens": 291,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
       "questionId": "q29",
       "expected": "43",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 5107
     },
     {
-      "text": "42",
+      "text": "43",
       "inputTokens": 6451,
       "outputTokens": 270,
       "model": "gpt-6.1-sol",
@@ -1383,13 +1389,13 @@
       "dataset": "tabular",
       "questionId": "q29",
       "expected": "43",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 8116
     },
     {
       "text": "43",
       "inputTokens": 2667,
-      "outputTokens": 262,
+      "outputTokens": 271,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1401,7 +1407,7 @@
     {
       "text": "43",
       "inputTokens": 2380,
-      "outputTokens": 271,
+      "outputTokens": 328,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1413,7 +1419,7 @@
     {
       "text": "26",
       "inputTokens": 4044,
-      "outputTokens": 212,
+      "outputTokens": 143,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -1425,7 +1431,7 @@
     {
       "text": "26",
       "inputTokens": 6451,
-      "outputTokens": 86,
+      "outputTokens": 135,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -1435,21 +1441,21 @@
       "reservedInputTokens": 8116
     },
     {
-      "text": "26",
+      "text": "27",
       "inputTokens": 2667,
-      "outputTokens": 100,
+      "outputTokens": 105,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
       "questionId": "q30",
       "expected": "26",
-      "correct": true,
+      "correct": false,
       "reservedInputTokens": 3386
     },
     {
       "text": "26",
       "inputTokens": 2380,
-      "outputTokens": 250,
+      "outputTokens": 144,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1461,7 +1467,7 @@
     {
       "text": "7",
       "inputTokens": 4045,
-      "outputTokens": 99,
+      "outputTokens": 100,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -1473,7 +1479,7 @@
     {
       "text": "7",
       "inputTokens": 6452,
-      "outputTokens": 101,
+      "outputTokens": 87,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -1485,7 +1491,7 @@
     {
       "text": "7",
       "inputTokens": 2668,
-      "outputTokens": 103,
+      "outputTokens": 72,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1497,7 +1503,7 @@
     {
       "text": "7",
       "inputTokens": 2381,
-      "outputTokens": 86,
+      "outputTokens": 77,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1521,7 +1527,7 @@
     {
       "text": "8",
       "inputTokens": 6452,
-      "outputTokens": 97,
+      "outputTokens": 86,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
@@ -1533,7 +1539,7 @@
     {
       "text": "8",
       "inputTokens": 2668,
-      "outputTokens": 85,
+      "outputTokens": 104,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1545,7 +1551,7 @@
     {
       "text": "8",
       "inputTokens": 2381,
-      "outputTokens": 104,
+      "outputTokens": 87,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1557,7 +1563,7 @@
     {
       "text": "10",
       "inputTokens": 4045,
-      "outputTokens": 86,
+      "outputTokens": 109,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -1581,7 +1587,7 @@
     {
       "text": "10",
       "inputTokens": 2668,
-      "outputTokens": 119,
+      "outputTokens": 77,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1593,7 +1599,7 @@
     {
       "text": "10",
       "inputTokens": 2381,
-      "outputTokens": 69,
+      "outputTokens": 107,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -1605,59 +1611,11 @@
     {
       "text": "14",
       "inputTokens": 4039,
-      "outputTokens": 58,
+      "outputTokens": 57,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
       "questionId": "q34",
-      "expected": "14",
-      "correct": true,
-      "reservedInputTokens": 5101
-    },
-    {
-      "text": "14",
-      "inputTokens": 6446,
-      "outputTokens": 57,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "tabular",
-      "questionId": "q34",
-      "expected": "14",
-      "correct": true,
-      "reservedInputTokens": 8109
-    },
-    {
-      "text": "14",
-      "inputTokens": 2662,
-      "outputTokens": 57,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "tabular",
-      "questionId": "q34",
-      "expected": "14",
-      "correct": true,
-      "reservedInputTokens": 3379
-    },
-    {
-      "text": "14",
-      "inputTokens": 2375,
-      "outputTokens": 54,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "tabular",
-      "questionId": "q34",
-      "expected": "14",
-      "correct": true,
-      "reservedInputTokens": 3021
-    },
-    {
-      "text": "14",
-      "inputTokens": 4039,
-      "outputTokens": 58,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "tabular",
-      "questionId": "q35",
       "expected": "14",
       "correct": true,
       "reservedInputTokens": 5101
@@ -1669,6 +1627,54 @@
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "tabular",
+      "questionId": "q34",
+      "expected": "14",
+      "correct": true,
+      "reservedInputTokens": 8109
+    },
+    {
+      "text": "14",
+      "inputTokens": 2662,
+      "outputTokens": 54,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "tabular",
+      "questionId": "q34",
+      "expected": "14",
+      "correct": true,
+      "reservedInputTokens": 3379
+    },
+    {
+      "text": "14",
+      "inputTokens": 2375,
+      "outputTokens": 58,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "tabular",
+      "questionId": "q34",
+      "expected": "14",
+      "correct": true,
+      "reservedInputTokens": 3021
+    },
+    {
+      "text": "14",
+      "inputTokens": 4039,
+      "outputTokens": 57,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "tabular",
+      "questionId": "q35",
+      "expected": "14",
+      "correct": true,
+      "reservedInputTokens": 5101
+    },
+    {
+      "text": "14",
+      "inputTokens": 6446,
+      "outputTokens": 63,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "tabular",
       "questionId": "q35",
       "expected": "14",
       "correct": true,
@@ -1677,7 +1683,7 @@
     {
       "text": "14",
       "inputTokens": 2662,
-      "outputTokens": 57,
+      "outputTokens": 55,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "tabular",
@@ -1689,7 +1695,7 @@
     {
       "text": "14",
       "inputTokens": 2375,
-      "outputTokens": 71,
+      "outputTokens": 58,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "tabular",
@@ -2181,7 +2187,7 @@
     {
       "text": "\"2025-04-14\"",
       "inputTokens": 7107,
-      "outputTokens": 32,
+      "outputTokens": 12,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2229,7 +2235,7 @@
     {
       "text": "2",
       "inputTokens": 7106,
-      "outputTokens": 5,
+      "outputTokens": 36,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2241,7 +2247,7 @@
     {
       "text": "2",
       "inputTokens": 11140,
-      "outputTokens": 5,
+      "outputTokens": 24,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -2421,7 +2427,7 @@
     {
       "text": "2",
       "inputTokens": 7106,
-      "outputTokens": 26,
+      "outputTokens": 25,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2433,7 +2439,7 @@
     {
       "text": "2",
       "inputTokens": 11140,
-      "outputTokens": 23,
+      "outputTokens": 29,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -2457,7 +2463,7 @@
     {
       "text": "2",
       "inputTokens": 5779,
-      "outputTokens": 37,
+      "outputTokens": 35,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -2613,7 +2619,7 @@
     {
       "text": "45413.15",
       "inputTokens": 7104,
-      "outputTokens": 548,
+      "outputTokens": 551,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2625,7 +2631,7 @@
     {
       "text": "45413.15",
       "inputTokens": 11138,
-      "outputTokens": 419,
+      "outputTokens": 375,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -2637,7 +2643,7 @@
     {
       "text": "45413.15",
       "inputTokens": 7549,
-      "outputTokens": 551,
+      "outputTokens": 520,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -2659,9 +2665,9 @@
       "reservedInputTokens": 7273
     },
     {
-      "text": "908.263",
+      "text": "908.26",
       "inputTokens": 7102,
-      "outputTokens": 525,
+      "outputTokens": 545,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2673,7 +2679,7 @@
     {
       "text": "908.26",
       "inputTokens": 11136,
-      "outputTokens": 544,
+      "outputTokens": 542,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -2697,7 +2703,7 @@
     {
       "text": "908.26",
       "inputTokens": 5775,
-      "outputTokens": 525,
+      "outputTokens": 546,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -2805,7 +2811,7 @@
     {
       "text": "41",
       "inputTokens": 7106,
-      "outputTokens": 76,
+      "outputTokens": 66,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2817,7 +2823,7 @@
     {
       "text": "41",
       "inputTokens": 11140,
-      "outputTokens": 56,
+      "outputTokens": 76,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -2829,7 +2835,7 @@
     {
       "text": "41",
       "inputTokens": 7551,
-      "outputTokens": 58,
+      "outputTokens": 66,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -2841,7 +2847,7 @@
     {
       "text": "41",
       "inputTokens": 5779,
-      "outputTokens": 58,
+      "outputTokens": 74,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -2853,7 +2859,7 @@
     {
       "text": "39",
       "inputTokens": 7106,
-      "outputTokens": 66,
+      "outputTokens": 71,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2865,7 +2871,7 @@
     {
       "text": "39",
       "inputTokens": 11140,
-      "outputTokens": 70,
+      "outputTokens": 65,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -2889,7 +2895,7 @@
     {
       "text": "39",
       "inputTokens": 5779,
-      "outputTokens": 66,
+      "outputTokens": 65,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -2901,7 +2907,7 @@
     {
       "text": "35",
       "inputTokens": 7106,
-      "outputTokens": 94,
+      "outputTokens": 72,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -2925,7 +2931,7 @@
     {
       "text": "35",
       "inputTokens": 7551,
-      "outputTokens": 169,
+      "outputTokens": 89,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -2937,7 +2943,7 @@
     {
       "text": "35",
       "inputTokens": 5779,
-      "outputTokens": 58,
+      "outputTokens": 59,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -2997,7 +3003,7 @@
     {
       "text": "6",
       "inputTokens": 7110,
-      "outputTokens": 60,
+      "outputTokens": 52,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -3009,7 +3015,7 @@
     {
       "text": "6",
       "inputTokens": 11144,
-      "outputTokens": 60,
+      "outputTokens": 61,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -3021,7 +3027,7 @@
     {
       "text": "6",
       "inputTokens": 7555,
-      "outputTokens": 60,
+      "outputTokens": 37,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -3033,7 +3039,7 @@
     {
       "text": "6",
       "inputTokens": 5783,
-      "outputTokens": 61,
+      "outputTokens": 60,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -3045,104 +3051,104 @@
     {
       "text": "10",
       "inputTokens": 7111,
-      "outputTokens": 40,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "nested",
-      "questionId": "q64",
-      "expected": "10",
-      "correct": true,
-      "reservedInputTokens": 8941
-    },
-    {
-      "text": "10",
-      "inputTokens": 11145,
-      "outputTokens": 45,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "nested",
-      "questionId": "q64",
-      "expected": "10",
-      "correct": true,
-      "reservedInputTokens": 13983
-    },
-    {
-      "text": "10",
-      "inputTokens": 7556,
-      "outputTokens": 40,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "nested",
-      "questionId": "q64",
-      "expected": "10",
-      "correct": true,
-      "reservedInputTokens": 9497
-    },
-    {
-      "text": "10",
-      "inputTokens": 5784,
       "outputTokens": 44,
       "model": "gpt-6.1-sol",
-      "format": "terset",
+      "format": "json-compact",
       "dataset": "nested",
       "questionId": "q64",
       "expected": "10",
       "correct": true,
-      "reservedInputTokens": 7282
-    },
-    {
-      "text": "7",
-      "inputTokens": 7111,
-      "outputTokens": 55,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "nested",
-      "questionId": "q65",
-      "expected": "7",
-      "correct": true,
       "reservedInputTokens": 8941
     },
     {
-      "text": "7",
+      "text": "10",
       "inputTokens": 11145,
-      "outputTokens": 55,
+      "outputTokens": 44,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
-      "questionId": "q65",
-      "expected": "7",
+      "questionId": "q64",
+      "expected": "10",
       "correct": true,
       "reservedInputTokens": 13983
     },
     {
-      "text": "7",
+      "text": "10",
       "inputTokens": 7556,
-      "outputTokens": 39,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "nested",
-      "questionId": "q65",
-      "expected": "7",
-      "correct": true,
-      "reservedInputTokens": 9497
-    },
-    {
-      "text": "7",
-      "inputTokens": 5784,
-      "outputTokens": 46,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "nested",
-      "questionId": "q65",
-      "expected": "7",
-      "correct": true,
-      "reservedInputTokens": 7282
-    },
-    {
-      "text": "6",
-      "inputTokens": 7110,
       "outputTokens": 41,
       "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "nested",
+      "questionId": "q64",
+      "expected": "10",
+      "correct": true,
+      "reservedInputTokens": 9497
+    },
+    {
+      "text": "10",
+      "inputTokens": 5784,
+      "outputTokens": 50,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "nested",
+      "questionId": "q64",
+      "expected": "10",
+      "correct": true,
+      "reservedInputTokens": 7282
+    },
+    {
+      "text": "7",
+      "inputTokens": 7111,
+      "outputTokens": 47,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "nested",
+      "questionId": "q65",
+      "expected": "7",
+      "correct": true,
+      "reservedInputTokens": 8941
+    },
+    {
+      "text": "7",
+      "inputTokens": 11145,
+      "outputTokens": 38,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "nested",
+      "questionId": "q65",
+      "expected": "7",
+      "correct": true,
+      "reservedInputTokens": 13983
+    },
+    {
+      "text": "7",
+      "inputTokens": 7556,
+      "outputTokens": 65,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "nested",
+      "questionId": "q65",
+      "expected": "7",
+      "correct": true,
+      "reservedInputTokens": 9497
+    },
+    {
+      "text": "7",
+      "inputTokens": 5784,
+      "outputTokens": 37,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "nested",
+      "questionId": "q65",
+      "expected": "7",
+      "correct": true,
+      "reservedInputTokens": 7282
+    },
+    {
+      "text": "6",
+      "inputTokens": 7110,
+      "outputTokens": 45,
+      "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
       "questionId": "q66",
@@ -3153,7 +3159,7 @@
     {
       "text": "6",
       "inputTokens": 11144,
-      "outputTokens": 42,
+      "outputTokens": 58,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -3165,7 +3171,7 @@
     {
       "text": "6",
       "inputTokens": 7555,
-      "outputTokens": 62,
+      "outputTokens": 42,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -3177,7 +3183,7 @@
     {
       "text": "6",
       "inputTokens": 5783,
-      "outputTokens": 42,
+      "outputTokens": 41,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -3189,7 +3195,7 @@
     {
       "text": "4",
       "inputTokens": 7110,
-      "outputTokens": 44,
+      "outputTokens": 50,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -3201,7 +3207,7 @@
     {
       "text": "4",
       "inputTokens": 11144,
-      "outputTokens": 61,
+      "outputTokens": 43,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -3213,7 +3219,7 @@
     {
       "text": "4",
       "inputTokens": 7555,
-      "outputTokens": 61,
+      "outputTokens": 45,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -3225,7 +3231,7 @@
     {
       "text": "4",
       "inputTokens": 5783,
-      "outputTokens": 40,
+      "outputTokens": 60,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -3237,7 +3243,7 @@
     {
       "text": "5",
       "inputTokens": 7111,
-      "outputTokens": 47,
+      "outputTokens": 62,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -3249,7 +3255,7 @@
     {
       "text": "5",
       "inputTokens": 11145,
-      "outputTokens": 61,
+      "outputTokens": 59,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -3261,7 +3267,7 @@
     {
       "text": "5",
       "inputTokens": 7556,
-      "outputTokens": 57,
+      "outputTokens": 45,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -3273,7 +3279,7 @@
     {
       "text": "5",
       "inputTokens": 5784,
-      "outputTokens": 47,
+      "outputTokens": 63,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -3285,7 +3291,7 @@
     {
       "text": "24",
       "inputTokens": 7112,
-      "outputTokens": 182,
+      "outputTokens": 177,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -3297,7 +3303,7 @@
     {
       "text": "24",
       "inputTokens": 11146,
-      "outputTokens": 178,
+      "outputTokens": 175,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -3309,7 +3315,7 @@
     {
       "text": "24",
       "inputTokens": 7557,
-      "outputTokens": 180,
+      "outputTokens": 179,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -3321,7 +3327,7 @@
     {
       "text": "24",
       "inputTokens": 5785,
-      "outputTokens": 176,
+      "outputTokens": 174,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -3333,7 +3339,7 @@
     {
       "text": "23",
       "inputTokens": 7112,
-      "outputTokens": 89,
+      "outputTokens": 179,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -3345,7 +3351,7 @@
     {
       "text": "23",
       "inputTokens": 11146,
-      "outputTokens": 174,
+      "outputTokens": 86,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -3357,7 +3363,7 @@
     {
       "text": "23",
       "inputTokens": 7557,
-      "outputTokens": 81,
+      "outputTokens": 84,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "nested",
@@ -3369,7 +3375,7 @@
     {
       "text": "23",
       "inputTokens": 5785,
-      "outputTokens": 86,
+      "outputTokens": 160,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -3861,7 +3867,7 @@
     {
       "text": "324092",
       "inputTokens": 2455,
-      "outputTokens": 380,
+      "outputTokens": 386,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -3873,7 +3879,7 @@
     {
       "text": "324092",
       "inputTokens": 3782,
-      "outputTokens": 380,
+      "outputTokens": 398,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -3885,7 +3891,7 @@
     {
       "text": "324092",
       "inputTokens": 1698,
-      "outputTokens": 428,
+      "outputTokens": 418,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -3897,7 +3903,7 @@
     {
       "text": "324092",
       "inputTokens": 1504,
-      "outputTokens": 280,
+      "outputTokens": 401,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -3909,7 +3915,7 @@
     {
       "text": "1610",
       "inputTokens": 2455,
-      "outputTokens": 263,
+      "outputTokens": 192,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -3921,7 +3927,7 @@
     {
       "text": "1610",
       "inputTokens": 3782,
-      "outputTokens": 190,
+      "outputTokens": 264,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -3933,7 +3939,7 @@
     {
       "text": "1610",
       "inputTokens": 1698,
-      "outputTokens": 192,
+      "outputTokens": 191,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -3945,7 +3951,7 @@
     {
       "text": "1610",
       "inputTokens": 1504,
-      "outputTokens": 191,
+      "outputTokens": 194,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -3957,7 +3963,7 @@
     {
       "text": "266028.87",
       "inputTokens": 2453,
-      "outputTokens": 738,
+      "outputTokens": 695,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -3969,7 +3975,7 @@
     {
       "text": "266028.87",
       "inputTokens": 3780,
-      "outputTokens": 636,
+      "outputTokens": 696,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -3981,7 +3987,7 @@
     {
       "text": "266028.87",
       "inputTokens": 1696,
-      "outputTokens": 647,
+      "outputTokens": 682,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -3993,7 +3999,7 @@
     {
       "text": "266028.87",
       "inputTokens": 1502,
-      "outputTokens": 686,
+      "outputTokens": 646,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4005,7 +4011,7 @@
     {
       "text": "0.4943333333333333",
       "inputTokens": 2451,
-      "outputTokens": 223,
+      "outputTokens": 218,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4017,7 +4023,7 @@
     {
       "text": "0.4943333333333333",
       "inputTokens": 3778,
-      "outputTokens": 251,
+      "outputTokens": 245,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4029,7 +4035,7 @@
     {
       "text": "0.4943333333333333",
       "inputTokens": 1694,
-      "outputTokens": 396,
+      "outputTokens": 377,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4041,7 +4047,7 @@
     {
       "text": "0.4943333333333333",
       "inputTokens": 1500,
-      "outputTokens": 195,
+      "outputTokens": 188,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4053,7 +4059,7 @@
     {
       "text": "19",
       "inputTokens": 2455,
-      "outputTokens": 81,
+      "outputTokens": 118,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4065,7 +4071,7 @@
     {
       "text": "19",
       "inputTokens": 3782,
-      "outputTokens": 121,
+      "outputTokens": 126,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4077,7 +4083,7 @@
     {
       "text": "19",
       "inputTokens": 1698,
-      "outputTokens": 108,
+      "outputTokens": 63,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4089,7 +4095,7 @@
     {
       "text": "19",
       "inputTokens": 1504,
-      "outputTokens": 84,
+      "outputTokens": 104,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4101,7 +4107,7 @@
     {
       "text": "37",
       "inputTokens": 2454,
-      "outputTokens": 134,
+      "outputTokens": 148,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4113,7 +4119,7 @@
     {
       "text": "37",
       "inputTokens": 3781,
-      "outputTokens": 177,
+      "outputTokens": 211,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4125,7 +4131,7 @@
     {
       "text": "37",
       "inputTokens": 1697,
-      "outputTokens": 138,
+      "outputTokens": 142,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4137,7 +4143,7 @@
     {
       "text": "37",
       "inputTokens": 1503,
-      "outputTokens": 171,
+      "outputTokens": 251,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4149,7 +4155,7 @@
     {
       "text": "18",
       "inputTokens": 2461,
-      "outputTokens": 112,
+      "outputTokens": 137,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4161,7 +4167,7 @@
     {
       "text": "18",
       "inputTokens": 3788,
-      "outputTokens": 128,
+      "outputTokens": 104,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4173,7 +4179,7 @@
     {
       "text": "18",
       "inputTokens": 1704,
-      "outputTokens": 139,
+      "outputTokens": 92,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4185,7 +4191,7 @@
     {
       "text": "18",
       "inputTokens": 1510,
-      "outputTokens": 121,
+      "outputTokens": 122,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4197,7 +4203,7 @@
     {
       "text": "9",
       "inputTokens": 2461,
-      "outputTokens": 80,
+      "outputTokens": 82,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4209,7 +4215,7 @@
     {
       "text": "9",
       "inputTokens": 3788,
-      "outputTokens": 84,
+      "outputTokens": 78,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4245,7 +4251,7 @@
     {
       "text": "19",
       "inputTokens": 2461,
-      "outputTokens": 101,
+      "outputTokens": 94,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4257,7 +4263,7 @@
     {
       "text": "19",
       "inputTokens": 3788,
-      "outputTokens": 126,
+      "outputTokens": 91,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4269,7 +4275,7 @@
     {
       "text": "19",
       "inputTokens": 1704,
-      "outputTokens": 104,
+      "outputTokens": 97,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4281,7 +4287,7 @@
     {
       "text": "19",
       "inputTokens": 1510,
-      "outputTokens": 112,
+      "outputTokens": 125,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4293,7 +4299,7 @@
     {
       "text": "18",
       "inputTokens": 2461,
-      "outputTokens": 123,
+      "outputTokens": 133,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4304,59 +4310,59 @@
     },
     {
       "text": "18",
-      "inputTokens": 3788,
-      "outputTokens": 117,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "analytics",
-      "questionId": "q90",
-      "expected": "18",
-      "correct": true,
-      "reservedInputTokens": 4787
-    },
-    {
-      "text": "18",
-      "inputTokens": 1704,
-      "outputTokens": 111,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "analytics",
-      "questionId": "q90",
-      "expected": "18",
-      "correct": true,
-      "reservedInputTokens": 2182
-    },
-    {
-      "text": "18",
-      "inputTokens": 1510,
-      "outputTokens": 117,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "analytics",
-      "questionId": "q90",
-      "expected": "18",
-      "correct": true,
-      "reservedInputTokens": 1939
-    },
-    {
-      "text": "16",
-      "inputTokens": 2461,
-      "outputTokens": 121,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "analytics",
-      "questionId": "q91",
-      "expected": "16",
-      "correct": true,
-      "reservedInputTokens": 3128
-    },
-    {
-      "text": "16",
       "inputTokens": 3788,
       "outputTokens": 73,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
+      "questionId": "q90",
+      "expected": "18",
+      "correct": true,
+      "reservedInputTokens": 4787
+    },
+    {
+      "text": "18",
+      "inputTokens": 1704,
+      "outputTokens": 71,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "analytics",
+      "questionId": "q90",
+      "expected": "18",
+      "correct": true,
+      "reservedInputTokens": 2182
+    },
+    {
+      "text": "18",
+      "inputTokens": 1510,
+      "outputTokens": 126,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "analytics",
+      "questionId": "q90",
+      "expected": "18",
+      "correct": true,
+      "reservedInputTokens": 1939
+    },
+    {
+      "text": "16",
+      "inputTokens": 2461,
+      "outputTokens": 126,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "analytics",
+      "questionId": "q91",
+      "expected": "16",
+      "correct": true,
+      "reservedInputTokens": 3128
+    },
+    {
+      "text": "16",
+      "inputTokens": 3788,
+      "outputTokens": 104,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "analytics",
       "questionId": "q91",
       "expected": "16",
       "correct": true,
@@ -4365,7 +4371,7 @@
     {
       "text": "16",
       "inputTokens": 1704,
-      "outputTokens": 128,
+      "outputTokens": 127,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4377,7 +4383,7 @@
     {
       "text": "16",
       "inputTokens": 1510,
-      "outputTokens": 115,
+      "outputTokens": 121,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4389,7 +4395,7 @@
     {
       "text": "30",
       "inputTokens": 2460,
-      "outputTokens": 92,
+      "outputTokens": 102,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4401,7 +4407,7 @@
     {
       "text": "30",
       "inputTokens": 3787,
-      "outputTokens": 100,
+      "outputTokens": 175,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4413,7 +4419,7 @@
     {
       "text": "30",
       "inputTokens": 1703,
-      "outputTokens": 100,
+      "outputTokens": 136,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4425,7 +4431,7 @@
     {
       "text": "30",
       "inputTokens": 1509,
-      "outputTokens": 102,
+      "outputTokens": 104,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4437,7 +4443,7 @@
     {
       "text": "8",
       "inputTokens": 2460,
-      "outputTokens": 56,
+      "outputTokens": 58,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -4449,7 +4455,7 @@
     {
       "text": "8",
       "inputTokens": 3787,
-      "outputTokens": 56,
+      "outputTokens": 55,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4461,7 +4467,7 @@
     {
       "text": "8",
       "inputTokens": 1703,
-      "outputTokens": 60,
+      "outputTokens": 57,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4473,7 +4479,7 @@
     {
       "text": "8",
       "inputTokens": 1509,
-      "outputTokens": 56,
+      "outputTokens": 57,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4483,21 +4489,21 @@
       "reservedInputTokens": 1938
     },
     {
-      "text": "29",
+      "text": "28",
       "inputTokens": 2463,
-      "outputTokens": 114,
+      "outputTokens": 127,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
       "questionId": "q94",
       "expected": "28",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 3131
     },
     {
       "text": "28",
       "inputTokens": 3790,
-      "outputTokens": 100,
+      "outputTokens": 129,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4509,7 +4515,7 @@
     {
       "text": "28",
       "inputTokens": 1706,
-      "outputTokens": 105,
+      "outputTokens": 141,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
@@ -4521,7 +4527,7 @@
     {
       "text": "28",
       "inputTokens": 1512,
-      "outputTokens": 157,
+      "outputTokens": 99,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -4531,21 +4537,21 @@
       "reservedInputTokens": 1942
     },
     {
-      "text": "27",
+      "text": "26",
       "inputTokens": 2463,
-      "outputTokens": 109,
+      "outputTokens": 242,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
       "questionId": "q95",
       "expected": "26",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 3131
     },
     {
       "text": "26",
       "inputTokens": 3790,
-      "outputTokens": 175,
+      "outputTokens": 98,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "analytics",
@@ -4555,21 +4561,21 @@
       "reservedInputTokens": 4789
     },
     {
-      "text": "26",
+      "text": "27",
       "inputTokens": 1706,
-      "outputTokens": 110,
+      "outputTokens": 116,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "analytics",
       "questionId": "q95",
       "expected": "26",
-      "correct": true,
+      "correct": false,
       "reservedInputTokens": 2184
     },
     {
       "text": "26",
       "inputTokens": 1512,
-      "outputTokens": 144,
+      "outputTokens": 189,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "analytics",
@@ -5109,7 +5115,7 @@
     {
       "text": "100",
       "inputTokens": 11749,
-      "outputTokens": 367,
+      "outputTokens": 252,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5121,7 +5127,7 @@
     {
       "text": "100",
       "inputTokens": 15449,
-      "outputTokens": 203,
+      "outputTokens": 495,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5157,7 +5163,7 @@
     {
       "text": "18455862",
       "inputTokens": 11752,
-      "outputTokens": 1031,
+      "outputTokens": 796,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5169,7 +5175,7 @@
     {
       "text": "18455862",
       "inputTokens": 15452,
-      "outputTokens": 768,
+      "outputTokens": 766,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5181,7 +5187,7 @@
     {
       "text": "18455862",
       "inputTokens": 9118,
-      "outputTokens": 758,
+      "outputTokens": 762,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5193,7 +5199,7 @@
     {
       "text": "18455862",
       "inputTokens": 8764,
-      "outputTokens": 760,
+      "outputTokens": 764,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5205,7 +5211,7 @@
     {
       "text": "2909646",
       "inputTokens": 11752,
-      "outputTokens": 734,
+      "outputTokens": 724,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5217,7 +5223,7 @@
     {
       "text": "2909646",
       "inputTokens": 15452,
-      "outputTokens": 726,
+      "outputTokens": 699,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5241,7 +5247,7 @@
     {
       "text": "2909646",
       "inputTokens": 8764,
-      "outputTokens": 708,
+      "outputTokens": 701,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5265,7 +5271,7 @@
     {
       "text": "184558.62",
       "inputTokens": 15451,
-      "outputTokens": 800,
+      "outputTokens": 1032,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5277,7 +5283,7 @@
     {
       "text": "184558.62",
       "inputTokens": 9117,
-      "outputTokens": 817,
+      "outputTokens": 784,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5289,7 +5295,7 @@
     {
       "text": "184558.62",
       "inputTokens": 8763,
-      "outputTokens": 1006,
+      "outputTokens": 862,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5301,7 +5307,7 @@
     {
       "text": "43",
       "inputTokens": 11753,
-      "outputTokens": 171,
+      "outputTokens": 189,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5313,7 +5319,7 @@
     {
       "text": "43",
       "inputTokens": 15453,
-      "outputTokens": 260,
+      "outputTokens": 134,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5325,7 +5331,7 @@
     {
       "text": "43",
       "inputTokens": 9119,
-      "outputTokens": 232,
+      "outputTokens": 429,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5337,7 +5343,7 @@
     {
       "text": "43",
       "inputTokens": 8765,
-      "outputTokens": 188,
+      "outputTokens": 274,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5349,7 +5355,7 @@
     {
       "text": "49",
       "inputTokens": 11753,
-      "outputTokens": 165,
+      "outputTokens": 246,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5361,7 +5367,7 @@
     {
       "text": "49",
       "inputTokens": 15453,
-      "outputTokens": 445,
+      "outputTokens": 175,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5373,7 +5379,7 @@
     {
       "text": "49",
       "inputTokens": 9119,
-      "outputTokens": 272,
+      "outputTokens": 269,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5383,21 +5389,21 @@
       "reservedInputTokens": 11451
     },
     {
-      "text": "48",
+      "text": "49",
       "inputTokens": 8765,
-      "outputTokens": 594,
+      "outputTokens": 322,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
       "questionId": "q112",
       "expected": "49",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 11008
     },
     {
       "text": "100",
       "inputTokens": 11752,
-      "outputTokens": 170,
+      "outputTokens": 372,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5409,7 +5415,7 @@
     {
       "text": "100",
       "inputTokens": 15452,
-      "outputTokens": 235,
+      "outputTokens": 381,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5445,7 +5451,7 @@
     {
       "text": "53",
       "inputTokens": 11752,
-      "outputTokens": 172,
+      "outputTokens": 111,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5457,7 +5463,7 @@
     {
       "text": "53",
       "inputTokens": 15452,
-      "outputTokens": 206,
+      "outputTokens": 199,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5469,7 +5475,7 @@
     {
       "text": "53",
       "inputTokens": 9118,
-      "outputTokens": 153,
+      "outputTokens": 208,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5481,7 +5487,7 @@
     {
       "text": "53",
       "inputTokens": 8764,
-      "outputTokens": 227,
+      "outputTokens": 167,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5505,7 +5511,7 @@
     {
       "text": "22",
       "inputTokens": 15452,
-      "outputTokens": 77,
+      "outputTokens": 71,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5517,7 +5523,7 @@
     {
       "text": "22",
       "inputTokens": 9118,
-      "outputTokens": 76,
+      "outputTokens": 59,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5529,7 +5535,7 @@
     {
       "text": "22",
       "inputTokens": 8764,
-      "outputTokens": 68,
+      "outputTokens": 69,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5539,201 +5545,201 @@
       "reservedInputTokens": 11007
     },
     {
-      "text": "57",
+      "text": "58",
       "inputTokens": 11752,
-      "outputTokens": 353,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "github",
-      "questionId": "q116",
-      "expected": "57",
-      "correct": true,
-      "reservedInputTokens": 14742
-    },
-    {
-      "text": "57",
-      "inputTokens": 15452,
-      "outputTokens": 389,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "github",
-      "questionId": "q116",
-      "expected": "57",
-      "correct": true,
-      "reservedInputTokens": 19367
-    },
-    {
-      "text": "57",
-      "inputTokens": 9118,
-      "outputTokens": 468,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "github",
-      "questionId": "q116",
-      "expected": "57",
-      "correct": true,
-      "reservedInputTokens": 11449
-    },
-    {
-      "text": "57",
-      "inputTokens": 8764,
-      "outputTokens": 566,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "github",
-      "questionId": "q116",
-      "expected": "57",
-      "correct": true,
-      "reservedInputTokens": 11007
-    },
-    {
-      "text": "29",
-      "inputTokens": 11752,
-      "outputTokens": 208,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "github",
-      "questionId": "q117",
-      "expected": "29",
-      "correct": true,
-      "reservedInputTokens": 14742
-    },
-    {
-      "text": "29",
-      "inputTokens": 15452,
-      "outputTokens": 193,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "github",
-      "questionId": "q117",
-      "expected": "29",
-      "correct": true,
-      "reservedInputTokens": 19367
-    },
-    {
-      "text": "29",
-      "inputTokens": 9118,
-      "outputTokens": 216,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "github",
-      "questionId": "q117",
-      "expected": "29",
-      "correct": true,
-      "reservedInputTokens": 11449
-    },
-    {
-      "text": "29",
-      "inputTokens": 8764,
-      "outputTokens": 212,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "github",
-      "questionId": "q117",
-      "expected": "29",
-      "correct": true,
-      "reservedInputTokens": 11007
-    },
-    {
-      "text": "5",
-      "inputTokens": 11752,
-      "outputTokens": 32,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "github",
-      "questionId": "q118",
-      "expected": "5",
-      "correct": true,
-      "reservedInputTokens": 14742
-    },
-    {
-      "text": "5",
-      "inputTokens": 15452,
-      "outputTokens": 32,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "github",
-      "questionId": "q118",
-      "expected": "5",
-      "correct": true,
-      "reservedInputTokens": 19367
-    },
-    {
-      "text": "5",
-      "inputTokens": 9118,
-      "outputTokens": 42,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "github",
-      "questionId": "q118",
-      "expected": "5",
-      "correct": true,
-      "reservedInputTokens": 11449
-    },
-    {
-      "text": "5",
-      "inputTokens": 8764,
-      "outputTokens": 37,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "github",
-      "questionId": "q118",
-      "expected": "5",
-      "correct": true,
-      "reservedInputTokens": 11007
-    },
-    {
-      "text": "72",
-      "inputTokens": 11759,
-      "outputTokens": 450,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "github",
-      "questionId": "q119",
-      "expected": "72",
-      "correct": true,
-      "reservedInputTokens": 14751
-    },
-    {
-      "text": "72",
-      "inputTokens": 15459,
-      "outputTokens": 446,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "github",
-      "questionId": "q119",
-      "expected": "72",
-      "correct": true,
-      "reservedInputTokens": 19376
-    },
-    {
-      "text": "72",
-      "inputTokens": 9125,
       "outputTokens": 344,
       "model": "gpt-6.1-sol",
-      "format": "toon",
+      "format": "json-compact",
       "dataset": "github",
-      "questionId": "q119",
-      "expected": "72",
-      "correct": true,
-      "reservedInputTokens": 11458
-    },
-    {
-      "text": "73",
-      "inputTokens": 8771,
-      "outputTokens": 322,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "github",
-      "questionId": "q119",
-      "expected": "72",
+      "questionId": "q116",
+      "expected": "57",
       "correct": false,
+      "reservedInputTokens": 14742
+    },
+    {
+      "text": "57",
+      "inputTokens": 15452,
+      "outputTokens": 360,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "github",
+      "questionId": "q116",
+      "expected": "57",
+      "correct": true,
+      "reservedInputTokens": 19367
+    },
+    {
+      "text": "58",
+      "inputTokens": 9118,
+      "outputTokens": 306,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "github",
+      "questionId": "q116",
+      "expected": "57",
+      "correct": false,
+      "reservedInputTokens": 11449
+    },
+    {
+      "text": "57",
+      "inputTokens": 8764,
+      "outputTokens": 314,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "github",
+      "questionId": "q116",
+      "expected": "57",
+      "correct": true,
+      "reservedInputTokens": 11007
+    },
+    {
+      "text": "29",
+      "inputTokens": 11752,
+      "outputTokens": 152,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "github",
+      "questionId": "q117",
+      "expected": "29",
+      "correct": true,
+      "reservedInputTokens": 14742
+    },
+    {
+      "text": "29",
+      "inputTokens": 15452,
+      "outputTokens": 199,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "github",
+      "questionId": "q117",
+      "expected": "29",
+      "correct": true,
+      "reservedInputTokens": 19367
+    },
+    {
+      "text": "29",
+      "inputTokens": 9118,
+      "outputTokens": 228,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "github",
+      "questionId": "q117",
+      "expected": "29",
+      "correct": true,
+      "reservedInputTokens": 11449
+    },
+    {
+      "text": "29",
+      "inputTokens": 8764,
+      "outputTokens": 281,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "github",
+      "questionId": "q117",
+      "expected": "29",
+      "correct": true,
+      "reservedInputTokens": 11007
+    },
+    {
+      "text": "5",
+      "inputTokens": 11752,
+      "outputTokens": 39,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "github",
+      "questionId": "q118",
+      "expected": "5",
+      "correct": true,
+      "reservedInputTokens": 14742
+    },
+    {
+      "text": "5",
+      "inputTokens": 15452,
+      "outputTokens": 31,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "github",
+      "questionId": "q118",
+      "expected": "5",
+      "correct": true,
+      "reservedInputTokens": 19367
+    },
+    {
+      "text": "5",
+      "inputTokens": 9118,
+      "outputTokens": 46,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "github",
+      "questionId": "q118",
+      "expected": "5",
+      "correct": true,
+      "reservedInputTokens": 11449
+    },
+    {
+      "text": "5",
+      "inputTokens": 8764,
+      "outputTokens": 43,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "github",
+      "questionId": "q118",
+      "expected": "5",
+      "correct": true,
+      "reservedInputTokens": 11007
+    },
+    {
+      "text": "72",
+      "inputTokens": 11759,
+      "outputTokens": 380,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "github",
+      "questionId": "q119",
+      "expected": "72",
+      "correct": true,
+      "reservedInputTokens": 14751
+    },
+    {
+      "text": "72",
+      "inputTokens": 15459,
+      "outputTokens": 453,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "github",
+      "questionId": "q119",
+      "expected": "72",
+      "correct": true,
+      "reservedInputTokens": 19376
+    },
+    {
+      "text": "72",
+      "inputTokens": 9125,
+      "outputTokens": 223,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "github",
+      "questionId": "q119",
+      "expected": "72",
+      "correct": true,
+      "reservedInputTokens": 11458
+    },
+    {
+      "text": "72",
+      "inputTokens": 8771,
+      "outputTokens": 211,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "github",
+      "questionId": "q119",
+      "expected": "72",
+      "correct": true,
       "reservedInputTokens": 11016
     },
     {
       "text": "57",
       "inputTokens": 11759,
-      "outputTokens": 358,
+      "outputTokens": 423,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5745,7 +5751,7 @@
     {
       "text": "57",
       "inputTokens": 15459,
-      "outputTokens": 368,
+      "outputTokens": 401,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5757,7 +5763,7 @@
     {
       "text": "57",
       "inputTokens": 9125,
-      "outputTokens": 324,
+      "outputTokens": 386,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5769,7 +5775,7 @@
     {
       "text": "57",
       "inputTokens": 8771,
-      "outputTokens": 428,
+      "outputTokens": 371,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5781,7 +5787,7 @@
     {
       "text": "31",
       "inputTokens": 11759,
-      "outputTokens": 170,
+      "outputTokens": 145,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5793,7 +5799,7 @@
     {
       "text": "31",
       "inputTokens": 15459,
-      "outputTokens": 146,
+      "outputTokens": 144,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -5805,7 +5811,7 @@
     {
       "text": "31",
       "inputTokens": 9125,
-      "outputTokens": 218,
+      "outputTokens": 284,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5817,7 +5823,7 @@
     {
       "text": "31",
       "inputTokens": 8771,
-      "outputTokens": 157,
+      "outputTokens": 154,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5829,7 +5835,7 @@
     {
       "text": "6",
       "inputTokens": 11759,
-      "outputTokens": 56,
+      "outputTokens": 57,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5841,19 +5847,19 @@
     {
       "text": "6",
       "inputTokens": 15459,
+      "outputTokens": 45,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "github",
+      "questionId": "q122",
+      "expected": "6",
+      "correct": true,
+      "reservedInputTokens": 19376
+    },
+    {
+      "text": "6",
+      "inputTokens": 9125,
       "outputTokens": 48,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "github",
-      "questionId": "q122",
-      "expected": "6",
-      "correct": true,
-      "reservedInputTokens": 19376
-    },
-    {
-      "text": "6",
-      "inputTokens": 9125,
-      "outputTokens": 47,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5877,7 +5883,7 @@
     {
       "text": "1",
       "inputTokens": 11759,
-      "outputTokens": 30,
+      "outputTokens": 31,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -5901,7 +5907,7 @@
     {
       "text": "1",
       "inputTokens": 9125,
-      "outputTokens": 30,
+      "outputTokens": 31,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "github",
@@ -5913,7 +5919,7 @@
     {
       "text": "1",
       "inputTokens": 8771,
-      "outputTokens": 31,
+      "outputTokens": 25,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "github",
@@ -5960,7 +5966,7 @@
     },
     {
       "text": "warn",
-      "inputTokens": 3634,
+      "inputTokens": 3655,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -5968,12 +5974,12 @@
       "questionId": "q124",
       "expected": "warn",
       "correct": true,
-      "reservedInputTokens": 4594
+      "reservedInputTokens": 4621
     },
     {
       "text": "\"/api/payments\"",
       "inputTokens": 4934,
-      "outputTokens": 37,
+      "outputTokens": 9,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6008,7 +6014,7 @@
     },
     {
       "text": "/api/payments",
-      "inputTokens": 3634,
+      "inputTokens": 3655,
       "outputTokens": 7,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6016,7 +6022,7 @@
       "questionId": "q125",
       "expected": "/api/payments",
       "correct": true,
-      "reservedInputTokens": 4594
+      "reservedInputTokens": 4621
     },
     {
       "text": "414",
@@ -6056,7 +6062,7 @@
     },
     {
       "text": "414",
-      "inputTokens": 3635,
+      "inputTokens": 3656,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6064,7 +6070,7 @@
       "questionId": "q126",
       "expected": "414",
       "correct": true,
-      "reservedInputTokens": 4596
+      "reservedInputTokens": 4622
     },
     {
       "text": "3564",
@@ -6104,7 +6110,7 @@
     },
     {
       "text": "3564",
-      "inputTokens": 3635,
+      "inputTokens": 3656,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6112,7 +6118,7 @@
       "questionId": "q127",
       "expected": "3564",
       "correct": true,
-      "reservedInputTokens": 4596
+      "reservedInputTokens": 4622
     },
     {
       "text": "\"error\"",
@@ -6152,7 +6158,7 @@
     },
     {
       "text": "error",
-      "inputTokens": 3634,
+      "inputTokens": 3655,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6160,7 +6166,7 @@
       "questionId": "q128",
       "expected": "error",
       "correct": true,
-      "reservedInputTokens": 4594
+      "reservedInputTokens": 4621
     },
     {
       "text": "\"/api/products\"",
@@ -6200,7 +6206,7 @@
     },
     {
       "text": "/api/products",
-      "inputTokens": 3634,
+      "inputTokens": 3655,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6208,7 +6214,7 @@
       "questionId": "q129",
       "expected": "/api/products",
       "correct": true,
-      "reservedInputTokens": 4594
+      "reservedInputTokens": 4621
     },
     {
       "text": "237",
@@ -6248,7 +6254,7 @@
     },
     {
       "text": "237",
-      "inputTokens": 3635,
+      "inputTokens": 3656,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6256,7 +6262,7 @@
       "questionId": "q130",
       "expected": "237",
       "correct": true,
-      "reservedInputTokens": 4596
+      "reservedInputTokens": 4622
     },
     {
       "text": "1507",
@@ -6296,7 +6302,7 @@
     },
     {
       "text": "1507",
-      "inputTokens": 3635,
+      "inputTokens": 3656,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6304,7 +6310,7 @@
       "questionId": "q131",
       "expected": "1507",
       "correct": true,
-      "reservedInputTokens": 4596
+      "reservedInputTokens": 4622
     },
     {
       "text": "\"warn\"",
@@ -6344,7 +6350,7 @@
     },
     {
       "text": "warn",
-      "inputTokens": 3634,
+      "inputTokens": 3655,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6352,7 +6358,7 @@
       "questionId": "q132",
       "expected": "warn",
       "correct": true,
-      "reservedInputTokens": 4594
+      "reservedInputTokens": 4621
     },
     {
       "text": "\"/api/products\"",
@@ -6392,7 +6398,7 @@
     },
     {
       "text": "/api/products",
-      "inputTokens": 3634,
+      "inputTokens": 3655,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6400,12 +6406,12 @@
       "questionId": "q133",
       "expected": "/api/products",
       "correct": true,
-      "reservedInputTokens": 4594
+      "reservedInputTokens": 4621
     },
     {
       "text": "75",
       "inputTokens": 4918,
-      "outputTokens": 265,
+      "outputTokens": 419,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6417,7 +6423,7 @@
     {
       "text": "75",
       "inputTokens": 6884,
-      "outputTokens": 93,
+      "outputTokens": 90,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6440,7 +6446,7 @@
     },
     {
       "text": "75",
-      "inputTokens": 3618,
+      "inputTokens": 3639,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -6448,12 +6454,12 @@
       "questionId": "q134",
       "expected": "75",
       "correct": true,
-      "reservedInputTokens": 4574
+      "reservedInputTokens": 4601
     },
     {
       "text": "2673.7733333333333",
       "inputTokens": 4919,
-      "outputTokens": 564,
+      "outputTokens": 588,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6463,9 +6469,9 @@
       "reservedInputTokens": 6201
     },
     {
-      "text": "2673.7733333333335",
+      "text": "2673.773333333333",
       "inputTokens": 6885,
-      "outputTokens": 818,
+      "outputTokens": 575,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6475,9 +6481,9 @@
       "reservedInputTokens": 8658
     },
     {
-      "text": "2673.773333333333",
+      "text": "2673.7733333333333",
       "inputTokens": 5939,
-      "outputTokens": 789,
+      "outputTokens": 564,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -6487,21 +6493,21 @@
       "reservedInputTokens": 7476
     },
     {
-      "text": "2673.773333333333",
-      "inputTokens": 3619,
-      "outputTokens": 528,
+      "text": "2673.7733333333333",
+      "inputTokens": 3640,
+      "outputTokens": 558,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q135",
       "expected": "2673.77",
       "correct": true,
-      "reservedInputTokens": 4576
+      "reservedInputTokens": 4602
     },
     {
       "text": "21",
       "inputTokens": 4918,
-      "outputTokens": 86,
+      "outputTokens": 133,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6513,139 +6519,139 @@
     {
       "text": "21",
       "inputTokens": 6884,
-      "outputTokens": 124,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "event-logs",
-      "questionId": "q136",
-      "expected": "21",
-      "correct": true,
-      "reservedInputTokens": 8657
-    },
-    {
-      "text": "21",
-      "inputTokens": 5938,
-      "outputTokens": 62,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "event-logs",
-      "questionId": "q136",
-      "expected": "21",
-      "correct": true,
-      "reservedInputTokens": 7474
-    },
-    {
-      "text": "21",
-      "inputTokens": 3618,
-      "outputTokens": 223,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "event-logs",
-      "questionId": "q136",
-      "expected": "21",
-      "correct": true,
-      "reservedInputTokens": 4574
-    },
-    {
-      "text": "27",
-      "inputTokens": 4918,
-      "outputTokens": 219,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "event-logs",
-      "questionId": "q137",
-      "expected": "27",
-      "correct": true,
-      "reservedInputTokens": 6199
-    },
-    {
-      "text": "27",
-      "inputTokens": 6884,
-      "outputTokens": 171,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "event-logs",
-      "questionId": "q137",
-      "expected": "27",
-      "correct": true,
-      "reservedInputTokens": 8657
-    },
-    {
-      "text": "27",
-      "inputTokens": 5938,
-      "outputTokens": 183,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "event-logs",
-      "questionId": "q137",
-      "expected": "27",
-      "correct": true,
-      "reservedInputTokens": 7474
-    },
-    {
-      "text": "27",
-      "inputTokens": 3618,
-      "outputTokens": 78,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "event-logs",
-      "questionId": "q137",
-      "expected": "27",
-      "correct": true,
-      "reservedInputTokens": 4574
-    },
-    {
-      "text": "27",
-      "inputTokens": 4918,
-      "outputTokens": 104,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "event-logs",
-      "questionId": "q138",
-      "expected": "27",
-      "correct": true,
-      "reservedInputTokens": 6199
-    },
-    {
-      "text": "27",
-      "inputTokens": 6884,
-      "outputTokens": 198,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "event-logs",
-      "questionId": "q138",
-      "expected": "27",
-      "correct": true,
-      "reservedInputTokens": 8657
-    },
-    {
-      "text": "27",
-      "inputTokens": 5938,
-      "outputTokens": 187,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "event-logs",
-      "questionId": "q138",
-      "expected": "27",
-      "correct": true,
-      "reservedInputTokens": 7474
-    },
-    {
-      "text": "27",
-      "inputTokens": 3618,
       "outputTokens": 195,
       "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "event-logs",
+      "questionId": "q136",
+      "expected": "21",
+      "correct": true,
+      "reservedInputTokens": 8657
+    },
+    {
+      "text": "21",
+      "inputTokens": 5938,
+      "outputTokens": 149,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "event-logs",
+      "questionId": "q136",
+      "expected": "21",
+      "correct": true,
+      "reservedInputTokens": 7474
+    },
+    {
+      "text": "21",
+      "inputTokens": 3639,
+      "outputTokens": 174,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "event-logs",
+      "questionId": "q136",
+      "expected": "21",
+      "correct": true,
+      "reservedInputTokens": 4601
+    },
+    {
+      "text": "27",
+      "inputTokens": 4918,
+      "outputTokens": 242,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "event-logs",
+      "questionId": "q137",
+      "expected": "27",
+      "correct": true,
+      "reservedInputTokens": 6199
+    },
+    {
+      "text": "27",
+      "inputTokens": 6884,
+      "outputTokens": 169,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "event-logs",
+      "questionId": "q137",
+      "expected": "27",
+      "correct": true,
+      "reservedInputTokens": 8657
+    },
+    {
+      "text": "27",
+      "inputTokens": 5938,
+      "outputTokens": 84,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "event-logs",
+      "questionId": "q137",
+      "expected": "27",
+      "correct": true,
+      "reservedInputTokens": 7474
+    },
+    {
+      "text": "27",
+      "inputTokens": 3639,
+      "outputTokens": 85,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "event-logs",
+      "questionId": "q137",
+      "expected": "27",
+      "correct": true,
+      "reservedInputTokens": 4601
+    },
+    {
+      "text": "27",
+      "inputTokens": 4918,
+      "outputTokens": 193,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "event-logs",
+      "questionId": "q138",
+      "expected": "27",
+      "correct": true,
+      "reservedInputTokens": 6199
+    },
+    {
+      "text": "27",
+      "inputTokens": 6884,
+      "outputTokens": 186,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "event-logs",
+      "questionId": "q138",
+      "expected": "27",
+      "correct": true,
+      "reservedInputTokens": 8657
+    },
+    {
+      "text": "27",
+      "inputTokens": 5938,
+      "outputTokens": 191,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "event-logs",
+      "questionId": "q138",
+      "expected": "27",
+      "correct": true,
+      "reservedInputTokens": 7474
+    },
+    {
+      "text": "27",
+      "inputTokens": 3639,
+      "outputTokens": 185,
+      "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q138",
       "expected": "27",
       "correct": true,
-      "reservedInputTokens": 4574
+      "reservedInputTokens": 4601
     },
     {
       "text": "20",
       "inputTokens": 4920,
-      "outputTokens": 154,
+      "outputTokens": 80,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6657,7 +6663,7 @@
     {
       "text": "20",
       "inputTokens": 6886,
-      "outputTokens": 130,
+      "outputTokens": 125,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6669,7 +6675,7 @@
     {
       "text": "20",
       "inputTokens": 5940,
-      "outputTokens": 61,
+      "outputTokens": 63,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -6680,20 +6686,20 @@
     },
     {
       "text": "20",
-      "inputTokens": 3620,
-      "outputTokens": 64,
+      "inputTokens": 3641,
+      "outputTokens": 142,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q139",
       "expected": "20",
       "correct": true,
-      "reservedInputTokens": 4577
+      "reservedInputTokens": 4603
     },
     {
       "text": "16",
       "inputTokens": 4921,
-      "outputTokens": 88,
+      "outputTokens": 154,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6705,7 +6711,7 @@
     {
       "text": "16",
       "inputTokens": 6887,
-      "outputTokens": 152,
+      "outputTokens": 153,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6717,7 +6723,7 @@
     {
       "text": "16",
       "inputTokens": 5941,
-      "outputTokens": 58,
+      "outputTokens": 100,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -6728,20 +6734,20 @@
     },
     {
       "text": "16",
-      "inputTokens": 3621,
-      "outputTokens": 54,
+      "inputTokens": 3642,
+      "outputTokens": 55,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q140",
       "expected": "16",
       "correct": true,
-      "reservedInputTokens": 4578
+      "reservedInputTokens": 4604
     },
     {
       "text": "32",
       "inputTokens": 4925,
-      "outputTokens": 95,
+      "outputTokens": 148,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6753,7 +6759,7 @@
     {
       "text": "32",
       "inputTokens": 6891,
-      "outputTokens": 150,
+      "outputTokens": 191,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6765,7 +6771,7 @@
     {
       "text": "32",
       "inputTokens": 5945,
-      "outputTokens": 217,
+      "outputTokens": 221,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -6776,20 +6782,20 @@
     },
     {
       "text": "32",
-      "inputTokens": 3625,
-      "outputTokens": 110,
+      "inputTokens": 3646,
+      "outputTokens": 218,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q141",
       "expected": "32",
       "correct": true,
-      "reservedInputTokens": 4583
+      "reservedInputTokens": 4609
     },
     {
       "text": "43",
       "inputTokens": 4923,
-      "outputTokens": 232,
+      "outputTokens": 259,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6801,7 +6807,7 @@
     {
       "text": "43",
       "inputTokens": 6889,
-      "outputTokens": 226,
+      "outputTokens": 184,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6813,7 +6819,7 @@
     {
       "text": "43",
       "inputTokens": 5943,
-      "outputTokens": 178,
+      "outputTokens": 213,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -6824,20 +6830,20 @@
     },
     {
       "text": "43",
-      "inputTokens": 3623,
-      "outputTokens": 296,
+      "inputTokens": 3644,
+      "outputTokens": 167,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q142",
       "expected": "43",
       "correct": true,
-      "reservedInputTokens": 4581
+      "reservedInputTokens": 4607
     },
     {
       "text": "24",
       "inputTokens": 4919,
-      "outputTokens": 93,
+      "outputTokens": 184,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6849,7 +6855,7 @@
     {
       "text": "24",
       "inputTokens": 6885,
-      "outputTokens": 148,
+      "outputTokens": 95,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6861,7 +6867,7 @@
     {
       "text": "24",
       "inputTokens": 5939,
-      "outputTokens": 139,
+      "outputTokens": 159,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -6872,20 +6878,20 @@
     },
     {
       "text": "24",
-      "inputTokens": 3619,
-      "outputTokens": 214,
+      "inputTokens": 3640,
+      "outputTokens": 155,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q143",
       "expected": "24",
       "correct": true,
-      "reservedInputTokens": 4576
+      "reservedInputTokens": 4602
     },
     {
       "text": "5",
       "inputTokens": 4925,
-      "outputTokens": 34,
+      "outputTokens": 29,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6897,7 +6903,7 @@
     {
       "text": "5",
       "inputTokens": 6891,
-      "outputTokens": 34,
+      "outputTokens": 27,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6920,20 +6926,20 @@
     },
     {
       "text": "5",
-      "inputTokens": 3625,
-      "outputTokens": 32,
+      "inputTokens": 3646,
+      "outputTokens": 33,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q144",
       "expected": "5",
       "correct": true,
-      "reservedInputTokens": 4583
+      "reservedInputTokens": 4609
     },
     {
       "text": "27",
       "inputTokens": 4925,
-      "outputTokens": 190,
+      "outputTokens": 108,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -6945,7 +6951,7 @@
     {
       "text": "27",
       "inputTokens": 6891,
-      "outputTokens": 190,
+      "outputTokens": 216,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -6957,7 +6963,7 @@
     {
       "text": "27",
       "inputTokens": 5945,
-      "outputTokens": 166,
+      "outputTokens": 193,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -6968,20 +6974,20 @@
     },
     {
       "text": "27",
-      "inputTokens": 3625,
-      "outputTokens": 194,
+      "inputTokens": 3646,
+      "outputTokens": 192,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q145",
       "expected": "27",
       "correct": true,
-      "reservedInputTokens": 4583
+      "reservedInputTokens": 4609
     },
     {
       "text": "7",
       "inputTokens": 4927,
-      "outputTokens": 35,
+      "outputTokens": 31,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -7005,7 +7011,7 @@
     {
       "text": "7",
       "inputTokens": 5947,
-      "outputTokens": 31,
+      "outputTokens": 36,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -7016,7 +7022,7 @@
     },
     {
       "text": "7",
-      "inputTokens": 3627,
+      "inputTokens": 3648,
       "outputTokens": 31,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7024,12 +7030,12 @@
       "questionId": "q146",
       "expected": "7",
       "correct": true,
-      "reservedInputTokens": 4586
+      "reservedInputTokens": 4612
     },
     {
       "text": "1",
       "inputTokens": 4928,
-      "outputTokens": 35,
+      "outputTokens": 33,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -7041,7 +7047,7 @@
     {
       "text": "1",
       "inputTokens": 6894,
-      "outputTokens": 35,
+      "outputTokens": 37,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -7053,7 +7059,7 @@
     {
       "text": "1",
       "inputTokens": 5948,
-      "outputTokens": 31,
+      "outputTokens": 33,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -7064,15 +7070,15 @@
     },
     {
       "text": "1",
-      "inputTokens": 3628,
-      "outputTokens": 31,
+      "inputTokens": 3649,
+      "outputTokens": 27,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q147",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 4587
+      "reservedInputTokens": 4613
     },
     {
       "text": "4",
@@ -7112,7 +7118,7 @@
     },
     {
       "text": "4",
-      "inputTokens": 3627,
+      "inputTokens": 3648,
       "outputTokens": 25,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7120,12 +7126,12 @@
       "questionId": "q148",
       "expected": "4",
       "correct": true,
-      "reservedInputTokens": 4586
+      "reservedInputTokens": 4612
     },
     {
       "text": "6",
       "inputTokens": 4925,
-      "outputTokens": 37,
+      "outputTokens": 45,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -7137,7 +7143,7 @@
     {
       "text": "6",
       "inputTokens": 6891,
-      "outputTokens": 34,
+      "outputTokens": 40,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -7149,7 +7155,7 @@
     {
       "text": "6",
       "inputTokens": 5945,
-      "outputTokens": 47,
+      "outputTokens": 37,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -7160,15 +7166,15 @@
     },
     {
       "text": "6",
-      "inputTokens": 3625,
-      "outputTokens": 31,
+      "inputTokens": 3646,
+      "outputTokens": 39,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q149",
       "expected": "6",
       "correct": true,
-      "reservedInputTokens": 4583
+      "reservedInputTokens": 4609
     },
     {
       "text": "3",
@@ -7185,7 +7191,7 @@
     {
       "text": "3",
       "inputTokens": 6892,
-      "outputTokens": 45,
+      "outputTokens": 39,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -7197,7 +7203,7 @@
     {
       "text": "3",
       "inputTokens": 5946,
-      "outputTokens": 43,
+      "outputTokens": 55,
       "model": "gpt-6.1-sol",
       "format": "toon",
       "dataset": "event-logs",
@@ -7208,71 +7214,71 @@
     },
     {
       "text": "3",
-      "inputTokens": 3626,
-      "outputTokens": 36,
+      "inputTokens": 3647,
+      "outputTokens": 54,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "event-logs",
       "questionId": "q150",
       "expected": "3",
       "correct": true,
-      "reservedInputTokens": 4584
+      "reservedInputTokens": 4611
     },
     {
       "text": "\"staging\"",
       "inputTokens": 660,
-      "outputTokens": 8,
-      "model": "gpt-6.1-sol",
-      "format": "json-compact",
-      "dataset": "nested-config",
-      "questionId": "q151",
-      "expected": "staging",
-      "correct": true,
-      "reservedInputTokens": 877
-    },
-    {
-      "text": "staging",
-      "inputTokens": 1017,
-      "outputTokens": 6,
-      "model": "gpt-6.1-sol",
-      "format": "json-pretty",
-      "dataset": "nested-config",
-      "questionId": "q151",
-      "expected": "staging",
-      "correct": true,
-      "reservedInputTokens": 1323
-    },
-    {
-      "text": "staging",
-      "inputTokens": 762,
-      "outputTokens": 6,
-      "model": "gpt-6.1-sol",
-      "format": "toon",
-      "dataset": "nested-config",
-      "questionId": "q151",
-      "expected": "staging",
-      "correct": true,
-      "reservedInputTokens": 1004
-    },
-    {
-      "text": "staging",
-      "inputTokens": 696,
-      "outputTokens": 6,
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "nested-config",
-      "questionId": "q151",
-      "expected": "staging",
-      "correct": true,
-      "reservedInputTokens": 922
-    },
-    {
-      "text": "\"memorable-summary.org\"",
-      "inputTokens": 658,
       "outputTokens": 31,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested-config",
+      "questionId": "q151",
+      "expected": "staging",
+      "correct": true,
+      "reservedInputTokens": 877
+    },
+    {
+      "text": "staging",
+      "inputTokens": 1017,
+      "outputTokens": 6,
+      "model": "gpt-6.1-sol",
+      "format": "json-pretty",
+      "dataset": "nested-config",
+      "questionId": "q151",
+      "expected": "staging",
+      "correct": true,
+      "reservedInputTokens": 1323
+    },
+    {
+      "text": "staging",
+      "inputTokens": 762,
+      "outputTokens": 6,
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "nested-config",
+      "questionId": "q151",
+      "expected": "staging",
+      "correct": true,
+      "reservedInputTokens": 1004
+    },
+    {
+      "text": "staging",
+      "inputTokens": 711,
+      "outputTokens": 6,
+      "model": "gpt-6.1-sol",
+      "format": "terset",
+      "dataset": "nested-config",
+      "questionId": "q151",
+      "expected": "staging",
+      "correct": true,
+      "reservedInputTokens": 941
+    },
+    {
+      "text": "\"memorable-summary.org\"",
+      "inputTokens": 658,
+      "outputTokens": 33,
+      "model": "gpt-6.1-sol",
+      "format": "json-compact",
+      "dataset": "nested-config",
       "questionId": "q152",
       "expected": "memorable-summary.org",
       "correct": true,
@@ -7304,7 +7310,7 @@
     },
     {
       "text": "memorable-summary.org",
-      "inputTokens": 694,
+      "inputTokens": 709,
       "outputTokens": 8,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7312,7 +7318,7 @@
       "questionId": "q152",
       "expected": "memorable-summary.org",
       "correct": true,
-      "reservedInputTokens": 919
+      "reservedInputTokens": 938
     },
     {
       "text": "5432",
@@ -7352,7 +7358,7 @@
     },
     {
       "text": "5432",
-      "inputTokens": 694,
+      "inputTokens": 709,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7360,7 +7366,7 @@
       "questionId": "q153",
       "expected": "5432",
       "correct": true,
-      "reservedInputTokens": 919
+      "reservedInputTokens": 938
     },
     {
       "text": "14",
@@ -7400,7 +7406,7 @@
     },
     {
       "text": "14",
-      "inputTokens": 696,
+      "inputTokens": 711,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7408,7 +7414,7 @@
       "questionId": "q154",
       "expected": "14",
       "correct": true,
-      "reservedInputTokens": 922
+      "reservedInputTokens": 941
     },
     {
       "text": "86400",
@@ -7448,7 +7454,7 @@
     },
     {
       "text": "86400",
-      "inputTokens": 694,
+      "inputTokens": 709,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7456,7 +7462,7 @@
       "questionId": "q155",
       "expected": "86400",
       "correct": true,
-      "reservedInputTokens": 919
+      "reservedInputTokens": 938
     },
     {
       "text": "2",
@@ -7496,7 +7502,7 @@
     },
     {
       "text": "2",
-      "inputTokens": 696,
+      "inputTokens": 711,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7504,7 +7510,7 @@
       "questionId": "q156",
       "expected": "2",
       "correct": true,
-      "reservedInputTokens": 922
+      "reservedInputTokens": 941
     },
     {
       "text": "30000",
@@ -7544,7 +7550,7 @@
     },
     {
       "text": "30000",
-      "inputTokens": 696,
+      "inputTokens": 711,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7552,12 +7558,12 @@
       "questionId": "q157",
       "expected": "30000",
       "correct": true,
-      "reservedInputTokens": 922
+      "reservedInputTokens": 941
     },
     {
-      "text": "mediumint",
+      "text": "\"mediumint\"",
       "inputTokens": 658,
-      "outputTokens": 6,
+      "outputTokens": 30,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested-config",
@@ -7592,7 +7598,7 @@
     },
     {
       "text": "mediumint",
-      "inputTokens": 694,
+      "inputTokens": 709,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7600,7 +7606,7 @@
       "questionId": "q158",
       "expected": "mediumint",
       "correct": true,
-      "reservedInputTokens": 919
+      "reservedInputTokens": 938
     },
     {
       "text": "3600",
@@ -7640,7 +7646,7 @@
     },
     {
       "text": "3600",
-      "inputTokens": 695,
+      "inputTokens": 710,
       "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7648,12 +7654,12 @@
       "questionId": "q159",
       "expected": "3600",
       "correct": true,
-      "reservedInputTokens": 921
+      "reservedInputTokens": 939
     },
     {
       "text": "\"1.5.4\"",
       "inputTokens": 660,
-      "outputTokens": 39,
+      "outputTokens": 30,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested-config",
@@ -7688,7 +7694,7 @@
     },
     {
       "text": "1.5.4",
-      "inputTokens": 696,
+      "inputTokens": 711,
       "outputTokens": 9,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7696,7 +7702,7 @@
       "questionId": "q160",
       "expected": "1.5.4",
       "correct": true,
-      "reservedInputTokens": 922
+      "reservedInputTokens": 941
     },
     {
       "text": "3",
@@ -7736,7 +7742,7 @@
     },
     {
       "text": "3",
-      "inputTokens": 696,
+      "inputTokens": 711,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7744,7 +7750,7 @@
       "questionId": "q161",
       "expected": "3",
       "correct": true,
-      "reservedInputTokens": 922
+      "reservedInputTokens": 941
     },
     {
       "text": "2",
@@ -7784,7 +7790,7 @@
     },
     {
       "text": "2",
-      "inputTokens": 696,
+      "inputTokens": 711,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7792,7 +7798,7 @@
       "questionId": "q162",
       "expected": "2",
       "correct": true,
-      "reservedInputTokens": 922
+      "reservedInputTokens": 941
     },
     {
       "text": "2",
@@ -7832,7 +7838,7 @@
     },
     {
       "text": "2",
-      "inputTokens": 695,
+      "inputTokens": 710,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7840,7 +7846,7 @@
       "questionId": "q163",
       "expected": "2",
       "correct": true,
-      "reservedInputTokens": 921
+      "reservedInputTokens": 939
     },
     {
       "text": "2",
@@ -7880,7 +7886,7 @@
     },
     {
       "text": "2",
-      "inputTokens": 695,
+      "inputTokens": 710,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7888,7 +7894,7 @@
       "questionId": "q164",
       "expected": "2",
       "correct": true,
-      "reservedInputTokens": 921
+      "reservedInputTokens": 939
     },
     {
       "text": "3",
@@ -7928,7 +7934,7 @@
     },
     {
       "text": "3",
-      "inputTokens": 695,
+      "inputTokens": 710,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7936,7 +7942,7 @@
       "questionId": "q165",
       "expected": "3",
       "correct": true,
-      "reservedInputTokens": 921
+      "reservedInputTokens": 939
     },
     {
       "text": "1",
@@ -7976,7 +7982,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 699,
+      "inputTokens": 714,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -7984,7 +7990,7 @@
       "questionId": "q166",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 926
+      "reservedInputTokens": 944
     },
     {
       "text": "2",
@@ -8024,7 +8030,7 @@
     },
     {
       "text": "2",
-      "inputTokens": 695,
+      "inputTokens": 710,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8032,7 +8038,7 @@
       "questionId": "q167",
       "expected": "2",
       "correct": true,
-      "reservedInputTokens": 921
+      "reservedInputTokens": 939
     },
     {
       "text": "5",
@@ -8072,7 +8078,7 @@
     },
     {
       "text": "5",
-      "inputTokens": 697,
+      "inputTokens": 712,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8080,7 +8086,7 @@
       "questionId": "q168",
       "expected": "5",
       "correct": true,
-      "reservedInputTokens": 923
+      "reservedInputTokens": 942
     },
     {
       "text": "8",
@@ -8120,7 +8126,7 @@
     },
     {
       "text": "8",
-      "inputTokens": 699,
+      "inputTokens": 714,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8128,7 +8134,7 @@
       "questionId": "q169",
       "expected": "8",
       "correct": true,
-      "reservedInputTokens": 926
+      "reservedInputTokens": 944
     },
     {
       "text": "5",
@@ -8168,7 +8174,7 @@
     },
     {
       "text": "5",
-      "inputTokens": 698,
+      "inputTokens": 713,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8176,7 +8182,7 @@
       "questionId": "q170",
       "expected": "5",
       "correct": true,
-      "reservedInputTokens": 924
+      "reservedInputTokens": 943
     },
     {
       "text": "3",
@@ -8216,7 +8222,7 @@
     },
     {
       "text": "3",
-      "inputTokens": 700,
+      "inputTokens": 715,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8224,7 +8230,7 @@
       "questionId": "q171",
       "expected": "3",
       "correct": true,
-      "reservedInputTokens": 927
+      "reservedInputTokens": 946
     },
     {
       "text": "1",
@@ -8264,7 +8270,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 700,
+      "inputTokens": 715,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8272,7 +8278,7 @@
       "questionId": "q172",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 927
+      "reservedInputTokens": 946
     },
     {
       "text": "1",
@@ -8312,7 +8318,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 701,
+      "inputTokens": 716,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8320,7 +8326,7 @@
       "questionId": "q173",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 928
+      "reservedInputTokens": 947
     },
     {
       "text": "1",
@@ -8360,7 +8366,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 698,
+      "inputTokens": 713,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8368,7 +8374,7 @@
       "questionId": "q174",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 924
+      "reservedInputTokens": 943
     },
     {
       "text": "1",
@@ -8408,7 +8414,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 702,
+      "inputTokens": 717,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8416,7 +8422,7 @@
       "questionId": "q175",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 929
+      "reservedInputTokens": 948
     },
     {
       "text": "1",
@@ -8456,7 +8462,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 696,
+      "inputTokens": 711,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8464,7 +8470,7 @@
       "questionId": "q176",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 922
+      "reservedInputTokens": 941
     },
     {
       "text": "1",
@@ -8504,7 +8510,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 704,
+      "inputTokens": 719,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8512,7 +8518,7 @@
       "questionId": "q177",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 932
+      "reservedInputTokens": 951
     },
     {
       "text": "1",
@@ -8552,7 +8558,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 699,
+      "inputTokens": 714,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8560,7 +8566,7 @@
       "questionId": "q178",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 926
+      "reservedInputTokens": 944
     },
     {
       "text": "1",
@@ -8600,7 +8606,7 @@
     },
     {
       "text": "1",
-      "inputTokens": 698,
+      "inputTokens": 713,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -8608,7 +8614,7 @@
       "questionId": "q179",
       "expected": "1",
       "correct": true,
-      "reservedInputTokens": 924
+      "reservedInputTokens": 943
     },
     {
       "text": "19",
@@ -8949,7 +8955,7 @@
     {
       "text": "\"Dorian\"",
       "inputTokens": 1376,
-      "outputTokens": 21,
+      "outputTokens": 7,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "keyed",
@@ -9237,7 +9243,7 @@
     {
       "text": "\"enabled,rollout,owner,updatedAt\"",
       "inputTokens": 1378,
-      "outputTokens": 95,
+      "outputTokens": 78,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "keyed",
@@ -9249,7 +9255,7 @@
     {
       "text": "enabled,rollout,owner,updatedAt",
       "inputTokens": 1987,
-      "outputTokens": 13,
+      "outputTokens": 67,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "keyed",
@@ -9283,21 +9289,21 @@
       "reservedInputTokens": 1199
     },
     {
-      "text": "rollout",
+      "text": "[\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\",\"rollout\"]",
       "inputTokens": 1376,
-      "outputTokens": 6,
+      "outputTokens": 192,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "keyed",
       "questionId": "q194",
       "expected": "rollout",
-      "correct": true,
+      "correct": false,
       "reservedInputTokens": 1772
     },
     {
       "text": "rollout",
       "inputTokens": 1985,
-      "outputTokens": 72,
+      "outputTokens": 6,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "keyed",
@@ -10005,7 +10011,7 @@
     {
       "text": "50",
       "inputTokens": 2481,
-      "outputTokens": 51,
+      "outputTokens": 61,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested-group",
@@ -10017,7 +10023,7 @@
     {
       "text": "50",
       "inputTokens": 4138,
-      "outputTokens": 52,
+      "outputTokens": 51,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested-group",
@@ -10053,7 +10059,7 @@
     {
       "text": "\"name,age,email,address,plan\"",
       "inputTokens": 2488,
-      "outputTokens": 50,
+      "outputTokens": 32,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested-group",
@@ -10101,7 +10107,7 @@
     {
       "text": "\"city,country\"",
       "inputTokens": 2490,
-      "outputTokens": 48,
+      "outputTokens": 34,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested-group",
@@ -10149,7 +10155,7 @@
     {
       "text": "\"name,price\"",
       "inputTokens": 2490,
-      "outputTokens": 34,
+      "outputTokens": 30,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested-group",
@@ -10341,7 +10347,7 @@
     {
       "text": "\"id,name,email,department,salary,yearsExperience,active\"",
       "inputTokens": 4044,
-      "outputTokens": 43,
+      "outputTokens": 36,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -10389,7 +10395,7 @@
     {
       "text": "\"email\"",
       "inputTokens": 4042,
-      "outputTokens": 31,
+      "outputTokens": 29,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "tabular",
@@ -10531,7 +10537,7 @@
       "reservedInputTokens": 3026
     },
     {
-      "text": "7",
+      "text": "8",
       "inputTokens": 4040,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
@@ -10539,7 +10545,7 @@
       "dataset": "tabular",
       "questionId": "q220",
       "expected": "7",
-      "correct": true,
+      "correct": false,
       "reservedInputTokens": 5102
     },
     {
@@ -10629,7 +10635,7 @@
     {
       "text": "\"orderId,customer,items,subtotal,tax,total,status,orderDate\"",
       "inputTokens": 7110,
-      "outputTokens": 44,
+      "outputTokens": 55,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -10677,7 +10683,7 @@
     {
       "text": "4",
       "inputTokens": 7106,
-      "outputTokens": 29,
+      "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -10689,7 +10695,7 @@
     {
       "text": "4",
       "inputTokens": 11140,
-      "outputTokens": 5,
+      "outputTokens": 25,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "nested",
@@ -10713,7 +10719,7 @@
     {
       "text": "4",
       "inputTokens": 5779,
-      "outputTokens": 5,
+      "outputTokens": 33,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "nested",
@@ -10723,9 +10729,9 @@
       "reservedInputTokens": 7276
     },
     {
-      "text": "\"sku,name,quantity,price\"",
+      "text": "sku,name,quantity,price",
       "inputTokens": 7111,
-      "outputTokens": 33,
+      "outputTokens": 10,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "nested",
@@ -10915,9 +10921,9 @@
       "reservedInputTokens": 1929
     },
     {
-      "text": "date,views,clicks,conversions,revenue,bounceRate",
+      "text": "\"date,views,clicks,conversions,revenue,bounceRate\"",
       "inputTokens": 2457,
-      "outputTokens": 18,
+      "outputTokens": 47,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -10965,7 +10971,7 @@
     {
       "text": "\"revenue\"",
       "inputTokens": 2456,
-      "outputTokens": 32,
+      "outputTokens": 47,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -11013,7 +11019,7 @@
     {
       "text": "\"2025-03-01\"",
       "inputTokens": 2457,
-      "outputTokens": 35,
+      "outputTokens": 12,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "analytics",
@@ -11109,7 +11115,7 @@
     {
       "text": "100",
       "inputTokens": 11749,
-      "outputTokens": 144,
+      "outputTokens": 435,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -11121,7 +11127,7 @@
     {
       "text": "100",
       "inputTokens": 15449,
-      "outputTokens": 284,
+      "outputTokens": 147,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -11155,9 +11161,9 @@
       "reservedInputTokens": 11003
     },
     {
-      "text": "\"id,name,repo,description,createdAt,updatedAt,pushedAt,stars,watchers,forks,defaultBranch\"",
+      "text": "id,name,repo,description,createdAt,updatedAt,pushedAt,stars,watchers,forks,defaultBranch",
       "inputTokens": 11754,
-      "outputTokens": 55,
+      "outputTokens": 29,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -11205,7 +11211,7 @@
     {
       "text": "\"pushedAt\"",
       "inputTokens": 11754,
-      "outputTokens": 37,
+      "outputTokens": 56,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -11217,7 +11223,7 @@
     {
       "text": "pushedAt",
       "inputTokens": 15454,
-      "outputTokens": 26,
+      "outputTokens": 28,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "github",
@@ -11253,7 +11259,7 @@
     {
       "text": "\"frp\"",
       "inputTokens": 11753,
-      "outputTokens": 34,
+      "outputTokens": 8,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
@@ -11299,15 +11305,15 @@
       "reservedInputTokens": 11008
     },
     {
-      "text": "12",
+      "text": "11",
       "inputTokens": 11750,
-      "outputTokens": 5,
+      "outputTokens": 26,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "github",
       "questionId": "q236",
       "expected": "11",
-      "correct": false,
+      "correct": true,
       "reservedInputTokens": 14739
     },
     {
@@ -11349,7 +11355,7 @@
     {
       "text": "75",
       "inputTokens": 4918,
-      "outputTokens": 151,
+      "outputTokens": 405,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -11361,7 +11367,7 @@
     {
       "text": "75",
       "inputTokens": 6884,
-      "outputTokens": 102,
+      "outputTokens": 404,
       "model": "gpt-6.1-sol",
       "format": "json-pretty",
       "dataset": "event-logs",
@@ -11384,7 +11390,7 @@
     },
     {
       "text": "75",
-      "inputTokens": 3618,
+      "inputTokens": 3639,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -11392,12 +11398,12 @@
       "questionId": "q237",
       "expected": "75",
       "correct": true,
-      "reservedInputTokens": 4574
+      "reservedInputTokens": 4601
     },
     {
       "text": "\"timestamp,level,endpoint,statusCode,responseTime,userId,error\"",
       "inputTokens": 4927,
-      "outputTokens": 69,
+      "outputTokens": 53,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "event-logs",
@@ -11432,7 +11438,7 @@
     },
     {
       "text": "timestamp,level,endpoint,statusCode,responseTime,userId,error",
-      "inputTokens": 3627,
+      "inputTokens": 3648,
       "outputTokens": 16,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -11440,7 +11446,7 @@
       "questionId": "q238",
       "expected": "timestamp,level,endpoint,statusCode,responseTime,userId,error",
       "correct": true,
-      "reservedInputTokens": 4586
+      "reservedInputTokens": 4612
     },
     {
       "text": "\"warn\"",
@@ -11480,7 +11486,7 @@
     },
     {
       "text": "warn",
-      "inputTokens": 3622,
+      "inputTokens": 3643,
       "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
@@ -11488,12 +11494,12 @@
       "questionId": "q239",
       "expected": "warn",
       "correct": true,
-      "reservedInputTokens": 4579
+      "reservedInputTokens": 4606
     },
     {
       "text": "\"YES\"",
       "inputTokens": 898,
-      "outputTokens": 41,
+      "outputTokens": 55,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "structural-validation-control",
@@ -11529,7 +11535,7 @@
     {
       "text": "YES",
       "inputTokens": 569,
-      "outputTokens": 22,
+      "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "terset",
       "dataset": "structural-validation-control",
@@ -11587,9 +11593,9 @@
       "reservedInputTokens": 684
     },
     {
-      "text": "YES",
+      "text": "\"YES\"",
       "inputTokens": 1019,
-      "outputTokens": 5,
+      "outputTokens": 46,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "structural-validation-extra-rows",
@@ -11685,7 +11691,7 @@
     {
       "text": "NO",
       "inputTokens": 861,
-      "outputTokens": 17,
+      "outputTokens": 5,
       "model": "gpt-6.1-sol",
       "format": "json-compact",
       "dataset": "structural-validation-missing-fields",
@@ -11731,7 +11737,17 @@
       "reservedInputTokens": 727
     }
   ],
-  "failures": [],
+  "failures": [
+    {
+      "model": "gpt-6.1-sol",
+      "format": "toon",
+      "dataset": "tabular",
+      "questionId": "q219",
+      "status": "failed",
+      "inputTokens": 3384,
+      "outputTokens": 2048
+    }
+  ],
   "inputReservation": {
     "margin": 1.25,
     "allowance": 64
@@ -11762,19 +11778,19 @@
       "format": "json-compact",
       "dataset": "ALL",
       "metrics": {
-        "correct": 234,
+        "correct": 237,
         "total": 244,
-        "accuracy": 0.9590163934426229,
+        "accuracy": 0.9713114754098361,
         "wilson95": {
-          "lower": 0.9262149211658895,
-          "upper": 0.9775886678940718
+          "lower": 0.94197743468984,
+          "upper": 0.9860351790770849
         },
         "inputTokens": 1158229,
-        "outputTokens": 17458,
+        "outputTokens": 18464,
         "droppedIncompleteQuestions": 0,
         "inputCost": 2.316458,
-        "outputCost": 0.17458,
-        "totalCost": 2.491038,
+        "outputCost": 0.18464,
+        "totalCost": 2.501098,
         "savingVsCompactJson": 0
       }
     },
@@ -11783,19 +11799,19 @@
       "format": "json-compact",
       "dataset": "tabular",
       "metrics": {
-        "correct": 38,
+        "correct": 40,
         "total": 41,
-        "accuracy": 0.926829268292683,
+        "accuracy": 0.975609756097561,
         "wilson95": {
-          "lower": 0.8057255146228096,
-          "upper": 0.9748021693660901
+          "lower": 0.8740493794422576,
+          "upper": 0.9956814684310874
         },
         "inputTokens": 165713,
-        "outputTokens": 3204,
+        "outputTokens": 3080,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.331426,
-        "outputCost": 0.03204,
-        "totalCost": 0.363466,
+        "outputCost": 0.0308,
+        "totalCost": 0.362226,
         "savingVsCompactJson": 0
       }
     },
@@ -11812,12 +11828,12 @@
           "upper": 0.9886824759099744
         },
         "inputTokens": 1696152,
-        "outputTokens": 16907,
+        "outputTokens": 17258,
         "droppedIncompleteQuestions": 0,
         "inputCost": 3.392304,
-        "outputCost": 0.16907,
-        "totalCost": 3.5613740000000003,
-        "savingVsCompactJson": -1.0703360000000002
+        "outputCost": 0.17258,
+        "totalCost": 3.564884,
+        "savingVsCompactJson": -1.0637860000000003
       }
     },
     {
@@ -11833,12 +11849,12 @@
           "upper": 0.9865190546348308
         },
         "inputTokens": 264400,
-        "outputTokens": 2897,
+        "outputTokens": 3042,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.5288,
-        "outputCost": 0.02897,
-        "totalCost": 0.5577700000000001,
-        "savingVsCompactJson": -0.1943040000000001
+        "outputCost": 0.03042,
+        "totalCost": 0.55922,
+        "savingVsCompactJson": -0.19699400000000006
       }
     },
     {
@@ -11846,20 +11862,20 @@
       "format": "toon",
       "dataset": "ALL",
       "metrics": {
-        "correct": 242,
+        "correct": 238,
         "total": 244,
-        "accuracy": 0.9918032786885246,
+        "accuracy": 0.9754098360655737,
         "wilson95": {
-          "lower": 0.9706117105007331,
-          "upper": 0.9977492777777971
+          "lower": 0.9473998127592713,
+          "upper": 0.9886824759099744
         },
         "inputTokens": 1020628,
-        "outputTokens": 15751,
+        "outputTokens": 15273,
         "droppedIncompleteQuestions": 0,
         "inputCost": 2.041256,
-        "outputCost": 0.15751,
-        "totalCost": 2.198766,
-        "savingVsCompactJson": 0.2922720000000001
+        "outputCost": 0.15273,
+        "totalCost": 2.193986,
+        "savingVsCompactJson": 0.3071119999999996
       }
     },
     {
@@ -11867,20 +11883,20 @@
       "format": "toon",
       "dataset": "tabular",
       "metrics": {
-        "correct": 40,
+        "correct": 38,
         "total": 41,
-        "accuracy": 0.975609756097561,
+        "accuracy": 0.926829268292683,
         "wilson95": {
-          "lower": 0.8740493794422576,
-          "upper": 0.9956814684310874
+          "lower": 0.8057255146228096,
+          "upper": 0.9748021693660901
         },
         "inputTokens": 109256,
-        "outputTokens": 3051,
+        "outputTokens": 2802,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.218512,
-        "outputCost": 0.03051,
-        "totalCost": 0.24902200000000002,
-        "savingVsCompactJson": 0.11444399999999999
+        "outputCost": 0.02802,
+        "totalCost": 0.246532,
+        "savingVsCompactJson": 0.11569399999999999
       }
     },
     {
@@ -11888,20 +11904,20 @@
       "format": "terset",
       "dataset": "ALL",
       "metrics": {
-        "correct": 241,
+        "correct": 243,
         "total": 244,
-        "accuracy": 0.9877049180327869,
+        "accuracy": 0.9959016393442623,
         "wilson95": {
-          "lower": 0.964481398748853,
-          "upper": 0.9958099146273562
+          "lower": 0.9771544911855791,
+          "upper": 0.9992761719952722
         },
-        "inputTokens": 842260,
-        "outputTokens": 15968,
+        "inputTokens": 843325,
+        "outputTokens": 15402,
         "droppedIncompleteQuestions": 0,
-        "inputCost": 1.68452,
-        "outputCost": 0.15968,
-        "totalCost": 1.8442,
-        "savingVsCompactJson": 0.646838
+        "inputCost": 1.68665,
+        "outputCost": 0.15402,
+        "totalCost": 1.84067,
+        "savingVsCompactJson": 0.6604279999999998
       }
     },
     {
@@ -11917,12 +11933,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 97489,
-        "outputTokens": 3047,
+        "outputTokens": 2884,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.194978,
-        "outputCost": 0.03047,
-        "totalCost": 0.225448,
-        "savingVsCompactJson": 0.138018
+        "outputCost": 0.02884,
+        "totalCost": 0.22381800000000002,
+        "savingVsCompactJson": 0.13840799999999998
       }
     },
     {
@@ -11938,11 +11954,11 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 291387,
-        "outputTokens": 2266,
+        "outputTokens": 2334,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.582774,
-        "outputCost": 0.02266,
-        "totalCost": 0.605434,
+        "outputCost": 0.02334,
+        "totalCost": 0.606114,
         "savingVsCompactJson": 0
       }
     },
@@ -11959,12 +11975,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 456781,
-        "outputTokens": 2116,
+        "outputTokens": 2018,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.913562,
-        "outputCost": 0.02116,
-        "totalCost": 0.9347219999999999,
-        "savingVsCompactJson": -0.3292879999999999
+        "outputCost": 0.02018,
+        "totalCost": 0.933742,
+        "savingVsCompactJson": -0.3276279999999999
       }
     },
     {
@@ -11980,12 +11996,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 309632,
-        "outputTokens": 2186,
+        "outputTokens": 2041,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.619264,
-        "outputCost": 0.02186,
-        "totalCost": 0.641124,
-        "savingVsCompactJson": -0.03569
+        "outputCost": 0.02041,
+        "totalCost": 0.6396740000000001,
+        "savingVsCompactJson": -0.033560000000000034
       }
     },
     {
@@ -12001,12 +12017,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 236980,
-        "outputTokens": 2079,
+        "outputTokens": 2245,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.47396,
-        "outputCost": 0.02079,
-        "totalCost": 0.49474999999999997,
-        "savingVsCompactJson": 0.11068400000000006
+        "outputCost": 0.02245,
+        "totalCost": 0.49641,
+        "savingVsCompactJson": 0.10970400000000002
       }
     },
     {
@@ -12014,19 +12030,19 @@
       "format": "json-compact",
       "dataset": "analytics",
       "metrics": {
-        "correct": 28,
+        "correct": 30,
         "total": 30,
-        "accuracy": 0.9333333333333333,
+        "accuracy": 1,
         "wilson95": {
-          "lower": 0.7867654163738308,
-          "upper": 0.9815229762087295
+          "lower": 0.8864866068260312,
+          "upper": 0.9999999999999999
         },
         "inputTokens": 73721,
-        "outputTokens": 2885,
+        "outputTokens": 3037,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.147442,
-        "outputCost": 0.02885,
-        "totalCost": 0.176292,
+        "outputCost": 0.03037,
+        "totalCost": 0.177812,
         "savingVsCompactJson": 0
       }
     },
@@ -12043,12 +12059,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 113531,
-        "outputTokens": 2821,
+        "outputTokens": 2954,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.227062,
-        "outputCost": 0.02821,
-        "totalCost": 0.255272,
-        "savingVsCompactJson": -0.07898
+        "outputCost": 0.02954,
+        "totalCost": 0.256602,
+        "savingVsCompactJson": -0.07879
       }
     },
     {
@@ -12056,20 +12072,20 @@
       "format": "toon",
       "dataset": "analytics",
       "metrics": {
-        "correct": 30,
+        "correct": 29,
         "total": 30,
-        "accuracy": 1,
+        "accuracy": 0.9666666666666667,
         "wilson95": {
-          "lower": 0.8864866068260312,
-          "upper": 0.9999999999999999
+          "lower": 0.8332960900859082,
+          "upper": 0.9940914096183874
         },
         "inputTokens": 51011,
-        "outputTokens": 2961,
+        "outputTokens": 2905,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.102022,
-        "outputCost": 0.02961,
-        "totalCost": 0.131632,
-        "savingVsCompactJson": 0.044660000000000005
+        "outputCost": 0.02905,
+        "totalCost": 0.131072,
+        "savingVsCompactJson": 0.046740000000000004
       }
     },
     {
@@ -12085,12 +12101,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 45191,
-        "outputTokens": 2722,
+        "outputTokens": 2918,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.090382,
-        "outputCost": 0.02722,
-        "totalCost": 0.11760200000000001,
-        "savingVsCompactJson": 0.05868999999999999
+        "outputCost": 0.02918,
+        "totalCost": 0.119562,
+        "savingVsCompactJson": 0.058249999999999996
       }
     },
     {
@@ -12106,11 +12122,11 @@
           "upper": 0.9832191169128082
         },
         "inputTokens": 387862,
-        "outputTokens": 5690,
+        "outputTokens": 5763,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.775724,
-        "outputCost": 0.0569,
-        "totalCost": 0.8326239999999999,
+        "outputCost": 0.05763,
+        "totalCost": 0.8333539999999999,
         "savingVsCompactJson": 0
       }
     },
@@ -12127,17 +12143,38 @@
           "upper": 0.9832191169128082
         },
         "inputTokens": 509962,
-        "outputTokens": 5785,
+        "outputTokens": 5893,
         "droppedIncompleteQuestions": 0,
         "inputCost": 1.019924,
-        "outputCost": 0.05785,
-        "totalCost": 1.077774,
-        "savingVsCompactJson": -0.2451500000000001
+        "outputCost": 0.05893,
+        "totalCost": 1.078854,
+        "savingVsCompactJson": -0.24550000000000005
       }
     },
     {
       "model": "gpt-6.1-sol",
       "format": "toon",
+      "dataset": "github",
+      "metrics": {
+        "correct": 31,
+        "total": 33,
+        "accuracy": 0.9393939393939394,
+        "wilson95": {
+          "lower": 0.8039375519135219,
+          "upper": 0.9832191169128082
+        },
+        "inputTokens": 300940,
+        "outputTokens": 4893,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 0.60188,
+        "outputCost": 0.04893,
+        "totalCost": 0.65081,
+        "savingVsCompactJson": 0.18254399999999993
+      }
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "format": "terset",
       "dataset": "github",
       "metrics": {
         "correct": 32,
@@ -12147,34 +12184,13 @@
           "lower": 0.846812746178811,
           "upper": 0.9946305894631283
         },
-        "inputTokens": 300940,
-        "outputTokens": 4827,
-        "droppedIncompleteQuestions": 0,
-        "inputCost": 0.60188,
-        "outputCost": 0.04827,
-        "totalCost": 0.65015,
-        "savingVsCompactJson": 0.18247399999999991
-      }
-    },
-    {
-      "model": "gpt-6.1-sol",
-      "format": "terset",
-      "dataset": "github",
-      "metrics": {
-        "correct": 30,
-        "total": 33,
-        "accuracy": 0.9090909090909091,
-        "wilson95": {
-          "lower": 0.7642739435353026,
-          "upper": 0.9685960584754184
-        },
         "inputTokens": 289258,
-        "outputTokens": 5484,
+        "outputTokens": 4738,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.578516,
-        "outputCost": 0.05484,
-        "totalCost": 0.633356,
-        "savingVsCompactJson": 0.1992679999999999
+        "outputCost": 0.04738,
+        "totalCost": 0.625896,
+        "savingVsCompactJson": 0.20745799999999992
       }
     },
     {
@@ -12190,11 +12206,11 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 147793,
-        "outputTokens": 2620,
+        "outputTokens": 3245,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.295586,
-        "outputCost": 0.0262,
-        "totalCost": 0.321786,
+        "outputCost": 0.03245,
+        "totalCost": 0.328036,
         "savingVsCompactJson": 0
       }
     },
@@ -12211,12 +12227,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 206773,
-        "outputTokens": 2785,
+        "outputTokens": 2861,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.413546,
-        "outputCost": 0.02785,
-        "totalCost": 0.441396,
-        "savingVsCompactJson": -0.11961
+        "outputCost": 0.02861,
+        "totalCost": 0.44215600000000005,
+        "savingVsCompactJson": -0.11412000000000005
       }
     },
     {
@@ -12232,12 +12248,12 @@
           "upper": 0.9999999999999999
         },
         "inputTokens": 178393,
-        "outputTokens": 2336,
+        "outputTokens": 2242,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.356786,
-        "outputCost": 0.02336,
-        "totalCost": 0.380146,
-        "savingVsCompactJson": -0.05835999999999997
+        "outputCost": 0.02242,
+        "totalCost": 0.379206,
+        "savingVsCompactJson": -0.05116999999999999
       }
     },
     {
@@ -12252,13 +12268,13 @@
           "lower": 0.8864866068260312,
           "upper": 0.9999999999999999
         },
-        "inputTokens": 108793,
-        "outputTokens": 2229,
+        "inputTokens": 109423,
+        "outputTokens": 2227,
         "droppedIncompleteQuestions": 0,
-        "inputCost": 0.217586,
-        "outputCost": 0.02229,
-        "totalCost": 0.239876,
-        "savingVsCompactJson": 0.08191000000000001
+        "inputCost": 0.218846,
+        "outputCost": 0.02227,
+        "totalCost": 0.24111600000000002,
+        "savingVsCompactJson": 0.08691999999999997
       }
     },
     {
@@ -12274,11 +12290,11 @@
           "upper": 1
         },
         "inputTokens": 19170,
-        "outputTokens": 213,
+        "outputTokens": 253,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.03834,
-        "outputCost": 0.00213,
-        "totalCost": 0.04047,
+        "outputCost": 0.00253,
+        "totalCost": 0.04087,
         "savingVsCompactJson": 0
       }
     },
@@ -12300,7 +12316,7 @@
         "inputCost": 0.059046,
         "outputCost": 0.00158,
         "totalCost": 0.060626,
-        "savingVsCompactJson": -0.020156
+        "savingVsCompactJson": -0.019756000000000003
       }
     },
     {
@@ -12321,7 +12337,7 @@
         "inputCost": 0.044256,
         "outputCost": 0.00158,
         "totalCost": 0.045835999999999995,
-        "savingVsCompactJson": -0.005365999999999996
+        "savingVsCompactJson": -0.004965999999999998
       }
     },
     {
@@ -12336,13 +12352,13 @@
           "lower": 0.8830302015002593,
           "upper": 1
         },
-        "inputTokens": 20214,
+        "inputTokens": 20649,
         "outputTokens": 158,
         "droppedIncompleteQuestions": 0,
-        "inputCost": 0.040428,
+        "inputCost": 0.041298,
         "outputCost": 0.00158,
-        "totalCost": 0.042008,
-        "savingVsCompactJson": -0.0015379999999999977
+        "totalCost": 0.042878,
+        "savingVsCompactJson": -0.002008000000000003
       }
     },
     {
@@ -12350,19 +12366,19 @@
       "format": "json-compact",
       "dataset": "keyed",
       "metrics": {
-        "correct": 17,
+        "correct": 16,
         "total": 17,
-        "accuracy": 1,
+        "accuracy": 0.9411764705882353,
         "wilson95": {
-          "lower": 0.8156818649911483,
-          "upper": 1
+          "lower": 0.7301796936242461,
+          "upper": 0.9895395990150025
         },
         "inputTokens": 23401,
-        "outputTokens": 202,
+        "outputTokens": 357,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.046802,
-        "outputCost": 0.00202,
-        "totalCost": 0.048822000000000004,
+        "outputCost": 0.00357,
+        "totalCost": 0.050372,
         "savingVsCompactJson": 0
       }
     },
@@ -12379,12 +12395,12 @@
           "upper": 1
         },
         "inputTokens": 33754,
-        "outputTokens": 166,
+        "outputTokens": 154,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.067508,
-        "outputCost": 0.00166,
-        "totalCost": 0.069168,
-        "savingVsCompactJson": -0.02034599999999999
+        "outputCost": 0.00154,
+        "totalCost": 0.069048,
+        "savingVsCompactJson": -0.018675999999999998
       }
     },
     {
@@ -12405,7 +12421,7 @@
         "inputCost": 0.035514,
         "outputCost": 0.001,
         "totalCost": 0.036514,
-        "savingVsCompactJson": 0.012308000000000006
+        "savingVsCompactJson": 0.013858000000000002
       }
     },
     {
@@ -12426,7 +12442,7 @@
         "inputCost": 0.031162,
         "outputCost": 0.001,
         "totalCost": 0.032161999999999996,
-        "savingVsCompactJson": 0.016660000000000008
+        "savingVsCompactJson": 0.018210000000000004
       }
     },
     {
@@ -12442,11 +12458,11 @@
           "upper": 1
         },
         "inputTokens": 44726,
-        "outputTokens": 305,
+        "outputTokens": 279,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.089452,
-        "outputCost": 0.00305,
-        "totalCost": 0.092502,
+        "outputCost": 0.00279,
+        "totalCost": 0.092242,
         "savingVsCompactJson": 0
       }
     },
@@ -12463,12 +12479,12 @@
           "upper": 1
         },
         "inputTokens": 74552,
-        "outputTokens": 154,
+        "outputTokens": 153,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.149104,
-        "outputCost": 0.00154,
-        "totalCost": 0.150644,
-        "savingVsCompactJson": -0.058142
+        "outputCost": 0.00153,
+        "totalCost": 0.150634,
+        "savingVsCompactJson": -0.058391999999999986
       }
     },
     {
@@ -12489,7 +12505,7 @@
         "inputCost": 0.056224,
         "outputCost": 0.00107,
         "totalCost": 0.057294000000000005,
-        "savingVsCompactJson": 0.035207999999999996
+        "savingVsCompactJson": 0.034948
       }
     },
     {
@@ -12510,7 +12526,7 @@
         "inputCost": 0.051868,
         "outputCost": 0.00107,
         "totalCost": 0.052938,
-        "savingVsCompactJson": 0.039564
+        "savingVsCompactJson": 0.039304000000000006
       }
     },
     {
@@ -12526,11 +12542,11 @@
           "upper": 0.7934506856227626
         },
         "inputTokens": 898,
-        "outputTokens": 41,
+        "outputTokens": 55,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.001796,
-        "outputCost": 0.00041,
-        "totalCost": 0.002206,
+        "outputCost": 0.00055,
+        "totalCost": 0.002346,
         "savingVsCompactJson": 0
       }
     },
@@ -12552,7 +12568,7 @@
         "inputCost": 0.00277,
         "outputCost": 0.00005,
         "totalCost": 0.00282,
-        "savingVsCompactJson": -0.000614
+        "savingVsCompactJson": -0.00047400000000000003
       }
     },
     {
@@ -12573,7 +12589,7 @@
         "inputCost": 0.00137,
         "outputCost": 0.00005,
         "totalCost": 0.0014199999999999998,
-        "savingVsCompactJson": 0.0007860000000000002
+        "savingVsCompactJson": 0.0009260000000000002
       }
     },
     {
@@ -12589,12 +12605,12 @@
           "upper": 1
         },
         "inputTokens": 569,
-        "outputTokens": 22,
+        "outputTokens": 5,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.001138,
-        "outputCost": 0.00022,
-        "totalCost": 0.0013579999999999998,
-        "savingVsCompactJson": 0.0008480000000000002
+        "outputCost": 0.00005,
+        "totalCost": 0.0011879999999999998,
+        "savingVsCompactJson": 0.0011580000000000002
       }
     },
     {
@@ -12694,11 +12710,11 @@
           "upper": 0.7934506856227626
         },
         "inputTokens": 1019,
-        "outputTokens": 5,
+        "outputTokens": 46,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.002038,
-        "outputCost": 0.00005,
-        "totalCost": 0.002088,
+        "outputCost": 0.00046,
+        "totalCost": 0.002498,
         "savingVsCompactJson": 0
       }
     },
@@ -12720,7 +12736,7 @@
         "inputCost": 0.003156,
         "outputCost": 0.00005,
         "totalCost": 0.003206,
-        "savingVsCompactJson": -0.001118
+        "savingVsCompactJson": -0.0007080000000000003
       }
     },
     {
@@ -12741,7 +12757,7 @@
         "inputCost": 0.001522,
         "outputCost": 0.00005,
         "totalCost": 0.0015719999999999998,
-        "savingVsCompactJson": 0.0005160000000000002
+        "savingVsCompactJson": 0.000926
       }
     },
     {
@@ -12762,7 +12778,7 @@
         "inputCost": 0.001278,
         "outputCost": 0.00005,
         "totalCost": 0.001328,
-        "savingVsCompactJson": 0.00076
+        "savingVsCompactJson": 0.0011699999999999998
       }
     },
     {
@@ -12862,11 +12878,11 @@
           "upper": 1
         },
         "inputTokens": 861,
-        "outputTokens": 17,
+        "outputTokens": 5,
         "droppedIncompleteQuestions": 0,
         "inputCost": 0.001722,
-        "outputCost": 0.00017,
-        "totalCost": 0.001892,
+        "outputCost": 0.00005,
+        "totalCost": 0.001772,
         "savingVsCompactJson": 0
       }
     },
@@ -12888,7 +12904,7 @@
         "inputCost": 0.002672,
         "outputCost": 0.00005,
         "totalCost": 0.002722,
-        "savingVsCompactJson": -0.00083
+        "savingVsCompactJson": -0.0009500000000000001
       }
     },
     {
@@ -12909,7 +12925,7 @@
         "inputCost": 0.001312,
         "outputCost": 0.00005,
         "totalCost": 0.001362,
-        "savingVsCompactJson": 0.0005300000000000001
+        "savingVsCompactJson": 0.00041
       }
     },
     {
@@ -12930,7 +12946,7 @@
         "inputCost": 0.00108,
         "outputCost": 0.00005,
         "totalCost": 0.00113,
-        "savingVsCompactJson": 0.0007620000000000001
+        "savingVsCompactJson": 0.000642
       }
     }
   ]

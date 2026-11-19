@@ -45,8 +45,8 @@ export function BigNumbers({ file }: { readonly file: AccuracyFile }) {
   );
 }
 
-function CostModel({ model }: { readonly model: AccuracyModel }) {
-  const bars = costBars(model);
+function CostModel({ file, model }: { readonly file: AccuracyFile; readonly model: AccuracyModel }) {
+  const bars = costBars(file, model);
   return (
     <div className="cost-model">
       <h3>{model.name}</h3>
@@ -81,7 +81,7 @@ export function CostBars({ file, headingId, title }: { readonly file: AccuracyFi
       )}
       <div className="cost-grid">
         {file.models.map((model) => (
-          <CostModel key={model.id} model={model} />
+          <CostModel key={model.id} file={file} model={model} />
         ))}
       </div>
       <figcaption className="tbl-note">{costNote(file)}</figcaption>

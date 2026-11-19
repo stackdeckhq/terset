@@ -9,6 +9,7 @@ PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE / "src"))
 
 from terset import RULES, decode, encode, rules_for
+from terset._terset import _FITTED_RULES
 
 
 class RulesTests(unittest.TestCase):
@@ -21,10 +22,17 @@ class RulesTests(unittest.TestCase):
 
     def test_shared_rules(self):
         cases = json.loads((PACKAGE.parent / "terset/tests/rules-cases.json").read_text(encoding="utf-8"))
+        sentences = dict(_FITTED_RULES)
+        seen: set[str] = set()
         for case in cases:
             with self.subTest(case=case["name"]):
                 self.assertEqual(rules_for(case["text"]), case["rules"])
-        self.assertEqual(cases[-1]["rules"], RULES)
+                self.assertEqual(" ".join(sentences[feature] for feature, _ in _FITTED_RULES if feature in case["features"]), case["rules"])
+                seen.update(case["features"])
+        # No one document holds both empty and named cells, so the cases
+        # cover every rule together rather than in one text.
+        self.assertEqual(seen, set(sentences))
+        self.assertEqual(RULES, " ".join(sentences.values()))
 
     def test_same_rejections(self):
         cases = json.loads((PACKAGE.parents[1] / "conformance/rejection-errors.json").read_text(encoding="utf-8"))

@@ -19,7 +19,15 @@ describe('step 4 Terset rows', () => {
       expect(cells.length).toBe(tabs.length + 1);
       expect(row).not.toMatch(/<span class="cell">(?:(?!<\/span>).)*<wbr/u);
     }
-    expect(html).toContain('<span class="cell">[{&quot;sku&quot;:&quot;C-310&quot;');
+    expect(html).toContain('<span class="cell">lines=[{&quot;sku&quot;:&quot;C-310&quot;');
+  });
+
+  it('points at the named cell a row has, and says when a row lacks the field', () => {
+    const html = renderToStaticMarkup(createElement(StepCases));
+    expect(html).toContain('<em>ship={&quot;city&quot;:&quot;Osaka&quot;}</em>');
+    expect(html).toContain('<em>note=Gift wrap</em>');
+    expect(html).toContain('Row 5, no ship cell');
+    expect(html).toContain('Row 4, ship cell');
   });
 
   it('keeps a cell on one line in the stylesheet', () => {

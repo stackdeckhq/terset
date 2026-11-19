@@ -42,9 +42,24 @@ export interface FormatLine {
   readonly raw: string;
   /** Root key for entry and list lines. */
   readonly key?: string;
-  /** Raw cells for header and row lines. */
+  /** Raw cells for header and row lines, named cells and the header's `name=value` marker included. */
   readonly cells: readonly string[];
+  /** How many of `cells` sit under a header column. Later cells are named cells or the marker. Zero for other lines. */
+  readonly positional: number;
   readonly tokens: readonly Token[];
+}
+
+/** The last header cell of a table whose rows end in `name=value` cells (format 1.1). */
+export const NAMED_MARKER = 'name=value';
+// A name is one field: a simple key without a dot, or a JSON string.
+const NAMED_CELL = /^("(?:[^"\\]|\\.)*"|[A-Za-z_$][A-Za-z0-9_$-]*)=([\s\S]*)$/u;
+
+/** A named cell's field name, unquoted, and its value cell. Null when the cell is not `name=value`. */
+export function namedCell(cell: string): { readonly name: string; readonly value: string } | null {
+  const match = NAMED_CELL.exec(cell);
+  if (match === null) return null;
+  const [, written = '', value = ''] = match;
+  return { name: fieldName(written), value };
 }
 
 function cellClass(cell: string): TokenClass {
@@ -57,11 +72,22 @@ function cellClass(cell: string): TokenClass {
   return 'st';
 }
 
-function joined(cells: readonly string[], classOf: (cell: string, index: number) => TokenClass): Token[] {
-  return cells.flatMap((cell, index) => {
-    const token: Token = { cls: classOf(cell, index), text: cell };
-    return index === 0 ? [token] : [{ cls: 'tb', text: CELL_SEPARATOR }, token];
-  });
+function joined(cells: readonly string[], tokensOf: (cell: string, index: number) => Token[]): Token[] {
+  return cells.flatMap((cell, index) => (index === 0 ? tokensOf(cell, index) : [{ cls: 'tb', text: CELL_SEPARATOR }, ...tokensOf(cell, index)]));
+}
+
+/** A named cell as its name, the `=` and its value. */
+function namedTokens(cell: string): Token[] {
+  const match = NAMED_CELL.exec(cell);
+  if (match === null) return [{ cls: cellClass(cell), text: cell }];
+  const [, written = '', value = ''] = match;
+  return [{ cls: 'fd', text: written }, { cls: 'p', text: '=' }, { cls: cellClass(value), text: value }];
+}
+
+/** Whether a line's cells fit the current table: exactly its columns, or its columns then named cells. */
+function rowFits(cells: readonly string[], width: number, named: boolean): boolean {
+  if (!named) return width > 0 && cells.length === width;
+  return cells.length >= width && cells.slice(width).every((cell) => NAMED_CELL.test(cell));
 }
 
 /** Splits Terset text into typed lines and tokens. Joining every token's text gives the input back. */
@@ -69,6 +95,7 @@ export function tokenize(text: string): FormatLine[] {
   const out: FormatLine[] = [];
   const lines = text.split('\n');
   let width = 0;
+  let named = false;
   let bareId = false;
   let remaining = 0;
   let expectHeader = false;
@@ -76,31 +103,40 @@ export function tokenize(text: string): FormatLine[] {
     const cells = raw.split(CELL_SEPARATOR);
     if (expectHeader) {
       expectHeader = false;
-      width = cells.length;
+      named = cells.at(-1) === NAMED_MARKER;
+      width = named ? cells.length - 1 : cells.length;
       // Only a bare `id` header makes the first column raw string ids. A quoted "id" keeps typed cells.
       bareId = cells[0] === 'id' || cells[0] === '@key';
-      out.push({ kind: 'header', raw, cells, tokens: joined(cells, () => 'fd') });
+      const tokens = joined(cells, (cell, column) => [{ cls: column < width ? 'fd' : 'p', text: cell }]);
+      out.push({ kind: 'header', raw, cells, positional: width, tokens });
       continue;
     }
-    if (remaining > 0 && width > 0 && cells.length === width) {
+    // A record with no columns and no named cells is an empty line.
+    const rowCells = named && width === 0 && raw === '' ? [] : cells;
+    if (remaining > 0 && rowFits(rowCells, width, named)) {
       remaining--;
-      out.push({ kind: 'row', raw, cells, tokens: joined(cells, (cell, index) => (index === 0 && bareId ? 'id' : cellClass(cell))) });
+      const tokens = joined(rowCells, (cell, column) => {
+        if (column >= width) return namedTokens(cell);
+        return [{ cls: column === 0 && bareId ? 'id' : cellClass(cell), text: cell }];
+      });
+      out.push({ kind: 'row', raw, cells: rowCells, positional: width, tokens });
       continue;
     }
     width = 0;
+    named = false;
     remaining = 0;
     const rootCount = index === 0 && lines.length > 1 ? /^\[(\d+)\]$/u.exec(raw) : null;
     if (rootCount !== null) {
       remaining = Number(rootCount[1]);
       expectHeader = true;
-      out.push({ kind: 'list', raw, cells: [], tokens: [
+      out.push({ kind: 'list', raw, cells: [], positional: 0, tokens: [
         { cls: 'p', text: '[' }, { cls: 'nu', text: rootCount[1] ?? '' }, { cls: 'p', text: ']' },
       ] });
       continue;
     }
     const entry = ENTRY.exec(raw);
     if (entry === null) {
-      out.push({ kind: 'other', raw, cells: [], tokens: raw === '' ? [] : [{ cls: 'json', text: raw }] });
+      out.push({ kind: 'other', raw, cells: [], positional: 0, tokens: raw === '' ? [] : [{ cls: 'json', text: raw }] });
       continue;
     }
     const [, key = '', listCount, mapCount, rest = ''] = entry;
@@ -115,11 +151,11 @@ export function tokenize(text: string): FormatLine[] {
     if (rest === '' && count !== undefined) {
       remaining = Number(count);
       expectHeader = true;
-      out.push({ kind: 'list', raw, key, cells: [], tokens: head });
+      out.push({ kind: 'list', raw, key, cells: [], positional: 0, tokens: head });
     } else {
       const value = rest.startsWith(' ') ? rest.slice(1) : rest;
       const tokens: Token[] = rest.startsWith(' ') ? [...head, { cls: 'sp', text: ' ' }] : head;
-      out.push({ kind: 'entry', raw, key, cells: [], tokens: [...tokens, { cls: cellClass(value), text: value }] });
+      out.push({ kind: 'entry', raw, key, cells: [], positional: 0, tokens: [...tokens, { cls: cellClass(value), text: value }] });
     }
   }
   return out;
@@ -127,17 +163,21 @@ export function tokenize(text: string): FormatLine[] {
 
 export interface Table {
   readonly key: string;
+  /** The header columns, without the `name=value` marker. */
   readonly fields: readonly string[];
+  /** Whether rows end in `name=value` cells for the fields only some records have. */
+  readonly named: boolean;
+  /** Raw row cells: one per column, then any named cells as written. */
   readonly rows: readonly (readonly string[])[];
 }
 
 /** Every table in a text: its root key, its header and its raw row cells. */
 export function tables(text: string): Table[] {
-  const out: { key: string; fields: readonly string[]; rows: (readonly string[])[] }[] = [];
+  const out: { key: string; fields: readonly string[]; named: boolean; rows: (readonly string[])[] }[] = [];
   let key = '';
   for (const line of tokenize(text)) {
     if (line.kind === 'list') key = line.key ?? '';
-    else if (line.kind === 'header') out.push({ key, fields: line.cells, rows: [] });
+    else if (line.kind === 'header') out.push({ key, fields: line.cells.slice(0, line.positional), named: line.positional < line.cells.length, rows: [] });
     else if (line.kind === 'row') out.at(-1)?.rows.push(line.cells);
   }
   return out;
@@ -145,7 +185,7 @@ export function tables(text: string): Table[] {
 
 // Marks: the parts of the syntax the anatomy step numbers.
 
-export type MarkId = 'rk' | 'hd' | 'id' | 'js' | 'qt' | 'ab';
+export type MarkId = 'rk' | 'hd' | 'id' | 'js' | 'qt' | 'nm';
 
 export interface Mark {
   readonly id: MarkId;
@@ -161,7 +201,7 @@ export const MARKS: readonly Mark[] = [
   { id: 'hd', n: 2, sample: 'id  customer  ...', sampleClass: 'fd', about: 'The field names, written once, split by tabs.' },
   { id: 'id', n: 3, sample: 'ORD-20001', sampleClass: 'id', about: 'A bare id header means each row starts with its id as plain text.' },
   { id: 'js', n: 4, sample: '{"city":"Lisbon"}', sampleClass: 'json', about: 'Nested values without dotted columns stay JSON cells.' },
-  { id: 'ab', n: 5, sample: '', sampleClass: 'ab', about: 'An empty cell means the field is absent. null stays null.' },
+  { id: 'nm', n: 5, sample: 'note=Gift wrap', sampleClass: 'fd', about: 'A field only some rows have follows the columns as name=value. A row without it lacks the field. null stays null.' },
   { id: 'qt', n: 6, sample: '"42"', sampleClass: 'qt', about: 'Text that looks like a number, boolean or null gets JSON quotes.' },
 ];
 
@@ -179,7 +219,8 @@ function marked(id: MarkId, html: string): string {
   return mark === undefined ? html : `<span class="mk ${id}" data-n="${String(mark.n)}">${html}</span>`;
 }
 
-const TOKEN_MARK: Partial<Record<TokenClass, MarkId>> = { id: 'id', json: 'js', qt: 'qt', ab: 'ab' };
+// In a row, an `fd` token is a named cell's name.
+const TOKEN_MARK: Partial<Record<TokenClass, MarkId>> = { id: 'id', json: 'js', qt: 'qt', fd: 'nm' };
 
 /** The width an empty cell's box takes, in characters. The box is drawn 1.6ch wide plus a margin. */
 const EMPTY_CELL_CH = 2;
@@ -194,37 +235,57 @@ function cellWidth(cell: string): number {
   return cell === '' ? EMPTY_CELL_CH : Array.from(GRAPHEMES.segment(cell)).length;
 }
 
+/** How one table lines up: the widest cell of each column, and whether rows end in named cells. */
+interface TableLayout {
+  readonly widths: number[];
+  readonly named: boolean;
+}
+
 /**
- * The column widths for every header and row line, by line index: the widest
- * cell of each column across the line's whole table, header included.
+ * The layout for every header and row line, by line index: the widest cell of
+ * each column across the line's whole table, header included.
  */
-function columnWidths(lines: readonly FormatLine[]): ReadonlyMap<number, readonly number[]> {
-  const out = new Map<number, readonly number[]>();
-  // Every line of one table shares this array, so all of them see the final widths.
-  let widths: number[] = [];
+function columnWidths(lines: readonly FormatLine[]): ReadonlyMap<number, TableLayout> {
+  const out = new Map<number, TableLayout>();
+  // Every line of one table shares this layout, so all of them see the final widths.
+  let layout: TableLayout = { widths: [], named: false };
   for (const [index, line] of lines.entries()) {
-    if (line.kind === 'header') widths = [];
+    if (line.kind === 'header') layout = { widths: [], named: line.positional < line.cells.length };
     else if (line.kind !== 'row') continue;
-    for (const [column, cell] of line.cells.entries()) widths[column] = Math.max(widths[column] ?? 0, cellWidth(cell));
-    out.set(index, widths);
+    const { widths } = layout;
+    for (const [column, cell] of line.cells.slice(0, line.positional).entries()) widths[column] = Math.max(widths[column] ?? 0, cellWidth(cell));
+    out.set(index, layout);
   }
   return out;
 }
 
 /**
- * Wraps each cell but the last in a box as wide as its column, so the cells
- * line up under their header. The real tab stays in the text between cells,
- * so a selection still copies the exact Terset text.
+ * Wraps each column cell in a box as wide as its column, so the cells line up
+ * under their header. Without named cells the line's last cell stays bare;
+ * with them every column is boxed, so named cells start in one place. The
+ * real tab stays in the text between cells, so a selection still copies the
+ * exact Terset text.
  */
-function alignCells(tokens: readonly string[], widths: readonly number[]): string {
-  const lastCell = tokens.length - 1;
-  return tokens
-    .map((html, index) => {
-      // Tokens alternate cell, tab, cell, so a cell's column is half its index.
-      if (index % 2 === 1 || index === lastCell) return html;
-      return `<span class="tc" style="--w:${String(widths[index / 2] ?? 0)}">${html}</span>`;
-    })
-    .join('');
+function alignCells(line: FormatLine, html: readonly string[], layout: TableLayout): string {
+  const parts: string[] = [];
+  let column = 0;
+  let cell = '';
+  const flush = (last: boolean): void => {
+    const boxed = column < line.positional && (layout.named || !last);
+    parts.push(boxed ? `<span class="tc" style="--w:${String(layout.widths[column] ?? 0)}">${cell}</span>` : cell);
+  };
+  for (const [index, token] of line.tokens.entries()) {
+    if (token.cls !== 'tb') {
+      cell += html[index] ?? '';
+      continue;
+    }
+    flush(false);
+    parts.push(html[index] ?? '');
+    column++;
+    cell = '';
+  }
+  flush(true);
+  return parts.join('');
 }
 
 export interface HighlightOptions {
@@ -248,10 +309,11 @@ export function highlight(text: string, options: HighlightOptions = {}): string 
     return marked(id, html);
   };
   const lines = tokenize(text);
-  const widths = options.align === true ? columnWidths(lines) : new Map<number, readonly number[]>();
+  const layouts = options.align === true ? columnWidths(lines) : new Map<number, TableLayout>();
   const cells = (index: number, tokens: readonly string[]): string => {
-    const columns = widths.get(index);
-    return columns === undefined ? tokens.join('') : alignCells(tokens, columns);
+    const layout = layouts.get(index);
+    const line = lines[index];
+    return layout === undefined || line === undefined ? tokens.join('') : alignCells(line, tokens, layout);
   };
   return lines
     .map((line, index) => {
@@ -298,7 +360,7 @@ export function jsonKeyTally(value: JsonValue): Map<string, number> {
   return counts;
 }
 
-/** How many times each key name is written in Terset text: root keys, header fields and keys inside JSON cells. */
+/** How many times each key name is written in Terset text: root keys, header fields, named cell names and keys inside JSON cells. */
 export function tersetKeyTally(text: string): Map<string, number> {
   const counts = new Map<string, number>();
   const add = (key: string): void => {
@@ -309,7 +371,7 @@ export function tersetKeyTally(text: string): Map<string, number> {
     if (line.key !== undefined) add(fieldName(line.key));
     if (line.kind === 'header') {
       keyed = line.cells[0] === '@key';
-      for (const cell of keyed ? line.cells.slice(1) : line.cells) {
+      for (const cell of line.cells.slice(keyed ? 1 : 0, line.positional)) {
         if (cell.startsWith('"')) add(fieldName(cell));
         else for (const part of cell.split('.')) add(part);
       }
@@ -317,6 +379,7 @@ export function tersetKeyTally(text: string): Map<string, number> {
     if (line.kind === 'row' && keyed && line.cells[0] !== undefined) add(line.cells[0]);
     for (const token of line.tokens) {
       if (token.cls === 'json') tallyValue(JSON.parse(token.text), counts);
+      else if (token.cls === 'fd' && line.kind === 'row') add(fieldName(token.text));
     }
   }
   return counts;

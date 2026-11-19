@@ -35,7 +35,7 @@ function svgTexts(svg: string): readonly string[] {
 }
 
 describe('share image text follows the data', () => {
-  // The README's o200k_base totals line says "26.8% fewer than compact JSON", from the same function.
+  // The README's o200k_base totals line says "26.5% fewer than compact JSON", from the same function.
   it('shows the o200k_base total saving against compact JSON exactly as the README states it', () => {
     if (COUNTERS === null) throw new Error('the committed bench file should be ready');
     const totals = benchTotals(COUNTERS.o200k);
@@ -58,9 +58,7 @@ describe('share image text follows the data', () => {
   it('shows right answers from the same model and says the accuracy ranges overlap, never a win', () => {
     const model = quotedModel();
     const terset = formatRow(model, 'terset');
-    // The image shows one number, so it must be what every run scored, not a picked run.
-    expect(terset.runs.length).toBeGreaterThan(1);
-    expect(terset.runs.every((run) => run.correct === terset.correct)).toBe(true);
+    // The image shows the score of the one published run of that model.
     expect(stat(2).value).toBe(`${String(terset.correct)} of ${String(ACCURACY.questions)}`);
     expect(ACCURACY.models.every(intervalsOverlap)).toBe(true);
     expect(stat(2).label).toContain('Accuracy ranges overlap');
@@ -75,7 +73,7 @@ describe('share image text follows the data', () => {
 
   it('says every word in the alt text, which uses the same constant', () => {
     for (const words of [...OG_TEXT.headline, ...OG_TEXT.stats.flatMap((item) => [item.value, item.label])]) expect(OG_IMAGE_ALT).toContain(words);
-    expect(OG_IMAGE_PATH).toBe('/og-v7.png');
+    expect(OG_IMAGE_PATH).toBe('/og-v8.png');
   });
 });
 

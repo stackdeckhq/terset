@@ -1,4 +1,16 @@
-import { encode, RULES, type JsonObject, type JsonRoot, type JsonValue } from "../src/index.ts";
+import { encode, type FormatVersion, type JsonObject, type JsonRoot, type JsonValue } from "../src/index.ts";
+
+// Written out here, not derived from RULES, so a changed sentence fails a test.
+export const SENTENCES = {
+  table: "Tables use tab-separated headers and rows.",
+  empty: "Empty cells mean absent.",
+  named: "After the header columns, a row lists its other fields as name=value. A field a row does not list is absent.",
+  quoted: "JSON quotes distinguish numeric, boolean or null text from scalars.",
+  json: "Nested cells use JSON.",
+  id: "A leading bare id header marks string IDs.",
+  keyed: "name{N} has N entries; the @key column holds each entry's key and is not a field.",
+  nested: "Header a.b is field b in object a.",
+};
 
 function object(value: JsonValue | undefined): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -22,13 +34,13 @@ function columns(path: string[], values: (JsonValue | undefined)[]): { path: str
 
 // Derive the feature truth from source values and the encoder's choice of table,
 // without parsing any header or consulting the decoder's feature collector.
-export function encoderRules(input: JsonRoot): string {
+export function encoderRules(input: JsonRoot, format: FormatVersion = "1.1"): string {
   const features = new Set<string>();
   const quoted = (value: JsonValue | undefined): boolean => typeof value === "string"
     && encode({ value }).startsWith('value: "');
   const candidates = Array.isArray(input) ? [input] : Object.values(input);
   for (const value of candidates) {
-    const encoded = encode({ candidate: value });
+    const encoded = encode({ candidate: value }, { format });
     const list = Array.isArray(value) && encoded.startsWith("candidate[");
     const map = object(value) && encoded.startsWith("candidate{");
     if (!list && !map) {
@@ -38,7 +50,26 @@ export function encoderRules(input: JsonRoot): string {
     features.add("table");
     if (map) features.add("keyed");
     const rows = (Array.isArray(value) ? value : object(value) ? Object.values(value) : []).filter(object);
-    const fields = [...new Set(rows.flatMap(row => Object.keys(row)))];
+    const allFields = [...new Set(rows.flatMap(row => Object.keys(row)))];
+    // In 1.1, a field some row lacks and every field that any row lists after
+    // it become name=value cells. The rest stay positional columns.
+    const later = new Set<string>();
+    if (format === "1.1") {
+      const sparse = new Set(allFields.filter(field => rows.some(row => !Object.hasOwn(row, field))));
+      for (const row of rows) {
+        let seen = false;
+        for (const key of Object.keys(row)) if ((seen ||= sparse.has(key))) later.add(key);
+      }
+      for (const field of sparse) later.add(field);
+    }
+    if (later.size) {
+      features.add("named");
+      for (const row of rows) for (const key of Object.keys(row)) if (later.has(key)) {
+        if (quoted(row[key])) features.add("quoted");
+        if (object(row[key]) || Array.isArray(row[key])) features.add("json");
+      }
+    }
+    const fields = allFields.filter(field => !later.has(field));
     const cells = fields.flatMap(field => columns([field], rows.map(row => Object.hasOwn(row, field) ? row[field] : undefined)));
     // Every row starting with id makes it the first field in any valid order.
     const ids = list && cells.some(column => column.path.length === 1 && column.path[0] === "id")
@@ -56,7 +87,5 @@ export function encoderRules(input: JsonRoot): string {
       }
     }
   }
-  const sentences = RULES.split(". ");
-  return ["table", "empty", "quoted", "json", "id", "keyed", "nested"]
-    .flatMap((feature, index) => features.has(feature) ? [sentences[index]! + (index < 6 ? "." : "")] : []).join(" ");
+  return Object.entries(SENTENCES).flatMap(([feature, sentence]) => features.has(feature) ? [sentence] : []).join(" ");
 }

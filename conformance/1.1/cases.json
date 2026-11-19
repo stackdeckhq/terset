@@ -1,0 +1,67 @@
+[
+  {
+    "name": "sparse fields after an id column",
+    "input": { "records": [{ "id": 1, "score": 5, "note": "a" }, { "id": 2, "note": "b" }, { "id": 3, "score": 7 }] },
+    "encoded": "records[3]:\n\"id\"\tname=value\n1\tscore=5\tnote=a\n2\tnote=b\n3\tscore=7"
+  },
+  {
+    "name": "a full column after a sparse column is named and keeps key order",
+    "input": [{ "a": 1, "b": 2, "c": 3 }, { "a": 4, "c": 6 }],
+    "encoded": "[2]\na\tname=value\n1\tb=2\tc=3\n4\tc=6"
+  },
+  {
+    "name": "no positional columns when the first column is sparse",
+    "input": [{ "a": 1, "b": 2 }, { "b": 3 }, { "a": 4 }],
+    "encoded": "[3]\nname=value\na=1\tb=2\nb=3\na=4"
+  },
+  {
+    "name": "an empty record is an empty row",
+    "input": [{ "a": 1, "b": 2 }, {}, { "a": 3, "b": 4 }, { "b": 5 }],
+    "encoded": "[4]\nname=value\na=1\tb=2\n\na=3\tb=4\nb=5"
+  },
+  {
+    "name": "an empty last record ends the text with LF",
+    "input": [{ "a": 1, "b": 2 }, { "a": 3, "b": 4 }, {}],
+    "encoded": "[3]\nname=value\na=1\tb=2\na=3\tb=4\n"
+  },
+  {
+    "name": "names and values that need quotes",
+    "input": [{ "x": 1, "a.b": "p=q", "k=v": "" }, { "x": 2 }],
+    "encoded": "[2]\nx\tname=value\n1\t\"a.b\"=p=q\t\"k=v\"=\"\"\n2"
+  },
+  {
+    "name": "keyed table with named cells",
+    "input": { "m": { "alpha": { "a": 1, "b": 2 }, "beta": { "a": 3 }, "gamma": { "a": 4, "b": 5 } } },
+    "encoded": "m{3}:\n@key\ta\tname=value\nalpha\t1\tb=2\nbeta\t3\ngamma\t4\tb=5"
+  },
+  {
+    "name": "string ids with named cells",
+    "input": [{ "id": "u1", "role": "admin" }, { "id": "u2" }, { "id": "u3", "role": "dev" }],
+    "encoded": "[3]\nid\tname=value\nu1\trole=admin\nu2\nu3\trole=dev"
+  },
+  {
+    "name": "a lone positional column quotes root-line lookalikes",
+    "input": [{ "k": "a: b", "v": 1 }, { "k": "c: d" }],
+    "encoded": "[2]\nk\tname=value\n\"a: b\"\tv=1\n\"c: d\""
+  },
+  {
+    "name": "objects after a sparse column are JSON values",
+    "input": [{ "a": 1, "o": { "x": 1, "y": 2 }, "z": 1 }, { "o": { "x": 3, "y": 4 } }],
+    "encoded": "[2]\nname=value\na=1\to={\"x\":1,\"y\":2}\tz=1\no={\"x\":3,\"y\":4}"
+  },
+  {
+    "name": "nested columns before a sparse column stay dotted",
+    "input": [{ "o": { "x": 1, "y": 2 }, "a": 1 }, { "o": { "x": 3, "y": 4 } }],
+    "encoded": "[2]\no.x\to.y\tname=value\n1\t2\ta=1\n3\t4"
+  },
+  {
+    "name": "a sparse id is an ordinary named cell",
+    "input": [{ "id": 1, "a": 1 }, { "a": 2 }],
+    "encoded": "[2]\nname=value\nid=1\ta=1\na=2"
+  },
+  {
+    "name": "dense tables are unchanged from 1.0",
+    "input": [{ "a": 1, "b": 2 }, { "a": 3, "b": 4 }],
+    "encoded": "[2]\na\tb\n1\t2\n3\t4"
+  }
+]

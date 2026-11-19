@@ -55,7 +55,7 @@ export default tseslint.config(
   // The encoder and its tests are copied from the reference source with few edits,
   // so the copy stays easy to compare. These three rules are relaxed here only.
   {
-    files: ['packages/terset/src/terset.ts', 'packages/terset/tests/**/*.ts'],
+    files: ['packages/terset/src/terset.ts', 'packages/terset/src/header-order.ts', 'packages/terset/tests/**/*.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-base-to-string': 'off',

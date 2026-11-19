@@ -7,6 +7,7 @@
 import { BADGES, INSTALL, LANG_FENCE, LANG_LABELS, LANG_NOTES, NAMES, NEVER_BY_HAND, OFFICIAL_LINE, QUICK_START, README_REFERENCE, WHEN_NOT, quickStartSteps } from './docs.ts';
 import type { DocLang } from './docs.ts';
 import { SITE_URL, TAGLINE } from './site.ts';
+import { WORKED_EXAMPLE, WORKED_README_PLACEMENT } from './worked-example.ts';
 
 /** The three READMEs that carry docs blocks. Paths are from the repository root. */
 export const README_FILES = {
@@ -17,7 +18,7 @@ export const README_FILES = {
 export type ReadmeId = keyof typeof README_FILES;
 export const README_IDS: readonly ReadmeId[] = ['root', 'js', 'py'];
 
-export type BlockName = 'header' | 'contents' | 'install' | 'install-py' | 'use' | 'use-py' | 'when-not' | 'reference' | 'agents';
+export type BlockName = 'header' | 'contents' | 'see-it' | 'install' | 'install-py' | 'use' | 'use-py' | 'when-not' | 'reference' | 'agents';
 
 /** The raw agent files the READMEs list, in order. */
 const AGENT_FILES: readonly (readonly [path: string, about: string])[] = [
@@ -97,6 +98,20 @@ function use(lang: DocLang): string {
   ].join('\n\n');
 }
 
+/** The "See it" example: JSON in, the Terset text and rules line out, and where they go. */
+function seeIt(): string {
+  const example = WORKED_EXAMPLE;
+  return [
+    'The same data, as compact JSON and as Terset.',
+    fence('json', example.json),
+    fence('text', example.terset),
+    'The gaps between cells are real tab characters.',
+    'The fitted rules line for this text:',
+    fence('text', example.rules),
+    `${WORKED_README_PLACEMENT} The [benchmark page](${SITE_URL}/benchmark#what-gets-sent) shows the full prompt.`,
+  ].join('\n\n');
+}
+
 function whenNot(): string {
   return WHEN_NOT.map((item) => `- **${item.title}** ${item.text}`).join('\n');
 }
@@ -108,7 +123,7 @@ function agents(): string {
 
 /** The blocks one README carries, rendered from the source. `text` gives the README's own headings for its contents list. */
 export function expectedBlocks(id: ReadmeId, text: string): Partial<Record<BlockName, string>> {
-  const shared = { contents: contents(h2Headings(text)), 'when-not': whenNot(), reference: README_REFERENCE, agents: agents() };
+  const shared = { contents: contents(h2Headings(text)), 'see-it': seeIt(), 'when-not': whenNot(), reference: README_REFERENCE, agents: agents() };
   if (id === 'root') return { ...shared, install: install('js'), use: use('js'), 'install-py': install('py'), 'use-py': use('py') };
   return { ...shared, header: header(id), install: install(id), use: use(id) };
 }

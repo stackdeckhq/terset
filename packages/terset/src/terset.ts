@@ -1,3 +1,5 @@
+import { headerOrder } from "./header-order.ts";
+
 export type JsonValue = null | boolean | number | string | JsonValue[] | JsonObject;
 export type JsonObject = { [key: string]: JsonValue };
 export type JsonRoot = JsonObject | JsonValue[];
@@ -6,20 +8,30 @@ const MAX_JSON_DEPTH = 500;
 const MAX_HEADER_SEGMENTS = 8;
 const DEPTH_ERROR = "Maximum JSON depth is 500.";
 
-/** The one rules line a model needs to read Terset text. Put it once, before the data. */
-export const RULES ="Tables use tab-separated headers and rows. Empty cells mean absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.";
+/** Format version written by default. Version 1.0 text still decodes. */
+export type FormatVersion = "1.0" | "1.1";
+export interface EncodeOptions {
+  /** "1.1" (default) writes sparse fields as name=value cells; "1.0" writes empty cells. */
+  format?: FormatVersion;
+}
 
-const sentences = RULES.split(". ");
-type RuleFeature = "table" | "empty" | "quoted" | "json" | "id" | "keyed" | "nested";
+type RuleFeature = "table" | "empty" | "named" | "quoted" | "json" | "id" | "keyed" | "nested";
 const fittedRules: readonly [feature: RuleFeature, sentence: string][] = [
-  ["table", `${sentences[0]}.`],
-  ["empty", `${sentences[1]}.`],
-  ["quoted", `${sentences[2]}.`],
-  ["json", `${sentences[3]}.`],
-  ["id", `${sentences[4]}.`],
-  ["keyed", `${sentences[5]}.`],
-  ["nested", sentences[6]!],
+  ["table", "Tables use tab-separated headers and rows."],
+  ["empty", "Empty cells mean absent."],
+  ["named", "After the header columns, a row lists its other fields as name=value. A field a row does not list is absent."],
+  ["quoted", "JSON quotes distinguish numeric, boolean or null text from scalars."],
+  ["json", "Nested cells use JSON."],
+  ["id", "A leading bare id header marks string IDs."],
+  ["keyed", "name{N} has N entries; the @key column holds each entry's key and is not a field."],
+  ["nested", "Header a.b is field b in object a."],
 ];
+
+/** The one rules line a model needs to read Terset text. Put it once, before the data. */
+export const RULES = fittedRules.map(([, sentence]) => sentence).join(" ");
+
+/** Ends the header of a table whose rows carry name=value cells. */
+const NAMED_MARKER = "name=value";
 
 /** The rules needed by this canonical text. Rejects the same text as decode. */
 export function rulesFor(text: string): string {
@@ -41,20 +53,25 @@ const ENTRY_TAIL = /^(?:\[(\d+)\]|\{(\d+)\})?:([\s\S]*)$/;
 
 interface Entry { key: string; listCount: string | undefined; keyedCount: string | undefined; rest: string }
 
-// Scan quoted keys without the regex engine's stack limit on long strings.
+// Scan a leading quoted key without the regex engine's stack limit on long
+// strings. Returns the index just past the closing quote, or -1.
+function quotedEnd(text: string): number {
+  let end = 1;
+  while (end < text.length && text[end] !== '"') {
+    if (text[end] === "\\") {
+      end++;
+      if (end === text.length || "\n\r\u2028\u2029".includes(text[end]!)) return -1;
+    }
+    end++;
+  }
+  return end === text.length ? -1 : end + 1;
+}
+
 function matchEntry(text: string): Entry | null {
   let end = 0;
   if (text.startsWith('"')) {
-    end = 1;
-    while (end < text.length && text[end] !== '"') {
-      if (text[end] === "\\") {
-        end++;
-        if (end === text.length || "\n\r\u2028\u2029".includes(text[end]!)) return null;
-      }
-      end++;
-    }
-    if (end === text.length) return null;
-    end++;
+    end = quotedEnd(text);
+    if (end < 0) return null;
   } else {
     const key = ENTRY_KEY.exec(text);
     if (!key) return null;
@@ -108,86 +125,6 @@ function validate(value: unknown, depth = 0, ancestors = new Set<object>()): ass
   ancestors.delete(value);
 }
 
-/** Removes and returns the smallest number in a binary min-heap. */
-function popMin(heap: number[]): number {
-  const top = heap[0]!;
-  const last = heap.pop()!;
-  if (heap.length) {
-    let index = 0;
-    for (;;) {
-      const left = index * 2 + 1;
-      const right = left + 1;
-      let child = left;
-      if (right < heap.length && heap[right]! < heap[left]!) child = right;
-      if (child >= heap.length || heap[child]! >= last) break;
-      heap[index] = heap[child]!;
-      index = child;
-    }
-    heap[index] = last;
-  }
-  return top;
-}
-
-/** Adds a number to a binary min-heap. */
-function pushMin(heap: number[], value: number): void {
-  let index = heap.length;
-  heap.push(value);
-  while (index > 0) {
-    const parent = (index - 1) >> 1;
-    if (heap[parent]! <= value) break;
-    heap[index] = heap[parent]!;
-    index = parent;
-  }
-  heap[index] = value;
-}
-
-/**
- * One header that every row's own key order fits, or null when none does.
- * When several fields may come next, the one seen first wins, so a list whose
- * first-seen field order already fits every row keeps exactly that order.
- */
-function header(value: JsonValue): string[] | null {
-  if (!Array.isArray(value) || value.length < 2 || !value.every(object)) return null;
-  const fields: string[] = [];
-  const positions = new Map<string, number>();
-  // A field's followers in some row, and how many fields must come before it.
-  const followers: number[][] = [];
-  const waiting: number[] = [];
-  for (const row of value) {
-    if (!object(row)) return null;
-    let previous = -1;
-    for (const key of Object.keys(row)) {
-      let index = positions.get(key);
-      if (index === undefined) {
-        index = fields.length;
-        fields.push(key);
-        positions.set(key, index);
-        followers.push([]);
-        waiting.push(0);
-      }
-      if (previous >= 0) {
-        followers[previous]!.push(index);
-        waiting[index]! += 1;
-      }
-      previous = index;
-    }
-  }
-  if (!fields.length) return null;
-  const ready: number[] = [];
-  for (let index = 0; index < fields.length; index++) if (waiting[index] === 0) pushMin(ready, index);
-  const order: string[] = [];
-  while (ready.length) {
-    const index = popMin(ready);
-    order.push(fields[index]!);
-    for (const next of followers[index]!) {
-      waiting[next]! -= 1;
-      if (waiting[next] === 0) pushMin(ready, next);
-    }
-  }
-  // Fields left over sit on a cycle: two rows order the same pair both ways.
-  return order.length === fields.length ? order : null;
-}
-
 function safeId(text: string): boolean {
   return text.length > 0 && text.trim() === text && !TROUBLE.test(text);
 }
@@ -212,63 +149,94 @@ function flatten(column: Column): Column[] {
   }));
 }
 
-function table(rows: JsonObject[], keyed: boolean, entryKeys: string[] = [], maxBytes = Infinity): string | null {
-  const fields = header(rows);
+/** Index of the first header field that some row lacks, or the field count. */
+function firstSparse(rows: JsonObject[], fields: string[]): number {
+  const counts = new Map<string, number>();
+  for (const row of rows) for (const key of Object.keys(row)) counts.set(key, (counts.get(key) ?? 0) + 1);
+  const index = fields.findIndex(field => counts.get(field) !== rows.length);
+  return index < 0 ? fields.length : index;
+}
+
+function table(rows: JsonObject[], keyed: boolean, named: boolean, entryKeys: string[] = [], maxBytes = Infinity): string | null {
+  const fields = headerOrder(rows);
   if (!fields) return null;
+  // Format 1.1 keeps the fields before the first sparse one as positional
+  // columns and writes every later field a row has as a name=value cell.
+  const split = named ? firstSparse(rows, fields) : fields.length;
+  const hasNamed = split < fields.length;
   // Flattening can only add columns. Tabs alone rule out wide sparse tables.
-  if (rows.length * (fields.length - 1) >= maxBytes) return null;
-  const columns = fields.flatMap(field => flatten({ path: [field], values: rows.map(row => Object.hasOwn(row, field) ? row[field] : undefined) }));
+  // Named cells write only present fields, so their size stays linear.
+  if (!hasNamed && rows.length * (fields.length - 1) >= maxBytes) return null;
+  const columns = fields.slice(0, split).flatMap(field => flatten({ path: [field], values: rows.map(row => Object.hasOwn(row, field) ? row[field] : undefined) }));
+  const lone = columns.length === 1;
   const ids = !keyed && columns[0]?.path.length === 1 && fields[0] === "id"
     && rows.every(row => Object.keys(row)[0] === "id" && typeof row.id === "string"
-      && safeId(row.id) && (columns.length !== 1 || !matchEntry(row.id)));
+      && safeId(row.id) && (!lone || !matchEntry(row.id)));
   const headings = columns.map((column, index) => {
     const field = column.path[0]!;
     if (column.path.length > 1) return column.path.join(".");
     if (field.includes(".") || (index === 0 && field === "id" && !ids && !keyed)) return JSON.stringify(field);
     return keyText(field);
   });
+  if (hasNamed) headings.push(NAMED_MARKER);
   if (keyed) headings.unshift("@key");
+  // A name is one field, never a path, so dotted names need quotes.
+  const names = new Map(fields.slice(split).map(field => [field, simpleSegment(field) ? field : JSON.stringify(field)]));
   const lines = [headings.join("\t")];
   for (let index = 0; index < rows.length; index++) {
     const cells = columns.map((column, position) => {
       const value = column.values[index];
       if (value === undefined) return "";
       if (position === 0 && ids && typeof value === "string") return value;
-      if (!keyed && columns.length === 1 && typeof value === "string" && matchEntry(value)) return JSON.stringify(value);
+      if (!keyed && lone && typeof value === "string" && matchEntry(value)) return JSON.stringify(value);
       return cell(value);
     });
+    if (hasNamed) {
+      // Each row's own key order fits the header, so its positional fields
+      // come first and its other fields follow in header order.
+      const row = rows[index]!;
+      for (const key of Object.keys(row).slice(split)) cells.push(`${names.get(key)!}=${cell(row[key]!)}`);
+    }
     if (keyed) cells.unshift(entryKeys[index]!);
     lines.push(cells.join("\t"));
   }
   return lines.join("\n");
 }
 
-function listTable(value: JsonValue): string | null {
+function listTable(value: JsonValue, named: boolean): string | null {
   if (!Array.isArray(value) || !value.every(object)) return null;
   const bytes = utf8.encode(JSON.stringify(value)).length;
-  const text = table(value, false, [], bytes);
+  const text = table(value, false, named, [], bytes);
   return text !== null && utf8.encode(text).length < bytes ? text : null;
 }
 
+function formatOption(options: unknown): FormatVersion {
+  if (typeof options !== "object" || options === null || Array.isArray(options)) throw new TypeError("Expected an options object.");
+  const { format = "1.1" } = options as { format?: unknown };
+  if (format !== "1.0" && format !== "1.1") throw new TypeError('format must be "1.0" or "1.1".');
+  return format;
+}
+
 /** Encode a JSON object or array as Terset text. */
-export function encode(value: JsonRoot): string {
+export function encode(value: JsonRoot, options: EncodeOptions = {}): string {
+  const named = formatOption(options) === "1.1";
   validate(value);
   if (Array.isArray(value)) {
-    const text = listTable(value);
+    const text = listTable(value, named);
     return text === null ? JSON.stringify(value) : `[${value.length}]\n${text}`;
   }
   if (!object(value)) throw new TypeError("Terset requires a root object or array.");
   if (!Object.keys(value).length) return "{}";
   return Object.entries(value).map(([key, entry]) => {
     const name = keyText(key);
-    const list = listTable(entry);
+    const list = listTable(entry, named);
     if (list !== null && Array.isArray(entry)) return `${name}[${entry.length}]:\n${list}`;
     const fallback = `${name}: ${cell(entry)}`;
     if (!object(entry)) return fallback;
     const keys = Object.keys(entry);
     const rows = Object.values(entry);
     if (keys.length < 2 || !keys.every(key => safeId(key) && !matchEntry(key)) || !rows.every(object)) return fallback;
-    const body = table(rows, true, keys, utf8.encode(fallback).length);
+    const body = table(rows, true, named, keys, utf8.encode(fallback).length);
     if (body === null) return fallback;
     const keyed = `${name}{${keys.length}}:\n${body}`;
     return utf8.encode(keyed).length < utf8.encode(fallback).length ? keyed : fallback;
@@ -310,6 +278,27 @@ function setPath(target: JsonObject, path: string[], value: JsonValue): void {
   }
 }
 
+function noteCell(raw: string, features: Set<RuleFeature> | undefined): void {
+  if (raw === "") features?.add("empty");
+  else if (raw.startsWith('"')) features?.add("quoted");
+  else if (raw.startsWith("{") || raw.startsWith("[")) features?.add("json");
+}
+
+/** Splits a name=value cell. The name is one field: bare, or a JSON string. */
+function readNamedCell(text: string): [key: string, raw: string] {
+  let end: number;
+  if (text.startsWith('"')) {
+    end = quotedEnd(text);
+    if (end < 0) throw new SyntaxError("Invalid field name.");
+  } else {
+    end = text.indexOf("=");
+    if (end < 0) throw new SyntaxError("Expected name=value cell.");
+    if (!simpleSegment(text.slice(0, end))) throw new SyntaxError("Invalid field name.");
+  }
+  if (text[end] !== "=") throw new SyntaxError("Expected name=value cell.");
+  return [readKey(text.slice(0, end)), text.slice(end + 1)];
+}
+
 type HeaderTrie = Map<string, HeaderTrie | null>;
 
 function readTable(lines: string[], start: number, count: number, keyed: boolean, rowDepth: number, features?: Set<RuleFeature>): JsonRoot {
@@ -317,7 +306,9 @@ function readTable(lines: string[], start: number, count: number, keyed: boolean
   if (rawHeader === undefined) throw new SyntaxError("Missing table header.");
   const fields = rawHeader.split("\t");
   if (keyed && fields.shift() !== "@key") throw new SyntaxError("Missing @key marker.");
-  if (!fields.length) throw new SyntaxError("Missing table fields.");
+  const named = fields.at(-1) === NAMED_MARKER;
+  if (named) fields.pop();
+  if (!fields.length && !named) throw new SyntaxError("Missing table fields.");
   const paths = fields.map(field => {
     const path = field.startsWith('"') ? [readKey(field)] : field.split(".", MAX_HEADER_SEGMENTS + 1);
     if (path.length > MAX_HEADER_SEGMENTS) throw new SyntaxError("Maximum header path is 8 segments.");
@@ -325,6 +316,7 @@ function readTable(lines: string[], start: number, count: number, keyed: boolean
     return path;
   });
   features?.add("table");
+  if (named) features?.add("named");
   if (keyed) features?.add("keyed");
   if (paths.some(path => path.length > 1)) features?.add("nested");
   const trie: HeaderTrie = new Map();
@@ -351,19 +343,23 @@ function readTable(lines: string[], start: number, count: number, keyed: boolean
   for (let index = 0; index < count; index++) {
     const line = lines[start + 1 + index];
     if (line === undefined) throw new SyntaxError("Row count mismatch.");
-    const cells = line.split("\t");
-    if (cells.length !== fields.length + (keyed ? 1 : 0)) throw new SyntaxError("Wrong cell count.");
+    // A named list row with no positional columns and no fields is empty.
+    const cells = named && line === "" ? [] : line.split("\t");
+    const expected = fields.length + (keyed ? 1 : 0);
+    if (named ? cells.length < expected : cells.length !== expected) throw new SyntaxError("Wrong cell count.");
     const entryKey = keyed ? cells.shift() : undefined;
     const row: JsonObject = {};
     for (let column = 0; column < paths.length; column++) {
       const raw = cells[column]!;
       if (column === 0 && ids && !raw) throw new SyntaxError("Missing string id.");
-      if (!(column === 0 && ids)) {
-        if (raw === "") features?.add("empty");
-        else if (raw.startsWith('"')) features?.add("quoted");
-        else if (raw.startsWith("{") || raw.startsWith("[")) features?.add("json");
-      }
+      if (named && !raw) throw new SyntaxError("Empty values are allowed only as absent table cells.");
+      if (!(column === 0 && ids)) noteCell(raw, features);
       if (raw !== "") setPath(row, paths[column]!, column === 0 && ids ? raw : readCell(raw));
+    }
+    for (let column = paths.length; column < cells.length; column++) {
+      const [key, raw] = readNamedCell(cells[column]!);
+      noteCell(raw, features);
+      set(row, key, readCell(raw));
     }
     if (Array.isArray(result)) result.push(row);
     else {
@@ -414,7 +410,8 @@ function readDocument(text: string, features?: Set<RuleFeature>): JsonRoot {
       }
     }
   }
-  if (encode(result) !== text) throw new SyntaxError("Noncanonical Terset text.");
+  // Canonical 1.1 text, or canonical 1.0 text from before named cells.
+  if (encode(result) !== text && encode(result, { format: "1.0" }) !== text) throw new SyntaxError("Noncanonical Terset text.");
   return result;
 }
 

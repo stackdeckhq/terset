@@ -1,6 +1,8 @@
-# Terset Format 1.0 conformance
+# Terset conformance
 
-This is the language-neutral suite for [Format 1.0](../packages/terset/SPEC.md).
+This is the language-neutral suite for the [Terset format](../packages/terset/SPEC.md).
+This folder holds the Format 1.0 suite. The `1.1/` folder holds the Format
+1.1 suite, described in [Format 1.1](#format-11) below.
 JavaScript and Python are two separate implementations, each with its own
 encoder and decoder. Both run every encode, decode and rejection case here
 in CI. The tests use only their language's standard library.
@@ -24,9 +26,9 @@ no portable error codes or kinds, and error wording is outside the freeze.
 An independent implementation can use its own exceptions and messages.
 
 `packages/terset/tests/rules-cases.json` is separate. Its shape is an array of
-`{ "name": string, "text": string, "rules": string }`. It checks prompt
-guidance, not the frozen data format. `RULES`, `rulesFor` and `rules_for`
-remain tunable and versioned by date, currently 2026-11-17.
+`{ "name": string, "text": string, "rules": string, "features": string[] }`.
+It checks prompt guidance, not the frozen data format. `RULES`, `rulesFor`
+and `rules_for` remain tunable and versioned by date, currently 2026-11-19.
 
 ## Values, numbers and order
 
@@ -91,13 +93,13 @@ is not a substitute for passing the frozen suite.
 
 ## Requirements and limits
 
-A conforming encoder writes exactly the expected text for every positive
-case. This includes key order, quotes, numeric spelling, table selection
+A conforming encoder, writing Format 1.0, writes exactly the expected text
+for every positive case. This includes key order, quotes, numeric spelling, table selection
 and JSON fallback. A conforming decoder accepts every positive case and
 returns its value with key order intact. It rejects every entry in both
 rejection files. It accepts only canonical text, even when another spelling
-would parse into the same value. Re-encoding each decoded value must produce
-the original text.
+would parse into the same value. Re-encoding each decoded value as Format 1.0
+must produce the original text.
 
 The suite samples the format. Passing it does not replace the specification.
 Implement these limits too:
@@ -124,14 +126,33 @@ under test.
 assert loadJSON("manifest.json").formatVersion == "1.0"
 for case in loadJSON("cases.json", numbers=binary64, keepObjectOrder=true):
     input, text = expandRecipeOrReadPair(case)
-    assert utf8(encode(input)) == utf8(text)
+    assert utf8(encode(input, format="1.0")) == utf8(text)
     decoded = decode(text)
     assert sameValuesAndKeyOrder(decoded, input)
-    assert utf8(encode(decoded)) == utf8(text)
+    assert utf8(encode(decoded, format="1.0")) == utf8(text)
 for text in loadJSON("rejections.json"):
     assert decodeRefuses(text)
 for case in loadJSON("rejection-errors.json"):
     assert decodeRefuses(case.text)
+```
+
+## Format 1.1
+
+Format 1.1 adds named cells for sparse fields. `1.1/manifest.json` is
+`{ "formatVersion": "1.1" }`. `1.1/cases.json` and `1.1/rejections.json`
+have the same shapes as the 1.0 files above, with no recipes. A 1.1 encoder
+writes each `encoded` text exactly, and a 1.1 decoder rejects each rejection.
+A 1.1 decoder still accepts every 1.0 case. It rejects a document that mixes
+1.0 empty cells with 1.1 named cells.
+
+```text
+assert loadJSON("1.1/manifest.json").formatVersion == "1.1"
+for case in loadJSON("1.1/cases.json", numbers=binary64, keepObjectOrder=true):
+    assert utf8(encode(case.input, format="1.1")) == utf8(case.encoded)
+    decoded = decode(case.encoded)
+    assert sameValuesAndKeyOrder(decoded, case.input)
+for text in loadJSON("1.1/rejections.json"):
+    assert decodeRefuses(text)
 ```
 
 From the repository root, run the existing implementations with:
@@ -145,8 +166,8 @@ pnpm test:py
 ```
 
 These are source-checkout tests. npm tarballs and Python wheels do not ship
-or require this folder. Keep future format versions' fixtures separate and
-retain this 1.0 suite.
+or require this folder. Keep each format version's fixtures separate and
+retain the 1.0 suite.
 
 ## License
 

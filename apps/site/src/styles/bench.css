@@ -84,7 +84,7 @@ table.bt { border-collapse: collapse; width: 100%; font-size: 13px; font-variant
 .bt tbody th { font-weight: 650; }
 .bt tfoot th, .bt tfoot td { font-weight: var(--w-strong); border-top: 1.5px solid var(--border-strong); border-bottom: 0; }
 .tbl-note { margin: var(--s-2) 0 0; font-size: 12.5px; color: var(--muted-fg); }
-/* A table of sentences, such as the number history: text wraps, reads left to right and starts at the top. */
+/* A table of sentences, such as the published runs: text wraps, reads left to right and starts at the top. */
 .bt.bt-text td { text-align: left; white-space: normal; vertical-align: top; min-width: 14em; }
 .bt.bt-text tbody th, .bt.bt-text td:last-child { vertical-align: top; min-width: 0; white-space: nowrap; }
 .bt.bt-text thead th { text-align: left; }

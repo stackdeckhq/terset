@@ -43,9 +43,9 @@ export const STRESS_DAMAGE_NOTE = 'JSON has no row count, so compact and pretty 
 
 /**
  * A scoring effect that lowers one JSON score. The counts come from the published GPT 6.1 Sol
- * run, and stress.test.ts checks them against it and against the README.
+ * run, and stress.test.ts checks the miss count against the committed Sol compact JSON score.
  */
-export const STRESS_QUOTED_NOTE = 'On GPT 6.1 Sol, 14 of the 22 compact JSON misses were correct yes or no answers wrapped in quote marks. The scorer was fixed before the runs and does not remove quote marks from yes or no answers, so they count as wrong. With them counted, compact JSON would score 112 of 120.';
+export const STRESS_QUOTED_NOTE = 'On GPT 6.1 Sol, 11 of the 20 compact JSON misses were correct yes or no answers wrapped in quote marks. The scorer was fixed before the runs and does not remove quote marks from yes or no answers, so they count as wrong. With them counted, compact JSON would score 111 of 120.';
 
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'] as const;
 
@@ -57,6 +57,30 @@ function assertClaim(holds: boolean, claim: string): void {
   if (!holds) throw new Error(`The stress copy says "${claim}", and the data no longer supports it`);
 }
 
+/**
+ * Where the stress test stands beside the tuning note, and Terset's place on each model.
+ * Format 1.1 was shaped by an earlier stress run, so the note says the test is not held out.
+ */
+export function stressHeldOutNote(file: StressAccuracyFile): string {
+  const best = (model: StressModel): number => Math.max(...model.rows.map((row) => row.correct));
+  const tied = file.models.filter((model) => {
+    const top = best(model);
+    return stressRow(model, 'terset').correct === top && model.rows.filter((row) => row.correct === top).length > 1;
+  });
+  const behind = file.models.filter((model) => !tied.includes(model));
+  const [trailing] = behind;
+  const leader = trailing === undefined ? [] : trailing.rows.filter((row) => row.correct === best(trailing));
+  const result = `Terset tied for the top score on two of the three models and was one answer behind TOON on ${trailing?.name ?? 'the third'}.`;
+  assertClaim(file.models.length === 3
+    && file.models.every((model) => model.rows.every((row) => row.total === file.questions))
+    && tied.length === 2 && trailing !== undefined && behind.length === 1
+    && leader.length === 1 && leader[0]?.format === 'toon'
+    && best(trailing) - stressRow(trailing, 'terset').correct === 1, result);
+  const frozenOn = file.source.referenceDate.slice(0, 10);
+  assertClaim(frozenOn === '2026-11-17', 'The stress questions were frozen on 2026-11-17');
+  return `The stress questions were frozen on ${frozenOn} before any model call. Format 1.1 came after that. Its named cells were designed to fix sparse-record misses seen in an earlier stress run, and were checked on new data from the same stress generator. So the stress test is not a held-out check of format 1.1. ${result}`;
+}
+
 function listPhrase(items: readonly string[]): string {
   return items.length <= 1 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items.at(-1) ?? ''}`;
 }
@@ -64,6 +88,11 @@ function listPhrase(items: readonly string[]): string {
 /** "119 of 120". */
 export function stressScore(score: { readonly correct: number; readonly total: number }): string {
   return `${formatCount(score.correct)} of ${formatCount(score.total)}`;
+}
+
+/** A row's score, overall or for one group. */
+export function stressResultScore(row: StressRow, group?: StressGroup): string {
+  return stressScore(group === undefined ? row : stressGroup(row, group));
 }
 
 export function stressModel(file: StressAccuracyFile, id: StressModel['id']): StressModel {
@@ -100,7 +129,7 @@ export function stressRunDates(file: StressAccuracyFile): string {
 }
 
 /** What was asked, shared by the Markdown intro and the page intro. */
-function stressScope(file: StressAccuracyFile): string {
+export function stressScope(file: StressAccuracyFile): string {
   const groups = stressGroups(file);
   assertClaim(file.models.every((model) => model.rows.every((row) => row.total === file.questions)), `every format answered all ${String(file.questions)} questions`);
   return `Each model answered ${formatCount(file.questions)} harder questions in ${countWord(groups.length)} groups, sent in each of ${countWord(stressFormats(file).length)} formats.`;
@@ -108,22 +137,28 @@ function stressScope(file: StressAccuracyFile): string {
 
 /** The sentences that open the section in /benchmark.md. Inline Markdown links the freeze record. */
 export function stressIntro(file: StressAccuracyFile): string {
-  return [stressScope(file), STRESS_FREEZE_NOTE, `Each model ran once, on ${stressRunDates(file)}. So a gap of a few questions is within noise.`].join(' ');
+  return [stressScope(file), STRESS_FREEZE_NOTE, stressRunsNote(file)].join(' ');
+}
+
+/** How many runs each cell comes from, shared with the README. */
+export function stressRunsNote(file: StressAccuracyFile): string {
+  const note = `Each model ran once, on ${stressRunDates(file)}. Each cell is that one run.`;
+  assertClaim(file.publishedRuns.length === file.models.length && file.models.every((model) => file.publishedRuns.filter((run) => run.model === model.id).length === 1), note);
+  return note;
 }
 
 /**
- * The open text of the stress section on /benchmark: what was asked, the one-run caveat
+ * The open text of the stress section on /benchmark: what was asked, the repeat counts
  * and where Terset scored lowest. The freeze record and the breakdown of the misses sit
  * in the section's fold, from STRESS_FREEZE_NOTE and stressLimitDetail.
  */
 export function stressPageIntro(file: StressAccuracyFile): string {
-  return [stressScope(file), `Each model ran once, on ${stressRunDates(file)}, so a gap of a few questions is within noise.`, stressLimitParts(file).headline].join(' ');
+  return [stressScope(file), stressRunsNote(file), stressLimitParts(file).headline].join(' ');
 }
 
 /**
- * Where Terset scored lowest, in plain words. The breakdown of the missed messy-data
- * answers comes from the published Claude Haiku 5.5 run, and stress.test.ts checks it
- * against that run. It throws if the scores it describes change.
+ * Where Terset missed, in plain words: mostly long lists, plus one sparse field count
+ * on Claude Haiku 5.5. It throws if those facts change.
  */
 export function stressLimit(file: StressAccuracyFile): string {
   const { headline, detail } = stressLimitParts(file);
@@ -142,50 +177,54 @@ export function stressFoldAbout(file: StressAccuracyFile): string {
 }
 
 /**
- * The lowest stress score as one short line for "When to keep something else": the model, the
- * score and the sparse data behind most of the misses. The same checked facts as stressLimit.
+ * The long-list weak spot for "When to keep something else".
+ * The same checked facts as stressLimit.
  */
 export function stressKeepElse(file: StressAccuracyFile): string {
-  const { model, score, missed, sparse } = stressLimitParts(file);
-  return `Stress test: on ${model}, Terset scored lowest of the ${countWord(stressFormats(file).length)} formats, with ${score}. ${sparse} of its ${countWord(missed)} messy-data misses were on sparse data, where many cells are empty.`;
+  const { haiku, leader } = stressLimitParts(file);
+  return `Long lists on Haiku: Terset got ${stressResultScore(stressRow(haiku, 'terset'), 'scale')} questions, where ${formatName(leader.format)} got ${formatCount(stressGroup(leader, 'scale').correct)}.`;
+}
+
+/** A format's name inside a sentence, as the notes write them: "pretty JSON", "TOON". */
+function formatName(format: AccuracyFormat): string {
+  const label = STRESS_FORMAT_LABELS[format];
+  return format.startsWith('json-') ? `${label.charAt(0).toLowerCase()}${label.slice(1)}` : label;
 }
 
 interface StressLimitParts {
   readonly headline: string;
   readonly detail: string;
-  readonly model: string;
-  readonly score: string;
-  readonly missed: number;
-  readonly sparse: string;
+  readonly haiku: StressModel;
+  /** The one format with the best long-list score on Haiku. */
+  readonly leader: StressRow;
 }
 
 function stressLimitParts(file: StressAccuracyFile): StressLimitParts {
-  const lowest = file.models.filter((model) => {
-    const terset = stressRow(model, 'terset');
-    return model.rows.every((row) => row.format === 'terset' || row.correct > terset.correct);
-  });
-  assertClaim(lowest.length === 1 && lowest[0]?.id === 'claude-haiku-5-5', 'Terset scored lowest on Claude Haiku 5.5 only');
+  const misses = (group?: StressGroup): number => file.models.reduce((sum, model) => {
+    const score = group === undefined ? stressRow(model, 'terset') : stressGroup(stressRow(model, 'terset'), group);
+    return sum + score.total - score.correct;
+  }, 0);
+  const all = misses();
+  const scale = misses('scale');
+  const headline = `Of Terset's ${formatCount(all)} misses across the three models, ${formatCount(scale)} were on long lists.`;
+  assertClaim(file.models.length === 3 && scale * 2 > all, headline);
+
   const haiku = stressModel(file, 'claude-haiku-5-5');
   const terset = stressRow(haiku, 'terset');
-  const messy = stressGroup(terset, 'messy');
-  const toon = stressGroup(stressRow(haiku, 'toon'), 'messy');
-  const missed = messy.total - messy.correct;
-  assertClaim(missed === 6, 'Terset missed six messy-data questions on Claude Haiku 5.5');
-  // The sparse-data count is read from the published run's answers; stress.test.ts checks it.
-  const sparse = 'Four';
-  return {
-    model: haiku.name,
-    score: stressScore(terset),
-    missed,
-    sparse,
-    headline: `Terset scored lowest on ${haiku.name}, with ${stressScore(terset)}.`,
-    detail: [
-      `It missed ${formatCount(missed)} of ${formatCount(messy.total)} messy-data questions.`,
-      `${sparse} were on sparse data, where many cells are empty.`,
-      'In three of those, the model counted empty cells as present.',
-      `TOON scored ${stressScore(toon)} there.`,
-    ].join(' '),
-  };
+  const top = Math.max(...haiku.rows.map((row) => stressGroup(row, 'scale').correct));
+  const leaders = haiku.rows.filter((row) => stressGroup(row, 'scale').correct === top);
+  const [leader] = leaders;
+  const longLists = `On ${haiku.name} it got ${stressResultScore(terset, 'scale')} long-list questions, where ${leader === undefined ? 'the best format' : formatName(leader.format)} got ${formatCount(top)}.`;
+  assertClaim(leader !== undefined && leaders.length === 1 && leader.format !== 'terset', longLists);
+
+  const other = `Its one other miss was a field count on sparse records, on ${haiku.name}.`;
+  const sparseMisses = terset.sparseFieldCounts.filter((answer) => !answer.correct);
+  assertClaim(all - scale === 1
+    && stressGroup(terset, 'messy').total - stressGroup(terset, 'messy').correct === 1
+    && sparseMisses.length === 1 && sparseMisses[0]?.dataset === 'messy-sparse'
+    && /^How many records include a .+ field, counting null and empty values\?$/u.test(sparseMisses[0].prompt), other);
+  if (leader === undefined) throw new Error('No long-list leader on Haiku');
+  return { headline, detail: `${longLists} ${other}`, haiku, leader };
 }
 
 /** The headline table's columns after Format: each model's score, then its input tokens. */
@@ -201,14 +240,14 @@ export function stressTableRows(file: StressAccuracyFile): readonly (readonly st
     STRESS_FORMAT_LABELS[format],
     ...stressColumns(file).map(({ model, field }) => {
       const row = stressRow(model, format);
-      return field === 'correct' ? stressScore(row) : formatCount(row.inputTokens);
+      return field === 'correct' ? stressResultScore(row) : formatCount(row.inputTokens);
     }),
   ]);
 }
 
 /**
  * The marks for the headline table, in the same shape as stressTableRows without the format
- * name. The fewest input tokens on each model are marked as a saving, ties included, as in the
+ * name. The fewest input tokens on each model are marked as a saving, shared counts included, as in the
  * per-model accuracy tables. Scores are never marked.
  */
 export function stressTableMarks(file: StressAccuracyFile): readonly (readonly ('is-less' | null)[])[] {
@@ -221,7 +260,7 @@ export function stressTableMarks(file: StressAccuracyFile): readonly (readonly (
 
 /** One row per format for one group, Terset first: the format name, then each model's score. */
 export function stressGroupRows(file: StressAccuracyFile, group: StressGroup): readonly (readonly string[])[] {
-  return stressFormats(file).map((format) => [STRESS_FORMAT_LABELS[format], ...file.models.map((model) => stressScore(stressGroup(stressRow(model, format), group)))]);
+  return stressFormats(file).map((format) => [STRESS_FORMAT_LABELS[format], ...file.models.map((model) => stressResultScore(stressRow(model, format), group))]);
 }
 
 /** How input tokens were counted. The schema allows only tokens as each model reported them. */
@@ -231,8 +270,8 @@ export function stressTokensNote(file: StressAccuracyFile): string {
 
 /**
  * Why two token columns in the headline table are the same: the two Claude models reported the
- * same input tokens. This file holds the totals per format; stress.test.ts checks every call in
- * the published runs. It throws unless exactly those two models match on every format.
+ * same input tokens. This file holds the totals per format, so the check is on those totals.
+ * It throws unless exactly those two models match on every format.
  */
 export function stressSharedTokensLine(file: StressAccuracyFile): string {
   const formats = stressFormats(file);

@@ -1,6 +1,7 @@
 // Step 4: four uneven rows, each shown as JSON and as its real Terset row.
-// Rows and columns are found by id and field name in the generated table.
+// Rows are found by id, and cells by column or by their name=value name.
 import type { CSSProperties, ReactNode } from 'react';
+import { namedCell } from '../../lib/format.ts';
 import { ORDERS_LINES, ORDERS_TABLE, ORDERS_TOON, TOON_SHAPE } from '../../lib/orders.ts';
 import { Reveal, Step } from './Step.tsx';
 
@@ -18,19 +19,20 @@ function rowIndex(id: string): number {
   return index;
 }
 
-function fieldIndex(field: string): number {
-  const index = ORDERS_TABLE.fields.indexOf(field);
-  if (index < 0) throw new Error(`No field ${field} in the orders table`);
-  return index;
+/** A field's cell in a row: its column, or its name=value cell. -1 when the row lacks the field. */
+function cellIndex(parts: readonly string[], field: string): number {
+  const column = ORDERS_TABLE.fields.indexOf(field);
+  if (column >= 0) return column;
+  return parts.findIndex((text, i) => i >= ORDERS_TABLE.fields.length && namedCell(text)?.name === field);
 }
 
 function TersetRow({ id, field }: { readonly id: string; readonly field: string }) {
   const parts = ORDERS_TABLE.rows[rowIndex(id)] ?? [];
-  const cell = fieldIndex(field);
+  const cell = cellIndex(parts, field);
   return (
     <p className="t">
       {parts.map((text, i) => {
-        const body = i === cell ? text === '' ? <em className="ab" title={`Empty cell: ${field} is absent`} /> : <em>{text}</em> : text;
+        const body = i === cell ? <em>{text}</em> : text;
         // A cell never breaks inside (a SKU like "C-310" would split at its hyphen);
         // the row wraps only at the break chance after each tab mark.
         return (
@@ -50,11 +52,9 @@ function TersetRow({ id, field }: { readonly id: string; readonly field: string 
 }
 
 function arrow(id: string, field: string): string {
-  const row = rowIndex(id) + 1;
-  const cell = fieldIndex(field);
-  const value = ORDERS_TABLE.rows[row - 1]?.[cell] ?? '';
-  const where = cell === ORDERS_TABLE.fields.length - 1 ? 'last cell' : `${field} cell`;
-  return value === '' ? `Row ${String(row)}, empty ${where}` : `Row ${String(row)}, ${where}`;
+  const row = rowIndex(id);
+  const found = cellIndex(ORDERS_TABLE.rows[row] ?? [], field) >= 0;
+  return `Row ${String(row + 1)}, ${found ? '' : 'no '}${field} cell`;
 }
 
 const K = ({ children }: { readonly children: string }) => <span className="k">&quot;{children}&quot;</span>;

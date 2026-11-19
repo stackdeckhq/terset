@@ -17,7 +17,7 @@ describe('plain-text bytes', () => {
 
   it('gives the published totals for each format', () => {
     expect(buildBytes(DATASETS).totals).toEqual({
-      terset: { raw: 62036, gzip: 25823 },
+      terset: { raw: 62196, gzip: 25838 },
       toon: { raw: 75238, gzip: 26488 },
       'json-compact': { raw: 104007, gzip: 28142 },
     });
@@ -30,7 +30,7 @@ describe('plain-text bytes', () => {
 
   it('writes the site line from the data file', () => {
     expect(bytesLine(BYTES)).toBe(
-      'In plain bytes, with no tokenizer, the 8 benchmark data sets take **62,036** as Terset, 75,238 as TOON and 104,007 as compact JSON. Gzipped: **25,823**, 26,488 and 28,142.',
+      'In plain bytes, with no tokenizer, the 8 benchmark data sets take **62,196** as Terset, 75,238 as TOON and 104,007 as compact JSON. Gzipped: **25,838**, 26,488 and 28,142.',
     );
   });
 });

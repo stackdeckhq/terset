@@ -2,6 +2,8 @@
 // A pending Claude file degrades to the o200k_base view. A ready file that does
 // not match the bench file case for case stops the build with a clear error.
 import { describe, expect, it } from 'vitest';
+import { ACCURACY, costLine } from './accuracy.ts';
+import { costNote } from './proof.ts';
 import { benchmarkMarkdown, benchmarkSampleTotals, benchmarkSummary, sampleTotalsLine } from './benchmark-doc.ts';
 import type { BenchReady } from './bench-schema.ts';
 import type { ClaudeReady } from './claude-counts-schema.ts';
@@ -17,6 +19,7 @@ import {
   centsPerThousand,
   costTableRows,
   costTotalsRow,
+  costMethod,
   counterSummary,
   counterTotals,
   countersHeadline,
@@ -173,12 +176,12 @@ describe('/benchmark lines under the sample cases card', () => {
     const counters = buildCounters(bench(), claude(), PRICES);
     if (counters === null || counters.claude === null) throw new Error('should pair');
     const line = sampleTotalsLine(bench(), counters);
-    expect(line).toBe("Over all 11 cases, Terset totals 26.8% fewer tokens than compact JSON and 6.6% fewer than TOON's best on o200k_base, and 32.0% and 4.5% fewer on Claude.");
+    expect(line).toBe("Over all 11 cases, Terset totals 26.5% fewer tokens than compact JSON and 6.2% fewer than TOON's best on o200k_base, and 31.4% and 3.8% fewer on Claude.");
     // The same rounding as the full totals in the fold.
-    expect(counterTotals(counters.o200k)).toContain('26.8% fewer than compact JSON');
-    expect(counterTotals(counters.o200k)).toContain("6.6% fewer than TOON's best");
-    expect(counterTotals(counters.claude)).toContain('32.0% fewer than compact JSON');
-    expect(counterTotals(counters.claude)).toContain("4.5% fewer than TOON's best");
+    expect(counterTotals(counters.o200k)).toContain('26.5% fewer than compact JSON');
+    expect(counterTotals(counters.o200k)).toContain("6.2% fewer than TOON's best");
+    expect(counterTotals(counters.claude)).toContain('31.4% fewer than compact JSON');
+    expect(counterTotals(counters.claude)).toContain("3.8% fewer than TOON's best");
     expect(sampleTotalsLine({ status: 'pending', reason: 'Not run yet.' }, null)).toBe('');
   });
 
@@ -191,6 +194,21 @@ describe('/benchmark lines under the sample cases card', () => {
 });
 
 describe('input cost at list price', () => {
+  it('prints the same price read date in the cost method and accuracy notes for the same input prices', () => {
+    if (COUNTERS === null) throw new Error('the committed counters should be ready');
+    for (const price of [PRICES.claude, PRICES.o200k]) {
+      const model = ACCURACY.models.find((item) => item.name === price.model);
+      if (model === undefined) throw new Error(`no accuracy price for ${price.model}`);
+      expect(model.inputPerMillion).toBe(price.usdPerMillionInput);
+      expect(model.priceSource).toBe(price.source);
+      expect(model.priceReadOn).toBe(PRICES.readOn);
+    }
+    expect(costMethod(COUNTERS, PRICES.readOn)).toContain(`Both pricing pages were read on ${PRICES.readOn}.`);
+    for (const note of [costLine(ACCURACY), costNote(ACCURACY)]) {
+      expect(note).toContain(`list prices read on ${PRICES.readOn}.`);
+    }
+  });
+
   it('rejects a price file with a stray field, a bad date or a plain http source', () => {
     const raw = { readOn: PRICES.readOn, o200k: PRICES.o200k, claude: PRICES.claude };
     expect(() => PricesSchema.parse(raw)).not.toThrow();
@@ -222,7 +240,7 @@ describe('input cost at list price', () => {
         expect(centsDelta(cents(terset), cents(json))).toBe(delta);
       }
     }
-    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$234.33', '$344.41', '$110.08 less']);
-    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.09', '$117.62', '$31.53 less']);
+    expect(costTotalsRow(counters.claude)).toEqual(['Total', '$236.19', '$344.41', '$108.22 less']);
+    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.46', '$117.62', '$31.16 less']);
   });
 });

@@ -1,6 +1,5 @@
 {
   "suite": "stress",
-  "aggregation": "single-run-per-model",
   "source": {
     "generatorSource": "bench/src/stress/generate.ts",
     "generatorSha256": "36e8782fe7dad303057132ff4ea5e2f85ff1dce4135ba3b3b5fe05be24010cd1",
@@ -12,7 +11,7 @@
     },
     "encoders": {
       "@toon-format/toon": "4.4.0",
-      "@stackdeck/terset": "0.2.4"
+      "@stackdeck/terset": "0.3.0"
     },
     "tokenizer": "o200k_base",
     "perCallMaxOutputTokens": 16000
@@ -20,24 +19,24 @@
   "questions": 120,
   "datasets": 38,
   "calls": 1440,
-  "failedCalls": 0,
+  "failedCalls": 1,
   "publishedRuns": [
     {
-      "runId": "stress-opus-16k-2026-11-18",
-      "runOn": "2026-11-18",
-      "publishedPath": "bench/published/2026-11-18",
+      "runId": "stress-opus-2026-11-19",
+      "runOn": "2026-11-19",
+      "publishedPath": "bench/published/2026-11-19",
       "model": "claude-opus-5-5"
     },
     {
-      "runId": "stress-sol-16k-2026-11-18",
-      "runOn": "2026-11-18",
-      "publishedPath": "bench/published/2026-11-18",
+      "runId": "stress-sol-2026-11-19",
+      "runOn": "2026-11-19",
+      "publishedPath": "bench/published/2026-11-19",
       "model": "gpt-6.1-sol"
     },
     {
-      "runId": "stress-haiku-16k-2026-11-18",
-      "runOn": "2026-11-18",
-      "publishedPath": "bench/published/2026-11-18",
+      "runId": "stress-haiku-2026-11-19",
+      "runOn": "2026-11-19",
+      "publishedPath": "bench/published/2026-11-19",
       "model": "claude-haiku-5-5"
     }
   ],
@@ -50,12 +49,10 @@
         {
           "correct": 119,
           "total": 120,
-          "inputTokens": 512108,
+          "inputTokens": 523418,
           "format": "terset",
-          "runId": "stress-opus-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 80279,
-          "totalCost": 3.654012,
+          "outputTokens": 81673,
+          "totalCost": 3.727132,
           "groups": [
             {
               "correct": 29,
@@ -72,7 +69,7 @@
             {
               "correct": 40,
               "total": 40,
-              "inputTokens": 94081,
+              "inputTokens": 105391,
               "group": "messy"
             },
             {
@@ -81,20 +78,19 @@
               "inputTokens": 74776,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
-          "correct": 116,
+          "correct": 117,
           "total": 120,
           "inputTokens": 1057589,
           "format": "json-compact",
-          "runId": "stress-opus-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 87955,
-          "totalCost": 5.989456,
+          "outputTokens": 87523,
+          "totalCost": 5.980816,
           "groups": [
             {
-              "correct": 29,
+              "correct": 30,
               "total": 30,
               "inputTokens": 654214,
               "group": "scale"
@@ -117,17 +113,16 @@
               "inputTokens": 171916,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
           "correct": 117,
           "total": 120,
           "inputTokens": 1674107,
           "format": "json-pretty",
-          "runId": "stress-opus-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 83490,
-          "totalCost": 8.366228,
+          "outputTokens": 84011,
+          "totalCost": 8.376648,
           "groups": [
             {
               "correct": 30,
@@ -153,17 +148,16 @@
               "inputTokens": 284277,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
           "correct": 120,
           "total": 120,
           "inputTokens": 592809,
           "format": "toon",
-          "runId": "stress-opus-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 74930,
-          "totalCost": 3.869836,
+          "outputTokens": 79210,
+          "totalCost": 3.955436,
           "groups": [
             {
               "correct": 30,
@@ -189,7 +183,8 @@
               "inputTokens": 84924,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         }
       ]
     },
@@ -199,17 +194,15 @@
       "inputTokensFrom": "model-report",
       "rows": [
         {
-          "correct": 116,
+          "correct": 118,
           "total": 120,
-          "inputTokens": 368136,
+          "inputTokens": 373486,
           "format": "terset",
-          "runId": "stress-sol-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 30898,
-          "totalCost": 1.045252,
+          "outputTokens": 33001,
+          "totalCost": 1.076982,
           "groups": [
             {
-              "correct": 26,
+              "correct": 28,
               "total": 30,
               "inputTokens": 206270,
               "group": "scale"
@@ -223,7 +216,7 @@
             {
               "correct": 40,
               "total": 40,
-              "inputTokens": 69033,
+              "inputTokens": 74383,
               "group": "messy"
             },
             {
@@ -232,17 +225,16 @@
               "inputTokens": 55330,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
-          "correct": 98,
+          "correct": 100,
           "total": 120,
           "inputTokens": 756623,
           "format": "json-compact",
-          "runId": "stress-sol-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 32526,
-          "totalCost": 1.838506,
+          "outputTokens": 35298,
+          "totalCost": 1.866226,
           "groups": [
             {
               "correct": 28,
@@ -263,25 +255,24 @@
               "group": "messy"
             },
             {
-              "correct": 7,
+              "correct": 9,
               "total": 25,
               "inputTokens": 130004,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
-          "correct": 111,
+          "correct": 113,
           "total": 120,
           "inputTokens": 1372895,
           "format": "json-pretty",
-          "runId": "stress-sol-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 31115,
-          "totalCost": 3.05694,
+          "outputTokens": 31528,
+          "totalCost": 3.06107,
           "groups": [
             {
-              "correct": 25,
+              "correct": 28,
               "total": 30,
               "inputTokens": 873750,
               "group": "scale"
@@ -299,25 +290,24 @@
               "group": "messy"
             },
             {
-              "correct": 21,
+              "correct": 20,
               "total": 25,
               "inputTokens": 242265,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
-          "correct": 119,
+          "correct": 118,
           "total": 120,
           "inputTokens": 477829,
           "format": "toon",
-          "runId": "stress-sol-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 30824,
-          "totalCost": 1.263898,
+          "outputTokens": 31887,
+          "totalCost": 1.274528,
           "groups": [
             {
-              "correct": 29,
+              "correct": 28,
               "total": 30,
               "inputTokens": 253430,
               "group": "scale"
@@ -340,7 +330,8 @@
               "inputTokens": 72126,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         }
       ]
     },
@@ -350,17 +341,15 @@
       "inputTokensFrom": "model-report",
       "rows": [
         {
-          "correct": 109,
+          "correct": 113,
           "total": 120,
-          "inputTokens": 512108,
+          "inputTokens": 523418,
           "format": "terset",
-          "runId": "stress-haiku-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 150373,
-          "totalCost": 0.1263973,
+          "outputTokens": 144736,
+          "totalCost": 0.12470980000000001,
           "groups": [
             {
-              "correct": 25,
+              "correct": 24,
               "total": 30,
               "inputTokens": 294284,
               "group": "scale"
@@ -372,9 +361,9 @@
               "group": "deep"
             },
             {
-              "correct": 34,
+              "correct": 39,
               "total": 40,
-              "inputTokens": 94081,
+              "inputTokens": 105391,
               "group": "messy"
             },
             {
@@ -383,20 +372,44 @@
               "inputTokens": 74776,
               "group": "damage"
             }
+          ],
+          "sparseFieldCounts": [
+            {
+              "questionId": "s057",
+              "dataset": "messy-sparse",
+              "prompt": "How many records include a score field, counting null and empty values?",
+              "rowCount": 120,
+              "text": "85",
+              "correct": false
+            },
+            {
+              "questionId": "s059",
+              "dataset": "messy-sparse",
+              "prompt": "How many records include a note field, counting null and empty values?",
+              "rowCount": 120,
+              "text": "83",
+              "correct": true
+            },
+            {
+              "questionId": "s061",
+              "dataset": "messy-sparse",
+              "prompt": "How many records include a tag field, counting null and empty values?",
+              "rowCount": 120,
+              "text": "81",
+              "correct": true
+            }
           ]
         },
         {
-          "correct": 114,
+          "correct": 111,
           "total": 120,
           "inputTokens": 1057589,
           "format": "json-compact",
-          "runId": "stress-haiku-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 141228,
-          "totalCost": 0.17637290000000003,
+          "outputTokens": 149262,
+          "totalCost": 0.18038990000000002,
           "groups": [
             {
-              "correct": 27,
+              "correct": 24,
               "total": 30,
               "inputTokens": 654214,
               "group": "scale"
@@ -419,20 +432,19 @@
               "inputTokens": 171916,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
-          "correct": 112,
+          "correct": 113,
           "total": 120,
           "inputTokens": 1674107,
           "format": "json-pretty",
-          "runId": "stress-haiku-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 138141,
-          "totalCost": 0.2364812,
+          "outputTokens": 138383,
+          "totalCost": 0.2366022,
           "groups": [
             {
-              "correct": 26,
+              "correct": 27,
               "total": 30,
               "inputTokens": 1059544,
               "group": "scale"
@@ -444,31 +456,30 @@
               "group": "deep"
             },
             {
-              "correct": 39,
+              "correct": 40,
               "total": 40,
               "inputTokens": 179611,
               "group": "messy"
             },
             {
-              "correct": 22,
+              "correct": 21,
               "total": 25,
               "inputTokens": 284277,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         },
         {
-          "correct": 112,
+          "correct": 113,
           "total": 120,
           "inputTokens": 592809,
           "format": "toon",
-          "runId": "stress-haiku-16k-2026-11-18",
-          "runOn": "2026-11-18",
-          "outputTokens": 157577,
-          "totalCost": 0.13806939999999998,
+          "outputTokens": 151133,
+          "totalCost": 0.1348474,
           "groups": [
             {
-              "correct": 23,
+              "correct": 25,
               "total": 30,
               "inputTokens": 319994,
               "group": "scale"
@@ -480,7 +491,7 @@
               "group": "deep"
             },
             {
-              "correct": 39,
+              "correct": 38,
               "total": 40,
               "inputTokens": 138821,
               "group": "messy"
@@ -491,7 +502,8 @@
               "inputTokens": 84924,
               "group": "damage"
             }
-          ]
+          ],
+          "sparseFieldCounts": []
         }
       ]
     }

@@ -13,6 +13,7 @@ CONFORMANCE = PACKAGE.parents[1] / "conformance"
 sys.path.insert(0, str(PACKAGE / "src"))
 
 from terset import RULES, decode, encode  # noqa: E402
+from terset._terset import _FITTED_RULES  # noqa: E402
 
 
 def fixture_integer(text: str) -> int | float:
@@ -68,15 +69,19 @@ class ConformanceTests(unittest.TestCase):
         self.assertEqual(decode(typing_smoke.nested_text), typing_smoke.nested)
 
     def test_shared_cases(self):
-        # Fixture numbers describe JavaScript values. Parse them as binary64,
-        # including integral decimal tokens outside Python's exact-int range.
+        # The root conformance suite is frozen format 1.0. Fixture numbers
+        # describe JavaScript values. Parse them as binary64, including
+        # integral decimal tokens outside Python's exact-int range.
         cases = json.loads((CONFORMANCE / "cases.json").read_text(encoding="utf-8"), parse_int=float)
         for case in cases:
             with self.subTest(case=case["name"]):
                 value, encoded = expand_case(case)
-                self.assertEqual(encode(value), encoded)
+                self.assertEqual(encode(value, format="1.0"), encoded)
                 self.assert_value_and_key_order(decode(encoded), value)
-                self.assertEqual(encode(decode(encoded)), encoded)
+                self.assertEqual(encode(decode(encoded), format="1.0"), encoded)
+                current = encode(value)
+                self.assert_value_and_key_order(decode(current), value)
+                self.assertEqual(encode(decode(current)), current)
 
     def test_shared_integer_inputs(self):
         cases = json.loads((CONFORMANCE / "cases.json").read_text(encoding="utf-8"), parse_int=fixture_integer)
@@ -86,7 +91,7 @@ class ConformanceTests(unittest.TestCase):
         for case in cases:
             with self.subTest(case=case["name"]):
                 value, encoded = expand_case(case)
-                self.assertEqual(encode(value), encoded)
+                self.assertEqual(encode(value, format="1.0"), encoded)
                 self.assert_value_and_key_order(decode(encoded), value)
 
     def test_equal_size_fallback(self):
@@ -95,13 +100,16 @@ class ConformanceTests(unittest.TestCase):
         candidate = "\t".join(fields) + "\n" + "\n".join("\t".join(str(row[key]) if key in row else "" for key in fields) for row in rows)
         compact = json.dumps(rows, separators=(",", ":"))
         self.assertEqual(len(candidate.encode("utf-8")), len(compact.encode("utf-8")))
-        self.assertEqual(encode(rows), compact)
+        self.assertEqual(encode(rows, format="1.0"), compact)
+        self.assertEqual(encode(rows), "[6]\nname=value\na=1\nb=1\nc=1\nd=1\ne=1\n")
 
     def test_rules_match_typescript(self):
         source = (PACKAGE.parent / "terset/src/terset.ts").read_text(encoding="utf-8")
-        match = re.search(r'export const RULES =(".*");', source)
-        self.assertIsNotNone(match)
-        self.assertEqual(RULES, json.loads(match[1]))
+        block = re.search(r"const fittedRules[^=]*= \[\n(.*?)\n\];", source, re.S)
+        self.assertIsNotNone(block)
+        typescript = [(feature, json.loads(sentence)) for feature, sentence in re.findall(r'\["(\w+)", (".*")\],', block[1])]
+        self.assertEqual(typescript, _FITTED_RULES)
+        self.assertEqual(RULES, " ".join(sentence for _, sentence in typescript))
 
     def test_types_and_number_rendering(self):
         self.assertEqual(encode({"a": True, "b": False, "c": None, "d": 1.0}),
@@ -126,12 +134,15 @@ class ConformanceTests(unittest.TestCase):
 
     def test_header_fits_every_row_order(self):
         skipped = [{"key": "a", "text": "A", "maxLength": 30}, {"key": "b", "text": "B", "description": "D", "maxLength": 61}]
-        self.assertEqual(encode(skipped), "[2]\nkey\ttext\tdescription\tmaxLength\na\tA\t\t30\nb\tB\tD\t61")
-        self.assertEqual(encode([{"a": 1, "b": 2}, {"c": 3, "a": 4}]), "[2]\nc\ta\tb\n\t1\t2\n3\t4\t")
-        self.assertEqual(encode([{"a": 1, "c": 2}, {"b": 3, "c": 4}]), "[2]\na\tb\tc\n1\t\t2\n\t3\t4")
-        self.assertEqual(encode({"people": {"ada": {"a": 1, "c": 2}, "lin": {"b": 3, "c": 4}}}), "people{2}:\n@key\ta\tb\tc\nada\t1\t\t2\nlin\t\t3\t4")
+        self.assertEqual(encode(skipped, format="1.0"), "[2]\nkey\ttext\tdescription\tmaxLength\na\tA\t\t30\nb\tB\tD\t61")
+        self.assertEqual(encode([{"a": 1, "b": 2}, {"c": 3, "a": 4}], format="1.0"), "[2]\nc\ta\tb\n\t1\t2\n3\t4\t")
+        self.assertEqual(encode([{"a": 1, "c": 2}, {"b": 3, "c": 4}], format="1.0"), "[2]\na\tb\tc\n1\t\t2\n\t3\t4")
+        self.assertEqual(encode({"people": {"ada": {"a": 1, "c": 2}, "lin": {"b": 3, "c": 4}}}, format="1.0"), "people{2}:\n@key\ta\tb\tc\nada\t1\t\t2\nlin\t\t3\t4")
+        self.assertEqual(encode(skipped), "[2]\nkey\ttext\tname=value\na\tA\tmaxLength=30\nb\tB\tdescription=D\tmaxLength=61")
+        self.assertEqual(encode([{"a": 1, "b": 2}, {"c": 3, "a": 4}]), "[2]\nname=value\na=1\tb=2\nc=3\ta=4")
         for value in (skipped, [{"a": 1, "b": 2}, {"c": 3, "a": 4}]):
             self.assertEqual(json.dumps(decode(encode(value))), json.dumps(value))
+            self.assertEqual(json.dumps(decode(encode(value, format="1.0"))), json.dumps(value))
         conflict = [{"a": 1, "b": 2}, {"b": 3, "a": 4}]
         self.assertEqual(encode(conflict), json.dumps(conflict, separators=(",", ":")))
 

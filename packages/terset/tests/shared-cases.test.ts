@@ -16,14 +16,24 @@ it("keeps the shared fixture below 150 kB", () => {
   assert.ok(readFileSync(new URL("../../../conformance/cases.json", import.meta.url)).byteLength < 150_000);
 });
 
-it("round trips every shared case with exact bytes and own key order", () => {
+it("round trips every format 1.0 shared case with exact bytes and own key order", () => {
   const cases = JSON.parse(readFileSync(new URL("../../../conformance/cases.json", import.meta.url), "utf8")) as SharedCase[];
   for (const entry of cases) {
     const { input, encoded } = expandCase(entry);
-    assert.equal(encode(input), encoded, entry.name);
+    assert.equal(encode(input, { format: "1.0" }), encoded, entry.name);
     assert.equal(JSON.stringify(decode(encoded)), JSON.stringify(input), entry.name);
-    assert.equal(encode(decode(encoded)), encoded, entry.name);
-    assert.equal(rulesFor(encoded), encoderRules(input), entry.name);
+    assert.equal(encode(decode(encoded), { format: "1.0" }), encoded, entry.name);
+    assert.equal(rulesFor(encoded), encoderRules(input, "1.0"), entry.name);
+  }
+});
+
+it("writes every format 1.0 shared case as 1.1 text that round trips", () => {
+  const cases = JSON.parse(readFileSync(new URL("../../../conformance/cases.json", import.meta.url), "utf8")) as SharedCase[];
+  for (const entry of cases) {
+    const { input } = expandCase(entry);
+    const current = encode(input);
+    assert.equal(JSON.stringify(decode(current)), JSON.stringify(input), entry.name);
+    assert.equal(rulesFor(current), encoderRules(input), entry.name);
   }
 });
 
@@ -34,7 +44,7 @@ it("reconstructs all three stress cases from shared recipes", () => {
   for (const entry of recipes) {
     const expanded = expandCase(entry);
     assert.deepEqual(expanded.input, HARD_CASES.find(({ name }) => name === entry.name)?.value);
-    assert.equal(encode(expanded.input), expanded.encoded);
+    assert.equal(encode(expanded.input, { format: "1.0" }), expanded.encoded);
     assert.deepEqual(decode(expanded.encoded), expanded.input);
   }
 });
@@ -46,7 +56,7 @@ it("covers numeric-key boundaries, signed numbers and the equal-size fallback", 
     const entry = cases.find((entry) => entry.name === name);
     assert.ok(entry, `Missing shared case: ${name}`);
     const { input, encoded } = expandCase(entry);
-    assert.equal(encode(input), encoded);
+    assert.equal(encode(input, { format: "1.0" }), encoded);
     assert.deepEqual(decode(encoded), input);
   }
   const tie = cases.find((entry) => entry.name === "equal-size table fallback");

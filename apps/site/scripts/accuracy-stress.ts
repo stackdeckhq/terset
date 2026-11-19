@@ -1,4 +1,4 @@
-// The stress publication has one measured run per model, separate from the TOON means.
+// The stress publication: one measured run per model, separate from the TOON suite.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
@@ -10,14 +10,14 @@ import { ACCURACY_FORMATS } from '../src/data/accuracy-schema.ts';
 import type { AccuracyFormat } from '../src/data/accuracy-schema.ts';
 import { STRESS_GROUPS, STRESS_MODELS, StressAccuracyFileSchema, StressSourceSchema } from '../src/data/accuracy-stress-schema.ts';
 import type { StressAccuracyFile } from '../src/data/accuracy-stress-schema.ts';
-import { stressRunDates } from '../src/data/stress.ts';
+import { stressLimit, stressReportsLine, stressResultScore, stressRunsNote, stressScope } from '../src/data/stress.ts';
 import { RunFile, equalField, runScores, validateRun } from './accuracy-runs.ts';
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 const STRESS_GENERATOR_SOURCE = 'bench/src/stress/generate.ts';
 const STRESS_SEED = 20261117;
 const STRESS_OUTPUT_CAP = 16000;
-const STRESS_ENCODERS = { '@toon-format/toon': '4.4.0', '@stackdeck/terset': '0.2.4' } as const;
+const STRESS_ENCODERS = { '@toon-format/toon': '4.4.0', '@stackdeck/terset': '0.3.0' } as const;
 const STRESS_REFERENCE_DATE = '2026-11-17T00:00:00.000Z';
 const STRESS_TOKENIZER = 'o200k_base';
 const STRESS_INPUT_RESERVATION = { margin: 1.25, allowance: 64 } as const;
@@ -34,10 +34,11 @@ interface StressPublishedSource {
   readonly path: string;
   readonly model: (typeof STRESS_MODELS)[number];
 }
+/** The one stress run per model, in STRESS_MODELS order. */
 export const STRESS_PUBLISHED_RUNS: readonly StressPublishedSource[] = [
-  { path: 'bench/published/2026-11-18/stress-opus-16k-2026-11-18.json', model: 'claude-opus-5-5' },
-  { path: 'bench/published/2026-11-18/stress-sol-16k-2026-11-18.json', model: 'gpt-6.1-sol' },
-  { path: 'bench/published/2026-11-18/stress-haiku-16k-2026-11-18.json', model: 'claude-haiku-5-5' },
+  { path: 'bench/published/2026-11-19/stress-opus-2026-11-19.json', model: 'claude-opus-5-5' },
+  { path: 'bench/published/2026-11-19/stress-sol-2026-11-19.json', model: 'gpt-6.1-sol' },
+  { path: 'bench/published/2026-11-19/stress-haiku-2026-11-19.json', model: 'claude-haiku-5-5' },
 ];
 const STRESS_MODEL_NAMES: Readonly<Record<(typeof STRESS_MODELS)[number], string>> = {
   'claude-opus-5-5': 'Claude Opus 5.5', 'gpt-6.1-sol': 'GPT 6.1 Sol', 'claude-haiku-5-5': 'Claude Haiku 5.5',
@@ -95,13 +96,15 @@ function validateStressQuestions(run: z.infer<typeof StressRunFile>, questions: 
   }
 }
 
-/** A separate list and output keep the TOON headline and its three-run means intact. */
+/** A separate list and output keep the TOON headline apart from the stress test. */
 export function buildStressAccuracy(rawRuns: readonly unknown[], sources: readonly StressPublishedSource[] = STRESS_PUBLISHED_RUNS): StressAccuracyFile {
-  if (rawRuns.length !== sources.length || sources.length !== STRESS_MODELS.length) throw new Error('Expected every published stress run');
-  equalField(sources.map((source) => source.model), STRESS_MODELS, 'stress model list');
+  if (rawRuns.length !== sources.length) throw new Error('Expected every published stress run');
+  equalField(sources.map((source) => source.model), STRESS_MODELS, 'stress model list (one run per model, in model order)');
   const dataHashes = Object.fromEntries(STRESS_DATA_FILES.map((name) => [name, repositoryHash(`bench/data/stress/${name}`)]));
   const generatorHash = repositoryHash(STRESS_GENERATOR_SOURCE);
   const questions = new Map(z.array(StressQuestion).parse(JSON.parse(readFileSync(`${REPO}bench/data/stress/questions.json`, 'utf8'))).map((question) => [question.id, question]));
+  const datasets = z.array(z.object({ name: z.string(), data: z.unknown() })).parse(JSON.parse(readFileSync(`${REPO}bench/data/stress/datasets.json`, 'utf8')));
+  const sparse = z.object({ records: z.array(z.unknown()) }).parse(datasets.find((dataset) => dataset.name === 'messy-sparse')?.data);
   const runs = rawRuns.map((raw, index) => {
     const source = sources[index];
     if (source === undefined) throw new Error('Missing stress source');
@@ -113,10 +116,11 @@ export function buildStressAccuracy(rawRuns: readonly unknown[], sources: readon
     validateStressQuestions(run, questions);
     return run;
   });
+  if (new Set(runs.map((run) => run.runId)).size !== runs.length) throw new Error('A stress run is published twice');
   const reference = runs[0];
   if (reference === undefined) throw new Error('Expected every published stress run');
   return StressAccuracyFileSchema.parse({
-    suite: 'stress', aggregation: 'single-run-per-model',
+    suite: 'stress',
     source: StressSourceSchema.strip().parse({ ...reference, perCallMaxOutputTokens: reference.budgets.perCallMaxOutputTokens }),
     questions: questions.size,
     datasets: new Set([...questions.values()].map((question) => question.dataset)).size,
@@ -128,19 +132,21 @@ export function buildStressAccuracy(rawRuns: readonly unknown[], sources: readon
       return { runId: run.runId, runOn: basename(dirname(source.path)), publishedPath: dirname(source.path), model: source.model };
     }),
     models: runs.map((run, index) => {
+      const id = STRESS_MODELS[index];
       const model = run.models[0];
-      const source = sources[index];
-      if (model === undefined || source === undefined) throw new Error('Missing stress model');
-      const name = STRESS_MODEL_NAMES[source.model];
-      const scores = runScores({ run, runOn: basename(dirname(source.path)) }, model, ACCURACY_FORMATS, (row) => row.inputTokens);
+      if (id === undefined || model === undefined) throw new Error('Missing stress model');
       return {
-        id: model.id, name, inputTokensFrom: 'model-report',
-        rows: scores.map((score) => ({
-          ...score,
+        id, name: STRESS_MODEL_NAMES[id], inputTokensFrom: 'model-report',
+        rows: runScores(run, model, ACCURACY_FORMATS).map(({ format, correct, total, inputTokens, outputTokens, totalCost }) => ({
+          format, correct, total, inputTokens, outputTokens, totalCost,
           groups: STRESS_GROUPS.map((group) => {
-            const rows = run.rows.filter((row) => row.format === score.format && questions.get(row.questionId)?.type === (group === 'damage' ? 'structural-validation' : group));
+            const rows = run.rows.filter((row) => row.format === format && questions.get(row.questionId)?.type === (group === 'damage' ? 'structural-validation' : group));
             return { group, correct: rows.filter((row) => row.correct).length, total: rows.length, inputTokens: rows.reduce((sum, row) => sum + row.inputTokens, 0) };
           }),
+          sparseFieldCounts: run.rows.filter((row) => id === 'claude-haiku-5-5' && format === 'terset' && row.format === format && row.dataset === 'messy-sparse' && /^How many records include a .+ field, counting null and empty values\?$/u.test(questions.get(row.questionId)?.prompt ?? '')).map((row) => ({
+            questionId: row.questionId, dataset: row.dataset, prompt: questions.get(row.questionId)?.prompt,
+            rowCount: sparse.records.length, text: row.text, correct: row.correct,
+          })),
         })),
       };
     }),
@@ -155,25 +161,17 @@ export function stressAccuracyText(): string {
 const STRESS_FORMAT_NAMES: Readonly<Record<AccuracyFormat, string>> = { terset: 'Terset', 'json-compact': 'Compact JSON', 'json-pretty': 'Pretty JSON', toon: 'TOON' };
 /** A short block: the headline table, any Terset loss, and links to the detail on the benchmark page. */
 export function stressReadmeBlock(file: StressAccuracyFile): string {
-  const score = (row: { readonly correct: number; readonly total: number }): string => `${String(row.correct)} of ${String(row.total)}`;
   const table = (head: readonly string[], rows: readonly (readonly string[])[]): string => [head, head.map(() => '---'), ...rows].map((row) => `| ${row.join(' | ')} |`).join('\n');
   const overall = ACCURACY_FORMATS.map((format) => [STRESS_FORMAT_NAMES[format], ...file.models.map((model) => {
     const row = model.rows.find((item) => item.format === format);
     if (row === undefined) throw new Error(`No stress ${model.id} ${format} score`);
-    return score(row);
+    return stressResultScore(row);
   })]);
-  // The README names every model where Terset alone has the lowest score, so a loss is never left out.
-  const lowest = file.models.filter((model) => {
-    const terset = model.rows.find((row) => row.format === 'terset');
-    return terset !== undefined && model.rows.every((row) => row.format === 'terset' || row.correct > terset.correct);
-  }).map((model) => model.name);
-  const published = 'https://github.com/stackdeckhq/terset';
-  const reports = file.publishedRuns.map((run) => `[${STRESS_MODEL_NAMES[run.model]}](${published}/blob/main/${run.publishedPath}/${run.runId}.md)`);
   return [
     '### Stress accuracy',
-    `One run per model on ${stressRunDates(file)}, with ${file.questions} harder questions in all four formats. Gaps of a few questions are within noise.`,
+    `${stressScope(file)} ${stressRunsNote(file)}`,
     table(['Format', ...file.models.map((model) => model.name)], overall),
-    `${lowest.length > 0 ? `Terset scored lowest on ${lowest.join(' and ')}. ` : ''}Results by group, every loss and the method: [terset.dev/benchmark](https://terset.dev/benchmark#stress). Every answer and its score: ${reports.join(', ')}.`,
+    `${stressLimit(file)} Results by group, every loss and the method: [terset.dev/benchmark](https://terset.dev/benchmark#stress). ${stressReportsLine(file)}`,
   ].join('\n\n');
 }
 
