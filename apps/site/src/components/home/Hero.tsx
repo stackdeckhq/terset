@@ -3,7 +3,7 @@
 // While the bench is pending, the counts read "Pending" and nothing ticks.
 import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BENCH, PENDING_LABEL, compareTokens, formatCount } from '../../data/numbers.ts';
+import { BENCH, COUNTERS, PENDING_LABEL, benchTotals, compareTokens, formatCount } from '../../data/numbers.ts';
 import type { Trio } from '../../data/bench-schema.ts';
 import { NUM, hlToon, jsonTokens } from '../../lib/highlight.ts';
 import { prefersStill } from '../../lib/motion.ts';
@@ -21,6 +21,17 @@ const VIEWS: readonly { readonly id: View; readonly label: string }[] = [
   { id: 'terset', label: 'Terset' },
 ];
 const COUNTS: Trio | null = BENCH.status === 'ready' ? BENCH.samples.orders : null;
+
+/**
+ * The headline result: every benchmark case summed, on o200k_base. The six orders below are one
+ * sample, so the lead states the total instead. Shown only while Terset is smaller than both.
+ */
+const HEADLINE = ((): { readonly cases: number; readonly vsJson: string; readonly vsToon: string } | null => {
+  if (COUNTERS === null) return null;
+  const totals = benchTotals(COUNTERS.o200k);
+  if (totals.terset >= totals.json || totals.terset >= totals.toon) return null;
+  return { cases: COUNTERS.o200k.cases.length, vsJson: compareTokens(totals.terset, totals.json, 'compact JSON'), vsToon: compareTokens(totals.terset, totals.toon, "TOON's best form") };
+})();
 const TOON_LINE_COUNT = ORDERS_TOON.split('\n').length;
 
 /** Compact JSON with each key wrapped, so the keys can light up one after another. */
@@ -214,12 +225,12 @@ function Stage() {
           'Token counts are pending. They appear once the measured results are published.'
         ) : (
           <>
-            <b>{compareTokens(COUNTS.terset, COUNTS.json, 'JSON')}.</b> {compareTokens(COUNTS.terset, COUNTS.toon, 'TOON')}.
+            {compareTokens(COUNTS.terset, COUNTS.json, 'JSON')}. {compareTokens(COUNTS.terset, COUNTS.toon, 'TOON')}.
           </>
         )}
       </p>
       <figcaption className="cap" id="stage-cap">
-        Six orders, counted with o200k_base against compact JSON. Terset counts include the fitted rules sentence.
+        One sample: six orders, counted with o200k_base against compact JSON. Terset counts include the fitted rules sentence.
       </figcaption>
     </figure>
   );
@@ -238,7 +249,17 @@ export function Hero() {
           <span className="grad">Fewer tokens.</span>
         </h1>
         <p className="lead">
-          Terset writes a set of records as one terse table for a model to read. Unlike TOON, it keeps the table when records skip a field or nest a value.
+          Terset writes JSON records as one table for a model to read.{' '}
+          {HEADLINE !== null && (
+            <>
+              Over {String(HEADLINE.cases)} benchmark cases on o200k_base, it used{' '}
+              <Link to="/benchmark" className="lead-num">
+                {HEADLINE.vsJson}
+              </Link>{' '}
+              and {HEADLINE.vsToon}.{' '}
+            </>
+          )}
+          Unlike TOON, it keeps the table when records skip a field or hold a list.
         </p>
         <div className="actions">
           <Link to="/" hash="b2" className="btn btn-lg btn-primary">

@@ -76,9 +76,11 @@ export const PACKAGE_README_HEADINGS: readonly string[] = [
   'See it',
   'Install',
   'Use it',
+  'How it compares',
   'How it works',
   'Benchmark',
   'When not to use it',
+  'FAQ',
   'Reference',
   'For agents',
   'Source',
@@ -326,6 +328,32 @@ export const WHEN_NOT: readonly { readonly title: string; readonly text: string 
   { title: 'Hard limits.', text: 'The root must be an object or an array. Numeric `-0` and nesting deeper than 500 levels are explicit errors.' },
   { title: 'Writing back.', text: 'Terset is for the model to read. Ask for answers in JSON.' },
 ];
+
+// README pitch, comparison and FAQ. docs-readme.ts adds the numbers from the data files.
+
+/** The problem and the idea, right under the README title. */
+export const PITCH_INTRO =
+  'JSON repeats every key in every record, and a model reads each repeat as input tokens. Terset writes a list of records as one table instead. The keys go in a header once, and each record becomes a row. `decode` turns the text back into the same JSON.';
+
+/** The highlights after the numbers one. Each is a bold claim and one plain sentence. */
+export const PITCH_HIGHLIGHTS: readonly { readonly title: string; readonly text: string }[] = [
+  { title: 'Lossless.', text: '`decode` gives back the same JSON, key order included. The benchmark decodes every Terset output and checks it against its input before counting it.' },
+  { title: 'Uneven records keep their table.', text: 'A record can skip a field or hold a list and still be one row.' },
+  { title: 'Same text from JavaScript and Python.', text: 'The two packages are separate code, and both pass one conformance suite.' },
+  { title: 'Zero dependencies.', text: 'Neither package installs anything else.' },
+];
+
+export const COMPARE_TOON_SHAPE = 'When records skip a field or hold a list, TOON drops its table and writes one line per field. Terset keeps the table.';
+
+/** What CSV gives up. docs-readme.ts puts the case count where CSV is smaller in front of it. */
+export const COMPARE_CSV = 'It has no types and cannot tell null, a missing field and empty text apart, so its text does not always read back to the same JSON. Nested values fit only as JSON inside a cell.';
+
+/** The FAQ answers that need no numbers. The accuracy answer is built from the data. */
+export const FAQ_STABLE = '**Is it stable?** Format 1.0 is frozen, and its text still decodes. The encoder writes format 1.1. The packages are at 0.x, so their API can still change.';
+
+export const FAQ_RULES = '**Do I have to explain the format to the model?** Yes, once per prompt. Send `rulesFor(text)` (`rules_for` in Python) right before the data. It holds only the rules that text needs, and it is empty when the text needs none. For one cached system prompt that serves many texts, send the full `RULES` there instead.';
+
+export const FAQ_NAME = '**Where does the name come from?** TERse SETs: a set of records, written tersely.';
 
 // 8. Links
 

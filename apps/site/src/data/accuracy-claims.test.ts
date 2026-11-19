@@ -1,5 +1,5 @@
-// Overlapping 95% ranges mean the test cannot tell the formats apart. They do not show the
-// formats are equally accurate, so no accuracy copy may call the result a tie or a match.
+// Overlapping 95% ranges do not show the formats are equally accurate, so no accuracy copy
+// may call the result a tie or a match.
 // Token counts can still tie: those lines are exact and are not checked here.
 // The share image label has the same check in src/brand/og.test.ts.
 import { readFileSync } from 'node:fs';

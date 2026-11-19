@@ -7,7 +7,7 @@
 
 <p align="center">The official Python package for Terset.</p>
 
-<p align="center">Terset: TERse SETs. It writes a set of records as one terse table, so a model reads the same data with fewer tokens.</p>
+<p align="center">A compact text format for JSON records in LLM prompts. Same data, fewer input tokens.</p>
 
 <p align="center">
   <img src="https://img.shields.io/pypi/v/terset" alt="PyPI version">
@@ -19,15 +19,27 @@
 <p align="center"><a href="https://terset.dev">terset.dev</a> · <a href="https://terset.dev/docs">Docs</a></p>
 <!-- /docs:header -->
 
+<!-- docs:pitch -->
+JSON repeats every key in every record, and a model reads each repeat as input tokens. Terset writes a list of records as one table instead. The keys go in a header once, and each record becomes a row. `decode` turns the text back into the same JSON.
+
+- **Fewer tokens.** Over the 11 benchmark cases, Terset used 26.5% fewer tokens than compact JSON and 6.2% fewer than TOON's best form, counted with the `o200k_base` tokenizer. Claude's own count for Claude Opus 5.5 gives 31.4% and 3.8%. [See the benchmark](#benchmark).
+- **Lossless.** `decode` gives back the same JSON, key order included. The benchmark decodes every Terset output and checks it against its input before counting it.
+- **Uneven records keep their table.** A record can skip a field or hold a list and still be one row.
+- **Same text from JavaScript and Python.** The two packages are separate code, and both pass one conformance suite.
+- **Zero dependencies.** Neither package installs anything else.
+<!-- /docs:pitch -->
+
 <!-- docs:contents -->
 **Contents**
 
 - [See it](#see-it)
 - [Install](#install)
 - [Use it](#use-it)
+- [How it compares](#how-it-compares)
 - [How it works](#how-it-works)
 - [Benchmark](#benchmark)
 - [When not to use it](#when-not-to-use-it)
+- [FAQ](#faq)
 - [Reference](#reference)
 - [For agents](#for-agents)
 - [Source](#source)
@@ -143,6 +155,15 @@ Never write Terset by hand. Always use `encode`.
 - `encode` takes the read-only `JsonInputRoot` type. `decode` returns `JsonRoot`. The package ships `py.typed`.
 <!-- /docs:use -->
 
+## How it compares
+
+<!-- docs:compare -->
+- **Compact JSON** is the baseline here. Terset is smaller in 10 of 11 cases on both counters.
+- **TOON** is another table format for prompts. Terset is smaller in 9 of 11 cases on o200k_base and 10 on Claude. TOON's best form is smaller in 2 on o200k_base and 1 on Claude, all listed in the benchmark below. When records skip a field or hold a list, TOON drops its table and writes one line per field. Terset keeps the table.
+- **CSV** needs no rules line, so it is smaller than Terset in 3 of 11 cases on o200k_base and 5 on Claude. It has no types and cannot tell null, a missing field and empty text apart, so its text does not always read back to the same JSON. Nested values fit only as JSON inside a cell.
+- **YAML and pretty JSON** are easy for people to read and cost the most in total here. Over all 11 cases on o200k_base, Terset is 39.0% smaller than YAML and 50.3% smaller than pretty JSON.
+<!-- /docs:compare -->
+
 ## How it works
 
 - **Lists become counted tables.** A list of two or more objects becomes a tab-separated header and one row per record. A named list starts with `name[N]:`. A root table starts with `[N]` on its own line.
@@ -159,9 +180,22 @@ Full rules: [terset.dev/format](https://terset.dev/format).
 
 ## Benchmark
 
-Token counts for the same input in each format. Lower is better.
-There are two counters: the `o200k_base` tokenizer, and Claude's own count
-for Claude Opus 5.5. They give different numbers for the same text.
+<!-- docs:bench-summary -->
+Total tokens over all 11 cases. Lower is better. Terset counts include its fitted rules line. TOON best is the smaller of TOON's comma and tab forms.
+
+| Format | o200k_base | Claude Opus 5.5 |
+| --- | --- | --- |
+| Terset | 43,228 | 59,047 |
+| TOON best | 46,068 | 61,360 |
+| Compact JSON | 58,808 | 86,102 |
+| YAML | 70,846 | 88,145 |
+| Pretty JSON | 87,020 | 113,574 |
+
+The two counters are the `o200k_base` tokenizer and Claude's own token count for Claude Opus 5.5. They give different numbers for the same text. Open the section below for every case, the input cost and the method.
+<!-- /docs:bench-summary -->
+
+<details>
+<summary>Every case, the input cost and the method</summary>
 
 ### o200k_base
 
@@ -289,6 +323,8 @@ Token counts say nothing about answer quality. Terset is about fewer tokens.
 Other tokenizers and models will give other counts. Full benchmark with pretty JSON and CSV counts:
 [terset.dev/benchmark](https://terset.dev/benchmark).
 
+</details>
+
 ### Answer accuracy
 
 On 244 questions and two models, Terset used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.
@@ -345,6 +381,18 @@ Of Terset's 10 misses across the three models, 9 were on long lists. On Claude H
 - **Hard limits.** The root must be an object or an array. Numeric `-0` and nesting deeper than 500 levels are explicit errors.
 - **Writing back.** Terset is for the model to read. Ask for answers in JSON.
 <!-- /docs:when-not -->
+
+## FAQ
+
+<!-- docs:faq -->
+**Is it stable?** Format 1.0 is frozen, and its text still decodes. The encoder writes format 1.1. The packages are at 0.x, so their API can still change.
+
+**Does it change answer accuracy?** Each model answered the same 244 questions in each format. The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate. See [Answer accuracy](#answer-accuracy).
+
+**Do I have to explain the format to the model?** Yes, once per prompt. Send `rulesFor(text)` (`rules_for` in Python) right before the data. It holds only the rules that text needs, and it is empty when the text needs none. For one cached system prompt that serves many texts, send the full `RULES` there instead.
+
+**Where does the name come from?** TERse SETs: a set of records, written tersely.
+<!-- /docs:faq -->
 
 ## Reference
 

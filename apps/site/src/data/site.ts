@@ -2,7 +2,7 @@
 
 export const SITE_URL = 'https://terset.dev';
 export const SITE_NAME = 'Terset';
-export const TAGLINE = 'TERse SETs. It writes a set of records as one terse table, so a model reads the same data with fewer tokens.';
+export const TAGLINE = 'A compact text format for JSON records in LLM prompts. Same data, fewer input tokens.';
 export const SHORT_TAGLINE = 'One terse table for a set of JSON records.';
 /** Google Search Console reads this from the home page to prove who owns the site. Removing it ends the proof. */
 export const GOOGLE_SITE_VERIFICATION = 'SiBnGI20KR2nbzKE2nSnThNJoqa90izcws96uHdp6dY';

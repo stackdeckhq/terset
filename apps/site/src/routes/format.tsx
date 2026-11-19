@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { DocPage, docHead } from '../components/DocPage.tsx';
 import { Markdown } from '../components/Markdown.tsx';
-import { PACKAGE_VERSION } from '../data/site.ts';
 import spec from '../generated/spec.md?raw';
 import { parseMarkdown, withoutTitle } from '../lib/markdown.ts';
 
@@ -17,7 +16,7 @@ export const Route = createFileRoute('/format')({
 function FormatPage() {
   return (
     <DocPage
-      kicker={`Spec for ${PACKAGE_VERSION}`}
+      kicker="The format spec"
       title={TITLE}
       lead="One table for a set of records. Every rule is here. The raw file is at /spec.md."
       headings={DOC.headings}
