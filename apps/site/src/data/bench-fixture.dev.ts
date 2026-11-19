@@ -17,6 +17,8 @@ export const BENCH_FIXTURE: BenchReady | null = {
     { name: 'Fake case 3, tiny', json: 60, jsonPretty: 110, yaml: 75, toon: 80, csv: null, csvExact: null, terset: 100 },
     { name: 'Fake case 4, long text', json: 4000, jsonPretty: 4800, yaml: 4400, toon: 3900, csv: 3700, csvExact: false, terset: 3600 },
     { name: 'Fake case 5, nested', json: 400, jsonPretty: 700, yaml: 480, toon: 450, csv: null, csvExact: null, terset: 440 },
+    // The losses line on home needs a case named like the bench's file lists.
+    { name: 'File list, fake', json: 3000, jsonPretty: 4200, yaml: 3300, toon: 2600, csv: null, csvExact: null, terset: 2200 },
   ],
   samples: {
     orders: { json: 500, toon: 400, terset: 300 },

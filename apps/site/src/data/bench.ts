@@ -73,6 +73,11 @@ export function benchTotals(bench: CaseSet): BenchTotals {
   return { terset: sum('terset'), json: sum('json'), jsonPretty: sum('jsonPretty'), yaml: sum('yaml'), toon: sum('toon') };
 }
 
+/** The footnote under the totals chart on home: how to read it, in the method's words. */
+export function totalsChartNote(bench: CaseSet): string {
+  return `Lower is better. Sum of ${String(bench.cases.length)} cases, rules line included. ${TOON_BEST_NOTE}`;
+}
+
 /** The bench table's columns, Terset first. The page and benchmark.md both use them. */
 export const BENCH_TABLE_HEAD = ['Case', 'Terset', 'Compact JSON', 'Pretty JSON', 'YAML', 'TOON best', 'CSV', 'Terset vs compact JSON', 'Terset vs TOON'] as const;
 
@@ -215,6 +220,56 @@ export function toonKeepNote(bench: CaseSource): string {
   ]
     .filter((text) => text !== '')
     .join(' ');
+}
+
+/** Bench cases whose name starts with this are the file lists. The losses line says how much of Terset's total they hold. */
+export const FILE_LIST_PREFIX = 'File list';
+
+/**
+ * "A", "A and B", or "A; B; and C". Case names hold commas, so three or more use semicolons,
+ * and so do two when either name has a comma: "A; B, long text".
+ */
+function caseNames(rows: readonly CaseRow[]): string {
+  const names = rows.map((item) => item.name);
+  const last = names.at(-1) ?? '';
+  if (names.length < 3) return names.join(names.some((name) => name.includes(',')) ? '; ' : ' and ');
+  return `${names.slice(0, -1).join('; ')}; and ${last}`;
+}
+
+/** The middle of the per-case savings against one base, in percent, rounded to one decimal. Even counts take the mean of the two middle values. */
+function medianSaving(rows: readonly CaseRow[], base: (item: CaseRow) => number): number {
+  const savings = rows.map((item) => ((base(item) - item.terset) / base(item)) * 100).sort((a, b) => a - b);
+  const high = savings[Math.floor(savings.length / 2)];
+  const low = savings[Math.ceil(savings.length / 2) - 1];
+  if (high === undefined || low === undefined) throw new Error('The losses line has no cases to take a median of');
+  return Math.round(((low + high) / 2) * 10) / 10;
+}
+
+/**
+ * The losses line for one counter: every case where TOON's best is smaller than Terset,
+ * the share of Terset's total the file lists hold, and the median saving per case.
+ * Throws when the data stops supporting a sentence: no file-list case, or a median that saves nothing.
+ */
+export function lossesLine(bench: CaseSet): string {
+  if (bench.cases.length === 0) throw new Error('The losses line has no cases to read');
+  const losses = bench.cases.filter((item) => item.toon < item.terset);
+  const lossText =
+    losses.length === 0
+      ? `TOON's best is smaller than Terset on none of the ${String(bench.cases.length)} cases.`
+      : `TOON's best is smaller than Terset on ${String(losses.length)} ${losses.length === 1 ? 'case' : 'cases'}: ${caseNames(losses)}.`;
+
+  const fileLists = bench.cases.filter((item) => item.name.startsWith(FILE_LIST_PREFIX));
+  if (fileLists.length === 0) throw new Error(`The losses line names the file-list cases, and no case name starts with "${FILE_LIST_PREFIX}" any more`);
+  const fileShare = String(Math.round(share(fileLists.reduce((total, item) => total + item.terset, 0), benchTotals(bench).terset)));
+  const fileText = fileLists.length === 1 ? `The file-list case holds ${fileShare}% of Terset's total.` : `The ${String(fileLists.length)} file-list cases hold ${fileShare}% of Terset's total.`;
+
+  const json = medianSaving(bench.cases, (item) => item.json);
+  if (json <= 0) throw new Error('The losses line says the median case saves tokens against compact JSON, and the data no longer supports it');
+  const toon = medianSaving(bench.cases, (item) => item.toon);
+  if (toon <= 0) throw new Error("The losses line says the median case saves tokens against TOON's best, and the data no longer supports it");
+  const medianText = `Per case, the median saving is ${json.toFixed(1)}% against compact JSON and ${toon.toFixed(1)}% against TOON's best.`;
+
+  return `${lossText} ${fileText} ${medianText}`;
 }
 
 /** What every Terset count holds besides the data. Every note beside a headline count says it. */

@@ -10,7 +10,7 @@ import { ACCURACY, accuracyOverlapLine } from './accuracy.ts';
 import { TOON_BEST_NOTE, benchTotals, formatCount, underJson, underToon } from './bench.ts';
 import type { BenchFile } from './bench.ts';
 import type { ClaudeCounts } from './claude-counts-schema.ts';
-import { buildCounters } from './counters.ts';
+import { buildCounters, counterLosses } from './counters.ts';
 import type { Counter } from './counters.ts';
 import {
   BADGES,
@@ -31,6 +31,7 @@ import {
   QUICK_START,
   README_REFERENCE,
   WHEN_NOT,
+  implementationsMarkdown,
   quickStartSteps,
 } from './docs.ts';
 import type { DocLang } from './docs.ts';
@@ -47,7 +48,7 @@ export const README_FILES = {
 export type ReadmeId = keyof typeof README_FILES;
 export const README_IDS: readonly ReadmeId[] = ['root', 'js', 'py'];
 
-export type BlockName = 'header' | 'pitch' | 'contents' | 'see-it' | 'install' | 'install-py' | 'use' | 'use-py' | 'compare' | 'bench-summary' | 'when-not' | 'faq' | 'reference' | 'agents';
+export type BlockName = 'header' | 'pitch' | 'contents' | 'see-it' | 'install' | 'install-py' | 'use' | 'use-py' | 'compare' | 'bench-summary' | 'when-not' | 'faq' | 'reference' | 'implementations' | 'agents';
 
 /** The raw agent files the READMEs list, in order. */
 const AGENT_FILES: readonly (readonly [path: string, about: string])[] = [
@@ -200,6 +201,7 @@ function benchSummary(): string {
   return [
     `Total tokens over all ${String(o200k.cases.length)} cases. Lower is better. Terset counts include its fitted rules line. ${TOON_BEST_NOTE}`,
     [`| Format | ${o200k.name} | ${claude.label} |`, '| --- | --- | --- |', ...rows.map(([name, key]) => `| ${name} | ${formatCount(open[key])} | ${formatCount(own[key])} |`)].join('\n'),
+    [o200k, claude].map((counter) => `- ${counterLosses(counter)}`).join('\n'),
     `The two counters are the \`${o200k.name}\` tokenizer and Claude's own token count for ${claude.label}. They give different numbers for the same text. Open the section below for every case, the input cost and the method.`,
   ].join('\n\n');
 }
@@ -230,6 +232,7 @@ export function expectedBlocks(id: ReadmeId, text: string): Partial<Record<Block
     'when-not': whenNot(),
     faq: faq(),
     reference: README_REFERENCE,
+    implementations: implementationsMarkdown(),
     agents: agents(),
   };
   if (id === 'root') return { ...shared, install: install('js'), use: use('js'), 'install-py': install('py'), 'use-py': use('py') };

@@ -4,7 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import { ACCURACY, costLine } from './accuracy.ts';
 import { costNote } from './proof.ts';
-import { benchmarkMarkdown, benchmarkSampleTotals, benchmarkSummary, sampleTotalsLine } from './benchmark-doc.ts';
+import { readFileSync } from 'node:fs';
+import { benchmarkLosses, benchmarkMarkdown, benchmarkSampleTotals, benchmarkSummary, sampleTotalsLine } from './benchmark-doc.ts';
 import type { BenchReady } from './bench-schema.ts';
 import type { ClaudeReady } from './claude-counts-schema.ts';
 import { STRESS, stressKeepElse } from './stress.ts';
@@ -20,17 +21,21 @@ import {
   costTableRows,
   costTotalsRow,
   costMethod,
+  counterLosses,
   counterSummary,
   counterTotals,
   countersHeadline,
   countersNote,
   countersPageNote,
   formatCents,
+  lossesLine,
   QUALITY_NOTE,
   totalsNote,
   underJson,
 } from './numbers.ts';
 import { PricesSchema } from './prices-schema.ts';
+
+const BENCHMARK_ROUTE = readFileSync(new URL('../routes/benchmark.tsx', import.meta.url), 'utf8');
 
 function bench(): BenchReady {
   if (BENCH_FILE.status !== 'ready') throw new Error('the committed bench file should be ready');
@@ -183,6 +188,24 @@ describe('/benchmark lines under the sample cases card', () => {
     expect(counterTotals(counters.claude)).toContain('31.4% fewer than compact JSON');
     expect(counterTotals(counters.claude)).toContain("3.8% fewer than TOON's best");
     expect(sampleTotalsLine({ status: 'pending', reason: 'Not run yet.' }, null)).toBe('');
+  });
+
+  it('gives one losses line per counter, named, on the page and in the benchmark.md summary', () => {
+    const counters = buildCounters(bench(), claude(), PRICES);
+    if (counters === null || counters.claude === null) throw new Error('should pair');
+    const lines = benchmarkLosses(bench(), counters);
+    expect(lines).toEqual([counterLosses(counters.o200k), counterLosses(counters.claude)]);
+    expect(counterLosses(counters.o200k)).toBe(`o200k_base: ${lossesLine(counters.o200k)}`);
+    const summary = benchmarkSummary(bench(), counters);
+    for (const line of lines) expect(summary).toContain(line);
+    expect(BENCHMARK_ROUTE).toContain('benchmarkLosses(BENCH, COUNTERS)');
+  });
+
+  it('gives the plain losses line with one counter, and none while pending', () => {
+    const single = buildCounters(bench(), { status: 'pending' }, PRICES);
+    expect(benchmarkLosses(bench(), single)).toEqual([lossesLine(bench())]);
+    expect(benchmarkSummary(bench(), single)).toContain(lossesLine(bench()));
+    expect(benchmarkLosses({ status: 'pending', reason: 'Not run yet.' }, null)).toEqual([]);
   });
 
   it('refuses the sample line once Terset totals more than TOON', () => {

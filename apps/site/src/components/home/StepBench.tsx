@@ -1,4 +1,4 @@
-// Step 6: the token counts. The six orders up top, then all cases.
+// Step 6: the token counts. The totals over all cases up top, then the six orders, then each case.
 // The headline and every figure come from the bench data. Pending shows pending.
 // The headline, the six orders and the foot note follow the chart's counter tab.
 // o200k_base, like the hero, is the default and what the server renders.
@@ -12,6 +12,7 @@ import type { Trio } from '../../data/bench-schema.ts';
 import { homeHeadline } from '../../data/proof.ts';
 import type { HomeHeadline } from '../../data/proof.ts';
 import { BenchChart } from '../BenchChart.tsx';
+import { TotalsChart } from '../TotalsChart.tsx';
 import { Reveal, Step } from './Step.tsx';
 
 const ACCURACY_LINE = accuracyHomeLine(ACCURACY);
@@ -91,6 +92,7 @@ export function StepBench() {
   const line = VIEWS.every((item) => item.headline.line === null) ? undefined : <Swap picked={picked} render={(item) => item.headline.line} />;
   return (
     <Step id="b6" title={<Swap picked={picked} render={headlineTitle} />} line={line} live>
+      <TotalsChart counters={COUNTERS} picked={picked} onPick={setPicked} />
       {/* Terset first, then JSON and TOON, so readers see Terset before the others. */}
       <Reveal className={view.orders === null ? 'trio pending' : 'trio'} label={view.ordersLabel}>
         <div className="best">

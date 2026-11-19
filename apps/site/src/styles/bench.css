@@ -163,6 +163,13 @@ h2.with-tag { text-wrap: balance; }
 .cost .tbl-note { margin-top: var(--s-4); text-wrap: pretty; }
 .cost-h { font-size: 17px; font-weight: var(--w-head); letter-spacing: -.01em; margin-bottom: var(--s-4); text-wrap: balance; }
 
+/* The totals chart on home reuses the cost bars. The bars grow in on reveal; without the boot script they are drawn in full. */
+.chart.totals .cost-bars { margin-top: var(--s-4); }
+.chart.totals .cost-t i { transform-origin: left; transition: transform .8s var(--ease); transition-delay: calc(var(--i, 0) * 60ms); }
+.js .chart.totals.pre .cost-t i { transform: scaleX(0); }
+.chart.totals .totals-line { margin-top: var(--s-4); font-size: 14px; color: var(--fg-2); text-wrap: pretty; }
+.chart.totals .tbl-note { margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--line); text-wrap: pretty; }
+
 .ds { margin: 0; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--sh-1); padding: var(--s-5) var(--s-4) var(--s-4); min-width: 0; }
 @media (min-width: 768px) { .ds { padding: var(--s-6) var(--s-6) var(--s-5); } }
 .ds-grid { display: grid; gap: var(--s-7) var(--s-6); grid-template-columns: minmax(0, 1fr); }

@@ -4,10 +4,10 @@
 // A pending Claude file gives the o200k_base document alone.
 import { ACCURACY, ACCURACY_FORMAT_NOTE, ACCURACY_KIND_NOTE, PUBLISHED_RUNS_NOTE, accuracyIntro, accuracyLines, accuracyOverlapLine, accuracyMarkdownTable, accuracyMethod, accuracyRunsNote, kindMarkdownTable, publishedRunsMarkdownTable } from './accuracy.ts';
 import type { AccuracyFile } from './accuracy.ts';
-import { BENCH_TABLE_HEAD, BENCH_TABLE_NOTE, CASE_SOURCE_NOTE, CSV_LIMITS_LINE, PENDING_NOTE, TOKENS_NOTE, TOON_BEST_NOTE, TOON_VERSION, PENDING_TITLE, QUALITY_NOTE, benchSummary, benchTableRows, benchTotals, benchTotalsRow, csvSizeNote, formatCount, jsonKeepNote, toonKeepNote, totalsNote } from './bench.ts';
+import { BENCH_TABLE_HEAD, BENCH_TABLE_NOTE, CASE_SOURCE_NOTE, CSV_LIMITS_LINE, PENDING_NOTE, TOKENS_NOTE, TOON_BEST_NOTE, TOON_VERSION, PENDING_TITLE, QUALITY_NOTE, benchSummary, benchTableRows, benchTotals, benchTotalsRow, csvSizeNote, formatCount, jsonKeepNote, lossesLine, toonKeepNote, totalsNote } from './bench.ts';
 import type { BenchFile } from './bench.ts';
 import type { ClaudeCounts } from './claude-counts-schema.ts';
-import { COST_TABLE_HEAD, buildCounters, claudeMethod, costCaption, costMethod, costTableRows, costTotalsRow, counterList, counterSummary, counterTotals } from './counters.ts';
+import { COST_TABLE_HEAD, buildCounters, claudeMethod, costCaption, costMethod, costTableRows, costTotalsRow, counterList, counterLosses, counterSummary, counterTotals } from './counters.ts';
 import type { Counter, Counters } from './counters.ts';
 import { BYTES, bytesLine } from './bytes.ts';
 import { PRICES } from './prices.ts';
@@ -42,8 +42,15 @@ function perCounter(counters: Counters, line: (counter: Counter) => string): rea
 
 export function benchmarkSummary(bench: BenchFile, counters: Counters | null = benchCounters(bench)): readonly string[] {
   if (bench.status === 'pending') return [PENDING_TITLE, bench.reason, PENDING_NOTE];
-  if (counters === null || counters.claude === null) return [benchSummary(bench), totalsNote(bench), QUALITY_NOTE];
-  return [...counterList(counters).flatMap((counter) => [counterSummary(counter), counterTotals(counter)]), QUALITY_NOTE];
+  if (counters === null || counters.claude === null) return [benchSummary(bench), totalsNote(bench), lossesLine(bench), QUALITY_NOTE];
+  return [...counterList(counters).flatMap((counter) => [counterSummary(counter), counterTotals(counter), counterLosses(counter)]), QUALITY_NOTE];
+}
+
+/** The losses line per counter, named when there are two, for the sample section on /benchmark. Empty while pending. */
+export function benchmarkLosses(bench: BenchFile, counters: Counters | null): readonly string[] {
+  if (bench.status === 'pending') return [];
+  if (counters === null || counters.claude === null) return [lossesLine(bench)];
+  return counterList(counters).map(counterLosses);
 }
 
 /**

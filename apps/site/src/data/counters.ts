@@ -8,7 +8,7 @@
 // a missing or extra case, a renamed case, other input data, or prices that
 // belong to another counter.
 import type { BenchFile, CaseRow, CaseSet } from './bench.ts';
-import { FITTED_RULES_NOTE, benchHeadline, benchSummary, formatCount, tokenizerNote, totalsNote, underJson } from './bench.ts';
+import { FITTED_RULES_NOTE, benchHeadline, benchSummary, formatCount, lossesLine, tokenizerNote, totalsNote, underJson } from './bench.ts';
 import type { Trio } from './bench-schema.ts';
 import type { ClaudeCounts, ClaudeReady, ClaudeRow } from './claude-counts-schema.ts';
 import type { Price, Prices } from './prices.ts';
@@ -125,6 +125,11 @@ export function counterSummary(counter: Counter): string {
 /** The totals sentence for one counter, named. */
 export function counterTotals(counter: Counter): string {
   return `${counter.name}: ${totalsNote(counter)}`;
+}
+
+/** The losses line for one counter, named. */
+export function counterLosses(counter: Counter): string {
+  return `${counter.name}: ${lossesLine(counter)}`;
 }
 
 // Cost. Integer cents per 1,000 requests, so every shown difference is exact.

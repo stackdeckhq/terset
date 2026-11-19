@@ -114,10 +114,10 @@ describe('bench numbers', () => {
 
   it('computes the headline and notes from the data', () => {
     if (BENCH_FIXTURE === null) return;
-    expect(underToon(BENCH_FIXTURE)).toBe(3);
-    expect(underJson(BENCH_FIXTURE)).toBe(2);
-    expect(benchHeadline(BENCH_FIXTURE)).toBe('Fewer tokens than TOON in 3 of 5 cases.');
-    expect(benchSummary(BENCH_FIXTURE)).toContain('in 3 of 5 cases and under compact JSON in 2 of 5');
+    expect(underToon(BENCH_FIXTURE)).toBe(4);
+    expect(underJson(BENCH_FIXTURE)).toBe(3);
+    expect(benchHeadline(BENCH_FIXTURE)).toBe('Fewer tokens than TOON in 4 of 6 cases.');
+    expect(benchSummary(BENCH_FIXTURE)).toContain('in 4 of 6 cases and under compact JSON in 3 of 6');
     expect(jsonWinsNote(BENCH_FIXTURE)).toContain('fake case 2, close (1,000 vs 1,010) and fake case 3, tiny (60 vs 100) and fake case 5, nested (400 vs 440)');
     expect(jsonWinsNote(BENCH_FIXTURE)).not.toContain('no list of records');
     expect(csvNote(BENCH_FIXTURE)).toContain('50 to 50 tokens smaller on 1 flat');
@@ -351,12 +351,13 @@ describe('bench numbers', () => {
       tokenizer: 'o200k_base',
       rulesTokens: 40,
       yamlVersion: '2.9.1',
-      cases: [{ name: 'Flat', json: 900, jsonPretty: 1500, yaml: 1100, toon: 800, csv: 700, csvExact: true, terset: 730 }],
+      // Named like a bench file list, since the benchmark.md summary states the file-list share.
+      cases: [{ name: 'File list', json: 900, jsonPretty: 1500, yaml: 1100, toon: 800, csv: 700, csvExact: true, terset: 730 }],
       samples: SAMPLES,
     };
     const text = benchmarkMarkdown(bench);
     expect(text).toContain('| Case | Terset | Compact JSON | Pretty JSON | YAML | TOON best | CSV | Terset vs compact JSON | Terset vs TOON |');
-    expect(text).toContain(`| Flat | 730 | 900 | 1,500 | 1,100 | 800 | 700 | ${pct(730, 900)} | ${pct(730, 800)} |`);
+    expect(text).toContain(`| File list | 730 | 900 | 1,500 | 1,100 | 800 | 700 | ${pct(730, 900)} | ${pct(730, 800)} |`);
     expect(text).toContain(`| Total | 730 | 900 | 1,500 | 1,100 | 800 | n/a | ${pct(730, 900)} | ${pct(730, 800)} |`);
   });
 

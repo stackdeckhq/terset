@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
-import { BANNED_NAMES, isBuiltOutput, isGitMetadata, loadAgentFileBannedNames, loadBannedNames, scanBanned } from './banned.ts';
+import { BANNED_NAMES, RANK_TABLE_MARKER, bannedIn, isBuiltOutput, isGitMetadata, loadAgentFileBannedNames, loadBannedNames, rankTableText, scanBanned } from './banned.ts';
 
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
@@ -66,6 +66,34 @@ describe('banned name loader', () => {
     writeFileSync(join(root, 'source.md'), 'clean\n');
     const names = [[/\bZORBLAX\b/iu, 'a made-up name']] as const;
     expect(scanBanned(root, undefined, names)).toEqual({ files: 1, hits: [] });
+  });
+
+  // The o200k_base table is 200k subword pieces, so a banned pattern can match one by chance.
+  // " conhecer" is one such piece; a made-up name stands in for a real one.
+  it('excuses a vocabulary piece only in a browser chunk that holds the rank table, and only as often as the table holds it', () => {
+    const names = [
+      [/\bconhecer\b/u, 'a vocabulary word'],
+      [/\bzorblax\b/u, 'a made-up name'],
+    ] as const;
+    const chunk = 'dist/client/assets/tokens-a1b2.js';
+    const table = rankTableText();
+    expect(bannedIn(chunk, table, names)).toEqual([]);
+    expect(bannedIn(chunk, `${table}\nconst word = "conhecer";`, names)).toEqual(['a vocabulary word']);
+    expect(bannedIn(chunk, `${table}\nby zorblax`, names)).toEqual(['a made-up name']);
+    // A source file that only names the marker word gets no excuse.
+    expect(bannedIn('apps/site/src/lib/tokens.test.ts', `'${RANK_TABLE_MARKER}' conhecer`, names)).toEqual(['a vocabulary word']);
+    const root = mkdtempSync(join(TEMP, 'vocab-'));
+    writeFileSync(join(root, 'page.js'), `const words = ["${RANK_TABLE_MARKER}", "conhecer"];\n`);
+    expect(scanBanned(root, undefined, names).hits).toEqual([{ file: 'page.js', line: 1, name: 'a vocabulary word' }]);
+  });
+
+  // A g or y pattern keeps lastIndex between test() calls, so a reused pattern would skip matches.
+  it('rejects the g and y flags', () => {
+    for (const flags of ['g', 'iy']) {
+      const file = join(TEMP, `flags-${flags}.json`);
+      writeFileSync(file, JSON.stringify([['zorblax', flags, 'a made-up name']]));
+      expect(() => loadBannedNames(file), flags).toThrow();
+    }
   });
 
   it('rejects a malformed list', () => {
