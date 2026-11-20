@@ -2,12 +2,13 @@
 // The names come from a local, gitignored list (see banned.ts). The loader tests
 // use a made-up name in a temp file, so this file names nothing real.
 // The build also runs scripts/check-build.ts, which scans dist again after a fresh build.
+import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
-import { BANNED_NAMES, RANK_TABLE_MARKER, bannedIn, isBuiltOutput, isGitMetadata, loadAgentFileBannedNames, loadBannedNames, rankTableText, scanBanned } from './banned.ts';
+import { BANNED_NAMES, RANK_TABLE_MARKER, bannedIn, isBuiltOutput, isTracked, loadAgentFileBannedNames, loadBannedNames, rankTableText, scanBanned } from './banned.ts';
 
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
@@ -37,14 +38,23 @@ describe('banned name loader', () => {
     expect(scan.hits).toEqual([{ file: 'planted.md', line: 2, name: 'a made-up name' }]);
   });
 
-  // In a git worktree `.git` is a one-line file that names the main checkout, so it holds a home folder path.
-  it('treats a .git folder and a worktree .git file as git metadata, not repo source', () => {
-    expect(['.git', '.git/config', '.github/workflows/ci.yml', 'docs/.git-notes.md'].map(isGitMetadata)).toEqual([true, true, false, false]);
-    const root = mkdtempSync(join(TEMP, 'worktree-'));
-    writeFileSync(join(root, '.git'), 'gitdir: /' + 'Users/someone/repo/.git/worktrees/x\n');
-    writeFileSync(join(root, 'source.md'), 'clean\n');
+  // Local plans, ignored caches and git's own files are not repo source, so the source scans
+  // read only what git tracks. A staged file counts, since it is about to be committed.
+  it('scans only files git tracks or has staged, never untracked, ignored or git metadata files', () => {
+    const root = mkdtempSync(join(TEMP, 'repo-'));
+    const git = (...args: string[]): void => {
+      execFileSync('git', ['-c', 'init.defaultBranch=main', ...args], { cwd: root, stdio: 'ignore' });
+    };
+    git('init', '-q');
     const homePath = new RegExp('/(?:Users|home)' + '/[\\w.-]+/', 'u');
-    expect(scanBanned(root, (path) => !isGitMetadata(path), [[homePath, 'a home folder path']]).hits).toEqual([]);
+    const line = 'see /' + 'Users/someone/notes\n';
+    writeFileSync(join(root, '.gitignore'), 'ignored.md\n');
+    writeFileSync(join(root, 'staged.md'), line);
+    writeFileSync(join(root, 'untracked.md'), line);
+    writeFileSync(join(root, 'ignored.md'), line);
+    git('add', '.gitignore', 'staged.md');
+    const scan = scanBanned(root, isTracked(root), [[homePath, 'a home folder path']]);
+    expect(scan).toEqual({ files: 2, hits: [{ file: 'staged.md', line: 1, name: 'a home folder path' }] });
   });
 
   it('names the agent-file list in its note, and loads it like the main list', () => {
@@ -105,7 +115,7 @@ describe('banned name loader', () => {
 
 describe('banned names', () => {
   it('finds none in the repo source', () => {
-    const scan = scanBanned(ROOT, (path) => !isBuiltOutput(path));
+    const scan = scanBanned(ROOT, isTracked(ROOT));
     expect(scan.files).toBeGreaterThan(50);
     expect(scan.hits).toEqual([]);
   });
@@ -113,7 +123,7 @@ describe('banned names', () => {
   // A path inside one person's home folder works on that machine only.
   it('finds no home folder path in the repo source', () => {
     const homePath = new RegExp('/(?:Users|home)' + '/[\\w.-]+/', 'u');
-    const scan = scanBanned(ROOT, (path) => !isBuiltOutput(path) && !isGitMetadata(path), [[homePath, 'a home folder path']]);
+    const scan = scanBanned(ROOT, isTracked(ROOT), [[homePath, 'a home folder path']]);
     expect(scan.files).toBeGreaterThan(50);
     expect(scan.hits).toEqual([]);
   });

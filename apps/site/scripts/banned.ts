@@ -8,8 +8,9 @@
 // example the package scope and the legal lines, so the repo-wide scans skip it.
 // A built browser chunk that holds the o200k_base rank table may match a name as often
 // as the vendored table does by chance, and no more (see bannedIn).
+import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { extname, join, relative } from 'node:path';
+import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
@@ -128,9 +129,15 @@ export function scanBanned(root: string, only?: (path: string) => boolean, names
   return { files: files.length, hits };
 }
 
-/** True for git's own files: the `.git` folder, or the `.git` file a worktree has in its place. */
-export function isGitMetadata(path: string): boolean {
-  return path === '.git' || path.startsWith('.git/');
+/**
+ * A filter for scanBanned that keeps the files git tracks or has staged under `root`. Untracked
+ * and ignored files, such as local plans and caches, are not repo source, and git's own files
+ * are never tracked. Throws when `root` is not inside a git checkout.
+ */
+export function isTracked(root: string): (path: string) => boolean {
+  const listed = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' });
+  const tracked = new Set(listed.split('\0').filter((path) => path !== ''));
+  return (path) => tracked.has(path.split(sep).join('/'));
 }
 
 /** True for paths inside a build output folder. */
