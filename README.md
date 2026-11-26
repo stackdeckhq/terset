@@ -124,9 +124,12 @@ Zero dependencies. Node 20 and up. Types are included.
 The API exports `encode`, `decode`, `RULES` and `rulesFor`.
 `rulesFor(text)` gives only the rules sentences that text needs. `RULES` keeps the full rules.
 
+Save this as `example.mjs`.
+
 ```js
 import { rulesFor, decode, encode } from "@stackdeck/terset";
 
+/** @type {import("@stackdeck/terset").JsonRoot} */
 const data = {
   team: "core",
   users: [
@@ -146,6 +149,10 @@ const messages = [
 
 console.log(text);
 console.log(JSON.stringify(decode(text)) === JSON.stringify(data)); // true
+```
+
+```sh
+node example.mjs
 ```
 
 Output (the gaps are tabs):
@@ -168,6 +175,7 @@ Never write Terset by hand. Always use `encode`.
 
 **JavaScript details**
 
+- Terset ships as an ES module. In a CommonJS project, use `await import("@stackdeck/terset")` inside an async function.
 - `decode` and `rulesFor` throw `SyntaxError` on any text they reject, and `TypeError` when the input is not a string.
 - Values must be plain objects, arrays and JSON scalars. Class instances, symbol keys and sparse arrays throw `TypeError`.
 - Numbers are JavaScript numbers. Numeric `-0`, `NaN` and infinities throw `TypeError`.
@@ -190,10 +198,12 @@ Zero dependencies. Python 3.10 and up. Type hints are included.
 The API exports `encode`, `decode`, `RULES` and `rules_for`.
 `rules_for(text)` gives only the rules sentences that text needs. `RULES` keeps the full rules.
 
-```python
-from terset import decode, encode, rules_for
+Save this as `example.py`.
 
-data = {
+```python
+from terset import JsonRoot, decode, encode, rules_for
+
+data: JsonRoot = {
     "team": "core",
     "users": [
         {"id": "u1", "name": "Ada", "role": "admin"},
@@ -212,6 +222,10 @@ messages = [
 
 print(text)
 print(decode(text) == data)  # True
+```
+
+```sh
+python3 example.py
 ```
 
 Output (the gaps are tabs):

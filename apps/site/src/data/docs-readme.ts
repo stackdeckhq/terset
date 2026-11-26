@@ -33,6 +33,7 @@ import {
   README_REFERENCE,
   WHEN_NOT,
   implementationsMarkdown,
+  quickStartCommand,
   quickStartSteps,
 } from './docs.ts';
 import type { DocLang } from './docs.ts';
@@ -119,7 +120,9 @@ function use(lang: DocLang): string {
   const sample = QUICK_START[lang];
   return [
     `The API exports \`${name.encode}\`, \`${name.decode}\`, \`${name.rules}\` and \`${name.rulesFor}\`.\n\`${name.rulesFor}(text)\` gives only the rules sentences that text needs. \`${name.rules}\` keeps the full rules.`,
+    `Save this as \`${sample.filename}\`.`,
     fence(LANG_FENCE[lang], sample.code),
+    fence('sh', quickStartCommand(lang)),
     'Output (the gaps are tabs):',
     fence('text', sample.output),
     quickStartSteps(lang)

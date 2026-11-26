@@ -112,10 +112,12 @@ Zero dependencies. Python 3.10 and up. Type hints are included.
 The API exports `encode`, `decode`, `RULES` and `rules_for`.
 `rules_for(text)` gives only the rules sentences that text needs. `RULES` keeps the full rules.
 
-```python
-from terset import decode, encode, rules_for
+Save this as `example.py`.
 
-data = {
+```python
+from terset import JsonRoot, decode, encode, rules_for
+
+data: JsonRoot = {
     "team": "core",
     "users": [
         {"id": "u1", "name": "Ada", "role": "admin"},
@@ -134,6 +136,10 @@ messages = [
 
 print(text)
 print(decode(text) == data)  # True
+```
+
+```sh
+python3 example.py
 ```
 
 Output (the gaps are tabs):

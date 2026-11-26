@@ -27,6 +27,7 @@ import {
   VERSION_LINE,
   WHEN_NOT,
   implementationsMarkdown,
+  quickStartCommand,
   quickStartSteps,
   sectionTitle,
 } from './docs.ts';
@@ -59,7 +60,9 @@ function quickStart(lang: DocLang): string {
   const sample = QUICK_START[lang];
   return [
     `### ${LANG_LABELS[lang]}`,
+    `Save this as \`${sample.filename}\`.`,
     fence(LANG_FENCE[lang], sample.code),
+    fence('sh', quickStartCommand(lang)),
     'Output (the gaps are tabs):',
     fence('text', sample.output),
     quickStartSteps(lang)

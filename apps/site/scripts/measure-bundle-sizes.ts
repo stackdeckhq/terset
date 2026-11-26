@@ -11,6 +11,10 @@ const TSC = createRequire(import.meta.url).resolve('typescript/bin/tsc');
 const CONFIG = fileURLToPath(new URL('../../../packages/terset/tsconfig.build.json', import.meta.url));
 const SITE = fileURLToPath(new URL('../', import.meta.url));
 
+export function buildTerset(outDir: string): void {
+  execFileSync(process.execPath, [TSC, '-p', CONFIG, '--outDir', outDir]);
+}
+
 function gzipBundle(entry: string, names: string): number {
   const result = buildSync({
     stdin: { contents: `export { ${names} } from ${JSON.stringify(entry)};`, resolveDir: SITE },
@@ -29,7 +33,7 @@ function gzipBundle(entry: string, names: string): number {
 export function measureBundleSizes() {
   const dist = mkdtempSync(join(tmpdir(), 'terset-bundle-'));
   try {
-    execFileSync(process.execPath, [TSC, '-p', CONFIG, '--outDir', dist]);
+    buildTerset(dist);
     const terset = join(dist, 'index.js');
     const toon = '@toon-format/toon';
     return {

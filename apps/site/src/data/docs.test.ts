@@ -10,7 +10,7 @@ import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
 import { describe, expect, it } from 'vitest';
 import { RULES, RULES_PLACEMENT, decode, encode, rulesFor } from '../lib/format.ts';
 import { API, PUBLIC_EXPORTS, exampleFence } from './docs-api.ts';
-import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, QUICK_START, RULES_INTRO, WHEN_NOT, quickStartSteps } from './docs.ts';
+import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, RULES_INTRO, WHEN_NOT, quickStartSteps } from './docs.ts';
 import { COUNTERS, counterLosses } from './numbers.ts';
 import { SAMPLES } from './samples.ts';
 import type { CodeSample } from './docs.ts';
@@ -202,10 +202,8 @@ function runPy(code: string): string {
   return result.stdout.replace(/\n$/u, '');
 }
 
-const EXAMPLES: readonly (readonly [label: string, js: CodeSample, py: CodeSample, typescript: boolean])[] = [
-  ['quick start', QUICK_START.js, QUICK_START.py, false],
-  ...API.map((entry) => [entry.id, entry.example.js, entry.example.py, exampleFence(entry, 'js') === 'ts'] as const),
-];
+const EXAMPLES: readonly (readonly [label: string, js: CodeSample, py: CodeSample, typescript: boolean])[] =
+  API.map((entry) => [entry.id, entry.example.js, entry.example.py, exampleFence(entry, 'js') === 'ts'] as const);
 
 describe('examples', () => {
   for (const [label, js, py, typescript] of EXAMPLES) {
