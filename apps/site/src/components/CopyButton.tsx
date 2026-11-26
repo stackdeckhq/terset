@@ -33,6 +33,22 @@ export interface CopyButtonProps {
    * It is not truly disabled, so it keeps its place in the tab order and never drops focus.
    */
   readonly disabled?: boolean;
+  /**
+   * Identifies the text on offer when it changes over time. "Copied" or "Copy failed" shows only
+   * while this still equals its value at the click, so a late result never lands on newer text.
+   */
+  readonly feedbackKey?: string;
+}
+
+/** The outcome of the last copy, and the feedbackKey it was started with. */
+interface CopyResult {
+  readonly state: Exclude<CopyState, 'idle'>;
+  readonly of: string | undefined;
+}
+
+/** What the button shows: the last copy's outcome, but only for the text still on offer and never while disabled. */
+export function shownState(last: CopyResult | null, feedbackKey: string | undefined, disabled: boolean): CopyState {
+  return last === null || disabled || last.of !== feedbackKey ? 'idle' : last.state;
 }
 
 function buttonClass(onLight: boolean, strong: boolean, labelled: boolean): string {
@@ -41,8 +57,9 @@ function buttonClass(onLight: boolean, strong: boolean, labelled: boolean): stri
   return onLight ? `${shape} on-light` : shape;
 }
 
-export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false, labelled = false, disabled = false }: CopyButtonProps) {
-  const [state, setState] = useState<CopyState>('idle');
+export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false, labelled = false, disabled = false, feedbackKey }: CopyButtonProps) {
+  const [last, setLast] = useState<CopyResult | null>(null);
+  const state = shownState(last, feedbackKey, disabled);
   const timer = useRef<number | undefined>(undefined);
 
   useEffect(
@@ -55,10 +72,11 @@ export function CopyButton({ getText, label = 'Copy', describedBy, onLight = fal
   const onClick = async (): Promise<void> => {
     if (disabled) return;
     const ok = await copyText(getText());
-    setState(ok ? 'copied' : 'failed');
+    // feedbackKey is the one from the click, so the outcome stays tied to the text that was copied.
+    setLast({ state: ok ? 'copied' : 'failed', of: feedbackKey });
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
-      setState('idle');
+      setLast(null);
     }, RESET_MS);
   };
 

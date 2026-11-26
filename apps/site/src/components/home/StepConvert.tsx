@@ -200,8 +200,8 @@ export function StepConvert() {
                 Terset, from the real encoder
               </span>
               <span className="code-h-acts">
-                <CopyButton getText={() => (copy === null ? '' : promptText(copy))} label="Copy for a prompt" labelled disabled={copy === null} describedBy={`${id}-out-label`} />
-                <CopyButton getText={() => copy ?? ''} disabled={copy === null} describedBy={`${id}-out-label`} />
+                <CopyButton getText={() => (copy === null ? '' : promptText(copy))} label="Copy for a prompt" labelled disabled={copy === null} feedbackKey={copy ?? ''} describedBy={`${id}-out-label`} />
+                <CopyButton getText={() => copy ?? ''} disabled={copy === null} feedbackKey={copy ?? ''} describedBy={`${id}-out-label`} />
               </span>
             </div>
             <div className="fade-x out-fade">

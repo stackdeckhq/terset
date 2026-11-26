@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { CopyButton } from './CopyButton.tsx';
+import { CopyButton, shownState } from './CopyButton.tsx';
 import type { CopyButtonProps } from './CopyButton.tsx';
 
 const render = (props: Omit<CopyButtonProps, 'getText'>): string => renderToStaticMarkup(createElement(CopyButton, { getText: () => 'a\tb', ...props }));
@@ -51,6 +51,25 @@ describe('disabled copy button', () => {
     expect(html).toContain('aria-disabled="true"');
     expect(html).not.toMatch(/<button[^>]* disabled=/u);
     expect(render({})).not.toContain('aria-disabled');
+  });
+});
+
+// A copy can finish after the text it copied is gone. Its result must not show on another text.
+describe('copy feedback', () => {
+  it('shows the result of a copy of the current text', () => {
+    expect(shownState({ state: 'copied', of: 'a: 1' }, 'a: 1', false)).toBe('copied');
+    expect(shownState({ state: 'failed', of: undefined }, undefined, false)).toBe('failed');
+    expect(shownState(null, 'a: 1', false)).toBe('idle');
+  });
+
+  it('hides the result of a copy of an older text', () => {
+    expect(shownState({ state: 'failed', of: 'old: 1' }, 'new: 2', false)).toBe('idle');
+    expect(shownState({ state: 'copied', of: 'old: 1' }, undefined, false)).toBe('idle');
+  });
+
+  it('hides any result while the button is disabled', () => {
+    expect(shownState({ state: 'failed', of: 'a: 1' }, 'a: 1', true)).toBe('idle');
+    expect(shownState({ state: 'copied', of: undefined }, undefined, true)).toBe('idle');
   });
 });
 
