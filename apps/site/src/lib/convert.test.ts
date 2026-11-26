@@ -1,7 +1,7 @@
 // The converter's output is exactly encode(), and bad input gets a clear status.
 import { describe, expect, it } from 'vitest';
 import { SAMPLES } from '../data/samples.ts';
-import { convert } from './convert.ts';
+import { changedNumbers, convert, statusOf } from './convert.ts';
 import { encode } from './format.ts';
 
 describe('convert', () => {
@@ -36,5 +36,71 @@ describe('convert', () => {
     const scalar = convert('42');
     expect(scalar.ok).toBe(false);
     if (!scalar.ok) expect(scalar.status).toBe('Needs an object or array');
+  });
+});
+
+describe('numbers JavaScript would change', () => {
+  const statusFor = (source: string): string => statusOf(convert(source));
+  const detailFor = (source: string): string => {
+    const result = convert(source);
+    return result.ok ? '' : result.detail;
+  };
+
+  it('refuses an integer past the safe range and names it as typed', () => {
+    const source = '[{"id":9007199254740993,"name":"Ada"},{"id":2,"name":"Ben"}]';
+    expect(statusFor(source)).toBe('Number would round');
+    expect(detailFor(source)).toContain('9007199254740993 would become 9007199254740992.');
+    expect(detailFor(source)).toContain('"9007199254740993"');
+  });
+
+  it('refuses a negative one too', () => {
+    expect(statusFor('{"n":-9007199254740993}')).toBe('Number would round');
+    expect(detailFor('{"n":-9007199254740993}')).toContain('-9007199254740993 would become -9007199254740992.');
+  });
+
+  it('finds one nested deep and gives its line', () => {
+    const source = JSON.stringify({ a: [{ b: { c: [1, 2, { d: 1 }] } }] }, null, 2).replace('"d": 1', '"d": 12345678901234567890');
+    expect(statusFor(source)).toBe('Number would round');
+    expect(detailFor(source)).toMatch(/^Line 9: 12345678901234567890 would become 12345678901234567000\./u);
+  });
+
+  it('counts the other numbers that change', () => {
+    expect(detailFor('[9007199254740993, 9007199254740995, 9007199254740997]')).toContain('2 more numbers change too.');
+    expect(detailFor('[9007199254740993, 9007199254740995]')).toContain('1 more number changes too.');
+  });
+
+  it('ignores digits inside strings and keys, escaped quotes included', () => {
+    const source = '[{"9007199254740993":"9007199254740993","note":"a \\" 9007199254740993 \\\\","id":1}]';
+    expect(statusFor(source)).toBe('Round trip exact');
+  });
+
+  it('refuses decimals and exponents whose value changes', () => {
+    expect(detailFor('[0.10000000000000000001]')).toContain('0.10000000000000000001 would become 0.1.');
+    expect(detailFor('[1e-400]')).toContain('1e-400 would become 0.');
+    expect(detailFor('[1e400]')).toContain('1e400 is too large for JavaScript.');
+    expect(statusFor('[-1e400]')).toBe('Number would round');
+  });
+
+  it('keeps numbers that only print differently', () => {
+    expect(statusFor('[{"a":1.50,"b":1e2,"c":1E+21,"d":0.000001,"e":2.5e-7,"f":9007199254740992,"g":-12.0}]')).toBe('Round trip exact');
+  });
+
+  it('shortens a very long number in the message', () => {
+    const long = `1${'0'.repeat(80)}1`;
+    expect(detailFor(`[${long}]`)).toContain(`${long.slice(0, 40)}…`);
+    expect(detailFor(`[${long}]`)).not.toContain(long);
+  });
+});
+
+describe('changedNumbers', () => {
+  it('returns each changed literal with its line, in order', () => {
+    expect(changedNumbers('{\n"a": 9007199254740993,\n"b": [1, 1e400]\n}')).toEqual([
+      { literal: '9007199254740993', line: 2, value: 9007199254740992 },
+      { literal: '1e400', line: 3, value: Infinity },
+    ]);
+  });
+
+  it('returns nothing for plain numbers', () => {
+    expect(changedNumbers('[1, -2, 3.25, 0, -0, 1e3]')).toEqual([]);
   });
 });

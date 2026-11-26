@@ -6,7 +6,7 @@ import { bytes } from './text.ts';
 export const MAX_CHARS = 60_000;
 
 /** Every status the converter can show. The page reserves room for the widest one. */
-export const STATUSES = ['Round trip exact', 'Round trip failed', 'Too long', 'Waiting for valid JSON', 'Needs an object or array', 'Cannot encode'] as const;
+export const STATUSES = ['Round trip exact', 'Round trip failed', 'Too long', 'Waiting for valid JSON', 'Needs an object or array', 'Number would round', 'Cannot encode'] as const;
 export type Status = (typeof STATUSES)[number];
 
 /** The status line for a result. */
@@ -43,20 +43,115 @@ function message(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-/** Parses JSON text into a typed JSON value, or returns why it could not. */
-export function parseJson(text: string): { readonly ok: true; readonly value: JsonValue } | { readonly ok: false; readonly detail: string } {
-  try {
-    const parsed: unknown = JSON.parse(text);
-    return isJsonValue(parsed) ? { ok: true, value: parsed } : { ok: false, detail: 'The text is not plain JSON data.' };
-  } catch (error) {
-    return { ok: false, detail: message(error) };
+/** A number literal in the pasted text that JavaScript reads as a different value. */
+export interface ChangedNumber {
+  /** The number exactly as typed. */
+  readonly literal: string;
+  /** Its line in the pasted text, counted from 1. */
+  readonly line: number;
+  /** What JSON.parse makes of it. */
+  readonly value: number;
+}
+
+// A JSON number literal, matched where the scan stands. The text already parsed, so it is well formed.
+const NUMBER_LITERAL = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
+// A decimal as JSON writes it or as String(number) prints it. Infinity and NaN do not match.
+const DECIMAL = /^(-?)(\d+)(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/u;
+
+/**
+ * A decimal reduced to sign, significant digits and power of ten, so 1.50, 15e-1 and 1.5
+ * all give "15e-1". Every zero gives "0". Null when the text is not a finite decimal.
+ */
+function canonicalDecimal(decimal: string): string | null {
+  const match = DECIMAL.exec(decimal);
+  if (match === null) return null;
+  const [, sign = '', whole = '', fraction = '', exponent = '0'] = match;
+  const digits = `${whole}${fraction}`.replace(/^0+/u, '');
+  if (digits === '') return '0';
+  const significant = digits.replace(/0+$/u, '');
+  const power = Number(exponent) - fraction.length + digits.length - significant.length;
+  return `${sign}${significant}e${String(power)}`;
+}
+
+/** The index just past the string that opens at `start`. JSON strings hold no raw newlines. */
+function afterString(json: string, start: number): number {
+  let index = start + 1;
+  while (index < json.length) {
+    const char = json.charAt(index);
+    if (char === '\\') index += 2;
+    else if (char === '"') return index + 1;
+    else index += 1;
   }
+  return index;
+}
+
+/**
+ * Every number literal in valid JSON text whose value changes when JavaScript reads it.
+ * A literal changes when the number it becomes prints back as a different decimal value:
+ * 9007199254740993 prints as 9007199254740992, 0.10000000000000000001 as 0.1 and 1e400 as
+ * Infinity. Forms that only print differently, such as 1.50 or 1e2, keep their value.
+ * Digits inside strings and keys are skipped.
+ */
+export function changedNumbers(json: string): readonly ChangedNumber[] {
+  const changed: ChangedNumber[] = [];
+  let line = 1;
+  let index = 0;
+  while (index < json.length) {
+    const char = json.charAt(index);
+    if (char === '"') {
+      index = afterString(json, index);
+    } else if (char === '-' || (char >= '0' && char <= '9')) {
+      NUMBER_LITERAL.lastIndex = index;
+      const literal = NUMBER_LITERAL.exec(json)?.[0] ?? char;
+      const value = Number(literal);
+      if (canonicalDecimal(literal) !== canonicalDecimal(String(value))) changed.push({ literal, line, value });
+      index += literal.length;
+    } else {
+      if (char === '\n') line += 1;
+      index += 1;
+    }
+  }
+  return changed;
+}
+
+// A number longer than this is cut short in the message, so the output pane stays readable.
+const SHOWN_CHARS = 40;
+
+function roundedDetail(first: ChangedNumber, more: number): string {
+  const cut = first.literal.length > SHOWN_CHARS;
+  const shown = cut ? `${first.literal.slice(0, SHOWN_CHARS)}…` : first.literal;
+  const what = Number.isFinite(first.value) ? `would become ${String(first.value)}. JavaScript cannot hold it exactly.` : 'is too large for JavaScript.';
+  const fix = cut ? 'Quote it to keep every digit.' : `Quote it to keep every digit: "${first.literal}".`;
+  const rest = more === 0 ? '' : more === 1 ? ' 1 more number changes too.' : ` ${String(more)} more numbers change too.`;
+  return `Line ${String(first.line)}: ${shown} ${what} ${fix}${rest}`;
+}
+
+export type ParseResult =
+  | { readonly ok: true; readonly value: JsonValue }
+  | { readonly ok: false; readonly reason: 'syntax'; readonly detail: string }
+  | { readonly ok: false; readonly reason: 'rounded'; readonly first: ChangedNumber; readonly more: number };
+
+/** Parses JSON text into a typed JSON value, or returns why it could not, including numbers JavaScript would change. */
+export function parseJson(text: string): ParseResult {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    return { ok: false, reason: 'syntax', detail: message(error) };
+  }
+  const changed = changedNumbers(text);
+  const first = changed[0];
+  if (first !== undefined) return { ok: false, reason: 'rounded', first, more: changed.length - 1 };
+  return isJsonValue(parsed) ? { ok: true, value: parsed } : { ok: false, reason: 'syntax', detail: 'The text is not plain JSON data.' };
 }
 
 export function convert(source: string): ConvertResult {
   if (source.length > MAX_CHARS) return { ok: false, title: 'Too long for this demo.', detail: 'It stops at 60,000 characters.', status: 'Too long' };
   const parsed = parseJson(source);
-  if (!parsed.ok) return { ok: false, title: 'Not valid JSON yet.', detail: parsed.detail, status: 'Waiting for valid JSON' };
+  if (!parsed.ok) {
+    if (parsed.reason === 'rounded') return { ok: false, title: 'A number would change.', detail: roundedDetail(parsed.first, parsed.more), status: 'Number would round' };
+    return { ok: false, title: 'Not valid JSON yet.', detail: parsed.detail, status: 'Waiting for valid JSON' };
+  }
   if (!isJsonRoot(parsed.value)) {
     return { ok: false, title: 'Use an object or an array.', detail: 'The root must be an object or an array, for example [{"id": "a1"}].', status: 'Needs an object or array' };
   }
