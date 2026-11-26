@@ -1,14 +1,8 @@
-// Bundle sizes, gzipped. Measured with a minified browser ESM bundle (ES2022)
-// and Node's gzipSync at the default level. TOON is @toon-format/toon at TOON_VERSION;
-// its "encode plus decode" figure is the whole module.
 import { TOON_VERSION } from './bench.ts';
+import measured from './bundle-sizes.json' with { type: 'json' };
 
-export const SIZE_BYTES = {
-  tersetEncode: 1231,
-  tersetAll: 2064,
-  toonEncode: 2775,
-  toonAll: 8247,
-} as const;
+// Refresh with pnpm bundle:sizes. The test checks the committed bytes against a fresh build.
+export const SIZE_BYTES: Readonly<typeof measured> = measured;
 
 const KB = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -16,4 +10,4 @@ export function kb(bytes: number): string {
   return `${KB.format(bytes / 1000)} kB`;
 }
 
-export const SIZE_LINE = `Gzipped: Terset encode ${kb(SIZE_BYTES.tersetEncode)}, encode plus decode ${kb(SIZE_BYTES.tersetAll)}. TOON ${TOON_VERSION} encode ${kb(SIZE_BYTES.toonEncode)}, encode plus decode ${kb(SIZE_BYTES.toonAll)}. No dependencies.`;
+export const SIZE_LINE = `Minified ES2022 browser bundles built with esbuild, then gzipped. Terset encode ${kb(SIZE_BYTES.tersetEncode)}, encode plus decode ${kb(SIZE_BYTES.tersetAll)}. TOON ${TOON_VERSION} encode ${kb(SIZE_BYTES.toonEncode)}, encode plus decode ${kb(SIZE_BYTES.toonAll)}. Terset has no dependencies.`;

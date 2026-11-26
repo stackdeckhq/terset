@@ -19,6 +19,7 @@
     "real": "node apps/site/scripts/update-real.ts",
     "accuracy": "node apps/site/scripts/update-accuracy.ts",
     "bytes": "node apps/site/scripts/update-bytes.ts",
+    "bundle:sizes": "node apps/site/scripts/measure-bundle-sizes.ts",
     "docs:readme": "node apps/site/scripts/update-readmes.ts",
     "build": "pnpm --dir packages/terset build && pnpm --dir apps/site build",
     "deploy:check": "pnpm --dir apps/site run deploy:check",
