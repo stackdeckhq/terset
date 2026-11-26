@@ -44,7 +44,13 @@ const agents = renderContent(read(join(CONTENT, 'agents.md')), generated, bench)
 const skill = renderContent(read(join(CONTENT, 'skill/SKILL.md')), generated, bench);
 const llms = renderContent(read(join(CONTENT, 'llms.txt')), generated, bench);
 
-for (const [name, text] of [['agents.md', agents], ['SKILL.md', skill], ['Agent prompt', AGENT_PROMPT]] as const) {
+const bugForm = join(SITE, '../../.github/ISSUE_TEMPLATE/bug_report.yml');
+for (const [name, text] of [
+  ['agents.md', agents],
+  ['SKILL.md', skill],
+  ['Agent prompt', AGENT_PROMPT],
+  ['bug_report.yml', read(bugForm)],
+] as const) {
   const plain = text.replaceAll('`', '');
   if (!plain.includes('@stackdeck/terset on npm') || !plain.includes('terset on PyPI')) {
     failures.push(`${name} must name both official packages and their registries`);
