@@ -4,7 +4,7 @@
 // docs.test.ts fails when a README drifts or an example's output changes.
 // Inline text may use `code`, **bold** and [links](https://terset.dev).
 import type { JsonRoot } from '../lib/format.ts';
-import { INSTALL_COMMANDS, NPM_URL, PACKAGE_MANAGERS, PACKAGE_NAME, PACKAGE_VERSION, SITE_URL } from './site.ts';
+import { INSTALL_COMMANDS, NPM_URL, PACKAGE_MANAGERS, PACKAGE_NAME, PACKAGE_VERSION, PYPI_NAME, SITE_URL } from './site.ts';
 import { CONFORMANCE_SUITES, DEFAULT_FORMAT, FROZEN_FORMAT, VERSIONS_TEXT } from './versions.ts';
 
 export const DOC_LANGS = ['js', 'py'] as const;
@@ -16,7 +16,6 @@ export const LANG_LABELS: PerLang<string> = { js: 'JavaScript', py: 'Python' };
 /** The fence tag each language's code uses. */
 export const LANG_FENCE: PerLang<string> = { js: 'js', py: 'python' };
 
-export const PYPI_NAME = 'terset';
 export const PYPI_URL = `https://pypi.org/project/${PYPI_NAME}/`;
 export const DOCS_URL = `${SITE_URL}/docs`;
 

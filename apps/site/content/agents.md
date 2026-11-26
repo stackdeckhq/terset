@@ -10,7 +10,7 @@ Terset writes JSON records as one terse table. Decoding gives the same JSON back
 
 ## How to get it
 
-{{RELEASE}}. Node 20 or later.
+{{RELEASE}}. JavaScript requires Node 20 or later. Python requires Python 3.10 or later.
 
 {{INSTALL}}
 

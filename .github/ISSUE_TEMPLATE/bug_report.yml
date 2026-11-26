@@ -5,9 +5,17 @@ body:
   - type: input
     id: version
     attributes:
-      label: Version
-      description: The @stackdeck/terset version, and your Node version.
-      placeholder: '0.1.1, Node 24.11'
+      label: Package and version
+      description: Give the package name and version, or say if the bug is on the site.
+      placeholder: 'terset 0.3.0'
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Language and runtime version
+      description: Give your language and runtime version, or your browser and version for a site bug.
+      placeholder: 'Python, CPython 3.12.0'
     validations:
       required: true
   - type: textarea
@@ -15,7 +23,6 @@ body:
     attributes:
       label: Input
       description: The smallest input that shows the problem, and the code you ran.
-      render: js
     validations:
       required: true
   - type: textarea

@@ -4,7 +4,9 @@
 
 The encoder writes format version 1.1 by default. Text written in format 1.0 still decodes, and `encode` can still write it. That number is separate from the package version, which is still 0.x. JavaScript and Python are separate implementations that both pass the conformance suite at `conformance/` in the repository.
 
-{{RELEASE}}. Install it with `{{PNPMADD}}`.
+{{RELEASE}}.
+
+{{INSTALL}}
 
 ## Start here
 
