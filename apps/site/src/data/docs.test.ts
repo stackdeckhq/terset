@@ -73,7 +73,8 @@ describe('README blocks', () => {
     const tables = section.split('\n\n').filter((paragraph) => paragraph.startsWith('| Format | Bytes | Tokens |'));
     expect(tables.map((table) => table.split('\n').slice(2))).toEqual([four.rows, ten.rows]);
     expect(four.dataTokens).toBeLessThan(four.jsonTokens);
-    expect(four.promptTokens).toBeGreaterThanOrEqual(four.jsonTokens);
+    // Strictly greater: at break-even the sentence below would be false.
+    expect(four.promptTokens).toBeGreaterThan(four.jsonTokens);
     expect(section).toContain('Four records do not save enough tokens to pay for the rules line.');
     const saving = ten.jsonTokens - ten.promptTokens;
     expect(saving).toBeGreaterThan(0);
