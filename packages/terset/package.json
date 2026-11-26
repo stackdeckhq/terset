@@ -1,6 +1,6 @@
 {
   "name": "@stackdeck/terset",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A compact text format for JSON records in LLM prompts. Same data, fewer input tokens.",
   "type": "module",
   "license": "MIT",
