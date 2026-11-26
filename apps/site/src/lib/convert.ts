@@ -171,7 +171,8 @@ export function changedNumbers(json: string): readonly ChangedNumber[] {
       if (change !== null) changed.push({ literal, line, value, change });
       index += literal.length;
     } else {
-      if (char === '\n') line += 1;
+      // LF, CR and CRLF each end a line. The CR of a CRLF waits for its LF, so the pair counts once.
+      if (char === '\n' || (char === '\r' && json.charAt(index + 1) !== '\n')) line += 1;
       index += 1;
     }
   }

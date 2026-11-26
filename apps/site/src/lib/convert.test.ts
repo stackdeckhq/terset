@@ -145,6 +145,12 @@ describe('changedNumbers', () => {
     ]);
   });
 
+  it('counts a bare CR as a line break and CRLF once', () => {
+    expect(changedNumbers('[\r9007199254740993]')[0]?.line).toBe(2);
+    expect(changedNumbers('[\r\n9007199254740993]')[0]?.line).toBe(2);
+    expect(changedNumbers('[\r\r\n\n9007199254740993]')[0]?.line).toBe(4);
+  });
+
   it('returns nothing for plain numbers', () => {
     expect(changedNumbers('[1, -2, 3.25, 0, -0, 1e3]')).toEqual([]);
   });
