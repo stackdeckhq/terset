@@ -52,7 +52,7 @@ export const API: readonly ApiEntry[] = [
   {
     id: 'encode',
     name: { js: 'encode', py: 'encode' },
-    summary: 'Turns a JSON object or array into Terset text. Lists of records become tables only when that is smaller than JSON.',
+    summary: 'Turns a JSON object or array into Terset text. The byte check compares the header and rows with compact JSON. It excludes the count line, so a tiny table can be larger than compact JSON. The encoder chooses a table only when the header and rows are shorter.',
     signature: { js: 'encode(value: JsonRoot, options?: EncodeOptions): string', py: 'encode(value: JsonInputRoot, *, format: FormatVersion = "1.1") -> str' },
     params: {
       js: [

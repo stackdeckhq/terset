@@ -130,6 +130,17 @@ describe('when not to use it', () => {
 });
 
 describe('package facts', () => {
+  it('explains why the count line can make a tiny table larger than JSON', () => {
+    const value = [{ a: 1, b: 2 }, { b: 2 }];
+    const text = encode(value);
+    expect(text).toMatch(/^\[2\]\n/u);
+    expect(Buffer.byteLength(text)).toBe(26);
+    expect(Buffer.byteLength(JSON.stringify(value))).toBe(23);
+    const summary = API.find((entry) => entry.id === 'encode')?.summary;
+    expect(summary).toContain('The byte check compares the header and rows with compact JSON.');
+    expect(summary).toContain('It excludes the count line, so a tiny table can be larger than compact JSON.');
+  });
+
   it('matches each package version, runtime and export list', () => {
     const npm = JSON.parse(read('packages/terset/package.json')) as { version: string; engines: { node: string } };
     const pyproject = read('packages/terset-py/pyproject.toml');
