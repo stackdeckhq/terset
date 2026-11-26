@@ -26,7 +26,7 @@ it('matches the committed files and records all source hashes', () => {
   const suite = loadSuite('real');
   const generated = serializeReal(generateReal());
   for (const name of ['datasets.json', 'questions.json'] as const) {
-    const bytes = readFileSync(new URL(`../../data/real/${name}`, import.meta.url));
+    const bytes = readFileSync(new URL(`../../data/real/suite/${name}`, import.meta.url));
     expect(bytes.toString('utf8')).toBe(generated[name]);
     expect(hash(bytes)).toBe(suite.hashes[name]);
   }

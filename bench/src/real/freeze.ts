@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { hash } from '../data.ts';
 import { generateReal, serializeReal } from './generate.ts';
 
-const destination = process.argv[2] ?? fileURLToPath(new URL('../../data/real/', import.meta.url));
+const destination = process.argv[2] ?? fileURLToPath(new URL('../../data/real/suite/', import.meta.url));
 const files = serializeReal(generateReal());
 await mkdir(destination, { recursive: true });
 for (const [name, text] of Object.entries(files)) {

@@ -63,7 +63,7 @@ export const SUITES: Record<SuiteName, SuiteRecord | null> = {
       seed: 20261117, referenceDate: '2026-11-17T00:00:00.000Z' },
   },
   real: {
-    name: 'real', paths: { 'datasets.json': '../data/real/datasets.json', 'questions.json': '../data/real/questions.json' },
+    name: 'real', paths: { 'datasets.json': '../data/real/suite/datasets.json', 'questions.json': '../data/real/suite/questions.json' },
     hashes: {
       'datasets.json': '452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6',
       'questions.json': 'a43dc5e2423f5a14c3caed102c7e1fe680e50eb24ee335b90aecc189466e2889',

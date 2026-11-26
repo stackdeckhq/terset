@@ -60,8 +60,8 @@ listed above before reading the data.
 | File | Bytes | SHA-256 |
 | --- | ---: | --- |
 | `bench/src/real/generate.ts` | 9067 | c09f85fe3e3d685292a38500881c469c9c1b9bd627354f5f4dba7b8eaaf099db |
-| `datasets.json` | 420151 | 452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6 |
-| `questions.json` | 11655 | a43dc5e2423f5a14c3caed102c7e1fe680e50eb24ee335b90aecc189466e2889 |
+| `suite/datasets.json` | 420151 | 452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6 |
+| `suite/questions.json` | 11655 | a43dc5e2423f5a14c3caed102c7e1fe680e50eb24ee335b90aecc189466e2889 |
 
 Regenerate the frozen dataset and question files from the repository root.
 
