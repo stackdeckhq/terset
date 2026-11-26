@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 import { runInThisContext } from 'node:vm';
+import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
 import { describe, expect, it } from 'vitest';
 import { RULES, RULES_PLACEMENT, decode, encode, rulesFor } from '../lib/format.ts';
 import { API, PUBLIC_EXPORTS, exampleFence } from './docs-api.ts';
@@ -32,6 +33,18 @@ const STALE_PYPI = ['Coming', 'soon', 'on', 'PyPI'].join(' ');
 const STALE_PLACEMENT = ['in', 'the', 'system', 'prompt', 'once'].join(' ');
 
 describe('README blocks', () => {
+  it('shows the measured counts for the four-user example in every README', () => {
+    for (const id of README_IDS) {
+      const section = sections(read(README_FILES[id])).get('See it') ?? '';
+      const json = /```json\n([^\n]+)\n```/u.exec(section)?.[1];
+      if (json === undefined) throw new Error(`${README_FILES[id]} is missing the example JSON`);
+      const data = encode(JSON.parse(json) as Parameters<typeof encode>[0]);
+      const prompt = [rulesFor(data), data].filter(Boolean).join('\n');
+      for (const [label, value] of [['Terset data alone', data], ['Terset data plus rules', prompt], ['Compact JSON', json]] as const) {
+        expect(section, README_FILES[id]).toContain(`| ${label} | ${String(Buffer.byteLength(value))} | ${String(tokenize(value).length)} |`);
+      }
+    }
+  });
   for (const id of README_IDS) {
     it(`keeps every docs block in ${README_FILES[id]} equal to the source`, () => {
       const text = read(README_FILES[id]);

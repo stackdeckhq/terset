@@ -69,6 +69,15 @@ function buildWorkedExample(input: JsonObject, question: string): WorkedExample 
 
 export const WORKED_EXAMPLE: WorkedExample = buildWorkedExample(INPUT, QUESTION);
 
+/** Repeats the same four record shapes, with a unique id on each row. */
+export function workedExampleAtSize(count: number): WorkedExample {
+  const users = Array.from({ length: count }, (_, index) => ({
+    ...INPUT.users[index % INPUT.users.length],
+    id: `u${String(index + 1)}`,
+  }));
+  return buildWorkedExample({ ...INPUT, users }, QUESTION);
+}
+
 /** Section title on /benchmark and in benchmark.md. */
 export const WORKED_TITLE = 'What gets sent';
 

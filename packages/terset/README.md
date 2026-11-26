@@ -74,16 +74,25 @@ Tables use tab-separated headers and rows. After the header columns, a row lists
 ```
 
 Send the rules line once per prompt, right before the data. The data goes in the user message, before the question. The [benchmark page](https://terset.dev/benchmark#what-gets-sent) shows the full prompt.
-<!-- /docs:see-it -->
 
-| | Bytes | Tokens |
-|---|---|---|
-| Terset | 140 | 56 |
+Counts use the `o200k_base` tokenizer. The rules line and the data are counted together with a newline between them.
+
+| Format | Bytes | Tokens |
+| --- | --- | --- |
+| Terset data alone | 199 | 70 |
+| Terset data plus rules | 394 | 112 |
 | Compact JSON | 289 | 99 |
 
-Tokens are counted with the `o200k_base` tokenizer, for the data alone.
-Terset also needs the fitted rules line once per prompt. Across many records that
-cost is paid once.
+Four records do not save enough tokens to pay for the rules line.
+
+Repeat the same record shapes to make 10 users, each with a unique ID. With the rules included, Terset uses 35 fewer tokens.
+
+| Format | Bytes | Tokens |
+| --- | --- | --- |
+| Terset data alone | 438 | 156 |
+| Terset data plus rules | 633 | 198 |
+| Compact JSON | 683 | 233 |
+<!-- /docs:see-it -->
 
 `decode` turns the Terset text back into the same object, key order included.
 
