@@ -1,6 +1,6 @@
 // One copy button for the whole site: Clipboard API with a fallback,
 // a "Copied" state, a spoken status and a 44 px target.
-// The small button is an icon with a tooltip; the strong one keeps its text label.
+// The small button is an icon with a tooltip; the labelled and strong ones keep their text label.
 import { useEffect, useRef, useState } from 'react';
 import { copyText } from '../lib/clipboard.ts';
 
@@ -26,15 +26,40 @@ export interface CopyButtonProps {
   readonly onLight?: boolean;
   /** A full-size primary button, for the main action of a card. */
   readonly strong?: boolean;
+  /** A small button that shows its label beside the icon, for a second copy action next to an icon one. */
+  readonly labelled?: boolean;
+  /**
+   * Nothing to copy yet: the button is marked aria-disabled and a click does nothing.
+   * It is not truly disabled, so it keeps its place in the tab order and never drops focus.
+   */
+  readonly disabled?: boolean;
+  /**
+   * Identifies the text on offer when it changes over time. "Copied" or "Copy failed" shows only
+   * while this still equals its value at the click, so a late result never lands on newer text.
+   */
+  readonly feedbackKey?: string;
 }
 
-function buttonClass(onLight: boolean, strong: boolean): string {
+/** The outcome of the last copy, and the feedbackKey it was started with. */
+interface CopyResult {
+  readonly state: Exclude<CopyState, 'idle'>;
+  readonly of: string | undefined;
+}
+
+/** What the button shows: the last copy's outcome, but only for the text still on offer and never while disabled. */
+export function shownState(last: CopyResult | null, feedbackKey: string | undefined, disabled: boolean): CopyState {
+  return last === null || disabled || last.of !== feedbackKey ? 'idle' : last.state;
+}
+
+function buttonClass(onLight: boolean, strong: boolean, labelled: boolean): string {
   if (strong) return 'btn btn-primary copy-strong';
-  return onLight ? 'mini-btn copy-icon on-light' : 'mini-btn copy-icon';
+  const shape = labelled ? 'mini-btn copy-text' : 'mini-btn copy-icon';
+  return onLight ? `${shape} on-light` : shape;
 }
 
-export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false }: CopyButtonProps) {
-  const [state, setState] = useState<CopyState>('idle');
+export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false, labelled = false, disabled = false, feedbackKey }: CopyButtonProps) {
+  const [last, setLast] = useState<CopyResult | null>(null);
+  const state = shownState(last, feedbackKey, disabled);
   const timer = useRef<number | undefined>(undefined);
 
   useEffect(
@@ -45,29 +70,33 @@ export function CopyButton({ getText, label = 'Copy', describedBy, onLight = fal
   );
 
   const onClick = async (): Promise<void> => {
+    if (disabled) return;
     const ok = await copyText(getText());
-    setState(ok ? 'copied' : 'failed');
+    // feedbackKey is the one from the click, so the outcome stays tied to the text that was copied.
+    setLast({ state: ok ? 'copied' : 'failed', of: feedbackKey });
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
-      setState('idle');
+      setLast(null);
     }, RESET_MS);
   };
 
   const current = state === 'idle' ? label : DONE_LABELS[state];
+  const showsLabel = strong || labelled;
   return (
     <>
       <button
         type="button"
-        className={buttonClass(onLight, strong)}
+        className={buttonClass(onLight, strong, labelled)}
         data-state={state === 'idle' ? undefined : state}
-        aria-label={strong ? undefined : current}
+        aria-label={showsLabel ? undefined : current}
         aria-describedby={describedBy}
+        aria-disabled={disabled ? true : undefined}
         onClick={() => {
           void onClick();
         }}
       >
         <CopyIcon done={state === 'copied'} />
-        {strong ? (
+        {showsLabel ? (
           <StrongLabel label={label} state={state} />
         ) : (
           <span className="copy-tip" aria-hidden="true">

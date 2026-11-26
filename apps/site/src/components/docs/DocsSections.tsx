@@ -27,6 +27,7 @@ import {
   RULES_PARTS,
   VERSION_LINE,
   WHEN_NOT,
+  quickStartCommand,
   quickStartSteps,
   sectionTitle,
 } from '../../data/docs.ts';
@@ -85,7 +86,8 @@ export function QuickStartSection() {
   return (
     <Section id="quick-start">
       <p>{QUICK_START_INTRO}</p>
-      <CodeBlock label={LANG_LABELS[lang]} text={sample.code} />
+      <CodeBlock label={sample.filename} text={sample.code} />
+      <CodeBlock label="Run it" text={quickStartCommand(lang)} />
       <CodeBlock label="Output (the gaps are tabs)" text={sample.output} html={highlight(sample.output, { align: true })} wrap={false} className="code-out" />
       <ol className="steps-list">
         {quickStartSteps(lang).map((step) => (

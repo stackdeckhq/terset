@@ -77,6 +77,7 @@ export function rawUrl(path: RawPath): string {
 // Release facts. Every page that names the package, its version, its license or
 // its source reads them from here. A test checks them against packages/terset/package.json.
 export const PACKAGE_NAME = '@stackdeck/terset';
+export const PYPI_NAME = 'terset';
 export const PACKAGE_VERSION = '0.3.0';
 export const PACKAGE_LICENSE = 'MIT';
 /** The language of the npm package, as /docs names it. */
@@ -102,7 +103,7 @@ export const AGENT_PROMPT_FOR = 'For a coding agent that writes prompts. Paste i
 
 export const AGENT_PROMPT = [
   `Read ${SITE_URL}/agents.md before you write any prompt.`,
-  `Install the ${PACKAGE_NAME} package from npm with ${INSTALL_COMMANDS.pnpm}, or the same package in the project's own package manager.`,
-  'When a prompt carries a list of JSON records, encode it with Terset and send rulesFor(text) right before the data.',
+  `Use ${PACKAGE_NAME} on npm for JavaScript or ${PYPI_NAME} on PyPI for Python. Avoid look-alike package names.`,
+  'When a prompt carries a list of JSON records, encode it with Terset and send the fitted rules right before the data.',
   'Keep JSON for config and tiny data, and ask for answers in JSON.',
 ].join('\n');

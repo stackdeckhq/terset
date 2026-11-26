@@ -1,8 +1,8 @@
 // The converter's output is exactly encode(), and bad input gets a clear status.
 import { describe, expect, it } from 'vitest';
 import { SAMPLES } from '../data/samples.ts';
-import { convert } from './convert.ts';
-import { encode } from './format.ts';
+import { MAX_CHARS, changedNumbers, convert, promptText, statusOf } from './convert.ts';
+import { encode, rulesFor } from './format.ts';
 
 describe('convert', () => {
   it('returns encode() output that round trips', () => {
@@ -36,5 +36,158 @@ describe('convert', () => {
     const scalar = convert('42');
     expect(scalar.ok).toBe(false);
     if (!scalar.ok) expect(scalar.status).toBe('Needs an object or array');
+  });
+
+  it('returns a message, not a throw, for JSON nested too deep to walk', () => {
+    const depth = MAX_CHARS / 2 - 1;
+    const deep = `${'['.repeat(depth)}1${']'.repeat(depth)}`;
+    expect(convert(deep).ok).toBe(false);
+  });
+});
+
+describe('numbers JavaScript would change', () => {
+  const statusFor = (source: string): string => statusOf(convert(source));
+  const detailFor = (source: string): string => {
+    const result = convert(source);
+    return result.ok ? '' : result.detail;
+  };
+
+  it('refuses an integer past the safe range and names it as typed', () => {
+    const source = '[{"id":9007199254740993,"name":"Ada"},{"id":2,"name":"Ben"}]';
+    expect(statusFor(source)).toBe('Number would round');
+    expect(detailFor(source)).toContain('9007199254740993 would become 9007199254740992.');
+    expect(detailFor(source)).toContain('"9007199254740993"');
+  });
+
+  // 1000000000000000100 is stored as 1000000000000000128, which prints back as 1000000000000000100.
+  it('refuses an integer that is stored as another integer even when it prints back the same', () => {
+    expect(statusFor('[1000000000000000100]')).toBe('Number would round');
+    expect(statusFor('[-1000000000000000100]')).toBe('Number would round');
+    expect(statusFor('[9007199254740994]')).toBe('Round trip exact');
+    expect(detailFor('[1000000000000000100]')).toContain('1000000000000000100 would become 1000000000000000128.');
+  });
+
+  it('refuses a negative one too', () => {
+    expect(statusFor('{"n":-9007199254740993}')).toBe('Number would round');
+    expect(detailFor('{"n":-9007199254740993}')).toContain('-9007199254740993 would become -9007199254740992.');
+  });
+
+  it('finds one nested deep and gives its line', () => {
+    const source = JSON.stringify({ a: [{ b: { c: [1, 2, { d: 1 }] } }] }, null, 2).replace('"d": 1', '"d": 12345678901234567890');
+    expect(statusFor(source)).toBe('Number would round');
+    expect(detailFor(source)).toMatch(/^Line 9: 12345678901234567890 would become 12345678901234567168\./u);
+  });
+
+  it('counts the other numbers that change', () => {
+    expect(detailFor('[9007199254740993, 9007199254740995, 9007199254740997]')).toContain('2 more numbers change too.');
+    expect(detailFor('[9007199254740993, 9007199254740995]')).toContain('1 more number changes too.');
+  });
+
+  it('ignores digits inside strings and keys, escaped quotes included', () => {
+    const source = '[{"9007199254740993":"9007199254740993","note":"a \\" 9007199254740993 \\\\","id":1}]';
+    expect(statusFor(source)).toBe('Round trip exact');
+  });
+
+  it('refuses decimals and exponents whose value changes', () => {
+    expect(detailFor('[0.10000000000000000001]')).toContain('0.10000000000000000001 would become 0.1.');
+    expect(detailFor('[1e-400]')).toContain('1e-400 would become 0.');
+    expect(detailFor('[1e400]')).toContain('1e400 is too large for JavaScript.');
+    expect(statusFor('[-1e400]')).toBe('Number would round');
+  });
+
+  it('gives the sign of a value that becomes negative zero', () => {
+    expect(detailFor('[-1e-999]')).toContain('-1e-999 would become -0.');
+  });
+
+  // JavaScript holds these exactly, so the message must not say it cannot. The output would still show other digits.
+  it('refuses a number held exactly that would print with other digits, and says so', () => {
+    const exact = '1000000000000000128';
+    expect(statusFor(`[${exact}]`)).toBe('Number would round');
+    expect(detailFor(`[${exact}]`)).toContain(`${exact} would print as 1000000000000000100. JavaScript holds it exactly but prints other digits.`);
+    expect(detailFor(`[${exact}]`)).not.toContain('cannot hold');
+    expect(detailFor('[1152921504606846976]')).toContain('would print as 1152921504606847000.');
+    // The exact value of the double nearest 0.1, written in full.
+    expect(detailFor('[0.1000000000000000055511151231257827021181583404541015625]')).toContain('would print as 0.1. JavaScript holds it exactly');
+  });
+
+  it('keeps numbers that only print differently', () => {
+    expect(statusFor('[{"a":1.50,"b":1e2,"c":1E+21,"d":0.000001,"e":2.5e-7,"f":9007199254740992,"g":-12.0}]')).toBe('Round trip exact');
+  });
+
+  it('shortens a very long number in the message', () => {
+    const long = `1${'0'.repeat(80)}1`;
+    expect(detailFor(`[${long}]`)).toContain(`${long.slice(0, 40)}…`);
+    expect(detailFor(`[${long}]`)).not.toContain(long);
+  });
+
+  it('names the stored integer for a decimal form of a rounded integer', () => {
+    expect(detailFor('[1000000000000000129]')).toContain('would become 1000000000000000128.');
+    expect(detailFor('[1000000000000000129.0]')).toContain('1000000000000000129.0 would become 1000000000000000128.');
+    expect(detailFor('[1.000000000000000129e18]')).toContain('would become 1000000000000000128.');
+  });
+
+  it('shows the digits that differ when a long number changes past the cut', () => {
+    // One above 2^200. JavaScript holds 2^200, which ends in 1376.
+    const literal = '1606938044258990275541962092341162602522202993782792835301377';
+    const detail = detailFor(`[${literal}]`);
+    expect(detail).toContain('…202993782792835301377 would become …202993782792835301376.');
+    expect(detail).toContain('Quote it to keep every digit.');
+  });
+});
+
+describe('promptText', () => {
+  it('puts the fitted rules line, then a newline, then the data', () => {
+    const text = encode(SAMPLES.orders);
+    const rules = rulesFor(text);
+    expect(rules).not.toBe('');
+    expect(promptText(text)).toBe(`${rules}\n${text}`);
+  });
+
+  it('gives the data alone when no rules fit, with no blank line first', () => {
+    const text = encode(SAMPLES.config);
+    expect(rulesFor(text)).toBe('');
+    expect(promptText(text)).toBe(text);
+  });
+});
+
+describe('changedNumbers', () => {
+  it('returns each changed literal with its line, in order', () => {
+    expect(changedNumbers('{\n"a": 9007199254740993,\n"b": [1, 1e400, 1000000000000000128]\n}')).toEqual([
+      { literal: '9007199254740993', line: 2, value: 9007199254740992, change: 'value' },
+      { literal: '1e400', line: 3, value: Infinity, change: 'value' },
+      { literal: '1000000000000000128', line: 3, value: 1000000000000000128, change: 'digits' },
+    ]);
+  });
+
+  it('counts a bare CR as a line break and CRLF once', () => {
+    expect(changedNumbers('[\r9007199254740993]')[0]?.line).toBe(2);
+    expect(changedNumbers('[\r\n9007199254740993]')[0]?.line).toBe(2);
+    expect(changedNumbers('[\r\r\n\n9007199254740993]')[0]?.line).toBe(4);
+  });
+
+  it('returns nothing for plain numbers', () => {
+    expect(changedNumbers('[1, -2, 3.25, 0, -0, 1e3]')).toEqual([]);
+  });
+
+  // The scan runs on the main thread on every paste. Each case is near the 60,000 character cap.
+  // A linear scan takes a few milliseconds; the quadratic one took over a second on the first case.
+  // The count of changed numbers is checked too, so a scan that skips long input cannot pass.
+  it.each([
+    ['a decimal with a long run of inner zeros', `[1.${'0'.repeat(MAX_CHARS - 6)}1]`, 1],
+    ['an integer with a long run of inner zeros', `[1${'0'.repeat(MAX_CHARS - 4)}1]`, 1],
+    ['an exponent with a long run of zeros', `[1e${'0'.repeat(MAX_CHARS - 6)}1]`, 0],
+    ['one long run of digits', `[${'7'.repeat(MAX_CHARS - 2)}]`, 1],
+    ['many short numbers', `[${Array.from({ length: MAX_CHARS / 2 - 1 }, () => '1').join(',')}]`, 0],
+    ['many numbers past the safe range', `[${Array.from({ length: MAX_CHARS / 20 }, () => '9007199254740993').join(',')}]`, MAX_CHARS / 20],
+    ['many tiny numbers that print with other digits', `[${Array.from({ length: MAX_CHARS / 25 }, () => '4.9406564584124654e-324').join(',')}]`, MAX_CHARS / 25],
+    ['a string full of backslashes', `["${'\\\\'.repeat((MAX_CHARS - 4) / 2)}"]`, 0],
+  ])('stays fast on %s', (_, source, expected) => {
+    expect(source.length).toBeLessThanOrEqual(MAX_CHARS);
+    // CPU time, not the wall clock: time the worker spends waiting for a busy machine does not count.
+    const start = process.cpuUsage();
+    const changed = changedNumbers(source);
+    const spent = process.cpuUsage(start);
+    expect((spent.user + spent.system) / 1000).toBeLessThan(250);
+    expect(changed).toHaveLength(expected);
   });
 });

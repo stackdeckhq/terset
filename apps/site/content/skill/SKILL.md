@@ -11,7 +11,7 @@ This is a skill file. Any agent harness that loads skill files can use it.
 
 ## Install
 
-{{RELEASE}}. Node 20 or later.
+{{RELEASE}}. JavaScript requires Node 20 or later. Python requires Python 3.10 or later.
 
 {{INSTALL}}
 

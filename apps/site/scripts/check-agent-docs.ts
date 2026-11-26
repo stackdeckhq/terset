@@ -15,6 +15,7 @@ import { encode as tokens } from 'gpt-tokenizer/encoding/o200k_base';
 import { parseBench } from '../src/data/bench-schema.ts';
 import { benchSummary } from '../src/data/bench.ts';
 import { GeneratedSamplesSchema } from '../src/data/generated-schema.ts';
+import { AGENT_PROMPT } from '../src/data/site.ts';
 import { RULES, decode, encode } from '../src/lib/format.ts';
 import type { JsonRoot } from '../src/lib/format.ts';
 import { buildSamples } from './samples-build.ts';
@@ -42,6 +43,20 @@ const bench = parseBench(JSON.parse(read(join(SITE, 'src/data/bench-results.json
 const agents = renderContent(read(join(CONTENT, 'agents.md')), generated, bench);
 const skill = renderContent(read(join(CONTENT, 'skill/SKILL.md')), generated, bench);
 const llms = renderContent(read(join(CONTENT, 'llms.txt')), generated, bench);
+
+const bugForm = join(SITE, '../../.github/ISSUE_TEMPLATE/bug_report.yml');
+for (const [name, text] of [
+  ['agents.md', agents],
+  ['SKILL.md', skill],
+  ['Agent prompt', AGENT_PROMPT],
+  ['bug_report.yml', read(bugForm)],
+] as const) {
+  const plain = text.replaceAll('`', '');
+  if (!plain.includes('@stackdeck/terset on npm') || !plain.includes('terset on PyPI')) {
+    failures.push(`${name} must name both official packages and their registries`);
+  }
+  if (/only real package/iu.test(plain)) failures.push(`${name} says there is only one official package`);
+}
 
 function checkExamples(name: string, text: string): number {
   const fences = fencesOf(text);

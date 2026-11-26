@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/pypi/pyversions/terset" alt="Python 3.10 and up">
 </p>
 
-<p align="center"><a href="https://terset.dev">terset.dev</a> · <a href="https://terset.dev/docs">Docs</a></p>
+<p align="center"><a href="https://terset.dev">terset.dev</a> · <a href="https://terset.dev/docs">Docs</a> · <a href="https://terset.dev/#b2">Try it with your JSON</a></p>
 <!-- /docs:header -->
 
 <!-- docs:pitch -->
@@ -49,6 +49,8 @@ JSON repeats every key in every record, and a model reads each repeat as input t
 ## See it
 
 <!-- docs:see-it -->
+[Try it with your JSON](https://terset.dev/#b2)
+
 The same data, as compact JSON and as Terset.
 
 ```json
@@ -74,16 +76,25 @@ Tables use tab-separated headers and rows. After the header columns, a row lists
 ```
 
 Send the rules line once per prompt, right before the data. The data goes in the user message, before the question. The [benchmark page](https://terset.dev/benchmark#what-gets-sent) shows the full prompt.
-<!-- /docs:see-it -->
 
-| | Bytes | Tokens |
-|---|---|---|
-| Terset | 140 | 56 |
+Counts use the `o200k_base` tokenizer. The rules line and the data are counted together with a newline between them.
+
+| Format | Bytes | Tokens |
+| --- | --- | --- |
+| Terset data alone | 199 | 70 |
+| Terset data plus rules | 394 | 112 |
 | Compact JSON | 289 | 99 |
 
-Tokens are counted with the `o200k_base` tokenizer, for the data alone.
-Terset also needs the fitted rules line once per prompt. Across many records that
-cost is paid once.
+Four records do not save enough tokens to pay for the rules line.
+
+Repeat the same record shapes to make 10 users, each with a unique ID. With the rules included, Terset uses 35 fewer tokens.
+
+| Format | Bytes | Tokens |
+| --- | --- | --- |
+| Terset data alone | 438 | 156 |
+| Terset data plus rules | 633 | 198 |
+| Compact JSON | 683 | 233 |
+<!-- /docs:see-it -->
 
 `decode` turns the Terset text back into the same object, key order included.
 
@@ -103,10 +114,12 @@ Zero dependencies. Python 3.10 and up. Type hints are included.
 The API exports `encode`, `decode`, `RULES` and `rules_for`.
 `rules_for(text)` gives only the rules sentences that text needs. `RULES` keeps the full rules.
 
-```python
-from terset import decode, encode, rules_for
+Save this as `example.py`.
 
-data = {
+```python
+from terset import JsonRoot, decode, encode, rules_for
+
+data: JsonRoot = {
     "team": "core",
     "users": [
         {"id": "u1", "name": "Ada", "role": "admin"},
@@ -125,6 +138,10 @@ messages = [
 
 print(text)
 print(decode(text) == data)  # True
+```
+
+```sh
+python3 example.py
 ```
 
 Output (the gaps are tabs):

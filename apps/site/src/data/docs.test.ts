@@ -6,10 +6,12 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 import { runInThisContext } from 'node:vm';
+import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
 import { describe, expect, it } from 'vitest';
 import { RULES, RULES_PLACEMENT, decode, encode, rulesFor } from '../lib/format.ts';
+import type { JsonObject } from '../lib/format.ts';
 import { API, PUBLIC_EXPORTS, exampleFence } from './docs-api.ts';
-import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, QUICK_START, RULES_INTRO, WHEN_NOT, quickStartSteps } from './docs.ts';
+import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, RULES_INTRO, WHEN_NOT, quickStartSteps } from './docs.ts';
 import { COUNTERS, counterLosses } from './numbers.ts';
 import { SAMPLES } from './samples.ts';
 import type { CodeSample } from './docs.ts';
@@ -32,6 +34,52 @@ const STALE_PYPI = ['Coming', 'soon', 'on', 'PyPI'].join(' ');
 const STALE_PLACEMENT = ['in', 'the', 'system', 'prompt', 'once'].join(' ');
 
 describe('README blocks', () => {
+  it('links to the converter at the top and under See it in every README', () => {
+    for (const id of README_IDS) {
+      const text = read(README_FILES[id]);
+      const [top] = text.split('<!-- docs:pitch -->', 1);
+      const seeIt = sections(text).get('See it');
+      expect(top, README_FILES[id]).toContain('<a href="https://terset.dev/#b2">Try it with your JSON</a>');
+      expect(seeIt, README_FILES[id]).toContain('[Try it with your JSON](https://terset.dev/#b2)');
+    }
+  });
+
+  it.each(README_IDS)('shows the measured counts for both user examples in the %s README', (id) => {
+    const section = readBlocks(read(README_FILES[id])).get('see-it') ?? '';
+    const json = /```json\n([^\n]+)\n```/u.exec(section)?.[1];
+    if (json === undefined) throw new Error(`${README_FILES[id]} is missing the example JSON`);
+    const input = JSON.parse(json) as JsonObject & { users: JsonObject[] };
+    expect(input.users).toHaveLength(4);
+    const users = [...input.users, ...input.users, ...input.users.slice(0, 2)]
+      .map((user, index) => ({ ...user, id: `u${String(index + 1)}` }));
+    const measure = (value: JsonObject, compact: string) => {
+      const data = encode(value);
+      const prompt = [rulesFor(data), data].filter(Boolean).join('\n');
+      const dataTokens = tokenize(data).length;
+      const promptTokens = tokenize(prompt).length;
+      const jsonTokens = tokenize(compact).length;
+      return {
+        dataTokens, promptTokens, jsonTokens,
+        rows: [
+          `| Terset data alone | ${String(Buffer.byteLength(data))} | ${String(dataTokens)} |`,
+          `| Terset data plus rules | ${String(Buffer.byteLength(prompt))} | ${String(promptTokens)} |`,
+          `| Compact JSON | ${String(Buffer.byteLength(compact))} | ${String(jsonTokens)} |`,
+        ],
+      };
+    };
+    const enlarged = { ...input, users };
+    const four = measure(input, json);
+    const ten = measure(enlarged, JSON.stringify(enlarged));
+    const tables = section.split('\n\n').filter((paragraph) => paragraph.startsWith('| Format | Bytes | Tokens |'));
+    expect(tables.map((table) => table.split('\n').slice(2))).toEqual([four.rows, ten.rows]);
+    expect(four.dataTokens).toBeLessThan(four.jsonTokens);
+    // Strictly greater: at break-even the sentence below would be false.
+    expect(four.promptTokens).toBeGreaterThan(four.jsonTokens);
+    expect(section).toContain('Four records do not save enough tokens to pay for the rules line.');
+    const saving = ten.jsonTokens - ten.promptTokens;
+    expect(saving).toBeGreaterThan(0);
+    expect(section).toContain(`Repeat the same record shapes to make 10 users, each with a unique ID. With the rules included, Terset uses ${String(saving)} fewer tokens.`);
+  });
   for (const id of README_IDS) {
     it(`keeps every docs block in ${README_FILES[id]} equal to the source`, () => {
       const text = read(README_FILES[id]);
@@ -117,6 +165,26 @@ describe('when not to use it', () => {
 });
 
 describe('package facts', () => {
+  it('explains why the count line can make a tiny table larger than JSON', () => {
+    const value = [{ a: 1, b: 2 }, { b: 2 }];
+    const text = encode(value);
+    expect(text).toMatch(/^\[2\]\n/u);
+    expect(Buffer.byteLength(text)).toBe(26);
+    expect(Buffer.byteLength(JSON.stringify(value))).toBe(23);
+    const summary = API.find((entry) => entry.id === 'encode')?.summary;
+    expect(summary).toContain('For lists, the encoder uses a table only if the header and rows are shorter in UTF-8 bytes than compact JSON.');
+    expect(summary).toContain('The list check excludes the count line, so a tiny list table can be larger than compact JSON.');
+  });
+
+  it('explains why keyed maps compare the complete field', () => {
+    const value = { m: { a: { a: 1, b: 2 }, b: { b: 2, c: 1 } } };
+    const fallback = `m: ${JSON.stringify(value.m)}`;
+    expect(encode(value)).toBe(fallback);
+    expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(value)}))`)).toBe(fallback);
+    const summary = API.find((entry) => entry.id === 'encode')?.summary;
+    expect(summary).toContain('A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON.');
+  });
+
   it('matches each package version, runtime and export list', () => {
     const npm = JSON.parse(read('packages/terset/package.json')) as { version: string; engines: { node: string } };
     const pyproject = read('packages/terset-py/pyproject.toml');
@@ -178,10 +246,8 @@ function runPy(code: string): string {
   return result.stdout.replace(/\n$/u, '');
 }
 
-const EXAMPLES: readonly (readonly [label: string, js: CodeSample, py: CodeSample, typescript: boolean])[] = [
-  ['quick start', QUICK_START.js, QUICK_START.py, false],
-  ...API.map((entry) => [entry.id, entry.example.js, entry.example.py, exampleFence(entry, 'js') === 'ts'] as const),
-];
+const EXAMPLES: readonly (readonly [label: string, js: CodeSample, py: CodeSample, typescript: boolean])[] =
+  API.map((entry) => [entry.id, entry.example.js, entry.example.py, exampleFence(entry, 'js') === 'ts'] as const);
 
 describe('examples', () => {
   for (const [label, js, py, typescript] of EXAMPLES) {

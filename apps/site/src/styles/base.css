@@ -147,6 +147,8 @@ img, svg { display: inline-block; }
 /* The result colors hold while the pointer still rests on the button. */
 .mini-btn[data-state="copied"], .mini-btn[data-state="copied"]:hover { background: var(--ok-bg); border-color: var(--ok-bg); color: var(--ok-fg); }
 .mini-btn[data-state="failed"], .mini-btn[data-state="failed"]:hover { background: var(--bad-bg); border-color: var(--bad-bg); color: var(--bad-fg); }
+/* Nothing to copy yet. aria-disabled keeps the button in the tab order; the pointer gets no hover and no click. */
+.mini-btn[aria-disabled="true"] { opacity: .5; cursor: default; pointer-events: none; }
 
 /* The small copy button is a square icon. Its name shows as a tooltip on hover and on
    keyboard focus, and stays up while "Copied" or "Copy failed" shows. The hit area
@@ -226,6 +228,10 @@ details.more[open] > summary { margin-bottom: var(--s-4); }
 /* 48 px tall, so a small header button's 44 px hit area fits inside it. */
 .code-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 8px 6px 16px; min-height: 48px; border-bottom: 1px solid var(--code-line); font-size: 12.5px; font-weight: 600; color: var(--code-head); }
 .code-h .fn { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+/* Two buttons on one header, such as Copy for a prompt beside Copy. The gap keeps the 44 px hit areas apart. */
+.code-h-acts { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+/* On the narrowest phones the buttons move under the title instead of squeezing it. */
+@media (max-width: 359px) { .code-h:has(> .code-h-acts) { flex-wrap: wrap; padding-bottom: 8px; } }
 .code-h .fn::before { content: ""; width: 7px; height: 7px; border-radius: 99px; background: var(--blue-1); flex: none; }
 .code pre { margin: 0; padding: 16px 18px; font-size: 13px; line-height: 1.7; overflow-x: auto; white-space: pre; }
 .code pre.wrap-pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; }

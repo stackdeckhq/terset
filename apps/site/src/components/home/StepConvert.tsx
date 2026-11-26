@@ -5,7 +5,7 @@ import { GENERATED } from '../../data/generated.ts';
 import { BENCH, COUNTERS, PENDING_TITLE, counterList, formatCount } from '../../data/numbers.ts';
 import { SAMPLE_IDS, SAMPLE_LABELS, SAMPLES } from '../../data/samples.ts';
 import type { SampleId } from '../../data/samples.ts';
-import { STATUSES, convert, statusOf } from '../../lib/convert.ts';
+import { STATUSES, convert, promptText, statusOf } from '../../lib/convert.ts';
 import type { ConvertResult, Status } from '../../lib/convert.ts';
 import { highlight } from '../../lib/format.ts';
 import { LIVE_TOKENIZER } from '../../lib/live-tokenizer.ts';
@@ -32,6 +32,14 @@ function sampleFor(result: ConvertResult): SampleId | null {
 function outHtml(result: ConvertResult): string {
   if (!result.ok) return `<span class="err"><b>${esc(result.title)}</b>${esc(result.detail)}</span>`;
   return highlight(result.text, { align: true });
+}
+
+/**
+ * The text the copy buttons may copy: the encoded result for what was typed, or null while
+ * newer input waits for the timer or after a refused input, so a button never copies an older result.
+ */
+export function copyable(source: string, settled: string, result: ConvertResult): string | null {
+  return source === settled && result.ok ? result.text : null;
 }
 
 type TokenKey = 'invalid' | 'bytes' | SampleId;
@@ -62,7 +70,7 @@ function sampleLine(sample: SampleId): ReactNode {
 
 // Every line the token row can show, so the row keeps the height of the longest.
 const TOKEN_ITEMS: readonly StackItem<TokenKey>[] = [
-  { key: 'invalid', node: 'Sizes return when the JSON parses.' },
+  { key: 'invalid', node: 'Sizes return when the JSON converts.' },
   { key: 'bytes', node: `Live sizes are in bytes. Show tokens counts them with ${LIVE_TOKENIZER}.` },
   ...SAMPLE_IDS.map((sample) => ({ key: sample, node: sampleLine(sample) })),
 ];
@@ -137,6 +145,7 @@ export function StepConvert() {
 
   const status = statusOf(result);
   const good = result.ok && result.roundTrip;
+  const copy = copyable(source, settled, result);
   return (
     <Step id="b2" title="Paste rows. Get the table.">
       <div className="vis conv">
@@ -190,7 +199,10 @@ export function StepConvert() {
               <span className="fn" id={`${id}-out-label`}>
                 Terset, from the real encoder
               </span>
-              <CopyButton getText={() => (result.ok ? result.text : '')} describedBy={`${id}-out-label`} />
+              <span className="code-h-acts">
+                <CopyButton getText={() => (copy === null ? '' : promptText(copy))} label="Copy for a prompt" labelled disabled={copy === null} feedbackKey={copy ?? ''} describedBy={`${id}-out-label`} />
+                <CopyButton getText={() => copy ?? ''} disabled={copy === null} feedbackKey={copy ?? ''} describedBy={`${id}-out-label`} />
+              </span>
             </div>
             <div className="fade-x out-fade">
               <pre className="out xs" id="converter-out" tabIndex={0} role="region" aria-labelledby={`${id}-out-label`} dangerouslySetInnerHTML={{ __html: outHtml(result) }} />

@@ -4,6 +4,7 @@
 //   ...
 //   <!-- /docs:install -->
 // scripts/update-readmes.ts rewrites them. docs.test.ts fails on any drift.
+import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
 import benchRaw from './bench-results.json' with { type: 'json' };
 import claudeRaw from './claude-counts.json' with { type: 'json' };
 import { ACCURACY, accuracyOverlapLine } from './accuracy.ts';
@@ -32,12 +33,14 @@ import {
   README_REFERENCE,
   WHEN_NOT,
   implementationsMarkdown,
+  quickStartCommand,
   quickStartSteps,
 } from './docs.ts';
 import type { DocLang } from './docs.ts';
 import { PRICES } from './prices.ts';
 import { SITE_URL, TAGLINE } from './site.ts';
-import { WORKED_EXAMPLE, WORKED_README_PLACEMENT } from './worked-example.ts';
+import { WORKED_EXAMPLE, WORKED_README_PLACEMENT, workedExampleAtSize } from './worked-example.ts';
+import type { WorkedExample } from './worked-example.ts';
 
 /** The three READMEs that carry docs blocks. Paths are from the repository root. */
 export const README_FILES = {
@@ -62,6 +65,8 @@ const AGENT_FILES: readonly (readonly [path: string, about: string])[] = [
 ];
 
 const fence = (lang: string, text: string): string => `\`\`\`${lang}\n${text}\n\`\`\``;
+const CONVERTER_URL = `${SITE_URL}/#b2`;
+const CONVERTER_LABEL = 'Try it with your JSON';
 
 function header(lang: DocLang): string {
   const badges = BADGES[lang].map((badge) => `  <img src="${badge.src}" alt="${badge.alt}">`);
@@ -80,7 +85,7 @@ function header(lang: DocLang): string {
     ...badges,
     '</p>',
     '',
-    `<p align="center"><a href="${SITE_URL}">terset.dev</a> · <a href="${SITE_URL}/docs">Docs</a></p>`,
+    `<p align="center"><a href="${SITE_URL}">terset.dev</a> · <a href="${SITE_URL}/docs">Docs</a> · <a href="${CONVERTER_URL}">${CONVERTER_LABEL}</a></p>`,
   ].join('\n');
 }
 
@@ -117,7 +122,9 @@ function use(lang: DocLang): string {
   const sample = QUICK_START[lang];
   return [
     `The API exports \`${name.encode}\`, \`${name.decode}\`, \`${name.rules}\` and \`${name.rulesFor}\`.\n\`${name.rulesFor}(text)\` gives only the rules sentences that text needs. \`${name.rules}\` keeps the full rules.`,
+    `Save this as \`${sample.filename}\`.`,
     fence(LANG_FENCE[lang], sample.code),
+    fence('sh', quickStartCommand(lang)),
     'Output (the gaps are tabs):',
     fence('text', sample.output),
     quickStartSteps(lang)
@@ -128,10 +135,43 @@ function use(lang: DocLang): string {
   ].join('\n\n');
 }
 
+function exampleCounts({ json, terset, rules }: WorkedExample) {
+  const prompt = rules === '' ? terset : `${rules}\n${terset}`;
+  const jsonTokens = tokenize(json).length;
+  const promptTokens = tokenize(prompt).length;
+  const row = (label: string, value: string, tokens: number): string =>
+    `| ${label} | ${String(Buffer.byteLength(value))} | ${String(tokens)} |`;
+  return {
+    jsonTokens,
+    promptTokens,
+    table: [
+      '| Format | Bytes | Tokens |',
+      '| --- | --- | --- |',
+      row('Terset data alone', terset, tokenize(terset).length),
+      row('Terset data plus rules', prompt, promptTokens),
+      row('Compact JSON', json, jsonTokens),
+    ].join('\n'),
+  };
+}
+
+function largerExample(): readonly string[] {
+  for (const count of [10, 25, 50]) {
+    const measured = exampleCounts(workedExampleAtSize(count));
+    // Show a saving of at least 10% after paying for the rules.
+    if (measured.promptTokens > measured.jsonTokens * 0.9) continue;
+    return [
+      `Repeat the same record shapes to make ${String(count)} users, each with a unique ID. With the rules included, Terset uses ${String(measured.jsonTokens - measured.promptTokens)} fewer tokens.`,
+      measured.table,
+    ];
+  }
+  throw new Error('No larger README example saves at least 10% of tokens with the rules included.');
+}
+
 /** The "See it" example: JSON in, the Terset text and rules line out, and where they go. */
 function seeIt(): string {
   const example = WORKED_EXAMPLE;
   return [
+    `[${CONVERTER_LABEL}](${CONVERTER_URL})`,
     'The same data, as compact JSON and as Terset.',
     fence('json', example.json),
     fence('text', example.terset),
@@ -139,6 +179,10 @@ function seeIt(): string {
     'The fitted rules line for this text:',
     fence('text', example.rules),
     `${WORKED_README_PLACEMENT} The [benchmark page](${SITE_URL}/benchmark#what-gets-sent) shows the full prompt.`,
+    'Counts use the `o200k_base` tokenizer. The rules line and the data are counted together with a newline between them.',
+    exampleCounts(example).table,
+    'Four records do not save enough tokens to pay for the rules line.',
+    ...largerExample(),
   ].join('\n\n');
 }
 

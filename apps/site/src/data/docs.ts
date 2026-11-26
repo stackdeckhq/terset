@@ -4,7 +4,7 @@
 // docs.test.ts fails when a README drifts or an example's output changes.
 // Inline text may use `code`, **bold** and [links](https://terset.dev).
 import type { JsonRoot } from '../lib/format.ts';
-import { INSTALL_COMMANDS, NPM_URL, PACKAGE_MANAGERS, PACKAGE_NAME, PACKAGE_VERSION, SITE_URL } from './site.ts';
+import { INSTALL_COMMANDS, NPM_URL, PACKAGE_MANAGERS, PACKAGE_NAME, PACKAGE_VERSION, PYPI_NAME, SITE_URL } from './site.ts';
 import { CONFORMANCE_SUITES, DEFAULT_FORMAT, FROZEN_FORMAT, VERSIONS_TEXT } from './versions.ts';
 
 export const DOC_LANGS = ['js', 'py'] as const;
@@ -16,7 +16,6 @@ export const LANG_LABELS: PerLang<string> = { js: 'JavaScript', py: 'Python' };
 /** The fence tag each language's code uses. */
 export const LANG_FENCE: PerLang<string> = { js: 'js', py: 'python' };
 
-export const PYPI_NAME = 'terset';
 export const PYPI_URL = `https://pypi.org/project/${PYPI_NAME}/`;
 export const DOCS_URL = `${SITE_URL}/docs`;
 
@@ -167,10 +166,12 @@ export function implementationsMarkdown(): string {
 
 // 2. Quick start
 
-export const QUICK_START: PerLang<CodeSample> = {
+export const QUICK_START: PerLang<CodeSample & { readonly filename: string }> = {
   js: {
+    filename: 'example.mjs',
     code: `import { rulesFor, decode, encode } from "${PACKAGE_NAME}";
 
+/** @type {import("${PACKAGE_NAME}").JsonRoot} */
 const data = {
   team: "core",
   users: [
@@ -193,9 +194,10 @@ console.log(JSON.stringify(decode(text)) === JSON.stringify(data)); // true`,
     output: 'team: core\nusers[3]:\nid\tname\tname=value\nu1\tAda\trole=admin\nu2\tBen\trole=ops\nu3\tChen\ntrue',
   },
   py: {
-    code: `from terset import decode, encode, rules_for
+    filename: 'example.py',
+    code: `from terset import JsonRoot, decode, encode, rules_for
 
-data = {
+data: JsonRoot = {
     "team": "core",
     "users": [
         {"id": "u1", "name": "Ada", "role": "admin"},
@@ -218,6 +220,10 @@ print(decode(text) == data)  # True`,
   },
 };
 
+export function quickStartCommand(lang: DocLang): string {
+  return `${lang === 'js' ? 'node' : 'python3'} ${QUICK_START[lang].filename}`;
+}
+
 /** The three steps under the quick start, with each language's names. */
 export function quickStartSteps(lang: DocLang): readonly string[] {
   const name = NAMES[lang];
@@ -233,6 +239,7 @@ export const NEVER_BY_HAND = 'Never write Terset by hand. Always use `encode`.';
 /** The few lines where each language behaves its own way. */
 export const LANG_NOTES: PerLang<readonly string[]> = {
   js: [
+    `Terset ships as an ES module. In a CommonJS project, use \`await import("${PACKAGE_NAME}")\` inside an async function.`,
     '`decode` and `rulesFor` throw `SyntaxError` on any text they reject, and `TypeError` when the input is not a string.',
     'Values must be plain objects, arrays and JSON scalars. Class instances, symbol keys and sparse arrays throw `TypeError`.',
     'Numbers are JavaScript numbers. Numeric `-0`, `NaN` and infinities throw `TypeError`.',

@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { convert } from '../../lib/convert.ts';
 import { GENERATED } from '../../data/generated.ts';
 import { liveTokens } from '../../lib/tokens.ts';
-import { LiveCountNote, MAX_SHOWN_TOKENS, Panes, TOKENIZER_DOWNLOAD_MB, TOKEN_LOAD_FAILED, TokenView, shownPieces, toggleLabel } from './TokenView.tsx';
+import { LiveCountNote, MAX_SHOWN_TOKENS, Panes, TOKENIZER_DOWNLOAD_MB, TOKEN_LOAD_FAILED, TokenView, shownPieces, toggleLabel, tokenNote } from './TokenView.tsx';
 
 const SOURCE = readFileSync(new URL('./TokenView.tsx', import.meta.url), 'utf8');
 const STEP_CONVERT = readFileSync(new URL('./StepConvert.tsx', import.meta.url), 'utf8');
@@ -94,6 +94,13 @@ describe('show tokens toggle', () => {
   it('points the live bytes line to Show tokens for a live count', () => {
     expect(STEP_CONVERT).toContain("{ key: 'bytes', node: `Live sizes are in bytes. Show tokens counts them with ${LIVE_TOKENIZER}.` }");
     expect(STEP_CONVERT).not.toContain('Live text has no token count');
+  });
+
+  // A refused number leaves valid JSON, so the notes wait for a conversion, not for the JSON to parse.
+  it('says the counts return when the JSON converts, since a refused number has parsed', () => {
+    expect(tokenNote({ kind: 'ready', shown: true }, null, false)).toBe('Token counts return when the JSON converts.');
+    expect(STEP_CONVERT).toContain("{ key: 'invalid', node: 'Sizes return when the JSON converts.' }");
+    expect(`${SOURCE}${STEP_CONVERT}`).not.toContain('when the JSON parses');
   });
 
   it('shows the toggle only when the boot script ran', () => {
