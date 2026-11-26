@@ -28,6 +28,11 @@ export interface CopyButtonProps {
   readonly strong?: boolean;
   /** A small button that shows its label beside the icon, for a second copy action next to an icon one. */
   readonly labelled?: boolean;
+  /**
+   * Nothing to copy yet: the button is marked aria-disabled and a click does nothing.
+   * It is not truly disabled, so it keeps its place in the tab order and never drops focus.
+   */
+  readonly disabled?: boolean;
 }
 
 function buttonClass(onLight: boolean, strong: boolean, labelled: boolean): string {
@@ -36,7 +41,7 @@ function buttonClass(onLight: boolean, strong: boolean, labelled: boolean): stri
   return onLight ? `${shape} on-light` : shape;
 }
 
-export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false, labelled = false }: CopyButtonProps) {
+export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false, labelled = false, disabled = false }: CopyButtonProps) {
   const [state, setState] = useState<CopyState>('idle');
   const timer = useRef<number | undefined>(undefined);
 
@@ -48,6 +53,7 @@ export function CopyButton({ getText, label = 'Copy', describedBy, onLight = fal
   );
 
   const onClick = async (): Promise<void> => {
+    if (disabled) return;
     const ok = await copyText(getText());
     setState(ok ? 'copied' : 'failed');
     window.clearTimeout(timer.current);
@@ -66,6 +72,7 @@ export function CopyButton({ getText, label = 'Copy', describedBy, onLight = fal
         data-state={state === 'idle' ? undefined : state}
         aria-label={showsLabel ? undefined : current}
         aria-describedby={describedBy}
+        aria-disabled={disabled ? true : undefined}
         onClick={() => {
           void onClick();
         }}

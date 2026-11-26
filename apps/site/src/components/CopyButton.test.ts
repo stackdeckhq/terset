@@ -44,6 +44,16 @@ describe('labelled copy button', () => {
   });
 });
 
+// aria-disabled, not disabled: the button stays in the tab order and keeps focus while it waits.
+describe('disabled copy button', () => {
+  it('is marked aria-disabled and stays focusable', () => {
+    const html = render({ label: 'Copy for a prompt', labelled: true, disabled: true });
+    expect(html).toContain('aria-disabled="true"');
+    expect(html).not.toMatch(/<button[^>]* disabled=/u);
+    expect(render({})).not.toContain('aria-disabled');
+  });
+});
+
 describe('strong copy button', () => {
   it('shows its label as text and needs no aria-label', () => {
     const html = render({ label: 'Copy prompt', strong: true });

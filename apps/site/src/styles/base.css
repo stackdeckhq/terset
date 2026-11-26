@@ -147,6 +147,8 @@ img, svg { display: inline-block; }
 /* The result colors hold while the pointer still rests on the button. */
 .mini-btn[data-state="copied"], .mini-btn[data-state="copied"]:hover { background: var(--ok-bg); border-color: var(--ok-bg); color: var(--ok-fg); }
 .mini-btn[data-state="failed"], .mini-btn[data-state="failed"]:hover { background: var(--bad-bg); border-color: var(--bad-bg); color: var(--bad-fg); }
+/* Nothing to copy yet. aria-disabled keeps the button in the tab order; the pointer gets no hover and no click. */
+.mini-btn[aria-disabled="true"] { opacity: .5; cursor: default; pointer-events: none; }
 
 /* The small copy button is a square icon. Its name shows as a tooltip on hover and on
    keyboard focus, and stays up while "Copied" or "Copy failed" shows. The hit area

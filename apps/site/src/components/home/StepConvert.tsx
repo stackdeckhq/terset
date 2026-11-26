@@ -34,6 +34,14 @@ function outHtml(result: ConvertResult): string {
   return highlight(result.text, { align: true });
 }
 
+/**
+ * The text the copy buttons may copy: the encoded result for what was typed, or null while
+ * newer input waits for the timer or after a refused input, so a button never copies an older result.
+ */
+export function copyable(source: string, settled: string, result: ConvertResult): string | null {
+  return source === settled && result.ok ? result.text : null;
+}
+
 type TokenKey = 'invalid' | 'bytes' | SampleId;
 
 function tokenKey(result: ConvertResult): TokenKey {
@@ -137,6 +145,7 @@ export function StepConvert() {
 
   const status = statusOf(result);
   const good = result.ok && result.roundTrip;
+  const copy = copyable(source, settled, result);
   return (
     <Step id="b2" title="Paste rows. Get the table.">
       <div className="vis conv">
@@ -191,8 +200,8 @@ export function StepConvert() {
                 Terset, from the real encoder
               </span>
               <span className="code-h-acts">
-                <CopyButton getText={() => (result.ok ? promptText(result.text) : '')} label="Copy for a prompt" labelled describedBy={`${id}-out-label`} />
-                <CopyButton getText={() => (result.ok ? result.text : '')} describedBy={`${id}-out-label`} />
+                <CopyButton getText={() => (copy === null ? '' : promptText(copy))} label="Copy for a prompt" labelled disabled={copy === null} describedBy={`${id}-out-label`} />
+                <CopyButton getText={() => copy ?? ''} disabled={copy === null} describedBy={`${id}-out-label`} />
               </span>
             </div>
             <div className="fade-x out-fade">
