@@ -169,9 +169,11 @@ describe('changedNumbers', () => {
     ['a string full of backslashes', `["${'\\\\'.repeat((MAX_CHARS - 4) / 2)}"]`, 0],
   ])('stays fast on %s', (_, source, expected) => {
     expect(source.length).toBeLessThanOrEqual(MAX_CHARS);
-    const start = performance.now();
+    // CPU time, not the wall clock: time the worker spends waiting for a busy machine does not count.
+    const start = process.cpuUsage();
     const changed = changedNumbers(source);
-    expect(performance.now() - start).toBeLessThan(250);
+    const spent = process.cpuUsage(start);
+    expect((spent.user + spent.system) / 1000).toBeLessThan(250);
     expect(changed).toHaveLength(expected);
   });
 });
