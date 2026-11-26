@@ -75,7 +75,10 @@ function canonicalDecimal(decimal: string): string | null {
   const [, sign = '', whole = '', fraction = '', exponent = '0'] = match;
   const digits = `${whole}${fraction}`.replace(/^0+/u, '');
   if (digits === '') return '0';
-  const significant = digits.replace(/0+$/u, '');
+  // Trim trailing zeros by walking back once. A /0+$/ regex rescans every inner run of zeros, which is quadratic.
+  let end = digits.length;
+  while (digits.charAt(end - 1) === '0') end -= 1;
+  const significant = digits.slice(0, end);
   const power = Number(exponent) - fraction.length + digits.length - significant.length;
   return `${sign}${significant}e${String(power)}`;
 }
