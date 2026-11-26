@@ -410,6 +410,7 @@ export const FAQ_NAME = '**Where does the name come from?** TERse SETs: a set of
 export const DOC_LINKS: readonly { readonly label: string; readonly href: string; readonly about: string }[] = [
   { label: 'Format spec', href: '/format', about: 'Every rule of the format, with examples.' },
   { label: 'Benchmark', href: '/benchmark', about: 'Token counts, answer accuracy, the method and the limits.' },
+  { label: 'Real files', href: '/workload', about: 'Answer accuracy and input tokens on two real public files.' },
   { label: 'Agents', href: '/agents', about: 'Plain files an agent can read, and a prompt to paste.' },
   { label: 'npm', href: NPM_URL, about: `The ${PACKAGE_NAME} package.` },
   { label: 'PyPI', href: PYPI_URL, about: `The ${PYPI_NAME} package.` },

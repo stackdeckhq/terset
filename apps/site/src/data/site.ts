@@ -7,12 +7,12 @@ export const SHORT_TAGLINE = 'One terse table for a set of JSON records.';
 /** Google Search Console reads this from the home page to prove who owns the site. Removing it ends the proof. */
 export const GOOGLE_SITE_VERIFICATION = 'SiBnGI20KR2nbzKE2nSnThNJoqa90izcws96uHdp6dY';
 
-export type PagePath = '/' | '/docs' | '/format' | '/benchmark' | '/agents';
+export type PagePath = '/' | '/docs' | '/format' | '/benchmark' | '/workload' | '/agents';
 /** The pages framed by DocPage: every page but home. */
 export type DocPagePath = Exclude<PagePath, '/'>;
 
-/** The five pages, in sitemap order. public/sitemap.xml lists the same URLs; a test checks it. */
-export const PAGE_PATHS: readonly PagePath[] = ['/', '/docs', '/format', '/benchmark', '/agents'];
+/** The six pages, in sitemap order. public/sitemap.xml lists the same URLs; a test checks it. */
+export const PAGE_PATHS: readonly PagePath[] = ['/', '/docs', '/format', '/benchmark', '/workload', '/agents'];
 
 /** The absolute https://terset.dev address of one page. */
 export function pageUrl(path: PagePath): string {
@@ -38,6 +38,7 @@ export const NAV: readonly NavLink[] = [
   { label: 'Docs', to: '/docs' },
   { label: 'Format', to: '/format' },
   { label: 'Benchmark', to: '/benchmark' },
+  { label: 'Real files', to: '/workload' },
   { label: 'Agents', to: '/agents' },
 ];
 

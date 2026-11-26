@@ -1,0 +1,26 @@
+/* /workload: the /benchmark layout, one results table per model grouped by file,
+   and a wrong answers table of short text. Tables scroll sideways in their own box on phones. */
+.work-page .acc { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1000px) { .work-page .acc { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* The hidden "(fewest)" labels in a cell place against the table's own scroll box, so they never widen the page. */
+.work-page .scroll-x { position: relative; }
+
+/* The file name heads its group of rows. It wraps, sits at the top and reads left to right. */
+.bt-work tbody th { text-align: left; }
+.bt-work th.grp-l { vertical-align: top; white-space: normal; min-width: 6.5em; max-width: 9em; color: var(--fg); }
+.bt-work tbody + tbody tr:first-child > * { border-top: 1.5px solid var(--border-strong); }
+.bt-work tbody.is-total th.grp-l { font-weight: var(--w-strong); }
+.acc .bt-work tbody:last-child tr:last-child th, .acc .bt-work tbody:last-child tr:last-child td { border-bottom: 0; }
+
+.bt-wrong th, .bt-wrong td { text-align: left; vertical-align: top; }
+.bt-wrong td.q { white-space: normal; min-width: 18em; }
+.bt-wrong td.is-none { color: var(--muted-fg); font-style: italic; }
+
+.work-file h3 { font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.01em; color: var(--fg); margin: 0 0 var(--s-2); }
+.work-file + .work-file { margin-top: var(--s-5); }
+.work-file > p { margin: 0 0 var(--s-2); }
+
+.work-links a { overflow-wrap: anywhere; }
+.work-prices { margin-top: var(--s-5); }
+.work-prices ul { margin: var(--s-1) 0 0; padding-left: 0; list-style: none; }
+.work-prices li + li { margin-top: var(--s-1); }
