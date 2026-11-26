@@ -26,7 +26,9 @@ beforeAll(() => {
   writeFileSync(PY_FILE, QUICK_START.py.code);
 }, 20_000);
 
-afterAll(() => rmSync(ROOT, { recursive: true, force: true }));
+afterAll(() => {
+  rmSync(ROOT, { recursive: true, force: true });
+});
 
 it('runs the JavaScript quick start in a CommonJS project', () => {
   const run = spawnSync(process.execPath, [JS_FILE], { encoding: 'utf8' });
