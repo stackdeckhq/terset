@@ -147,8 +147,17 @@ describe('package facts', () => {
     expect(Buffer.byteLength(text)).toBe(26);
     expect(Buffer.byteLength(JSON.stringify(value))).toBe(23);
     const summary = API.find((entry) => entry.id === 'encode')?.summary;
-    expect(summary).toContain('The byte check compares the header and rows with compact JSON.');
-    expect(summary).toContain('It excludes the count line, so a tiny table can be larger than compact JSON.');
+    expect(summary).toContain('For lists, the encoder uses a table only if the header and rows are shorter in UTF-8 bytes than compact JSON.');
+    expect(summary).toContain('The list check excludes the count line, so a tiny list table can be larger than compact JSON.');
+  });
+
+  it('explains why keyed maps compare the complete field', () => {
+    const value = { m: { a: { a: 1, b: 2 }, b: { b: 2, c: 1 } } };
+    const fallback = `m: ${JSON.stringify(value.m)}`;
+    expect(encode(value)).toBe(fallback);
+    expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(value)}))`)).toBe(fallback);
+    const summary = API.find((entry) => entry.id === 'encode')?.summary;
+    expect(summary).toContain('A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON.');
   });
 
   it('matches each package version, runtime and export list', () => {

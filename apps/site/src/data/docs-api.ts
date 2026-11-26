@@ -52,7 +52,7 @@ export const API: readonly ApiEntry[] = [
   {
     id: 'encode',
     name: { js: 'encode', py: 'encode' },
-    summary: 'Turns a JSON object or array into Terset text. The byte check compares the header and rows with compact JSON. It excludes the count line, so a tiny table can be larger than compact JSON. The encoder chooses a table only when the header and rows are shorter.',
+    summary: 'Turns a JSON object or array into Terset text. For lists, the encoder uses a table only if the header and rows are shorter in UTF-8 bytes than compact JSON. The list check excludes the count line, so a tiny list table can be larger than compact JSON. A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON.',
     signature: { js: 'encode(value: JsonRoot, options?: EncodeOptions): string', py: 'encode(value: JsonInputRoot, *, format: FormatVersion = "1.1") -> str' },
     params: {
       js: [
