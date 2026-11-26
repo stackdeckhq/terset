@@ -95,6 +95,21 @@ describe('numbers JavaScript would change', () => {
     expect(statusFor('[-1e400]')).toBe('Number would round');
   });
 
+  it('gives the sign of a value that becomes negative zero', () => {
+    expect(detailFor('[-1e-999]')).toContain('-1e-999 would become -0.');
+  });
+
+  // JavaScript holds these exactly, so the message must not say it cannot. The output would still show other digits.
+  it('refuses a number held exactly that would print with other digits, and says so', () => {
+    const exact = '1000000000000000128';
+    expect(statusFor(`[${exact}]`)).toBe('Number would round');
+    expect(detailFor(`[${exact}]`)).toContain(`${exact} would print as 1000000000000000100. JavaScript holds it exactly but prints other digits.`);
+    expect(detailFor(`[${exact}]`)).not.toContain('cannot hold');
+    expect(detailFor('[1152921504606846976]')).toContain('would print as 1152921504606847000.');
+    // The exact value of the double nearest 0.1, written in full.
+    expect(detailFor('[0.1000000000000000055511151231257827021181583404541015625]')).toContain('would print as 0.1. JavaScript holds it exactly');
+  });
+
   it('keeps numbers that only print differently', () => {
     expect(statusFor('[{"a":1.50,"b":1e2,"c":1E+21,"d":0.000001,"e":2.5e-7,"f":9007199254740992,"g":-12.0}]')).toBe('Round trip exact');
   });
@@ -123,9 +138,10 @@ describe('promptText', () => {
 
 describe('changedNumbers', () => {
   it('returns each changed literal with its line, in order', () => {
-    expect(changedNumbers('{\n"a": 9007199254740993,\n"b": [1, 1e400]\n}')).toEqual([
-      { literal: '9007199254740993', line: 2, value: 9007199254740992 },
-      { literal: '1e400', line: 3, value: Infinity },
+    expect(changedNumbers('{\n"a": 9007199254740993,\n"b": [1, 1e400, 1000000000000000128]\n}')).toEqual([
+      { literal: '9007199254740993', line: 2, value: 9007199254740992, change: 'value' },
+      { literal: '1e400', line: 3, value: Infinity, change: 'value' },
+      { literal: '1000000000000000128', line: 3, value: 1000000000000000128, change: 'digits' },
     ]);
   });
 
@@ -142,6 +158,7 @@ describe('changedNumbers', () => {
     ['one long run of digits', `[${'7'.repeat(MAX_CHARS - 2)}]`],
     ['many short numbers', `[${Array.from({ length: MAX_CHARS / 2 - 1 }, () => '1').join(',')}]`],
     ['many numbers past the safe range', `[${Array.from({ length: MAX_CHARS / 20 }, () => '9007199254740993').join(',')}]`],
+    ['many tiny numbers that print with other digits', `[${Array.from({ length: MAX_CHARS / 25 }, () => '4.9406564584124654e-324').join(',')}]`],
     ['a string full of backslashes', `["${'\\\\'.repeat((MAX_CHARS - 4) / 2)}"]`],
   ])('stays fast on %s', (_, source) => {
     expect(source.length).toBeLessThanOrEqual(MAX_CHARS);
