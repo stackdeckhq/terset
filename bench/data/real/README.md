@@ -43,3 +43,28 @@ never changes them.
 Neither file names a person. The USGS file holds place names near each
 event, network codes and links to USGS pages. The NWS file holds a map
 square, unit codes and forecast values.
+
+## Question freeze
+
+The questions were frozen on 2026-11-26 before any model call. No question is
+removed after seeing results.
+
+Each document has five questions of each kind. They are field retrieval,
+count, extreme and nested lookup. The generator computes every answer from the
+original data. It samples lookup records at fixed intervals in source order.
+It checks that each extreme that asks for a record has exactly one match.
+
+The generator is `bench/src/real/generate.ts`. It checks both source hashes
+listed above before reading the data.
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `bench/src/real/generate.ts` | 9067 | c09f85fe3e3d685292a38500881c469c9c1b9bd627354f5f4dba7b8eaaf099db |
+| `datasets.json` | 420151 | 452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6 |
+| `questions.json` | 11655 | a43dc5e2423f5a14c3caed102c7e1fe680e50eb24ee335b90aecc189466e2889 |
+
+Regenerate the frozen dataset and question files from the repository root.
+
+```sh
+pnpm --dir bench real:freeze
+```
