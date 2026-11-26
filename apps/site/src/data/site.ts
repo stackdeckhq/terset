@@ -78,7 +78,7 @@ export function rawUrl(path: RawPath): string {
 // its source reads them from here. A test checks them against packages/terset/package.json.
 export const PACKAGE_NAME = '@stackdeck/terset';
 export const PYPI_NAME = 'terset';
-export const PACKAGE_VERSION = '0.3.0';
+export const PACKAGE_VERSION = '0.3.1';
 export const PACKAGE_LICENSE = 'MIT';
 /** The language of the npm package, as /docs names it. */
 export const PACKAGE_LANGUAGE = 'JavaScript';
