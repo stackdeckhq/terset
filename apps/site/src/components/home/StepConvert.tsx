@@ -62,7 +62,7 @@ function sampleLine(sample: SampleId): ReactNode {
 
 // Every line the token row can show, so the row keeps the height of the longest.
 const TOKEN_ITEMS: readonly StackItem<TokenKey>[] = [
-  { key: 'invalid', node: 'Sizes return when the JSON parses.' },
+  { key: 'invalid', node: 'Sizes return when the JSON converts.' },
   { key: 'bytes', node: `Live sizes are in bytes. Show tokens counts them with ${LIVE_TOKENIZER}.` },
   ...SAMPLE_IDS.map((sample) => ({ key: sample, node: sampleLine(sample) })),
 ];

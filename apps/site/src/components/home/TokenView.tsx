@@ -114,10 +114,10 @@ export function Panes({ live }: { readonly live: LiveTokens }) {
 }
 
 // The note is a polite live region, so a screen reader hears the load start and the counts arrive.
-function note(state: TokenState, live: LiveTokens | null, ok: boolean): ReactNode {
+export function tokenNote(state: TokenState, live: LiveTokens | null, ok: boolean): ReactNode {
   if (state.kind === 'loading') return `Loading ${LIVE_TOKENIZER}, about ${String(TOKENIZER_DOWNLOAD_MB)} MB.`;
   if (state.kind !== 'ready' || !state.shown) return `Colors each token and counts your JSON live with ${LIVE_TOKENIZER}.`;
-  if (!ok || live === null) return 'Token counts return when the JSON parses.';
+  if (!ok || live === null) return 'Token counts return when the JSON converts.';
   return <LiveCountNote live={live} />;
 }
 
@@ -164,7 +164,7 @@ export function TokenView({ result }: { readonly result: ConvertResult }) {
     <div className="tokv">
       <div className="card-actions tokv-bar">
         <p className="card-note" aria-live="polite">
-          {note(state, live, result.ok)}
+          {tokenNote(state, live, result.ok)}
         </p>
         <button type="button" className="btn btn-line" aria-pressed={state.kind === 'failed' ? undefined : state.kind === 'ready' && state.shown} onClick={onClick}>
           {toggleLabel(state)}
