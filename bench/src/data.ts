@@ -1,8 +1,10 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { z } from 'zod';
-import { datasetSchema, questionSchema } from './schema.ts';
+import { datasetSchema, questionSchema, suiteNameSchema } from './schema.ts';
 import type { Dataset, Question } from './schema.ts';
+
+export { suiteNameSchema };
 
 export const UPSTREAM_SHA = '22caca377f08d737789a2ca60ab02c425a3aa947';
 export const DATA_HASHES = {
@@ -19,14 +21,19 @@ export const datasetNameSchema = z.enum([
 export const selectedDatasetsSchema = z.array(datasetNameSchema).min(1)
   .refine(names => new Set(names).size === names.length, 'Datasets must be unique');
 
-export const suiteNameSchema = z.enum(['toon', 'stress']);
 export type SuiteName = z.infer<typeof suiteNameSchema>;
+export const REAL_SOURCE_HASHES = {
+  'usgs-earthquakes-all-day.geojson': '7306b59e3a896439a3c57efd6597ac062b8234dd459ebcd1eb4c5fcfc07b5485',
+  'nws-gridpoint-lwx-97-71.json': '9ca6b9be09aed19680ae60eb24c6e92e8caac82cd6dfee3af034478482f39158',
+} as const;
 export interface SuiteRecord {
   name: SuiteName;
   paths: { 'datasets.json': string; 'questions.json': string };
   hashes: Record<keyof typeof DATA_HASHES, string>;
   datasetNames: readonly string[];
-  source: { upstreamSha: string } | { generatorSource: string; generatorSha256: string; seed: number; referenceDate: string };
+  source: { upstreamSha: string }
+    | { generatorSource: string; generatorSha256: string; seed: number; referenceDate: string }
+    | { generatorSource: string; generatorSha256: string; sourceHashes: typeof REAL_SOURCE_HASHES };
 }
 export interface Suite extends SuiteRecord { datasets: Dataset[]; questions: Question[] }
 export const SUITES: Record<SuiteName, SuiteRecord | null> = {
@@ -54,6 +61,19 @@ export const SUITES: Record<SuiteName, SuiteRecord | null> = {
     source: { generatorSource: 'bench/src/stress/generate.ts',
       generatorSha256: '36e8782fe7dad303057132ff4ea5e2f85ff1dce4135ba3b3b5fe05be24010cd1',
       seed: 20261117, referenceDate: '2026-11-17T00:00:00.000Z' },
+  },
+  real: {
+    name: 'real', paths: { 'datasets.json': '../data/real/datasets.json', 'questions.json': '../data/real/questions.json' },
+    hashes: {
+      'datasets.json': '452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6',
+      'questions.json': 'a43dc5e2423f5a14c3caed102c7e1fe680e50eb24ee335b90aecc189466e2889',
+    },
+    datasetNames: ['usgs-earthquakes', 'nws-gridpoint'],
+    source: {
+      generatorSource: 'bench/src/real/generate.ts',
+      generatorSha256: 'c09f85fe3e3d685292a38500881c469c9c1b9bd627354f5f4dba7b8eaaf099db',
+      sourceHashes: REAL_SOURCE_HASHES,
+    },
   },
 };
 export class SuiteUnavailableError extends Error {

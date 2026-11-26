@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node src/cli.ts",
     "stress:freeze": "node src/stress/freeze.ts",
+    "real:freeze": "node src/real/freeze.ts",
     "test": "vitest run --root .. bench --maxWorkers=2"
   },
   "dependencies": {
