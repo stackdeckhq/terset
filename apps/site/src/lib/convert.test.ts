@@ -125,6 +125,14 @@ describe('numbers JavaScript would change', () => {
     expect(detailFor('[1000000000000000129.0]')).toContain('1000000000000000129.0 would become 1000000000000000128.');
     expect(detailFor('[1.000000000000000129e18]')).toContain('would become 1000000000000000128.');
   });
+
+  it('shows the digits that differ when a long number changes past the cut', () => {
+    // One above 2^200. JavaScript holds 2^200, which ends in 1376.
+    const literal = '1606938044258990275541962092341162602522202993782792835301377';
+    const detail = detailFor(`[${literal}]`);
+    expect(detail).toContain('…202993782792835301377 would become …202993782792835301376.');
+    expect(detail).toContain('Quote it to keep every digit.');
+  });
 });
 
 describe('promptText', () => {

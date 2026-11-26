@@ -186,19 +186,33 @@ function shorten(text: string): string {
   return text.length > SHOWN_CHARS ? `${text.slice(0, SHOWN_CHARS)}…` : text;
 }
 
+/**
+ * The typed number and the held one, each cut to fit the message. Both are cut from the start,
+ * unless they first differ past the cut. Then both show the same window around that digit,
+ * so the message never prints two identical previews.
+ */
+function previews(typed: string, held: string): readonly [string, string] {
+  let differs = 0;
+  while (differs < typed.length && typed.charAt(differs) === held.charAt(differs)) differs += 1;
+  if (differs < SHOWN_CHARS) return [shorten(typed), shorten(held)];
+  const start = differs - SHOWN_CHARS / 2;
+  const end = start + SHOWN_CHARS;
+  const window = (text: string): string => `…${text.slice(start, end)}${end < text.length ? '…' : ''}`;
+  return [window(typed), window(held)];
+}
+
 function changeText(first: ChangedNumber): string {
-  if (!Number.isFinite(first.value)) return 'is too large for JavaScript.';
-  if (first.change === 'digits') return `would print as ${String(first.value)}. JavaScript holds it exactly but prints other digits.`;
-  return `would become ${shorten(heldText(first.value))}. JavaScript cannot hold it exactly.`;
+  if (!Number.isFinite(first.value)) return `${shorten(first.literal)} is too large for JavaScript.`;
+  if (first.change === 'digits') return `${shorten(first.literal)} would print as ${String(first.value)}. JavaScript holds it exactly but prints other digits.`;
+  const [typed, held] = previews(first.literal, heldText(first.value));
+  return `${typed} would become ${held}. JavaScript cannot hold it exactly.`;
 }
 
 function roundedDetail(first: ChangedNumber, more: number): string {
   const cut = first.literal.length > SHOWN_CHARS;
-  const shown = shorten(first.literal);
-  const what = changeText(first);
   const fix = cut ? 'Quote it to keep every digit.' : `Quote it to keep every digit: "${first.literal}".`;
   const rest = more === 0 ? '' : more === 1 ? ' 1 more number changes too.' : ` ${String(more)} more numbers change too.`;
-  return `Line ${String(first.line)}: ${shown} ${what} ${fix}${rest}`;
+  return `Line ${String(first.line)}: ${changeText(first)} ${fix}${rest}`;
 }
 
 export type ParseResult =
