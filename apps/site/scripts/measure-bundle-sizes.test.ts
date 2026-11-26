@@ -17,7 +17,8 @@ it('publishes the measured gzip sizes of the browser bundles', () => {
 
 it('shows each measured bundle size with its label in the home page limits', () => {
   const html = renderToStaticMarkup(createElement(KeepJson));
-  const kb = (bytes: number) => `${(bytes / 1000).toFixed(1)} kB`;
+  // Rounds the whole byte count to the nearest 100 first. toFixed on 2.55 would give 2.5, since 2.55 is stored just below.
+  const kb = (bytes: number) => `${(Math.round(bytes / 100) / 10).toFixed(1)} kB`;
   expect(html).toContain('Minified ES2022 browser bundles built with esbuild, then gzipped.');
   expect(html).toContain(`Terset encode ${kb(measured.tersetEncode)}, encode plus decode ${kb(measured.tersetAll)}.`);
   expect(html).toContain(`TOON ${TOON_VERSION} encode ${kb(measured.toonEncode)}, encode plus decode ${kb(measured.toonAll)}.`);
