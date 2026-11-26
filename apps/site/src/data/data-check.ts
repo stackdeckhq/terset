@@ -1,5 +1,5 @@
 // Checks every build-time data value the pages read against its zod schema.
-// The data modules type their JSON without parsing it, so the browser never loads zod.
+// Data modules that type their JSON without parsing it keep zod out of the browser.
 // The check runs where zod is free to load: in the server entry, so a bad file fails
 // the prerender in `pnpm build`, and in data-check.test.ts, which also proves that
 // parsing returns each value unchanged, so typing it without parsing is exact.
@@ -17,6 +17,8 @@ import { BENCH_FILE, CLAUDE_FILE } from './numbers.ts';
 import { PRICES } from './prices.ts';
 import { PricesSchema } from './prices-schema.ts';
 import { REAL } from './real.ts';
+import { REAL_ACCURACY } from './real-accuracy.ts';
+import { RealAccuracyFileSchema } from './real-accuracy-schema.ts';
 import { RealDataSchema } from './real-data-schema.ts';
 import { SeedSweepSchema } from './seed-sweep-schema.ts';
 import { SIZE_BYTES } from './size.ts';
@@ -46,6 +48,7 @@ export const DATA_CHECKS: readonly DataCheck[] = [
   check('src/data/bytes-results.json', BytesFileSchema, BYTES),
   check('src/data/claude-counts.json', ClaudeCountsSchema, CLAUDE_FILE),
   check('src/data/prices.ts', PricesSchema, PRICES),
+  check('src/data/real-accuracy-results.json', RealAccuracyFileSchema, REAL_ACCURACY),
   check('src/data/real-data.json', RealDataSchema, REAL),
   check('src/data/seed-sweep.json', SeedSweepSchema, SWEEP),
   check('src/generated/samples.json', GeneratedSamplesSchema, GENERATED),

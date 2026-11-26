@@ -10,12 +10,14 @@
 // and any difference stops the script. Input tokens are as each model reported them.
 // Importing this file writes nothing; only running it does.
 // STRESS_PUBLISHED_RUNS feeds a separate file and README block, one run per model.
+// The real suite writes its own data file from the two published runs.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ACCURACY_FORMATS, ACCURACY_KINDS, AccuracyFileSchema } from '../src/data/accuracy-schema.ts';
 import type { AccuracyFile, AccuracyFormat, AccuracyKind, AccuracyKindId, AccuracyModel } from '../src/data/accuracy-schema.ts';
 import { StressAccuracyFileSchema } from '../src/data/accuracy-stress-schema.ts';
+import { REAL_ACCURACY_OUTPUT, realAccuracyText } from './accuracy-real.ts';
 import { RunFile, equalField, questionSet, runScores, validateRun, wilson95 } from './accuracy-runs.ts';
 import { STRESS_OUTPUT, STRESS_PUBLISHED_RUNS, stressAccuracyText, updateStressReadme } from './accuracy-stress.ts';
 
@@ -172,9 +174,11 @@ export function accuracyText(): string {
 }
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const realText = realAccuracyText();
   writeFileSync(OUTPUT, accuracyText());
   const stressText = stressAccuracyText();
   writeFileSync(STRESS_OUTPUT, stressText);
+  writeFileSync(REAL_ACCURACY_OUTPUT, realText);
   const stress = StressAccuracyFileSchema.parse(JSON.parse(stressText));
   const { ACCURACY, accuracyReadmeBlock } = await import('../src/data/accuracy.ts');
   for (const path of ['README.md', 'packages/terset/README.md', 'packages/terset-py/README.md']) {
@@ -184,4 +188,5 @@ if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.a
     writeFileSync(`${REPO}${path}`, updateStressReadme(updated, stress));
   }
   console.log(`Updated accuracy data and README tables from ${String(PUBLISHED_RUNS.length)} TOON runs and ${String(STRESS_PUBLISHED_RUNS.length)} stress runs.`);
+  console.log('Updated real accuracy data from the two published runs.');
 }
