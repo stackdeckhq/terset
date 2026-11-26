@@ -37,6 +37,12 @@ describe('convert', () => {
     expect(scalar.ok).toBe(false);
     if (!scalar.ok) expect(scalar.status).toBe('Needs an object or array');
   });
+
+  it('returns a message, not a throw, for JSON nested too deep to walk', () => {
+    const depth = MAX_CHARS / 2 - 1;
+    const deep = `${'['.repeat(depth)}1${']'.repeat(depth)}`;
+    expect(convert(deep).ok).toBe(false);
+  });
 });
 
 describe('numbers JavaScript would change', () => {

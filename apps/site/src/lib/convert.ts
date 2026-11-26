@@ -155,7 +155,13 @@ export function parseJson(text: string): ParseResult {
   const changed = changedNumbers(text);
   const first = changed[0];
   if (first !== undefined) return { ok: false, reason: 'rounded', first, more: changed.length - 1 };
-  return isJsonValue(parsed) ? { ok: true, value: parsed } : { ok: false, reason: 'syntax', detail: 'The text is not plain JSON data.' };
+  try {
+    if (isJsonValue(parsed)) return { ok: true, value: parsed };
+  } catch (error) {
+    // Nesting thousands deep runs out of stack. JSON.parse copes, so this check is where it shows.
+    return { ok: false, reason: 'syntax', detail: message(error) };
+  }
+  return { ok: false, reason: 'syntax', detail: 'The text is not plain JSON data.' };
 }
 
 /** What "Copy for a prompt" copies: the rules line fitted to `text`, a newline, then `text`. Just `text` when no rules fit. */
