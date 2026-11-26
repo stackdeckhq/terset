@@ -7,6 +7,7 @@ import type { z } from 'zod';
 import { ACCURACY } from './accuracy.ts';
 import { AccuracyFileSchema } from './accuracy-schema.ts';
 import { BenchFileSchema } from './bench-schema.ts';
+import { BundleSizesSchema } from './bundle-sizes-schema.ts';
 import { BYTES } from './bytes.ts';
 import { BytesFileSchema } from './bytes-schema.ts';
 import { ClaudeCountsSchema } from './claude-counts-schema.ts';
@@ -18,6 +19,7 @@ import { PricesSchema } from './prices-schema.ts';
 import { REAL } from './real.ts';
 import { RealDataSchema } from './real-data-schema.ts';
 import { SeedSweepSchema } from './seed-sweep-schema.ts';
+import { SIZE_BYTES } from './size.ts';
 import { SIZES } from './sizes.ts';
 import { StressAccuracyFileSchema } from './accuracy-stress-schema.ts';
 import { STRESS } from './stress.ts';
@@ -40,6 +42,7 @@ export const DATA_CHECKS: readonly DataCheck[] = [
   check('src/data/accuracy-results.json', AccuracyFileSchema, ACCURACY),
   check('src/data/accuracy-stress-results.json', StressAccuracyFileSchema, STRESS),
   check('src/data/bench-results.json', BenchFileSchema, BENCH_FILE),
+  check('src/data/bundle-sizes.json', BundleSizesSchema, SIZE_BYTES),
   check('src/data/bytes-results.json', BytesFileSchema, BYTES),
   check('src/data/claude-counts.json', ClaudeCountsSchema, CLAUDE_FILE),
   check('src/data/prices.ts', PricesSchema, PRICES),
