@@ -1,6 +1,6 @@
 // One copy button for the whole site: Clipboard API with a fallback,
 // a "Copied" state, a spoken status and a 44 px target.
-// The small button is an icon with a tooltip; the strong one keeps its text label.
+// The small button is an icon with a tooltip; the labelled and strong ones keep their text label.
 import { useEffect, useRef, useState } from 'react';
 import { copyText } from '../lib/clipboard.ts';
 
@@ -26,14 +26,17 @@ export interface CopyButtonProps {
   readonly onLight?: boolean;
   /** A full-size primary button, for the main action of a card. */
   readonly strong?: boolean;
+  /** A small button that shows its label beside the icon, for a second copy action next to an icon one. */
+  readonly labelled?: boolean;
 }
 
-function buttonClass(onLight: boolean, strong: boolean): string {
+function buttonClass(onLight: boolean, strong: boolean, labelled: boolean): string {
   if (strong) return 'btn btn-primary copy-strong';
-  return onLight ? 'mini-btn copy-icon on-light' : 'mini-btn copy-icon';
+  const shape = labelled ? 'mini-btn copy-text' : 'mini-btn copy-icon';
+  return onLight ? `${shape} on-light` : shape;
 }
 
-export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false }: CopyButtonProps) {
+export function CopyButton({ getText, label = 'Copy', describedBy, onLight = false, strong = false, labelled = false }: CopyButtonProps) {
   const [state, setState] = useState<CopyState>('idle');
   const timer = useRef<number | undefined>(undefined);
 
@@ -54,20 +57,21 @@ export function CopyButton({ getText, label = 'Copy', describedBy, onLight = fal
   };
 
   const current = state === 'idle' ? label : DONE_LABELS[state];
+  const showsLabel = strong || labelled;
   return (
     <>
       <button
         type="button"
-        className={buttonClass(onLight, strong)}
+        className={buttonClass(onLight, strong, labelled)}
         data-state={state === 'idle' ? undefined : state}
-        aria-label={strong ? undefined : current}
+        aria-label={showsLabel ? undefined : current}
         aria-describedby={describedBy}
         onClick={() => {
           void onClick();
         }}
       >
         <CopyIcon done={state === 'copied'} />
-        {strong ? (
+        {showsLabel ? (
           <StrongLabel label={label} state={state} />
         ) : (
           <span className="copy-tip" aria-hidden="true">

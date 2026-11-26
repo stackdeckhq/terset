@@ -33,6 +33,17 @@ describe('small copy button', () => {
   });
 });
 
+describe('labelled copy button', () => {
+  it('is small, shows its label as text and needs no aria-label', () => {
+    const html = render({ label: 'Copy for a prompt', labelled: true });
+    expect(html).toContain('mini-btn copy-text');
+    expect(html).not.toContain('copy-icon');
+    expect(html).not.toContain('aria-label');
+    expect(html).not.toContain('copy-tip');
+    expect(visibleText(html)).toContain('Copy for a prompt');
+  });
+});
+
 describe('strong copy button', () => {
   it('shows its label as text and needs no aria-label', () => {
     const html = render({ label: 'Copy prompt', strong: true });

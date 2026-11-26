@@ -1,8 +1,8 @@
 // The converter's output is exactly encode(), and bad input gets a clear status.
 import { describe, expect, it } from 'vitest';
 import { SAMPLES } from '../data/samples.ts';
-import { changedNumbers, convert, statusOf } from './convert.ts';
-import { encode } from './format.ts';
+import { changedNumbers, convert, promptText, statusOf } from './convert.ts';
+import { encode, rulesFor } from './format.ts';
 
 describe('convert', () => {
   it('returns encode() output that round trips', () => {
@@ -89,6 +89,21 @@ describe('numbers JavaScript would change', () => {
     const long = `1${'0'.repeat(80)}1`;
     expect(detailFor(`[${long}]`)).toContain(`${long.slice(0, 40)}…`);
     expect(detailFor(`[${long}]`)).not.toContain(long);
+  });
+});
+
+describe('promptText', () => {
+  it('puts the fitted rules line, then a newline, then the data', () => {
+    const text = encode(SAMPLES.orders);
+    const rules = rulesFor(text);
+    expect(rules).not.toBe('');
+    expect(promptText(text)).toBe(`${rules}\n${text}`);
+  });
+
+  it('gives the data alone when no rules fit, with no blank line first', () => {
+    const text = encode(SAMPLES.config);
+    expect(rulesFor(text)).toBe('');
+    expect(promptText(text)).toBe(text);
   });
 });
 

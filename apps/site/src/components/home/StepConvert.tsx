@@ -5,7 +5,7 @@ import { GENERATED } from '../../data/generated.ts';
 import { BENCH, COUNTERS, PENDING_TITLE, counterList, formatCount } from '../../data/numbers.ts';
 import { SAMPLE_IDS, SAMPLE_LABELS, SAMPLES } from '../../data/samples.ts';
 import type { SampleId } from '../../data/samples.ts';
-import { STATUSES, convert, statusOf } from '../../lib/convert.ts';
+import { STATUSES, convert, promptText, statusOf } from '../../lib/convert.ts';
 import type { ConvertResult, Status } from '../../lib/convert.ts';
 import { highlight } from '../../lib/format.ts';
 import { LIVE_TOKENIZER } from '../../lib/live-tokenizer.ts';
@@ -190,7 +190,10 @@ export function StepConvert() {
               <span className="fn" id={`${id}-out-label`}>
                 Terset, from the real encoder
               </span>
-              <CopyButton getText={() => (result.ok ? result.text : '')} describedBy={`${id}-out-label`} />
+              <span className="code-h-acts">
+                <CopyButton getText={() => (result.ok ? promptText(result.text) : '')} label="Copy for a prompt" labelled describedBy={`${id}-out-label`} />
+                <CopyButton getText={() => (result.ok ? result.text : '')} describedBy={`${id}-out-label`} />
+              </span>
             </div>
             <div className="fade-x out-fade">
               <pre className="out xs" id="converter-out" tabIndex={0} role="region" aria-labelledby={`${id}-out-label`} dangerouslySetInnerHTML={{ __html: outHtml(result) }} />
