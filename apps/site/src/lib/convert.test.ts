@@ -157,19 +157,21 @@ describe('changedNumbers', () => {
 
   // The scan runs on the main thread on every paste. Each case is near the 60,000 character cap.
   // A linear scan takes a few milliseconds; the quadratic one took over a second on the first case.
+  // The count of changed numbers is checked too, so a scan that skips long input cannot pass.
   it.each([
-    ['a decimal with a long run of inner zeros', `[1.${'0'.repeat(MAX_CHARS - 6)}1]`],
-    ['an integer with a long run of inner zeros', `[1${'0'.repeat(MAX_CHARS - 4)}1]`],
-    ['an exponent with a long run of zeros', `[1e${'0'.repeat(MAX_CHARS - 6)}1]`],
-    ['one long run of digits', `[${'7'.repeat(MAX_CHARS - 2)}]`],
-    ['many short numbers', `[${Array.from({ length: MAX_CHARS / 2 - 1 }, () => '1').join(',')}]`],
-    ['many numbers past the safe range', `[${Array.from({ length: MAX_CHARS / 20 }, () => '9007199254740993').join(',')}]`],
-    ['many tiny numbers that print with other digits', `[${Array.from({ length: MAX_CHARS / 25 }, () => '4.9406564584124654e-324').join(',')}]`],
-    ['a string full of backslashes', `["${'\\\\'.repeat((MAX_CHARS - 4) / 2)}"]`],
-  ])('stays fast on %s', (_, source) => {
+    ['a decimal with a long run of inner zeros', `[1.${'0'.repeat(MAX_CHARS - 6)}1]`, 1],
+    ['an integer with a long run of inner zeros', `[1${'0'.repeat(MAX_CHARS - 4)}1]`, 1],
+    ['an exponent with a long run of zeros', `[1e${'0'.repeat(MAX_CHARS - 6)}1]`, 0],
+    ['one long run of digits', `[${'7'.repeat(MAX_CHARS - 2)}]`, 1],
+    ['many short numbers', `[${Array.from({ length: MAX_CHARS / 2 - 1 }, () => '1').join(',')}]`, 0],
+    ['many numbers past the safe range', `[${Array.from({ length: MAX_CHARS / 20 }, () => '9007199254740993').join(',')}]`, MAX_CHARS / 20],
+    ['many tiny numbers that print with other digits', `[${Array.from({ length: MAX_CHARS / 25 }, () => '4.9406564584124654e-324').join(',')}]`, MAX_CHARS / 25],
+    ['a string full of backslashes', `["${'\\\\'.repeat((MAX_CHARS - 4) / 2)}"]`, 0],
+  ])('stays fast on %s', (_, source, expected) => {
     expect(source.length).toBeLessThanOrEqual(MAX_CHARS);
     const start = performance.now();
-    changedNumbers(source);
+    const changed = changedNumbers(source);
     expect(performance.now() - start).toBeLessThan(250);
+    expect(changed).toHaveLength(expected);
   });
 });
