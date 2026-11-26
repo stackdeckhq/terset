@@ -53,6 +53,14 @@ describe('numbers JavaScript would change', () => {
     expect(detailFor(source)).toContain('"9007199254740993"');
   });
 
+  // 1000000000000000100 is stored as 1000000000000000128, which prints back as 1000000000000000100.
+  it('refuses an integer that is stored as another integer even when it prints back the same', () => {
+    expect(statusFor('[1000000000000000100]')).toBe('Number would round');
+    expect(statusFor('[-1000000000000000100]')).toBe('Number would round');
+    expect(statusFor('[9007199254740994]')).toBe('Round trip exact');
+    expect(detailFor('[1000000000000000100]')).toContain('1000000000000000100 would become 1000000000000000128.');
+  });
+
   it('refuses a negative one too', () => {
     expect(statusFor('{"n":-9007199254740993}')).toBe('Number would round');
     expect(detailFor('{"n":-9007199254740993}')).toContain('-9007199254740993 would become -9007199254740992.');
@@ -61,7 +69,7 @@ describe('numbers JavaScript would change', () => {
   it('finds one nested deep and gives its line', () => {
     const source = JSON.stringify({ a: [{ b: { c: [1, 2, { d: 1 }] } }] }, null, 2).replace('"d": 1', '"d": 12345678901234567890');
     expect(statusFor(source)).toBe('Number would round');
-    expect(detailFor(source)).toMatch(/^Line 9: 12345678901234567890 would become 12345678901234567000\./u);
+    expect(detailFor(source)).toMatch(/^Line 9: 12345678901234567890 would become 12345678901234567168\./u);
   });
 
   it('counts the other numbers that change', () => {

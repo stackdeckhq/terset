@@ -57,6 +57,13 @@ export interface ChangedNumber {
 const NUMBER_LITERAL = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
 // A decimal as JSON writes it or as String(number) prints it. Infinity and NaN do not match.
 const DECIMAL = /^(-?)(\d+)(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/u;
+// A literal written as an integer: no fraction, no exponent. Other JSON readers keep these as exact integers.
+const INTEGER = /^-?\d+$/u;
+
+/** What JavaScript holds for a literal, as the message shows it: the exact integer for an integer literal. */
+function heldAs(literal: string, value: number): string {
+  return INTEGER.test(literal) && Number.isFinite(value) ? BigInt(value).toString() : String(value);
+}
 
 /**
  * A decimal reduced to sign, significant digits and power of ten, so 1.50, 15e-1 and 1.5
@@ -89,7 +96,9 @@ function afterString(json: string, start: number): number {
  * Every number literal in valid JSON text whose value changes when JavaScript reads it.
  * A literal changes when the number it becomes prints back as a different decimal value:
  * 9007199254740993 prints as 9007199254740992, 0.10000000000000000001 as 0.1 and 1e400 as
- * Infinity. Forms that only print differently, such as 1.50 or 1e2, keep their value.
+ * Infinity. An integer literal also changes when the exact integer JavaScript holds differs,
+ * even if it prints back the same: 1000000000000000100 is held as 1000000000000000128.
+ * Forms that only print differently, such as 1.50 or 1e2, keep their value.
  * Digits inside strings and keys are skipped.
  */
 export function changedNumbers(json: string): readonly ChangedNumber[] {
@@ -104,7 +113,8 @@ export function changedNumbers(json: string): readonly ChangedNumber[] {
       NUMBER_LITERAL.lastIndex = index;
       const literal = NUMBER_LITERAL.exec(json)?.[0] ?? char;
       const value = Number(literal);
-      if (canonicalDecimal(literal) !== canonicalDecimal(String(value))) changed.push({ literal, line, value });
+      const typed = canonicalDecimal(literal);
+      if (typed !== canonicalDecimal(String(value)) || typed !== canonicalDecimal(heldAs(literal, value))) changed.push({ literal, line, value });
       index += literal.length;
     } else {
       if (char === '\n') line += 1;
@@ -120,7 +130,7 @@ const SHOWN_CHARS = 40;
 function roundedDetail(first: ChangedNumber, more: number): string {
   const cut = first.literal.length > SHOWN_CHARS;
   const shown = cut ? `${first.literal.slice(0, SHOWN_CHARS)}…` : first.literal;
-  const what = Number.isFinite(first.value) ? `would become ${String(first.value)}. JavaScript cannot hold it exactly.` : 'is too large for JavaScript.';
+  const what = Number.isFinite(first.value) ? `would become ${heldAs(first.literal, first.value)}. JavaScript cannot hold it exactly.` : 'is too large for JavaScript.';
   const fix = cut ? 'Quote it to keep every digit.' : `Quote it to keep every digit: "${first.literal}".`;
   const rest = more === 0 ? '' : more === 1 ? ' 1 more number changes too.' : ` ${String(more)} more numbers change too.`;
   return `Line ${String(first.line)}: ${shown} ${what} ${fix}${rest}`;
