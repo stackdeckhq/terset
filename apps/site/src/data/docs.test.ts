@@ -9,6 +9,7 @@ import { runInThisContext } from 'node:vm';
 import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
 import { describe, expect, it } from 'vitest';
 import { RULES, RULES_PLACEMENT, decode, encode, rulesFor } from '../lib/format.ts';
+import type { JsonObject } from '../lib/format.ts';
 import { API, PUBLIC_EXPORTS, exampleFence } from './docs-api.ts';
 import { CHEAT_SHEET, DOCS_SECTIONS, ERROR_MESSAGES, INSTALL, OFFICIAL_LINE, PACKAGE_README_HEADINGS, RULES_INTRO, WHEN_NOT, quickStartSteps } from './docs.ts';
 import { COUNTERS, counterLosses } from './numbers.ts';
@@ -43,17 +44,40 @@ describe('README blocks', () => {
     }
   });
 
-  it('shows the measured counts for the four-user example in every README', () => {
-    for (const id of README_IDS) {
-      const section = sections(read(README_FILES[id])).get('See it') ?? '';
-      const json = /```json\n([^\n]+)\n```/u.exec(section)?.[1];
-      if (json === undefined) throw new Error(`${README_FILES[id]} is missing the example JSON`);
-      const data = encode(JSON.parse(json) as Parameters<typeof encode>[0]);
+  it.each(README_IDS)('shows the measured counts for both user examples in the %s README', (id) => {
+    const section = readBlocks(read(README_FILES[id])).get('see-it') ?? '';
+    const json = /```json\n([^\n]+)\n```/u.exec(section)?.[1];
+    if (json === undefined) throw new Error(`${README_FILES[id]} is missing the example JSON`);
+    const input = JSON.parse(json) as JsonObject & { users: JsonObject[] };
+    expect(input.users).toHaveLength(4);
+    const users = [...input.users, ...input.users, ...input.users.slice(0, 2)]
+      .map((user, index) => ({ ...user, id: `u${String(index + 1)}` }));
+    const measure = (value: JsonObject, compact: string) => {
+      const data = encode(value);
       const prompt = [rulesFor(data), data].filter(Boolean).join('\n');
-      for (const [label, value] of [['Terset data alone', data], ['Terset data plus rules', prompt], ['Compact JSON', json]] as const) {
-        expect(section, README_FILES[id]).toContain(`| ${label} | ${String(Buffer.byteLength(value))} | ${String(tokenize(value).length)} |`);
-      }
-    }
+      const dataTokens = tokenize(data).length;
+      const promptTokens = tokenize(prompt).length;
+      const jsonTokens = tokenize(compact).length;
+      return {
+        dataTokens, promptTokens, jsonTokens,
+        rows: [
+          `| Terset data alone | ${String(Buffer.byteLength(data))} | ${String(dataTokens)} |`,
+          `| Terset data plus rules | ${String(Buffer.byteLength(prompt))} | ${String(promptTokens)} |`,
+          `| Compact JSON | ${String(Buffer.byteLength(compact))} | ${String(jsonTokens)} |`,
+        ],
+      };
+    };
+    const enlarged = { ...input, users };
+    const four = measure(input, json);
+    const ten = measure(enlarged, JSON.stringify(enlarged));
+    const tables = section.split('\n\n').filter((paragraph) => paragraph.startsWith('| Format | Bytes | Tokens |'));
+    expect(tables.map((table) => table.split('\n').slice(2))).toEqual([four.rows, ten.rows]);
+    expect(four.dataTokens).toBeLessThan(four.jsonTokens);
+    expect(four.promptTokens).toBeGreaterThanOrEqual(four.jsonTokens);
+    expect(section).toContain('Four records do not save enough tokens to pay for the rules line.');
+    const saving = ten.jsonTokens - ten.promptTokens;
+    expect(saving).toBeGreaterThan(0);
+    expect(section).toContain(`Repeat the same record shapes to make 10 users, each with a unique ID. With the rules included, Terset uses ${String(saving)} fewer tokens.`);
   });
   for (const id of README_IDS) {
     it(`keeps every docs block in ${README_FILES[id]} equal to the source`, () => {

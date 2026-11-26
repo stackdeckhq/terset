@@ -164,7 +164,7 @@ function largerExample(): readonly string[] {
       measured.table,
     ];
   }
-  return [];
+  throw new Error('No larger README example saves at least 10% of tokens with the rules included.');
 }
 
 /** The "See it" example: JSON in, the Terset text and rules line out, and where they go. */
