@@ -126,10 +126,10 @@ function changeOf(literal: string, value: number): NumberChange | null {
   return printsSame ? null : 'digits';
 }
 
-/** The number JavaScript holds for a literal, as the message shows it: the exact integer for an integer literal, and -0 with its sign. */
-function heldText(literal: string, value: number): string {
-  if (INTEGER.test(literal)) return BigInt(value).toString();
-  return Object.is(value, -0) ? '-0' : String(value);
+/** The finite number JavaScript holds, as the message shows it: -0 with its sign, and a whole number as its exact integer. */
+function heldText(value: number): string {
+  if (Object.is(value, -0)) return '-0';
+  return Number.isInteger(value) ? BigInt(value).toString() : String(value);
 }
 
 /** The index just past the string that opens at `start`. JSON strings hold no raw newlines. */
@@ -189,7 +189,7 @@ function shorten(text: string): string {
 function changeText(first: ChangedNumber): string {
   if (!Number.isFinite(first.value)) return 'is too large for JavaScript.';
   if (first.change === 'digits') return `would print as ${String(first.value)}. JavaScript holds it exactly but prints other digits.`;
-  return `would become ${shorten(heldText(first.literal, first.value))}. JavaScript cannot hold it exactly.`;
+  return `would become ${shorten(heldText(first.value))}. JavaScript cannot hold it exactly.`;
 }
 
 function roundedDetail(first: ChangedNumber, more: number): string {

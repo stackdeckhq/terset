@@ -119,6 +119,12 @@ describe('numbers JavaScript would change', () => {
     expect(detailFor(`[${long}]`)).toContain(`${long.slice(0, 40)}…`);
     expect(detailFor(`[${long}]`)).not.toContain(long);
   });
+
+  it('names the stored integer for a decimal form of a rounded integer', () => {
+    expect(detailFor('[1000000000000000129]')).toContain('would become 1000000000000000128.');
+    expect(detailFor('[1000000000000000129.0]')).toContain('1000000000000000129.0 would become 1000000000000000128.');
+    expect(detailFor('[1.000000000000000129e18]')).toContain('would become 1000000000000000128.');
+  });
 });
 
 describe('promptText', () => {
