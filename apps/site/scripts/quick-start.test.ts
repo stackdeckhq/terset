@@ -15,6 +15,7 @@ const PY_FILE = join(ROOT, QUICK_START.py.filename);
 const TSC = createRequire(import.meta.url).resolve('typescript/bin/tsc');
 const PY_SRC = fileURLToPath(new URL('../../../packages/terset-py/src', import.meta.url));
 const mypy = spawnSync('mypy', ['--version']);
+const mypyMissing = mypy.error !== undefined && 'code' in mypy.error && mypy.error.code === 'ENOENT';
 
 beforeAll(() => {
   const pkg = join(ROOT, 'node_modules', npmPackage.name);
@@ -52,7 +53,7 @@ it('runs the Python quick start', () => {
   expect(run.stdout.trimEnd()).toBe(QUICK_START.py.output);
 });
 
-it.skipIf(mypy.error !== undefined && 'code' in mypy.error && mypy.error.code === 'ENOENT')(
+it.skipIf(!process.env.CI && mypyMissing)(
   'type checks the Python quick start with strict mypy',
   { timeout: 20_000 },
   () => {
@@ -60,6 +61,7 @@ it.skipIf(mypy.error !== undefined && 'code' in mypy.error && mypy.error.code ==
       encoding: 'utf8',
       env: { ...process.env, MYPYPATH: PY_SRC },
     });
+    expect(check.error, 'mypy must be installed and available on PATH').toBeUndefined();
     expect(check.status, check.stdout + check.stderr).toBe(0);
   },
 );
