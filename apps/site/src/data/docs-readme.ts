@@ -65,6 +65,8 @@ const AGENT_FILES: readonly (readonly [path: string, about: string])[] = [
 ];
 
 const fence = (lang: string, text: string): string => `\`\`\`${lang}\n${text}\n\`\`\``;
+const CONVERTER_URL = `${SITE_URL}/#b2`;
+const CONVERTER_LABEL = 'Try it with your JSON';
 
 function header(lang: DocLang): string {
   const badges = BADGES[lang].map((badge) => `  <img src="${badge.src}" alt="${badge.alt}">`);
@@ -83,7 +85,7 @@ function header(lang: DocLang): string {
     ...badges,
     '</p>',
     '',
-    `<p align="center"><a href="${SITE_URL}">terset.dev</a> · <a href="${SITE_URL}/docs">Docs</a></p>`,
+    `<p align="center"><a href="${SITE_URL}">terset.dev</a> · <a href="${SITE_URL}/docs">Docs</a> · <a href="${CONVERTER_URL}">${CONVERTER_LABEL}</a></p>`,
   ].join('\n');
 }
 
@@ -169,6 +171,7 @@ function largerExample(): readonly string[] {
 function seeIt(): string {
   const example = WORKED_EXAMPLE;
   return [
+    `[${CONVERTER_LABEL}](${CONVERTER_URL})`,
     'The same data, as compact JSON and as Terset.',
     fence('json', example.json),
     fence('text', example.terset),

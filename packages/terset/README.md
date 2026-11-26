@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/node/v/@stackdeck/terset" alt="node 20 and up">
 </p>
 
-<p align="center"><a href="https://terset.dev">terset.dev</a> · <a href="https://terset.dev/docs">Docs</a></p>
+<p align="center"><a href="https://terset.dev">terset.dev</a> · <a href="https://terset.dev/docs">Docs</a> · <a href="https://terset.dev/#b2">Try it with your JSON</a></p>
 <!-- /docs:header -->
 
 <!-- docs:pitch -->
@@ -49,6 +49,8 @@ JSON repeats every key in every record, and a model reads each repeat as input t
 ## See it
 
 <!-- docs:see-it -->
+[Try it with your JSON](https://terset.dev/#b2)
+
 The same data, as compact JSON and as Terset.
 
 ```json

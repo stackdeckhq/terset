@@ -33,6 +33,16 @@ const STALE_PYPI = ['Coming', 'soon', 'on', 'PyPI'].join(' ');
 const STALE_PLACEMENT = ['in', 'the', 'system', 'prompt', 'once'].join(' ');
 
 describe('README blocks', () => {
+  it('links to the converter at the top and under See it in every README', () => {
+    for (const id of README_IDS) {
+      const text = read(README_FILES[id]);
+      const [top] = text.split('<!-- docs:pitch -->', 1);
+      const seeIt = sections(text).get('See it');
+      expect(top, README_FILES[id]).toContain('<a href="https://terset.dev/#b2">Try it with your JSON</a>');
+      expect(seeIt, README_FILES[id]).toContain('[Try it with your JSON](https://terset.dev/#b2)');
+    }
+  });
+
   it('shows the measured counts for the four-user example in every README', () => {
     for (const id of README_IDS) {
       const section = sections(read(README_FILES[id])).get('See it') ?? '';
