@@ -193,6 +193,9 @@ function BenchmarkPage() {
           </h2>
           <Text>
             <p>{realIntro(REAL)}</p>
+            <p>
+              Both models also answered questions on these two files in each format. Every result and wrong answer: <a href="/workload">accuracy on real files</a>.
+            </p>
           </Text>
           <RealTable data={REAL} />
           <div className="folds">

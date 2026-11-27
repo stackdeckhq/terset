@@ -79,11 +79,13 @@ Both flags reject unknown names and duplicates. A saved run refuses a changed
 selection. Comparisons use questions complete in every selected format.
 Savings cells stay blank when compact JSON is absent.
 
-`--suite toon|stress` selects frozen inputs. The default is `toon`, with the
+`--suite toon|stress|real` selects frozen inputs. The default is `toon`, with the
 same data, questions, prompts and fingerprints as existing runs. Dataset names
-are validated within the selected suite. Results record the suite, input hashes
-and its source: an upstream commit for TOON, or the generator source hash, seed
-and reference date for stress. A saved stress run refuses a different suite.
+are validated within the selected suite. Results record the suite, input
+hashes and source. TOON records the upstream commit. Stress records the
+generator path and hash, seed and reference date. Real records the generator
+path and hash and both original file hashes. A saved run refuses a different
+plan.
 
 The [stress freeze record](data/stress/README.md) describes its 120 questions
 across scale, deep nesting, messy data and damage detection. To plan it:
@@ -119,6 +121,17 @@ questions count as dropped. Raw completed rows and the budget ledger retain
 every call, including rows excluded from comparisons.
 Failed requests may have unreported charges. Intervals are descriptive because questions share
 data and are not independent trials.
+
+## Real suite
+
+The real suite uses a USGS daily earthquake feed and a National Weather
+Service gridpoint forecast. Each dataset contains the whole frozen document.
+There are 20 questions per dataset. The [freeze record](data/real/README.md)
+lists the sources, hashes and question rules.
+
+```sh
+pnpm bench --suite real --formats json-compact,toon,terset --dry-run --per-call-max-output-tokens 2048
+```
 
 ## HTTP client
 

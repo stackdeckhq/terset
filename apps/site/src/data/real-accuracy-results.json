@@ -1,0 +1,264 @@
+{
+  "suite": "real",
+  "questions": 40,
+  "perCallMaxOutputTokens": 2048,
+  "formats": [
+    "json-compact",
+    "toon",
+    "terset"
+  ],
+  "datasets": [
+    "usgs-earthquakes",
+    "nws-gridpoint"
+  ],
+  "publishedRuns": [
+    {
+      "runId": "real-opus-2026-11-26",
+      "runOn": "2026-11-26",
+      "publishedPath": "bench/published/2026-11-26",
+      "model": "claude-opus-5-5",
+      "price": {
+        "inputPerMillion": 4,
+        "outputPerMillion": 20,
+        "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "dateRead": "2026-11-26"
+      }
+    },
+    {
+      "runId": "real-sol-2026-11-26",
+      "runOn": "2026-11-26",
+      "publishedPath": "bench/published/2026-11-26",
+      "model": "gpt-6.2-sol",
+      "price": {
+        "inputPerMillion": 2,
+        "outputPerMillion": 10,
+        "sourceUrl": "https://developers.openai.com/api/docs/pricing",
+        "dateRead": "2026-11-26"
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "rows": [
+        {
+          "format": "json-compact",
+          "dataset": "ALL",
+          "correct": 39,
+          "total": 40,
+          "inputTokens": 2476689,
+          "outputTokens": 7552,
+          "totalCost": 10.057796
+        },
+        {
+          "format": "json-compact",
+          "dataset": "usgs-earthquakes",
+          "correct": 19,
+          "total": 20,
+          "inputTokens": 1640419,
+          "outputTokens": 5190,
+          "totalCost": 6.665476
+        },
+        {
+          "format": "json-compact",
+          "dataset": "nws-gridpoint",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 836270,
+          "outputTokens": 2362,
+          "totalCost": 3.39232
+        },
+        {
+          "format": "toon",
+          "dataset": "ALL",
+          "correct": 39,
+          "total": 40,
+          "inputTokens": 2439889,
+          "outputTokens": 6748,
+          "totalCost": 9.894516
+        },
+        {
+          "format": "toon",
+          "dataset": "usgs-earthquakes",
+          "correct": 19,
+          "total": 20,
+          "inputTokens": 1750739,
+          "outputTokens": 5409,
+          "totalCost": 7.111136
+        },
+        {
+          "format": "toon",
+          "dataset": "nws-gridpoint",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 689150,
+          "outputTokens": 1339,
+          "totalCost": 2.78338
+        },
+        {
+          "format": "terset",
+          "dataset": "ALL",
+          "correct": 39,
+          "total": 40,
+          "inputTokens": 1919729,
+          "outputTokens": 7024,
+          "totalCost": 7.819396
+        },
+        {
+          "format": "terset",
+          "dataset": "usgs-earthquakes",
+          "correct": 19,
+          "total": 20,
+          "inputTokens": 1083999,
+          "outputTokens": 4524,
+          "totalCost": 4.426476
+        },
+        {
+          "format": "terset",
+          "dataset": "nws-gridpoint",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 835730,
+          "outputTokens": 2500,
+          "totalCost": 3.3929199999999997
+        }
+      ]
+    },
+    {
+      "id": "gpt-6.2-sol",
+      "rows": [
+        {
+          "format": "json-compact",
+          "dataset": "ALL",
+          "correct": 40,
+          "total": 40,
+          "inputTokens": 1790704,
+          "outputTokens": 2248,
+          "totalCost": 3.603888
+        },
+        {
+          "format": "json-compact",
+          "dataset": "usgs-earthquakes",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 1106938,
+          "outputTokens": 1416,
+          "totalCost": 2.228036
+        },
+        {
+          "format": "json-compact",
+          "dataset": "nws-gridpoint",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 683766,
+          "outputTokens": 832,
+          "totalCost": 1.375852
+        },
+        {
+          "format": "toon",
+          "dataset": "ALL",
+          "correct": 40,
+          "total": 40,
+          "inputTokens": 1920964,
+          "outputTokens": 1843,
+          "totalCost": 3.8603579999999997
+        },
+        {
+          "format": "toon",
+          "dataset": "usgs-earthquakes",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 1295938,
+          "outputTokens": 1657,
+          "totalCost": 2.6084460000000003
+        },
+        {
+          "format": "toon",
+          "dataset": "nws-gridpoint",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 625026,
+          "outputTokens": 186,
+          "totalCost": 1.251912
+        },
+        {
+          "format": "terset",
+          "dataset": "ALL",
+          "correct": 39,
+          "total": 40,
+          "inputTokens": 1453624,
+          "outputTokens": 2128,
+          "totalCost": 2.928528
+        },
+        {
+          "format": "terset",
+          "dataset": "usgs-earthquakes",
+          "correct": 19,
+          "total": 20,
+          "inputTokens": 770058,
+          "outputTokens": 1348,
+          "totalCost": 1.553596
+        },
+        {
+          "format": "terset",
+          "dataset": "nws-gridpoint",
+          "correct": 20,
+          "total": 20,
+          "inputTokens": 683566,
+          "outputTokens": 780,
+          "totalCost": 1.374932
+        }
+      ]
+    }
+  ],
+  "wrongAnswers": [
+    {
+      "model": "claude-opus-5-5",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "r006",
+      "prompt": "How many features have properties.mag at or above 1?",
+      "kind": "count",
+      "expected": "182",
+      "text": "",
+      "outputTokens": 2048,
+      "hitOutputCap": true
+    },
+    {
+      "model": "claude-opus-5-5",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "r006",
+      "prompt": "How many features have properties.mag at or above 1?",
+      "kind": "count",
+      "expected": "182",
+      "text": "",
+      "outputTokens": 2048,
+      "hitOutputCap": true
+    },
+    {
+      "model": "claude-opus-5-5",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "r006",
+      "prompt": "How many features have properties.mag at or above 1?",
+      "kind": "count",
+      "expected": "182",
+      "text": "",
+      "outputTokens": 2048,
+      "hitOutputCap": true
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "r007",
+      "prompt": "How many features have properties.mag at or above 2.5?",
+      "kind": "count",
+      "expected": "41",
+      "text": "40",
+      "outputTokens": 205,
+      "hitOutputCap": false
+    }
+  ]
+}

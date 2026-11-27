@@ -28,7 +28,7 @@ export async function main(args: string[], log: (text: string) => void = console
   } });
   if (values.help) {
     log('pnpm bench [--dry-run] [--fake | --http --config FILE] [--run-id ID] [--limit N]\n'
-      + '  --suite toon|stress --formats a,b,c --datasets a,b --terset-format 1.0|1.1\n'
+      + `  --suite ${suiteNameSchema.options.join('|')} --formats a,b,c --datasets a,b --terset-format 1.0|1.1\n`
       + '  --max-calls N --max-input-tokens N --max-output-tokens N --per-call-max-output-tokens N\n'
       + 'Fake mode is the default. HTTP mode requires explicit config and all four budget flags.');
     return;

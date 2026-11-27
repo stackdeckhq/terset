@@ -1,0 +1,412 @@
+[
+  {
+    "id": "r001",
+    "prompt": "What is properties.mag for the feature with id \"ci41363079\"?",
+    "groundTruth": "1.22",
+    "type": "field-retrieval",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r002",
+    "prompt": "What is properties.place for the feature with id \"us7000tyst\"?",
+    "groundTruth": "86 km SSW of Atocha, Bolivia",
+    "type": "field-retrieval",
+    "dataset": "usgs-earthquakes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r003",
+    "prompt": "What is properties.magType for the feature with id \"pr71539428\"?",
+    "groundTruth": "md",
+    "type": "field-retrieval",
+    "dataset": "usgs-earthquakes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r004",
+    "prompt": "What is properties.status for the feature with id \"uu80164956\"?",
+    "groundTruth": "reviewed",
+    "type": "field-retrieval",
+    "dataset": "usgs-earthquakes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r005",
+    "prompt": "What is properties.net for the feature with id \"tx2026wpiezn\"?",
+    "groundTruth": "tx",
+    "type": "field-retrieval",
+    "dataset": "usgs-earthquakes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r006",
+    "prompt": "How many features have properties.mag at or above 1?",
+    "groundTruth": "182",
+    "type": "count",
+    "dataset": "usgs-earthquakes",
+    "answerType": "integer"
+  },
+  {
+    "id": "r007",
+    "prompt": "How many features have properties.mag at or above 2.5?",
+    "groundTruth": "41",
+    "type": "count",
+    "dataset": "usgs-earthquakes",
+    "answerType": "integer"
+  },
+  {
+    "id": "r008",
+    "prompt": "How many features have properties.mag at or above 4?",
+    "groundTruth": "21",
+    "type": "count",
+    "dataset": "usgs-earthquakes",
+    "answerType": "integer"
+  },
+  {
+    "id": "r009",
+    "prompt": "How many features have properties.net equal to \"ci\"?",
+    "groundTruth": "21",
+    "type": "count",
+    "dataset": "usgs-earthquakes",
+    "answerType": "integer"
+  },
+  {
+    "id": "r010",
+    "prompt": "How many features have properties.net equal to \"av\"?",
+    "groundTruth": "1",
+    "type": "count",
+    "dataset": "usgs-earthquakes",
+    "answerType": "integer"
+  },
+  {
+    "id": "r011",
+    "prompt": "What is the largest properties.mag among all features?",
+    "groundTruth": "6.6",
+    "type": "extreme",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r012",
+    "prompt": "What is the id of the feature with the largest properties.mag?",
+    "groundTruth": "us7000tymu",
+    "type": "extreme",
+    "dataset": "usgs-earthquakes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r013",
+    "prompt": "What is the smallest depth (third entry in geometry.coordinates) among all features?",
+    "groundTruth": "-0.55",
+    "type": "extreme",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r014",
+    "prompt": "What is the id of the feature with the smallest depth (third entry in geometry.coordinates)?",
+    "groundTruth": "uw714139711",
+    "type": "extreme",
+    "dataset": "usgs-earthquakes",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r015",
+    "prompt": "What is the smallest properties.sig among all features?",
+    "groundTruth": "0",
+    "type": "extreme",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r016",
+    "prompt": "What is the longitude (first entry in geometry.coordinates) for the feature with id \"aka2026wujopo\"?",
+    "groundTruth": "-151.482",
+    "type": "nested-lookup",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r017",
+    "prompt": "What is the latitude (second entry in geometry.coordinates) for the feature with id \"nc75467497\"?",
+    "groundTruth": "38.7821655273438",
+    "type": "nested-lookup",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r018",
+    "prompt": "What is the depth (third entry in geometry.coordinates) for the feature with id \"ci41362951\"?",
+    "groundTruth": "2.38",
+    "type": "nested-lookup",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r019",
+    "prompt": "What is the longitude (first entry in geometry.coordinates) for the feature with id \"ci41362911\"?",
+    "groundTruth": "-117.4815",
+    "type": "nested-lookup",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r020",
+    "prompt": "What is the latitude (second entry in geometry.coordinates) for the feature with id \"av93069504\"?",
+    "groundTruth": "53.9043333333333",
+    "type": "nested-lookup",
+    "dataset": "usgs-earthquakes",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r021",
+    "prompt": "What is the top-level id?",
+    "groundTruth": "https://api.weather.gov/gridpoints/LWX/97,71",
+    "type": "field-retrieval",
+    "dataset": "nws-gridpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r022",
+    "prompt": "What is the top-level type?",
+    "groundTruth": "Feature",
+    "type": "field-retrieval",
+    "dataset": "nws-gridpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r023",
+    "prompt": "What is properties.temperature.uom?",
+    "groundTruth": "wmoUnit:degC",
+    "type": "field-retrieval",
+    "dataset": "nws-gridpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r024",
+    "prompt": "What is properties.windSpeed.uom?",
+    "groundTruth": "wmoUnit:km_h-1",
+    "type": "field-retrieval",
+    "dataset": "nws-gridpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r025",
+    "prompt": "What is properties.waveHeight.uom?",
+    "groundTruth": "wmoUnit:m",
+    "type": "field-retrieval",
+    "dataset": "nws-gridpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r026",
+    "prompt": "How many entries are in properties.temperature.values, including entries with a null value?",
+    "groundTruth": "154",
+    "type": "count",
+    "dataset": "nws-gridpoint",
+    "answerType": "integer"
+  },
+  {
+    "id": "r027",
+    "prompt": "How many entries are in properties.apparentTemperature.values, including entries with a null value?",
+    "groundTruth": "157",
+    "type": "count",
+    "dataset": "nws-gridpoint",
+    "answerType": "integer"
+  },
+  {
+    "id": "r028",
+    "prompt": "How many entries are in properties.windSpeed.values, including entries with a null value?",
+    "groundTruth": "59",
+    "type": "count",
+    "dataset": "nws-gridpoint",
+    "answerType": "integer"
+  },
+  {
+    "id": "r029",
+    "prompt": "How many entries are in properties.iceAccumulation.values, including entries with a null value?",
+    "groundTruth": "14",
+    "type": "count",
+    "dataset": "nws-gridpoint",
+    "answerType": "integer"
+  },
+  {
+    "id": "r030",
+    "prompt": "How many entries are in properties.waveHeight.values, including entries with a null value?",
+    "groundTruth": "1",
+    "type": "count",
+    "dataset": "nws-gridpoint",
+    "answerType": "integer"
+  },
+  {
+    "id": "r031",
+    "prompt": "For entries in properties.temperature.values, what is the largest number in the value field?",
+    "groundTruth": "20.555555555555557",
+    "type": "extreme",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r032",
+    "prompt": "In properties.temperature.values, what is the exact validTime of the entry whose value field has the largest number?",
+    "groundTruth": "2026-11-20T19:00:00+00:00/PT2H",
+    "type": "extreme",
+    "dataset": "nws-gridpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r033",
+    "prompt": "For entries in properties.relativeHumidity.values, what is the smallest number in the value field?",
+    "groundTruth": "28",
+    "type": "extreme",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r034",
+    "prompt": "In properties.relativeHumidity.values, what is the exact validTime of the entry whose value field has the smallest number?",
+    "groundTruth": "2026-11-18T20:00:00+00:00/PT1H",
+    "type": "extreme",
+    "dataset": "nws-gridpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "r035",
+    "prompt": "For entries in properties.windSpeed.values, what is the largest number in the value field?",
+    "groundTruth": "22.224",
+    "type": "extreme",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r036",
+    "prompt": "What is the value in properties.temperature.values for the entry with validTime \"2026-11-17T12:00:00+00:00/PT1H\"?",
+    "groundTruth": "2.2222222222222223",
+    "type": "nested-lookup",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r037",
+    "prompt": "What is the value in properties.apparentTemperature.values for the entry with validTime \"2026-11-19T08:00:00+00:00/PT2H\"?",
+    "groundTruth": "4.444444444444445",
+    "type": "nested-lookup",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r038",
+    "prompt": "What is the value in properties.windSpeed.values for the entry with validTime \"2026-11-22T08:00:00+00:00/PT6H\"?",
+    "groundTruth": "3.704",
+    "type": "nested-lookup",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r039",
+    "prompt": "What is the value in properties.snowfallAmount.values for the entry with validTime \"2026-11-20T00:00:00+00:00/PT6H\"?",
+    "groundTruth": "0",
+    "type": "nested-lookup",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "r040",
+    "prompt": "What is the value in properties.waveHeight.values for the entry with validTime \"2026-11-17T12:00:00+00:00/P6DT23H\"?",
+    "groundTruth": "0",
+    "type": "nested-lookup",
+    "dataset": "nws-gridpoint",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  }
+]

@@ -3,6 +3,7 @@ import { z } from 'zod';
 const count = z.number().int().nonnegative();
 export const formatSchema = z.enum(['json-compact', 'json-pretty', 'toon', 'terset']);
 export type Format = z.infer<typeof formatSchema>;
+export const suiteNameSchema = z.enum(['toon', 'stress', 'real']);
 // Default formats retain the published order.
 export const FORMATS = ['json-compact', 'json-pretty', 'toon', 'terset'] as const;
 export const selectedFormatsSchema = z.array(formatSchema).min(1)
@@ -93,7 +94,7 @@ export const tersetFormatSchema = z.enum(['1.0', '1.1']);
 export type TersetFormat = z.infer<typeof tersetFormatSchema>;
 export const resultSchema = z.object({
   version: z.literal(1), runId: runIdSchema, fingerprint: z.string(),
-  suite: z.enum(['toon', 'stress']).optional(),
+  suite: suiteNameSchema.optional(),
   encoders: encodersSchema.optional(),
   tersetFormat: tersetFormatSchema.optional(),
   mode: z.enum(['fake', 'http']), status: z.enum(['partial', 'complete']),

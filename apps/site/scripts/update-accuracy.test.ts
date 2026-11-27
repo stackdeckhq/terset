@@ -5,11 +5,13 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { KIND_DATASETS, OUTPUT, PUBLISHED_RUNS, accuracyText, buildAccuracy, wilson95 } from './update-accuracy.ts';
 import type { PublishedSource } from './update-accuracy.ts';
+import { REAL_PUBLISHED_RUNS } from './accuracy-real.ts';
 import { STRESS_OUTPUT, STRESS_PUBLISHED_RUNS } from './accuracy-stress.ts';
 import type { RunFile } from './accuracy-runs.ts';
 import { StressAccuracyFileSchema } from '../src/data/accuracy-stress-schema.ts';
 import { ACCURACY_FORMATS } from '../src/data/accuracy-schema.ts';
 import type { AccuracyFile } from '../src/data/accuracy-schema.ts';
+import { REAL_ACCURACY } from '../src/data/real-accuracy.ts';
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 const OPUS = 'claude-opus-5-5';
@@ -84,13 +86,15 @@ describe('every published run', () => {
   });
 
   it('lists every run file in bench/published in the script, so none is left out', () => {
-    expect([...PUBLISHED_RUNS, ...STRESS_PUBLISHED_RUNS].map((source) => source.path).sort()).toEqual(runFiles);
+    const sources = [...PUBLISHED_RUNS, ...STRESS_PUBLISHED_RUNS, ...REAL_PUBLISHED_RUNS];
+    expect(sources.map((source) => source.path).sort()).toEqual(runFiles);
   });
 
   it('lists every run file in bench/published in the site data', () => {
     const site = JSON.parse(readFileSync(OUTPUT, 'utf8')) as AccuracyFile;
     const stress = StressAccuracyFileSchema.parse(JSON.parse(readFileSync(STRESS_OUTPUT, 'utf8')));
-    expect([...site.publishedRuns, ...stress.publishedRuns].map((run) => `${run.publishedPath}/${run.runId}.json`).sort()).toEqual(runFiles);
+    const runs = [...site.publishedRuns, ...stress.publishedRuns, ...REAL_ACCURACY.publishedRuns];
+    expect(runs.map((run) => `${run.publishedPath}/${run.runId}.json`).sort()).toEqual(runFiles);
   });
 });
 

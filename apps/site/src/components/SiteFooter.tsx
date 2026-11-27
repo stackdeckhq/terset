@@ -43,6 +43,9 @@ export function SiteFooter() {
               <Link to="/benchmark">Benchmark</Link>
             </li>
             <li>
+              <Link to="/workload">Real files</Link>
+            </li>
+            <li>
               <Link to="/agents">Agents</Link>
             </li>
           </ul>

@@ -32,6 +32,10 @@ export const PAGE_SEO: Readonly<Record<PagePath, PageSeo>> = {
     title: 'Terset benchmark: LLM prompt tokens and accuracy vs JSON',
     description: 'How many tokens Terset saves over JSON in LLM prompts: token counts per case, input cost at list price, answer accuracy, the method and the limits.',
   },
+  '/workload': {
+    title: 'Terset on real JSON files: LLM accuracy and input tokens',
+    description: 'Answer accuracy and whole-prompt input tokens for Terset, compact JSON and TOON on two real public files and two models, with every wrong answer.',
+  },
   '/agents': {
     title: 'Terset for coding agents: LLM prompt, skill and llms.txt',
     description: 'What a coding agent needs to send JSON data to an LLM with Terset: a prompt to paste, the agent guide, a skill file, the spec and llms.txt.',

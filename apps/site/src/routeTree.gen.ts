@@ -20,6 +20,7 @@ import { Route as FormatRouteImport } from './routes/format'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as SpecDotmdRouteImport } from './routes/spec[.]md'
+import { Route as WorkloadRouteImport } from './routes/workload'
 import { Route as SkillSKILLDotmdRouteImport } from './routes/skill/SKILL[.]md'
 
 const IndexRoute = IndexRouteImport.update({
@@ -77,6 +78,11 @@ const SpecDotmdRoute = SpecDotmdRouteImport.update({
   path: '/spec.md',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkloadRoute = WorkloadRouteImport.update({
+  id: '/workload',
+  path: '/workload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SkillSKILLDotmdRoute = SkillSKILLDotmdRouteImport.update({
   id: '/skill/SKILL.md',
   path: '/skill/SKILL.md',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/spec.md': typeof SpecDotmdRoute
+  '/workload': typeof WorkloadRoute
   '/skill/SKILL.md': typeof SkillSKILLDotmdRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/spec.md': typeof SpecDotmdRoute
+  '/workload': typeof WorkloadRoute
   '/skill/SKILL.md': typeof SkillSKILLDotmdRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/spec.md': typeof SpecDotmdRoute
+  '/workload': typeof WorkloadRoute
   '/skill/SKILL.md': typeof SkillSKILLDotmdRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/llms-full.txt'
     | '/llms.txt'
     | '/spec.md'
+    | '/workload'
     | '/skill/SKILL.md'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/llms-full.txt'
     | '/llms.txt'
     | '/spec.md'
+    | '/workload'
     | '/skill/SKILL.md'
   id:
     | '__root__'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/llms-full.txt'
     | '/llms.txt'
     | '/spec.md'
+    | '/workload'
     | '/skill/SKILL.md'
   fileRoutesById: FileRoutesById
 }
@@ -183,6 +195,7 @@ export interface RootRouteChildren {
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   SpecDotmdRoute: typeof SpecDotmdRoute
+  WorkloadRoute: typeof WorkloadRoute
   SkillSKILLDotmdRoute: typeof SkillSKILLDotmdRoute
 }
 
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpecDotmdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workload': {
+      id: '/workload'
+      path: '/workload'
+      fullPath: '/workload'
+      preLoaderRoute: typeof WorkloadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/skill/SKILL.md': {
       id: '/skill/SKILL.md'
       path: '/skill/SKILL.md'
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
   SpecDotmdRoute: SpecDotmdRoute,
+  WorkloadRoute: WorkloadRoute,
   SkillSKILLDotmdRoute: SkillSKILLDotmdRoute,
 }
 export const routeTree = rootRouteImport
