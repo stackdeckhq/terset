@@ -5,13 +5,21 @@ import { DATASETS, QUESTIONS } from './data.ts';
 import { decode, encode, encodeDataset, primerFor } from './formats.ts';
 import { plan } from './plan.ts';
 import fakeModel from '../fixtures/fake-model.json' with { type: 'json' };
-import { FORMATS, PUBLISHED_TERSET_FORMAT, formatSchema, modelSchema } from './schema.ts';
+import { FORMATS, PUBLISHED_TERSET_FORMAT, formatSchema, modelSchema, tersetFormatSchema } from './schema.ts';
 
 describe('Terset package integration', () => {
   it.each(DATASETS)('uses the package and round trips $name before damage', dataset => {
     const text = encode('terset', dataset.data);
     expect(text).toBe(encodeTerset(dataset.data, { format: PUBLISHED_TERSET_FORMAT }));
     expect(JSON.stringify(decode('terset', text))).toBe(JSON.stringify(dataset.data));
+  });
+
+  it('encodes with format 1.2 when a run asks for it', () => {
+    const data = { a: { b: [{ x: 1, y: 2 }, { x: 3, y: 4 }, { x: 5, y: 6 }] } };
+    const text = encode('terset', data, tersetFormatSchema.parse('1.2'));
+    expect(text).toBe('a/b[3]:\nx\ty\n1\t2\n3\t4\n5\t6');
+    expect(primerFor('terset', text)).toContain('Key a/b is field b in object a.');
+    expect(encode('terset', data)).toBe(`a: ${JSON.stringify(data.a)}`);
   });
 
   it('uses the fitted package primer and supports only the four formats', () => {
