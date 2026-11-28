@@ -115,8 +115,8 @@
     "id": "p012",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"nc\", which id has the second highest properties.mag?",
-    "groundTruth": "nc75467427",
+    "prompt": "Among features with properties.net \"nc\", which id has the third highest properties.mag?",
+    "groundTruth": "nc75467492",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -238,8 +238,8 @@
     "id": "p024",
     "type": "rank",
     "dataset": "nws-gridpoint",
-    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the second highest numeric value?",
-    "groundTruth": "2026-11-17T18:00:00+00:00/PT1H",
+    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the fourth lowest numeric value?",
+    "groundTruth": "2026-11-19T10:00:00+00:00/PT1H",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true

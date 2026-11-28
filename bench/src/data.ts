@@ -47,7 +47,7 @@ function real400Record(name: 'real-400' | 'real-400-pilot', filename: string, qu
     datasetNames: realDatasetNames,
     source: {
       generatorSource: 'bench/src/real/generate-400.ts',
-      generatorSha256: 'ef9f973521096d42344c79c01ace7730b24095e7660b9bd90c4917cd3e2d7630',
+      generatorSha256: '34e1f3690b3710a9ee0b857c6070558bd2131d4f1b3e0296b56749d3785b3968',
       sourceHashes: REAL_SOURCE_HASHES,
     },
   };
@@ -92,8 +92,8 @@ export const SUITES: Record<SuiteName, SuiteRecord | null> = {
       sourceHashes: REAL_SOURCE_HASHES,
     },
   },
-  'real-400': real400Record('real-400', 'questions.json', 'f5bc3212982e9dc239bd3595d59471952e8a24b97fc2e3132b71e1be66e29ac8'),
-  'real-400-pilot': real400Record('real-400-pilot', 'pilot.json', 'd43c2b8b6706257748026eec0f1492e8727a9e7d0e6a5ad6a3b0168f1482d181'),
+  'real-400': real400Record('real-400', 'questions.json', '1d479996a56e0c2defbedceab2ae69bee4aebd442ed73edda9ef1381c6224d08'),
+  'real-400-pilot': real400Record('real-400-pilot', 'pilot.json', 'e8d5216a21593f7d2fbd68c91f45ad59baa75f6f73b4c0a0f60b38bbe6aaf47c'),
 };
 export class SuiteUnavailableError extends Error {
   constructor() { super('Stress suite is not frozen. Run the stress freeze step before selecting it.'); }

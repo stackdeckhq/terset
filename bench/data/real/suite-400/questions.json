@@ -1778,8 +1778,8 @@
     "id": "q176",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"ak\", which id has the third highest properties.mag?",
-    "groundTruth": "aka2026wtkldi",
+    "prompt": "Among features with properties.net \"ak\", which id has the fourth highest properties.mag?",
+    "groundTruth": "aka2026wtulto",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1789,8 +1789,8 @@
     "id": "q177",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"nc\", which id has the third lowest properties.mag?",
-    "groundTruth": "nc75467437",
+    "prompt": "Among features with properties.net \"nc\", which id has the fourth lowest properties.mag?",
+    "groundTruth": "nc75467532",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1800,8 +1800,8 @@
     "id": "q178",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"hv\", which id has the fourth lowest properties.mag?",
-    "groundTruth": "hv75071282",
+    "prompt": "Among features with properties.net \"hv\", which id has the fifth lowest properties.mag?",
+    "groundTruth": "hv75071422",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1811,8 +1811,8 @@
     "id": "q179",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uu\", which id has the fifth lowest properties.mag?",
-    "groundTruth": "uu80165046",
+    "prompt": "Among features with properties.net \"us\", which id has the second highest properties.mag?",
+    "groundTruth": "us7000tysq",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1822,8 +1822,8 @@
     "id": "q180",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uw\", which id has the fourth highest properties.mag?",
-    "groundTruth": "uw714139801",
+    "prompt": "Among features with properties.net \"uw\", which id has the fifth highest properties.mag?",
+    "groundTruth": "uw714139741",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1833,8 +1833,8 @@
     "id": "q181",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"ci\", which id has the fifth lowest properties.sig?",
-    "groundTruth": "ci41363063",
+    "prompt": "Among features with properties.net \"ak\", which id has the second lowest properties.sig?",
+    "groundTruth": "aka2026wtbpvk",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1844,8 +1844,8 @@
     "id": "q182",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"nc\", which id has the fifth highest properties.sig?",
-    "groundTruth": "nc75467442",
+    "prompt": "Among features with properties.net \"hv\", which id has the fifth highest properties.sig?",
+    "groundTruth": "hv75071492",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1855,8 +1855,8 @@
     "id": "q183",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uu\", which id has the second highest properties.sig?",
-    "groundTruth": "uu80165071",
+    "prompt": "Among features with properties.net \"uu\", which id has the third lowest properties.sig?",
+    "groundTruth": "uu80164996",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1866,8 +1866,8 @@
     "id": "q184",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"us\", which id has the third highest properties.sig?",
-    "groundTruth": "us7000tyq5",
+    "prompt": "Among features with properties.net \"tx\", which id has the second highest properties.sig?",
+    "groundTruth": "tx2026wqecjv",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1877,8 +1877,8 @@
     "id": "q185",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uw\", which id has the fifth highest properties.sig?",
-    "groundTruth": "uw714139741",
+    "prompt": "Among features with properties.net \"ci\", which id has the second highest properties.nst?",
+    "groundTruth": "ci41362871",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1888,8 +1888,8 @@
     "id": "q186",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"ci\", which id has the fourth lowest properties.nst?",
-    "groundTruth": "ci41363079",
+    "prompt": "Among features with properties.net \"nc\", which id has the second highest properties.nst?",
+    "groundTruth": "nc75467222",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1899,8 +1899,8 @@
     "id": "q187",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"hv\", which id has the second highest properties.nst?",
-    "groundTruth": "hv75071352",
+    "prompt": "Among features with properties.net \"us\", which id has the second highest properties.nst?",
+    "groundTruth": "us7000tymu",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1910,8 +1910,8 @@
     "id": "q188",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"us\", which id has the third highest properties.nst?",
-    "groundTruth": "us7000tysq",
+    "prompt": "Among features with properties.net \"ci\", which id has the second highest properties.dmin?",
+    "groundTruth": "ci41362959",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1921,8 +1921,8 @@
     "id": "q189",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uw\", which id has the second highest properties.nst?",
-    "groundTruth": "uw714139801",
+    "prompt": "Among features with properties.net \"ak\", which id has the third highest properties.dmin?",
+    "groundTruth": "aka2026wtulto",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1932,8 +1932,8 @@
     "id": "q190",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"ci\", which id has the fifth highest properties.dmin?",
-    "groundTruth": "ci41362983",
+    "prompt": "Among features with properties.net \"hv\", which id has the second highest properties.dmin?",
+    "groundTruth": "hv75071337",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1943,8 +1943,8 @@
     "id": "q191",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"nc\", which id has the fourth highest properties.dmin?",
-    "groundTruth": "nc75467212",
+    "prompt": "Among features with properties.net \"uu\", which id has the third highest properties.dmin?",
+    "groundTruth": "uu80164976",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1954,8 +1954,8 @@
     "id": "q192",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"hv\", which id has the fifth highest properties.dmin?",
-    "groundTruth": "hv75071317",
+    "prompt": "Among features with properties.net \"us\", which id has the fourth highest properties.dmin?",
+    "groundTruth": "us7000tyqi",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1965,8 +1965,8 @@
     "id": "q193",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uu\", which id has the second lowest properties.dmin?",
-    "groundTruth": "uu80165026",
+    "prompt": "Among features with properties.net \"uw\", which id has the fifth highest properties.dmin?",
+    "groundTruth": "uw714139741",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1976,8 +1976,8 @@
     "id": "q194",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"us\", which id has the third lowest properties.dmin?",
-    "groundTruth": "us7000tysx",
+    "prompt": "Among features with properties.net \"us\", which id has the second highest properties.rms?",
+    "groundTruth": "us7000tyt1",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1987,8 +1987,8 @@
     "id": "q195",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uw\", which id has the fourth lowest properties.dmin?",
-    "groundTruth": "uw714139781",
+    "prompt": "Among features with properties.net \"ci\", which id has the third highest properties.gap?",
+    "groundTruth": "ci41362991",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -1998,8 +1998,8 @@
     "id": "q196",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"uu\", which id has the fourth highest properties.rms?",
-    "groundTruth": "uu80164986",
+    "prompt": "Among features with properties.net \"ak\", which id has the fifth highest properties.gap?",
+    "groundTruth": "aka2026wuopax",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -2009,8 +2009,8 @@
     "id": "q197",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"ci\", which id has the second highest properties.gap?",
-    "groundTruth": "ci41362815",
+    "prompt": "Among features with properties.net \"nc\", which id has the fourth lowest properties.gap?",
+    "groundTruth": "nc75467472",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -2020,8 +2020,8 @@
     "id": "q198",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"ak\", which id has the fourth highest properties.gap?",
-    "groundTruth": "aka2026wtojwy",
+    "prompt": "Among features with properties.net \"uu\", which id has the second highest properties.gap?",
+    "groundTruth": "uu80164896",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -2031,8 +2031,8 @@
     "id": "q199",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"nc\", which id has the third lowest properties.gap?",
-    "groundTruth": "nc75467632",
+    "prompt": "Among features with properties.net \"us\", which id has the third lowest properties.gap?",
+    "groundTruth": "us7000tyrv",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -2042,8 +2042,8 @@
     "id": "q200",
     "type": "rank",
     "dataset": "usgs-earthquakes",
-    "prompt": "Among features with properties.net \"hv\", which id has the fifth lowest properties.gap?",
-    "groundTruth": "hv75071287",
+    "prompt": "Among features with properties.net \"uw\", which id has the fourth highest properties.gap?",
+    "groundTruth": "uw714139711",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true
@@ -3850,17 +3850,6 @@
     "id": "q378",
     "type": "rank",
     "dataset": "nws-gridpoint",
-    "prompt": "In properties.dewpoint.values, what is the exact validTime of the entry with the fourth highest numeric value?",
-    "groundTruth": "2026-11-23T02:00:00+00:00/PT2H",
-    "answerType": "string",
-    "normalizationOptions": {
-      "caseSensitive": true
-    }
-  },
-  {
-    "id": "q379",
-    "type": "rank",
-    "dataset": "nws-gridpoint",
     "prompt": "In properties.maxTemperature.values, what is the exact validTime of the entry with the second highest numeric value?",
     "groundTruth": "2026-11-19T12:00:00+00:00/PT13H",
     "answerType": "string",
@@ -3869,7 +3858,7 @@
     }
   },
   {
-    "id": "q380",
+    "id": "q379",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.minTemperature.values, what is the exact validTime of the entry with the second highest numeric value?",
@@ -3880,7 +3869,7 @@
     }
   },
   {
-    "id": "q381",
+    "id": "q380",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.minTemperature.values, what is the exact validTime of the entry with the third highest numeric value?",
@@ -3891,7 +3880,7 @@
     }
   },
   {
-    "id": "q382",
+    "id": "q381",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.minTemperature.values, what is the exact validTime of the entry with the fourth highest numeric value?",
@@ -3902,7 +3891,7 @@
     }
   },
   {
-    "id": "q383",
+    "id": "q382",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.minTemperature.values, what is the exact validTime of the entry with the fifth highest numeric value?",
@@ -3913,29 +3902,7 @@
     }
   },
   {
-    "id": "q384",
-    "type": "rank",
-    "dataset": "nws-gridpoint",
-    "prompt": "In properties.minTemperature.values, what is the exact validTime of the entry with the fourth lowest numeric value?",
-    "groundTruth": "2026-11-18T00:00:00+00:00/PT14H",
-    "answerType": "string",
-    "normalizationOptions": {
-      "caseSensitive": true
-    }
-  },
-  {
-    "id": "q385",
-    "type": "rank",
-    "dataset": "nws-gridpoint",
-    "prompt": "In properties.minTemperature.values, what is the exact validTime of the entry with the fifth lowest numeric value?",
-    "groundTruth": "2026-11-24T00:00:00+00:00/PT14H",
-    "answerType": "string",
-    "normalizationOptions": {
-      "caseSensitive": true
-    }
-  },
-  {
-    "id": "q386",
+    "id": "q383",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.relativeHumidity.values, what is the exact validTime of the entry with the second lowest numeric value?",
@@ -3946,18 +3913,7 @@
     }
   },
   {
-    "id": "q387",
-    "type": "rank",
-    "dataset": "nws-gridpoint",
-    "prompt": "In properties.relativeHumidity.values, what is the exact validTime of the entry with the fifth lowest numeric value?",
-    "groundTruth": "2026-11-19T19:00:00+00:00/PT2H",
-    "answerType": "string",
-    "normalizationOptions": {
-      "caseSensitive": true
-    }
-  },
-  {
-    "id": "q388",
+    "id": "q384",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.apparentTemperature.values, what is the exact validTime of the entry with the second highest numeric value?",
@@ -3968,29 +3924,7 @@
     }
   },
   {
-    "id": "q389",
-    "type": "rank",
-    "dataset": "nws-gridpoint",
-    "prompt": "In properties.apparentTemperature.values, what is the exact validTime of the entry with the fifth lowest numeric value?",
-    "groundTruth": "2026-11-19T11:00:00+00:00/PT1H",
-    "answerType": "string",
-    "normalizationOptions": {
-      "caseSensitive": true
-    }
-  },
-  {
-    "id": "q390",
-    "type": "rank",
-    "dataset": "nws-gridpoint",
-    "prompt": "In properties.windChill.values, what is the exact validTime of the entry with the fifth lowest numeric value?",
-    "groundTruth": "2026-11-19T11:00:00+00:00/PT1H",
-    "answerType": "string",
-    "normalizationOptions": {
-      "caseSensitive": true
-    }
-  },
-  {
-    "id": "q391",
+    "id": "q385",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.skyCover.values, what is the exact validTime of the entry with the second highest numeric value?",
@@ -4001,7 +3935,7 @@
     }
   },
   {
-    "id": "q392",
+    "id": "q386",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.skyCover.values, what is the exact validTime of the entry with the third highest numeric value?",
@@ -4012,7 +3946,7 @@
     }
   },
   {
-    "id": "q393",
+    "id": "q387",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.skyCover.values, what is the exact validTime of the entry with the fourth highest numeric value?",
@@ -4023,7 +3957,7 @@
     }
   },
   {
-    "id": "q394",
+    "id": "q388",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.skyCover.values, what is the exact validTime of the entry with the fifth highest numeric value?",
@@ -4034,7 +3968,7 @@
     }
   },
   {
-    "id": "q395",
+    "id": "q389",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.probabilityOfPrecipitation.values, what is the exact validTime of the entry with the second highest numeric value?",
@@ -4045,7 +3979,7 @@
     }
   },
   {
-    "id": "q396",
+    "id": "q390",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.probabilityOfPrecipitation.values, what is the exact validTime of the entry with the third highest numeric value?",
@@ -4056,7 +3990,7 @@
     }
   },
   {
-    "id": "q397",
+    "id": "q391",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.probabilityOfPrecipitation.values, what is the exact validTime of the entry with the fourth highest numeric value?",
@@ -4067,7 +4001,7 @@
     }
   },
   {
-    "id": "q398",
+    "id": "q392",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.probabilityOfPrecipitation.values, what is the exact validTime of the entry with the fifth highest numeric value?",
@@ -4078,7 +4012,7 @@
     }
   },
   {
-    "id": "q399",
+    "id": "q393",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.transportWindDirection.values, what is the exact validTime of the entry with the second highest numeric value?",
@@ -4089,11 +4023,77 @@
     }
   },
   {
-    "id": "q400",
+    "id": "q394",
     "type": "rank",
     "dataset": "nws-gridpoint",
     "prompt": "In properties.transportWindDirection.values, what is the exact validTime of the entry with the third highest numeric value?",
     "groundTruth": "2026-11-17T18:00:00+00:00/PT6H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "q395",
+    "type": "rank",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.transportWindDirection.values, what is the exact validTime of the entry with the second lowest numeric value?",
+    "groundTruth": "2026-11-19T20:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "q396",
+    "type": "rank",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the second highest numeric value?",
+    "groundTruth": "2026-11-17T18:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "q397",
+    "type": "rank",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the third highest numeric value?",
+    "groundTruth": "2026-11-17T20:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "q398",
+    "type": "rank",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the fourth highest numeric value?",
+    "groundTruth": "2026-11-17T17:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "q399",
+    "type": "rank",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the fifth highest numeric value?",
+    "groundTruth": "2026-11-18T19:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "q400",
+    "type": "rank",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the second lowest numeric value?",
+    "groundTruth": "2026-11-19T11:00:00+00:00/PT1H",
     "answerType": "string",
     "normalizationOptions": {
       "caseSensitive": true

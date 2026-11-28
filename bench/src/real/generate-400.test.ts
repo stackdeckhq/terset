@@ -94,6 +94,10 @@ it('recomputes every count and rank from the source and verifies a unique record
         const winner = rows.filter(row => rows.filter(other => order === 'highest' ? other.value > row.value : other.value < row.value).length
           === ordinals.indexOf(rank ?? '') + 1);
         expect(winner.map(row => row.id), q.id).toEqual([q.groundTruth]);
+        // No tie above the answer, so "third highest" means the same by record and by distinct value.
+        const target = rows.find(row => row.id === q.groundTruth)?.value ?? Number.NaN;
+        const ahead = rows.filter(row => order === 'highest' ? row.value > target : row.value < target).map(row => row.value);
+        expect(new Set(ahead).size, q.id).toBe(ahead.length);
       } else {
         const [field = '', threshold, net] = captures(q, /^How many features have properties\.(\w+) greater than (-?[\d.]+)(?: and properties\.net "(\w+)")?\?$/);
         expect(Boolean(net), q.id).toBe(q.type === 'count-two-conditions');
@@ -113,7 +117,10 @@ it('recomputes every count and rank from the source and verifies a unique record
       const winner = rows.flatMap(({ value, validTime }) => {
         if (typeof value !== 'number') return [];
         const ahead = rows.filter(row => typeof row.value === 'number' && (order === 'highest' ? row.value > value : row.value < value));
-        return ahead.length === ordinals.indexOf(rank ?? '') + 1 ? [validTime] : [];
+        if (ahead.length !== ordinals.indexOf(rank ?? '') + 1) return [];
+        // No tie above the answer, so "third highest" means the same by entry and by distinct value.
+        expect(new Set(ahead.map(row => row.value)).size, q.id).toBe(ahead.length);
+        return [validTime];
       });
       expect(winner, q.id).toEqual([q.groundTruth]);
     } else {

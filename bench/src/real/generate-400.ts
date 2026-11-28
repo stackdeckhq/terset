@@ -57,8 +57,9 @@ function ranks(rows: NumericRecord[], prompt: (rank: string, direction: string) 
     const sorted = sortValues(rows, direction);
     return ordinals.flatMap((ordinal, i) => {
       const row = at(sorted, i + 1);
-      const unique = row.value !== at(sorted, i).value && row.value !== at(sorted, i + 2).value;
-      return unique ? [answer(prompt(ordinal, direction), row.id)] : [];
+      // Every value down to the one after the answer is distinct, so a tie can never make the rank arguable.
+      const leading = sorted.slice(0, i + 3).map(entry => entry.value);
+      return new Set(leading).size === leading.length ? [answer(prompt(ordinal, direction), row.id)] : [];
     });
   });
 }
