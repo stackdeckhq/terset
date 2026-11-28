@@ -314,8 +314,19 @@ export const CHEAT_SHEET: readonly CheatInput[] = [
   {
     id: 'path',
     title: 'Path entries',
-    about: 'A slash separates nested keys, as in `a/b: 1`. Format 1.2 uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1.',
-    value: { a: { b: 1 } },
+    about: 'A slash separates nested keys, so `forecast/hours` is the list `hours` inside `forecast`. Format 1.2 uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1. A smaller document keeps the nested object as JSON.',
+    value: {
+      forecast: {
+        hours: [
+          { time: '06:00', temperature: 11, humidity: 82, windSpeed: 9, windDirection: 'NW', precipitation: 0 },
+          { time: '09:00', temperature: 14, humidity: 74, windSpeed: 12, windDirection: 'NW', precipitation: 0 },
+          { time: '12:00', temperature: 18, humidity: 61, windSpeed: 15, windDirection: 'W', precipitation: 0 },
+          { time: '15:00', temperature: 19, humidity: 58, windSpeed: 17, windDirection: 'W', precipitation: 0.2 },
+          { time: '18:00', temperature: 16, humidity: 67, windSpeed: 11, windDirection: 'SW', precipitation: 1.4 },
+          { time: '21:00', temperature: 13, humidity: 79, windSpeed: 8, windDirection: 'SW', precipitation: 0.6 },
+        ],
+      },
+    },
   },
   {
     id: 'scalars',

@@ -160,6 +160,17 @@ describe('when not to use it', () => {
   });
 });
 
+describe('cheat sheet', () => {
+  it('shows a real path entry in the path example', () => {
+    const example = CHEAT_SHEET.find((input) => input.id === 'path');
+    if (example === undefined) throw new Error('the path example is missing');
+    const text = encode(example.value);
+    expect(text.split('\n')[0]).toBe('forecast/hours[6]:');
+    expect(text).not.toBe(encode(example.value, { format: '1.1' }));
+    expect(example.about).toContain('`forecast/hours`');
+  });
+});
+
 describe('package facts', () => {
   it('explains why the count line can make a tiny table larger than JSON', () => {
     const value = [{ a: 1, b: 2 }, { b: 2 }];
