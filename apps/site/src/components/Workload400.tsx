@@ -19,8 +19,11 @@ import {
   real400WrongSummary,
   wrong400Groups,
 } from '../data/workload-400.ts';
+import type { Weather12AccuracyFile } from '../data/weather-12-accuracy.ts';
+import { WEATHER_12_POINTER_LINK, weather12Pointer } from '../data/workload-weather-12.ts';
 import { Fold } from './Fold.tsx';
 import { Lines, ModelTable, Text } from './WorkloadParts.tsx';
+import { WEATHER_12_ANCHOR } from './WorkloadWeather12.tsx';
 
 type Model = Real400AccuracyFile['models'][number];
 
@@ -142,7 +145,23 @@ function WrongFolds({ file }: { readonly file: Real400AccuracyFile }) {
   ));
 }
 
-export function Real400Sections({ file }: { readonly file: Real400AccuracyFile }) {
+/** These runs used Terset 1.1. On the weather file, 1.2 changed the result, so this links to that run. */
+function Weather12Pointer({ file }: { readonly file: Weather12AccuracyFile }) {
+  return (
+    <p>
+      {`${weather12Pointer(file)} `}
+      <a href={`#${WEATHER_12_ANCHOR}`}>{WEATHER_12_POINTER_LINK}</a>
+    </p>
+  );
+}
+
+export interface Real400SectionsProps {
+  readonly file: Real400AccuracyFile;
+  /** The weather file again with Terset 1.2, which the weather results here point to. */
+  readonly weather12: Weather12AccuracyFile;
+}
+
+export function Real400Sections({ file, weather12 }: Real400SectionsProps) {
   const run = `${formatCount(file.questions)} questions`;
   const strictNote = real400StrictNote(file);
   return (
@@ -153,6 +172,7 @@ export function Real400Sections({ file }: { readonly file: Real400AccuracyFile }
           {real400Headline(file).map((line) => (
             <p key={line}>{line}</p>
           ))}
+          <Weather12Pointer file={weather12} />
           <div className="work-file">
             <h3>How it ran</h3>
             <Lines lines={real400Intro(file)} />
@@ -192,6 +212,7 @@ export function Real400Sections({ file }: { readonly file: Real400AccuracyFile }
             <div key={result.dataset} className="work-file">
               <h3>{result.label}</h3>
               <Lines lines={result.lines} />
+              {result.dataset === weather12.dataset ? <Weather12Pointer file={weather12} /> : null}
             </div>
           ))}
         </Text>

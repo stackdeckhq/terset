@@ -20,6 +20,8 @@
 .work-file h3 { font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.01em; color: var(--fg); margin: 0 0 var(--s-2); }
 .work-file + .work-file, .bench-text > p + .work-file { margin-top: var(--s-5); }
 .work-file > p { margin: 0 0 var(--s-2); }
+/* A note after a file's list, such as the pointer to the Terset 1.2 weather run. */
+.work-file > .steps-list + p { margin: var(--s-3) 0 0; }
 
 .work-links a { overflow-wrap: anywhere; }
 .work-prices { margin-top: var(--s-5); }

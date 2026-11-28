@@ -165,15 +165,22 @@ export interface PairedGroup {
   readonly rows: readonly PairedRow[];
 }
 
-function pairedRow(pair: Pair): PairedRow {
+/** The test cells of a paired row: the signed gap, its 95% interval and the exact p. Shared with the weather 1.2 table. */
+export function pairedTestCells(pair: Pick<Pair, 'gapPoints' | 'interval95Points' | 'pValue'>): Pick<PairedRow, 'gap' | 'interval' | 'p'> {
   const gap = Number(pair.gapPoints.toFixed(2)) === 0 ? '0' : `${pair.gapPoints < 0 ? '−' : '+'}${shortNumber(Math.abs(pair.gapPoints))}`;
+  return {
+    gap,
+    interval: `${signed(pair.interval95Points.lower, 1, false)} to ${signed(pair.interval95Points.upper, 1, false)}`,
+    p: pair.pValue < 0.001 ? '< 0.001' : String(Number(pair.pValue.toFixed(3))),
+  };
+}
+
+function pairedRow(pair: Pair): PairedRow {
   return {
     comparison: WORKLOAD_FORMAT_LABELS[pair.comparisonFormat],
     tersetOnly: formatCount(pair.tersetOnly),
     otherOnly: formatCount(pair.otherOnly),
-    gap,
-    interval: `${signed(pair.interval95Points.lower, 1, false)} to ${signed(pair.interval95Points.upper, 1, false)}`,
-    p: pair.pValue < 0.001 ? '< 0.001' : String(Number(pair.pValue.toFixed(3))),
+    ...pairedTestCells(pair),
   };
 }
 

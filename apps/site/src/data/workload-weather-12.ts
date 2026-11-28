@@ -1,6 +1,7 @@
 import { formatCount } from './bench.ts';
 import type { Weather12AccuracyFile } from './weather-12-accuracy.ts';
-import { blob, WORKLOAD_MODEL_NAMES } from './workload.ts';
+import { pairedTestCells } from './workload-400.ts';
+import { NO_ANSWER, WORKLOAD_DATASET_LABELS, WORKLOAD_MODEL_NAMES, blob, listPhrase } from './workload.ts';
 
 type Model = Weather12AccuracyFile['models'][number];
 type Format = keyof Model['scores'];
@@ -13,6 +14,8 @@ const LABELS = {
 const FORMATS: readonly Format[] = ['json-compact', 'toon', 'terset-1.1', 'terset-1.2'];
 
 export const WEATHER_12_TITLE = 'The weather file with Terset 1.2';
+export const WEATHER_12_PAIRED_TITLE = 'Terset 1.2 against each format';
+export const WEATHER_12_WRONG_TITLE = 'Terset 1.2: wrong answers and run files';
 export const WEATHER_12_SCORE_HEAD = ['Model', 'Format', 'Correct', 'Input tokens'] as const;
 export const WEATHER_12_PAIRED_HEAD = [
   'Model', 'Terset 1.2 against', 'Only 1.2 right', 'Only the other right',
@@ -55,18 +58,65 @@ export function weather12ScoreRows(file: Weather12AccuracyFile): readonly (reado
 export const WEATHER_12_PAIRED_NOTE = 'Each pair uses the same question. The exact p-value comes from a two-sided McNemar test. All questions use one file, so treat these results as descriptive.';
 
 export function weather12PairedRows(file: Weather12AccuracyFile): readonly (readonly string[])[] {
-  return file.models.flatMap(({ id, paired }) => paired.map((row) => [
-    WORKLOAD_MODEL_NAMES[id], LABELS[row.comparisonFormat],
-    formatCount(row.tersetOnly), formatCount(row.otherOnly), tokensFewer(row.inputTokensFewerPct),
-    row.gapPoints.toFixed(2), `${row.interval95Points.lower.toFixed(2)} to ${row.interval95Points.upper.toFixed(2)}`,
-    String(Number(row.pValue.toPrecision(3))),
-  ]));
+  return file.models.flatMap(({ id, paired }) => paired.map((row) => {
+    const { gap, interval, p } = pairedTestCells(row);
+    return [
+      WORKLOAD_MODEL_NAMES[id], LABELS[row.comparisonFormat],
+      formatCount(row.tersetOnly), formatCount(row.otherOnly), tokensFewer(row.inputTokensFewerPct),
+      gap, interval, p,
+    ];
+  }));
 }
 
 export function weather12WrongAnswers(file: Weather12AccuracyFile) {
   return file.models.flatMap(({ id, wrongAnswers }) => wrongAnswers.map((answer) => ({
     ...answer, model: WORKLOAD_MODEL_NAMES[id],
   })));
+}
+
+export const WEATHER_12_WRONG_HEAD = ['Model', 'Question', 'Expected', 'Model said'] as const;
+
+export type Weather12WrongRow = readonly [model: string, question: string, expected: string, said: string];
+
+export function weather12WrongRows(file: Weather12AccuracyFile): readonly Weather12WrongRow[] {
+  return weather12WrongAnswers(file).map((answer) => [
+    answer.model,
+    `${answer.questionId}: ${answer.prompt}`,
+    answer.expected,
+    answer.hitOutputCap ? NO_ANSWER : answer.text,
+  ]);
+}
+
+/** "1 wrong of 400 Terset 1.2 answers, on GPT 6.2 Sol." Names the models that missed. */
+export function weather12WrongSummary(file: Weather12AccuracyFile): string {
+  const answers = file.questions * file.models.length;
+  const wrong = weather12WrongAnswers(file);
+  const head = `${formatCount(wrong.length)} wrong of ${formatCount(answers)} Terset 1.2 answers`;
+  if (wrong.length === 0) return `${head}.`;
+  const perModel = file.models
+    .filter(({ wrongAnswers }) => wrongAnswers.length > 0)
+    .map(({ id, wrongAnswers }) => (wrong.length === wrongAnswers.length
+      ? WORKLOAD_MODEL_NAMES[id]
+      : `${formatCount(wrongAnswers.length)} on ${WORKLOAD_MODEL_NAMES[id]}`));
+  return `${head}, on ${listPhrase(perModel)}.`;
+}
+
+/** The link after the pointer, to the weather 1.2 section. */
+export const WEATHER_12_POINTER_LINK = 'See the Terset 1.2 run below.';
+
+/**
+ * The note for the format 1.1 weather results: they stay true for 1.1, and 1.2 changed them.
+ * Throws when Terset 1.2 did not use fewer input tokens than TOON on every model.
+ */
+export function weather12Pointer(file: Weather12AccuracyFile): string {
+  const parts = file.models.map(({ id, paired }, index) => {
+    const toon = paired.find(({ comparisonFormat }) => comparisonFormat === 'toon');
+    if (toon === undefined) throw new Error(`${id} has no TOON comparison`);
+    if (toon.inputTokensFewerPct <= 0) throw new Error(`Terset 1.2 did not use fewer input tokens than TOON on ${id}`);
+    const fewer = `${toon.inputTokensFewerPct.toFixed(1)}% fewer`;
+    return index === 0 ? `${fewer} input tokens than TOON on ${WORKLOAD_MODEL_NAMES[id]}` : `${fewer} on ${WORKLOAD_MODEL_NAMES[id]}`;
+  });
+  return `These runs used Terset 1.1. On the ${WORKLOAD_DATASET_LABELS[file.dataset]}, Terset 1.2 used ${listPhrase(parts)}.`;
 }
 
 export function weather12Links(file: Weather12AccuracyFile) {
