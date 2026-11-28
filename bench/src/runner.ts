@@ -6,7 +6,7 @@ import type { SuiteRecord } from './data.ts';
 import { fingerprint, key, reserveInput } from './plan.ts';
 import type { Task } from './plan.ts';
 import { markdown, summaries } from './report.ts';
-import { budgetsSchema, encodersSchema, inputReservationSchema, modelSchema, PUBLISHED_TERSET_FORMAT, responseSchema, resultSchema, runIdSchema } from './schema.ts';
+import { budgetsSchema, DEFAULT_TERSET_FORMAT, encodersSchema, inputReservationSchema, modelSchema, responseSchema, resultSchema, runIdSchema } from './schema.ts';
 import type { Budgets, Encoders, InputReservation, Result, Row, TersetFormat, Usage } from './schema.ts';
 import { score } from './scoring.ts';
 
@@ -38,6 +38,18 @@ function rowKey(row: Pick<Row, 'model' | 'format' | 'dataset' | 'questionId'>): 
   return JSON.stringify([row.model, row.format, row.dataset, row.questionId]);
 }
 
+export async function readSavedRun(directory: string, runId: string): Promise<Result | undefined> {
+  const path = join(directory, `${runIdSchema.parse(runId)}.json`);
+  let text: string;
+  try { text = await readFile(path, 'utf8'); }
+  catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return undefined;
+    throw error;
+  }
+  try { return resultSchema.parse(JSON.parse(text) as unknown); }
+  catch { throw new Error('Invalid result file'); }
+}
+
 export async function run(options: {
   runId: string; directory: string; tasks: Task[]; client: Client; mode: Result['mode']; budgets: Budgets;
   inputReservation?: InputReservation; suite?: SuiteRecord;
@@ -67,13 +79,12 @@ export async function run(options: {
       version: 1, runId, fingerprint: digest, mode: options.mode, status: 'partial', reason: null,
       plannedCalls: options.tasks.length, budgets, budgetUsed: { calls: 0, inputTokens: 0, outputTokens: 0 }, rows: [], failures: [],
     };
-    let existing: string | undefined;
-    try { existing = await readFile(jsonPath, 'utf8'); }
-    catch (error) { if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw new Error('Cannot read result file'); }
+    const existing = await readSavedRun(options.directory, runId);
     if (existing !== undefined) {
-      const parsed = resultSchema.safeParse(JSON.parse(existing) as unknown);
-      if (!parsed.success) throw new Error('Invalid result file');
-      result = parsed.data;
+      result = existing;
+      if (result.tersetFormat !== undefined && options.tersetFormat !== undefined && result.tersetFormat !== options.tersetFormat) {
+        throw new Error('Terset format differs from the saved run');
+      }
       if (result.fingerprint !== digest || result.runId !== runId) throw new Error('Run id belongs to a different plan, model configuration, or mode');
       if (result.encoders && JSON.stringify(result.encoders) !== JSON.stringify(encoders)) {
         throw new Error('Encoder versions changed since this run started; use a new run id');
@@ -111,7 +122,7 @@ export async function run(options: {
     result.status = 'partial';
     result.suite = suite.name;
     result.encoders = encoders;
-    result.tersetFormat = options.tersetFormat ?? PUBLISHED_TERSET_FORMAT;
+    result.tersetFormat ??= options.tersetFormat ?? DEFAULT_TERSET_FORMAT;
     result.reason = null;
     result.inputReservation = inputReservation;
     const questions = new Map<string, Task[]>();

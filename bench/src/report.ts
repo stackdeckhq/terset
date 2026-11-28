@@ -162,6 +162,7 @@ export function markdown(result: Result, tasks: Task[]): string {
   const summary = summaries(result.rows, tasks);
   const lines = [`# Accuracy benchmark: ${result.runId}`, '',
     `Status: ${result.status}. Mode: ${result.mode}. Recorded ${result.rows.length}/${result.plannedCalls} calls.`,
+    ...(result.tersetFormat === undefined ? [] : [`Terset format: ${result.tersetFormat}.`]),
     result.mode === 'fake' ? 'Fake responses exercise the harness. These are not model measurements.' : 'Results are published as measured.',
     `Stop reason: ${result.reason ?? 'none'}.`, '',
     `Input reservation exceeded: ${result.rows.filter(row => row.reservedInputTokens !== undefined && row.inputTokens > row.reservedInputTokens).length} calls.`, '',

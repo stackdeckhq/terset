@@ -99,7 +99,7 @@ export type Encoders = z.infer<typeof encodersSchema>;
 export const tersetFormatSchema = z.enum(['1.0', '1.1', '1.2']);
 export type TersetFormat = z.infer<typeof tersetFormatSchema>;
 // Published runs used format 1.1.
-export const PUBLISHED_TERSET_FORMAT = '1.1' satisfies TersetFormat;
+export const DEFAULT_TERSET_FORMAT = '1.2' satisfies TersetFormat;
 export const resultSchema = z.object({
   version: z.literal(1), runId: runIdSchema, fingerprint: z.string(),
   suite: suiteNameSchema.optional(),

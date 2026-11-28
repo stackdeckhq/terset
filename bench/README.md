@@ -36,6 +36,10 @@ the separate pilot for the 400-question run.
   same run ID and answered all 400 questions in each format. The interrupted
   compact JSON call for q367 stays in the budget ledger as a charge. The retry
   supplied the scored answer.
+- [2026-11-28](published/2026-11-28), format 1.2. The weather runs are
+  `real400-weather12-opus-2026-11-28` and `real400-weather12-sol-2026-11-28`.
+  Each answers the same 200 weather questions as the full runs using Terset 1.2.
+  Both used an 8,192-token output limit and completed without request failures.
 
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
 published runs, and updates the accuracy blocks in the READMEs. It takes one
@@ -94,6 +98,9 @@ damage. The decoder rejects damaged text.
 Both flags reject unknown names and duplicates. A saved run refuses a changed
 selection. Comparisons use questions complete in every selected format.
 Savings cells stay blank when compact JSON is absent.
+
+New runs use Terset format 1.2 by default. Use `--terset-format 1.0` or
+`--terset-format 1.1` to write older text. A saved run uses its recorded format.
 
 `--suite toon|stress|real|real-400|real-400-pilot` selects frozen inputs. The default is `toon`, with the
 same data, questions, prompts and fingerprints as existing runs. Dataset names

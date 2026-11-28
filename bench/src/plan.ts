@@ -3,7 +3,7 @@ import { DATASETS } from './data.ts';
 import type { SuiteRecord } from './data.ts';
 import { encode, encodeDataset, estimateInputTokens, makePrompt, primerFor } from './formats.ts';
 import type { Prompt } from './formats.ts';
-import { FORMATS, inputReservationSchema, modelSchema, PUBLISHED_TERSET_FORMAT, selectedFormatsSchema } from './schema.ts';
+import { DEFAULT_TERSET_FORMAT, FORMATS, inputReservationSchema, modelSchema, selectedFormatsSchema } from './schema.ts';
 import type { Dataset, Format, InputReservation, Model, Question, TersetFormat } from './schema.ts';
 
 export interface Task { model: Model; format: Format; question: Question; prompt: Prompt; estimatedInputTokens: number }
@@ -11,7 +11,7 @@ export function key(task: Pick<Task, 'model' | 'format' | 'question'>): string {
   return JSON.stringify([task.model.id, task.format, task.question.dataset, task.question.id]);
 }
 
-export function plan(models: Model[], questions: Question[], formats: readonly Format[] = FORMATS, datasets: Dataset[] = DATASETS, tersetFormat: TersetFormat = PUBLISHED_TERSET_FORMAT): Task[] {
+export function plan(models: Model[], questions: Question[], formats: readonly Format[] = FORMATS, datasets: Dataset[] = DATASETS, tersetFormat: TersetFormat = DEFAULT_TERSET_FORMAT): Task[] {
   formats = selectedFormatsSchema.parse(formats);
   models = models.map(model => modelSchema.parse(model));
   if (new Set(models.map(m => m.id)).size !== models.length) throw new Error('Model ids must be unique');
