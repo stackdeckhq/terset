@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { decode, encode, rulesFor, type JsonRoot, type JsonValue } from "../src/index.ts";
 import { HARD_STRINGS } from "./hard-cases.ts";
-import { encoderRules } from "./rules-truth.ts";
+import { encoderRules, SENTENCES } from "./rules-truth.ts";
 
 const SEED = 20261112;
 export function randomFrom(seed: number): () => number {
@@ -19,7 +19,7 @@ export function randomFrom(seed: number): () => number {
 }
 
 const STRINGS = [...HARD_STRINGS, " ", "1e3", '"x"', "[1]", "{x}", "x\\n", "trail "];
-const KEYS = ["id", "name", "a", "b", "c", "__proto__", "constructor", "1", "02", "", "a: b", "x\ty", '"key"', "ñ"];
+const KEYS = ["id", "name", "a", "b", "c", "__proto__", "constructor", "1", "02", "", "a: b", "a/b", "a.b", "x\ty", '"key"', "ñ"];
 
 function pick<T>(random: () => number, values: readonly T[]): T {
   return values[Math.floor(random() * values.length)]!;
@@ -52,21 +52,28 @@ function rows(random: () => number): JsonValue[] {
 it("round-trips 30,000 seeded JSON object and array roots weighted toward general tables", () => {
   const random = randomFrom(SEED);
   let tables = 0;
+  let paths = 0;
   const texts: string[] = [];
   const fitted: string[] = [];
   for (let index = 0; index < 30_000; index++) {
-    const input: JsonRoot = random() < 0.45 ? rows(random) : Object.fromEntries(Array.from({ length: 1 + Math.floor(random() * 5) }, () => [pick(random, KEYS), random() < 0.75 ? rows(random) : value(random, 4)]));
+    const input: JsonRoot = index % 7 === 0 ? { a: { "b/c": { d: rows(random) } } }
+      : random() < 0.45 ? rows(random)
+      : Object.fromEntries(Array.from({ length: 1 + Math.floor(random() * 5) }, () => [pick(random, KEYS), random() < 0.75 ? rows(random) : value(random, 4)]));
     try {
       const text = encode(input);
-      const rules = rulesFor(text);
-      assert.equal(rules, encoderRules(input));
-      texts.push(text);
-      fitted.push(rules);
+      const v11 = encode(input, { format: "1.1" });
+      const rules11 = rulesFor(v11);
+      assert.equal(rules11, encoderRules(input));
+      texts.push(v11);
+      fitted.push(rules11);
+      if (rulesFor(text).includes(SENTENCES.path)) paths++;
+      assert.ok(Buffer.byteLength(text) <= Buffer.byteLength(v11));
       if (Array.isArray(input) ? /^\[\d+\]\n/.test(text) : text.includes(":\n")) tables++;
       assert.deepEqual(decode(text), input);
       assert.equal(JSON.stringify(decode(text)), JSON.stringify(input));
       assert.deepEqual(decode(Buffer.from(text, "utf8").toString("utf8")), input);
       assert.equal(encode(input), text);
+      assert.equal(JSON.stringify(decode(v11)), JSON.stringify(input));
       const legacy = encode(input, { format: "1.0" });
       assert.equal(rulesFor(legacy), encoderRules(input, "1.0"));
       assert.equal(JSON.stringify(decode(legacy)), JSON.stringify(input));
@@ -75,6 +82,7 @@ it("round-trips 30,000 seeded JSON object and array roots weighted toward genera
     }
   }
   assert.ok(tables > 5000, `seed ${SEED}: only ${tables} tables`);
+  assert.ok(paths > 3000, `seed ${SEED}: only ${paths} path documents`);
   const python = spawnSync("python3", ["-B", fileURLToPath(new URL("../../terset-py/tests/rules_parity.py", import.meta.url))], {
     input: JSON.stringify(texts), encoding: "utf8", maxBuffer: 32 * 1024 * 1024, timeout: 120_000,
   });

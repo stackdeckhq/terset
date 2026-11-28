@@ -15,6 +15,10 @@
 
 <p align="center"><a href="https://terset.dev">terset.dev</a> · <a href="https://terset.dev/docs">Docs</a> · <a href="https://terset.dev/#b2">Try it with your JSON</a></p>
 
+This checkout defaults to format 1.2. Slash paths let nested fields use
+tables. Both packages still read and write 1.0 and 1.1. The published
+examples and counts below use format 1.1.
+
 <!-- docs:pitch -->
 JSON repeats every key in every record, and a model reads each repeat as input tokens. Terset writes a list of records as one table instead. The keys go in a header once, and each record becomes a row. `decode` turns the text back into the same JSON.
 

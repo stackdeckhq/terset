@@ -10,6 +10,7 @@ export const SENTENCES = {
   id: "A leading bare id header marks string IDs.",
   keyed: "name{N} has N entries; the @key column holds each entry's key and is not a field.",
   nested: "Header a.b is field b in object a.",
+  path: "Key a/b is field b in object a.",
 };
 
 function object(value: JsonValue | undefined): value is JsonObject {
@@ -34,7 +35,7 @@ function columns(path: string[], values: (JsonValue | undefined)[]): { path: str
 
 // Derive the feature truth from source values and the encoder's choice of table,
 // without parsing any header or consulting the decoder's feature collector.
-export function encoderRules(input: JsonRoot, format: FormatVersion = "1.1"): string {
+export function encoderRules(input: JsonRoot, format: Exclude<FormatVersion, "1.2"> = "1.1"): string {
   const features = new Set<string>();
   const quoted = (value: JsonValue | undefined): boolean => typeof value === "string"
     && encode({ value }).startsWith('value: "');

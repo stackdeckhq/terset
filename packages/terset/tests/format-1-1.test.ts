@@ -11,7 +11,6 @@ const rejections = read("rejections.json") as string[];
 
 it("encodes and decodes every 1.1 case with exact bytes and own key order", () => {
   for (const { name, input, encoded } of cases) {
-    assert.equal(encode(input), encoded, name);
     assert.equal(encode(input, { format: "1.1" }), encoded, name);
     assert.equal(JSON.stringify(decode(encoded)), JSON.stringify(input), name);
     assert.equal(rulesFor(encoded), encoderRules(input), name);

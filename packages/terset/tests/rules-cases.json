@@ -136,5 +136,23 @@
     "text": "map{3}:\n@key\ta.b\tname=value\none\t1\tv=\"true\"\ttext=[1]\ntwo\t2\nthree\t3\tv=x\nlist[2]:\nid\tname=value\nu1\tn=1\nu2",
     "features": ["table", "named", "quoted", "json", "id", "keyed", "nested"],
     "rules": "Tables use tab-separated headers and rows. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a."
+  },
+  {
+    "name": "path with a quoted segment and quoted value",
+    "text": "a/\"b/c\": \"true\"",
+    "features": ["quoted", "path"],
+    "rules": "JSON quotes distinguish numeric, boolean or null text from scalars. Key a/b is field b in object a."
+  },
+  {
+    "name": "dotted table header under a slash path",
+    "text": "a/rows[2]:\nb.c\n1\n2",
+    "features": ["table", "nested", "path"],
+    "rules": "Tables use tab-separated headers and rows. Header a.b is field b in object a. Key a/b is field b in object a."
+  },
+  {
+    "name": "slash lookalikes in a root key and table cells",
+    "text": "\"a/b\": a/b: 1\nrows[2]:\nx\na/b: 2\nc/d: 3",
+    "features": ["table"],
+    "rules": "Tables use tab-separated headers and rows."
   }
 ]
