@@ -21,7 +21,6 @@ class FormatOneOneTests(unittest.TestCase):
     def test_shared_cases(self):
         for case in json.loads((SUITE / "cases.json").read_text(encoding="utf-8")):
             with self.subTest(case=case["name"]):
-                self.assertEqual(encode(case["input"]), case["encoded"])
                 self.assertEqual(encode(case["input"], format="1.1"), case["encoded"])
                 decoded = decode(case["encoded"])
                 self.assertEqual(json.dumps(decoded), json.dumps(case["input"]))

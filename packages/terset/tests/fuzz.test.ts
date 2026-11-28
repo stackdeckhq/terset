@@ -64,9 +64,10 @@ it("round-trips 30,000 seeded JSON object and array roots weighted toward genera
       const v11 = encode(input, { format: "1.1" });
       const rules11 = rulesFor(v11);
       assert.equal(rules11, encoderRules(input));
-      texts.push(v11);
-      fitted.push(rules11);
-      if (rulesFor(text).includes(SENTENCES.path)) paths++;
+      const rules = rulesFor(text);
+      texts.push(text);
+      fitted.push(rules);
+      if (rules.includes(SENTENCES.path)) paths++;
       assert.ok(Buffer.byteLength(text) <= Buffer.byteLength(v11));
       if (Array.isArray(input) ? /^\[\d+\]\n/.test(text) : text.includes(":\n")) tables++;
       assert.deepEqual(decode(text), input);

@@ -128,7 +128,8 @@ class ConformanceTests(unittest.TestCase):
 
     def test_key_order(self):
         value = {"10": 10, "2": 2, "z": {"b": 1, "a": 2}, "01": 3}
-        self.assertEqual(encode(value), '"2": 2\n"10": 10\nz: {"b":1,"a":2}\n"01": 3')
+        self.assertEqual(encode(value, format="1.1"), '"2": 2\n"10": 10\nz: {"b":1,"a":2}\n"01": 3')
+        self.assertEqual(encode(value), '"2": 2\n"10": 10\nz/b: 1\nz/a: 2\n"01": 3')
         self.assertEqual(list(decode(encode(value))), ["2", "10", "z", "01"])
         self.assertEqual(list(decode(encode(value))["z"]), ["b", "a"])
 

@@ -6,7 +6,8 @@ import heapq
 import json
 import math
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 from typing import Literal, TypeAlias, cast
 
 JsonValue: TypeAlias = "None | bool | int | float | str | list[JsonValue] | dict[str, JsonValue]"
@@ -17,10 +18,11 @@ JsonInputRoot: TypeAlias = "Mapping[str, JsonInputValue] | Sequence[JsonInputVal
 
 _MAX_JSON_DEPTH = 500
 _MAX_HEADER_SEGMENTS = 8
+_MAX_ENTRY_SEGMENTS = 8
 _DEPTH_ERROR = "Maximum JSON depth is 500."
 _HeaderTrie: TypeAlias = "dict[str, _HeaderTrie | None]"
 
-FormatVersion: TypeAlias = Literal["1.0", "1.1"]
+FormatVersion: TypeAlias = Literal["1.0", "1.1", "1.2"]
 
 _FITTED_RULES = [
     ("table", "Tables use tab-separated headers and rows."),
@@ -31,6 +33,7 @@ _FITTED_RULES = [
     ("id", "A leading bare id header marks string IDs."),
     ("keyed", "name{N} has N entries; the @key column holds each entry's key and is not a field."),
     ("nested", "Header a.b is field b in object a."),
+    ("path", "Key a/b is field b in object a."),
 ]
 
 RULES = " ".join(sentence for _, sentence in _FITTED_RULES)
@@ -48,6 +51,8 @@ def rules_for(text: str) -> str:
 _KEY = re.compile(r"[A-Za-z_$][A-Za-z0-9_$.-]*\Z")
 _NUMBER = re.compile(r"[-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?\Z")
 _ENTRY = re.compile(r'^("(?:[^"\\]|\\.)*"|[A-Za-z_$][A-Za-z0-9_$.-]*)(?:\[([0-9]+)\]|\{([0-9]+)\})?:([\s\S]*)\Z')
+_ENTRY_KEY = re.compile(r"[A-Za-z_$][A-Za-z0-9_$.-]*")
+_ENTRY_TAIL = re.compile(r"(?:\[([0-9]+)\]|\{([0-9]+)\})?:([\s\S]*)\Z")
 _TROUBLE = re.compile(r"[\x00-\x1f\x7f\x85\u2028\u2029\ud800-\udfff]")
 _WHITESPACE = "\u0009\u000a\u000b\u000c\u000d\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff"
 _WORDS = {"true", "false", "null", "undefined", "NaN", "Infinity", "-Infinity"}
@@ -264,7 +269,8 @@ def _first_sparse(rows: list[JsonObject], fields: list[str]) -> int:
     return next((index for index, field in enumerate(fields) if counts.get(field) != len(rows)), len(fields))
 
 
-def _table(value: list[JsonObject], keyed: bool, named: bool, entry_keys: list[str] | None = None, max_bytes: int | float = math.inf) -> str | None:
+def _table(value: list[JsonObject], keyed: bool, named: bool, entry_keys: list[str] | None = None,
+           max_bytes: int | float = math.inf, write_cell: Callable[[JsonValue], str] = _cell) -> str | None:
     if len(value) < 2:
         return None
     rows = [{_unicode(key): child for key, child in row.items()} for row in value]
@@ -311,12 +317,12 @@ def _table(value: list[JsonObject], keyed: bool, named: bool, entry_keys: list[s
             elif not keyed and lone and isinstance(entry, str) and _ENTRY.fullmatch(entry):
                 cells.append(_quote(entry))
             else:
-                cells.append(_cell(cast(JsonValue, entry)))
+                cells.append(write_cell(cast(JsonValue, entry)))
         if has_named:
             # Each row's own key order fits the header, so its positional
             # fields come first and its other fields follow in header order.
             row = rows[row_index]
-            cells.extend(f"{names[key]}={_cell(row[key])}" for key in _keys(row)[split:])
+            cells.extend(f"{names[key]}={write_cell(row[key])}" for key in _keys(row)[split:])
         if keyed:
             if entry_keys is None:
                 raise TypeError("Missing entry keys.")
@@ -325,26 +331,118 @@ def _table(value: list[JsonObject], keyed: bool, named: bool, entry_keys: list[s
     return "\n".join(lines)
 
 
-def _list_table(value: JsonValue, named: bool) -> str | None:
+def _list_table(value: JsonValue, named: bool, size: int | None = None,
+                write_cell: Callable[[JsonValue], str] = _cell) -> str | None:
     if not isinstance(value, list) or not all(isinstance(row, dict) for row in value):
         return None
-    size = len(_json(value).encode("utf-8"))
-    text = _table(cast(list[JsonObject], value), False, named, max_bytes=size)
+    if size is None:
+        size = len(_json(value).encode("utf-8"))
+    text = _table(cast(list[JsonObject], value), False, named, max_bytes=size, write_cell=write_cell)
     return text if text is not None and len(text.encode("utf-8")) < size else None
 
 
-def encode(value: JsonInputRoot, *, format: FormatVersion = "1.1") -> str:
+@dataclass(slots=True)
+class _Text:
+    # Parents can count a child's JSON or path lines without serializing
+    # or copying either candidate again.
+    size: int
+    parts: str | list[_Text]
+
+
+def _measured(text: str) -> _Text:
+    return _Text(len(text.encode("utf-8")), text)
+
+
+def _join(parts: list[_Text], separator: _Text | None = None) -> _Text:
+    size = sum(part.size for part in parts)
+    if separator is None or len(parts) < 2:
+        return _Text(size, parts)
+    joined = [parts[0]]
+    for part in parts[1:]:
+        joined.extend((separator, part))
+    return _Text(size + (len(parts) - 1) * separator.size, joined)
+
+
+def _render(text: _Text) -> str:
+    if isinstance(text.parts, str):
+        return text.parts
+    strings: list[str] = []
+
+    def append(part: _Text) -> None:
+        if isinstance(part.parts, str):
+            strings.append(part.parts)
+        else:
+            for child in part.parts:
+                append(child)
+
+    append(text)
+    return "".join(strings)
+
+
+_SLASH = _measured("/")
+_LF = _measured("\n")
+_COMMA = _measured(",")
+_OPEN_OBJECT = _measured("{")
+_CLOSE_OBJECT = _measured("}")
+_VALUE_PREFIX = _measured(": ")
+
+
+def _entry_form(name: _Text, value: JsonValue, compact: _Text, named: bool,
+                write_cell: Callable[[JsonValue], str]) -> _Text:
+    if isinstance(value, list):
+        body = _list_table(value, named, compact.size, write_cell)
+        if body is not None:
+            return _join([name, _measured(f"[{len(value)}]:\n{body}")])
+    scalar = _measured(_unicode(value)) if isinstance(value, str) and _bare(value) else compact
+    fallback = _join([name, _VALUE_PREFIX, scalar])
+    if not isinstance(value, dict):
+        return fallback
+    keys = _keys(value)
+    rows = [value[key] for key in keys]
+    if len(keys) < 2 or not all(_safe_id(key) and not _ENTRY.fullmatch(key) for key in keys) or not all(isinstance(row, dict) for row in rows):
+        return fallback
+    body = _table(cast(list[JsonObject], rows), True, named, keys, fallback.size, write_cell)
+    if body is None:
+        return fallback
+    keyed = _join([name, _measured(f"{{{len(keys)}}}:\n{body}")])
+    return keyed if keyed.size < fallback.size else fallback
+
+
+def _plan_entry(name: _Text, value: JsonValue, remaining: int, compact: dict[int, _Text],
+                write_cell: Callable[[JsonValue], str]) -> tuple[_Text, _Text]:
+    path = None
+    if remaining > 0 and isinstance(value, dict) and value:
+        fields: list[_Text] = []
+        entries: list[_Text] = []
+        for key in _keys(value):
+            quoted = _quote(key)
+            child_name = _join([name, _SLASH, _measured(key if _KEY.fullmatch(key) else quoted)])
+            child_json, child_entry = _plan_entry(child_name, value[key], remaining - 1, compact, write_cell)
+            fields.append(_join([_measured(quoted + ":"), child_json]))
+            entries.append(child_entry)
+        json_text = _join([_OPEN_OBJECT, _join(fields, _COMMA), _CLOSE_OBJECT])
+        path = _join(entries, _LF)
+    else:
+        cached = compact.get(id(value)) if isinstance(value, (dict, list)) else None
+        json_text = cached if cached is not None else _measured(_json(value))
+    if isinstance(value, (dict, list)):
+        compact[id(value)] = json_text
+    base = _entry_form(name, value, json_text, True, write_cell)
+    return json_text, path if path is not None and path.size < base.size else base
+
+
+def encode(value: JsonInputRoot, *, format: FormatVersion = "1.2") -> str:
     """Encode a JSON object or list. Invalid data raises TypeError.
 
-    format "1.1" (default) writes sparse fields as name=value cells; "1.0"
-    writes empty cells. Version 1.0 text still decodes.
+    Format "1.2" (default) adds path entries. Format "1.1" uses named
+    cells. Format "1.0" uses empty cells. All three versions decode.
 
     Numbers use JavaScript binary64 semantics. Integers must be exactly
     representable as binary64; negative zero and non-finite values fail.
     """
-    if not isinstance(format, str) or format not in ("1.0", "1.1"):
-        raise TypeError('format must be "1.0" or "1.1".')
-    named = format == "1.1"
+    if not isinstance(format, str) or format not in ("1.0", "1.1", "1.2"):
+        raise TypeError('format must be "1.0", "1.1" or "1.2".')
+    named = format != "1.0"
     _validate(value)
     # Validation restricts the read-only input interface to JSON's concrete
     # built-in containers. The decoder always returns those concrete types.
@@ -356,27 +454,24 @@ def encode(value: JsonInputRoot, *, format: FormatVersion = "1.1") -> str:
         raise TypeError("Terset requires a root object or array.")
     if not root:
         return "{}"
-    lines = []
-    for key in _keys(root):
-        entry = root[key]
-        name = _key(key)
-        table = _list_table(entry, named)
-        if table is not None and isinstance(entry, list):
-            lines.append(f"{name}[{len(entry)}]:\n{table}")
-            continue
-        fallback = name + ": " + _cell(entry)
-        if isinstance(entry, dict):
-            keys = _keys(entry)
-            rows = [entry[entry_key] for entry_key in keys]
-            if len(keys) >= 2 and all(_safe_id(entry_key) and not _ENTRY.fullmatch(entry_key) for entry_key in keys) and all(isinstance(row, dict) for row in rows):
-                body = _table(cast(list[JsonObject], rows), True, named, keys, len(fallback.encode("utf-8")))
-                if body is not None:
-                    candidate = f"{name}{{{len(keys)}}}:\n{body}"
-                    if len(candidate.encode("utf-8")) < len(fallback.encode("utf-8")):
-                        lines.append(candidate)
-                        continue
-        lines.append(fallback)
-    return "\n".join(lines)
+    if format != "1.2":
+        return "\n".join(_render(_entry_form(_measured(_key(key)), root[key], _measured(_json(root[key])), named, _cell))
+                         for key in _keys(root))
+    compact: dict[int, _Text] = {}
+
+    def write_cell(child: JsonValue) -> str:
+        if not isinstance(child, (dict, list)):
+            return _cell(child)
+        json_text = compact.get(id(child))
+        if json_text is None:
+            json_text = _measured(_json(child))
+            compact[id(child)] = json_text
+        text = _render(json_text)
+        json_text.parts = text
+        return text
+
+    return "\n".join(_render(_plan_entry(_measured(_key(key)), root[key], _MAX_ENTRY_SEGMENTS - 1, compact, write_cell)[1])
+                     for key in _keys(root))
 
 
 def _pairs(pairs: list[tuple[str, JsonValue]]) -> JsonObject:
@@ -402,20 +497,23 @@ def _reject_constant(text: str) -> JsonValue:
     raise ValueError("Invalid JSON constant: " + text)
 
 
-def _parse(text: str) -> JsonValue:
+def _parse(text: str, *, path_entry: bool = False) -> JsonValue:
     try:
-        value = cast(JsonValue, json.loads(text, parse_int=_parse_integer, parse_float=float, parse_constant=_reject_constant, object_pairs_hook=_pairs))
+        # Like JavaScript, let the whole-document comparison reject a
+        # duplicate JSON key inside a path entry as noncanonical.
+        value = cast(JsonValue, json.loads(text, parse_int=_parse_integer, parse_float=float,
+                                        parse_constant=_reject_constant, object_pairs_hook=None if path_entry else _pairs))
         _validate(value)
     except (ValueError, TypeError, RecursionError) as error:
         raise ValueError("Invalid JSON cell: " + str(error)) from error
     return value
 
 
-def _read_cell(text: str) -> JsonValue:
+def _read_cell(text: str, *, path_entry: bool = False) -> JsonValue:
     if not text:
         raise ValueError("Empty values are allowed only as absent table cells.")
     if text[0] in '\"{[' or text in {"true", "false", "null"} or _NUMBER.fullmatch(text):
-        return _parse(text)
+        return _parse(text, path_entry=path_entry)
     if not _bare(text):
         raise ValueError("Invalid bare text.")
     return text
@@ -453,9 +551,25 @@ def _set_path(target: JsonObject, path: list[str], value: JsonValue) -> None:
         target = nested
 
 
-def _quoted_end(text: str) -> int:
+def _set_entry_path(target: JsonObject, path: list[str], value: JsonValue, parents: set[int]) -> None:
+    for key in path[:-1]:
+        if key not in target:
+            child: JsonObject = {}
+            _set(target, key, child)
+            parents.add(id(child))
+        nested = target[key]
+        if not isinstance(nested, dict) or id(nested) not in parents:
+            raise ValueError("Duplicate or conflicting entry path.")
+        target = nested
+    key = path[-1]
+    if key in target and (len(path) > 1 or id(target[key]) in parents):
+        raise ValueError("Duplicate or conflicting entry path.")
+    _set(target, key, value)
+
+
+def _quoted_end(text: str, start: int = 0) -> int:
     """Index just past the closing quote of a leading quoted key, or -1."""
-    end = 1
+    end = start + 1
     while end < len(text) and text[end] != '"':
         if text[end] == "\\":
             end += 1
@@ -463,6 +577,28 @@ def _quoted_end(text: str) -> int:
                 return -1
         end += 1
     return -1 if end == len(text) else end + 1
+
+
+def _read_entry(text: str) -> tuple[list[str], re.Match[str]]:
+    keys: list[str] = []
+    start = 0
+    while True:
+        if text[start:start + 1] == '"':
+            end = _quoted_end(text, start)
+        else:
+            match = _ENTRY_KEY.match(text, start)
+            end = match.end() if match is not None else -1
+        if end <= start:
+            raise ValueError("Expected root field.")
+        keys.append(text[start:end])
+        if text[end:end + 1] != "/":
+            tail = _ENTRY_TAIL.match(text, end)
+            if tail is None:
+                raise ValueError("Expected root field.")
+            return [_read_key(key) for key in keys], tail
+        if len(keys) == _MAX_ENTRY_SEGMENTS:
+            raise ValueError("Maximum entry path is 8 segments.")
+        start = end + 1
 
 
 def _note_cell(raw: str, features: set[str] | None) -> None:
@@ -543,6 +679,7 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
     if ids and features is not None:
         features.add("id")
     result: JsonRoot = {} if keyed else []
+    path_entry = row_depth > 2
     for index in range(count):
         if start + 1 + index >= len(lines):
             raise ValueError("Row count mismatch.")
@@ -562,11 +699,11 @@ def _read_table(lines: list[str], start: int, count: int, keyed: bool, row_depth
             if not (column == 0 and ids):
                 _note_cell(raw, features)
             if raw:
-                _set_path(row, path, raw if column == 0 and ids else _read_cell(raw))
+                _set_path(row, path, raw if column == 0 and ids else _read_cell(raw, path_entry=path_entry))
         for raw_cell in cells[len(paths):]:
             key, raw = _read_named_cell(raw_cell)
             _note_cell(raw, features)
-            _set(row, key, _read_cell(raw))
+            _set(row, key, _read_cell(raw, path_entry=path_entry))
         if isinstance(result, list):
             result.append(row)
         else:
@@ -601,6 +738,7 @@ def _read_document(text: str, features: set[str] | None = None) -> JsonRoot:
     lines = text.split("\n")
     root_count = re.fullmatch(r"\[([0-9]+)\]", lines[0]) if len(lines) > 1 else None
     result: JsonRoot
+    has_paths = False
     if root_count:
         count = _read_count(root_count[1])
         result = _read_table(lines, 1, count, False, 1, features)
@@ -615,29 +753,36 @@ def _read_document(text: str, features: set[str] | None = None) -> JsonRoot:
         result = parsed
     else:
         result = {}
+        parents: set[int] = set()
         index = 0
         while index < len(lines):
-            match = _ENTRY.fullmatch(lines[index])
+            path, tail = _read_entry(lines[index])
             index += 1
-            if match is None:
-                raise ValueError("Expected root field.")
-            key = _read_key(match[1])
-            rest = match[4]
-            if match[2] is not None or match[3] is not None:
+            if len(path) > 1:
+                has_paths = True
+                if features is not None:
+                    features.add("path")
+            list_count, keyed_count, rest = tail.groups()
+            count_text = list_count if list_count is not None else keyed_count
+            entry: JsonValue
+            if count_text is not None:
                 if rest != "":
                     raise ValueError("Expected a table header.")
-                count = _read_count(match[2] if match[2] is not None else match[3])
-                _set(result, key, _read_table(lines, index, count, match[3] is not None, 2, features))
+                count = _read_count(count_text)
+                entry = _read_table(lines, index, count, keyed_count is not None, len(path) + 1, features)
                 index += count + 1
             else:
                 if not rest.startswith(" "):
                     raise ValueError("Expected scalar field.")
                 if features is not None and rest[1:].startswith('"'):
                     features.add("quoted")
-                _set(result, key, _read_cell(rest[1:]))
-    # Canonical 1.1 text, or canonical 1.0 text from before named cells.
+                entry = _read_cell(rest[1:], path_entry=len(path) > 1)
+            _set_entry_path(result, path, entry, parents)
+    # Whole-document comparison also detects interleaved paths and versions.
     try:
-        canonical = encode(result) == text or encode(result, format="1.0") == text
+        canonical = encode(result) == text if has_paths else (
+            encode(result, format="1.1") == text or encode(result, format="1.0") == text
+        )
     except (TypeError, RecursionError) as error:
         raise ValueError(str(error)) from error
     if not canonical:
