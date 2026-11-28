@@ -9,12 +9,15 @@ it("fits the shared construct combinations and ignores quoted and cell lookalike
   const fitted = (features: string[]): string => Object.entries(SENTENCES)
     .flatMap(([feature, sentence]) => features.includes(feature) ? [sentence] : []).join(" ");
   for (const entry of cases) {
-    const format = encode(decode(entry.text)) === entry.text ? "1.1" : "1.0";
-    assert.equal(encoderRules(decode(entry.text), format), entry.rules, `${entry.name}: source oracle`);
+    if (!entry.features.includes("path")) {
+      const input = decode(entry.text);
+      const format = encode(input, { format: "1.1" }) === entry.text ? "1.1" : "1.0";
+      assert.equal(encoderRules(input, format), entry.rules, `${entry.name}: source oracle`);
+    }
     assert.equal(rulesFor(entry.text), entry.rules, entry.name);
     assert.equal(fitted(entry.features), entry.rules, `${entry.name}: features`);
   }
-  // One document is either 1.0 or 1.1, so the cases cover RULES together.
+  // No document contains every feature, so the cases cover RULES together.
   assert.deepEqual(new Set(cases.flatMap(entry => entry.features)), new Set(Object.keys(SENTENCES)));
   assert.equal(RULES, Object.values(SENTENCES).join(" "));
 });

@@ -32,7 +32,7 @@ const render = (name: string): string => renderContent(read(`${SITE}content/${na
 
 const agents = render('agents.md');
 const docs = docsMarkdown(generated.rules, generated.cheatSheet);
-const spec = read(`${SITE}../../packages/terset/SPEC.md`);
+const spec = readFileSync(new URL('../SPEC.md', import.meta.resolve('@stackdeck/terset')), 'utf8').trim();
 const benchmark = benchmarkMarkdown(bench, claude);
 const llms = render('llms.txt');
 const skill = render('skill/SKILL.md');

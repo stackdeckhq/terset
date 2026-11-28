@@ -32,8 +32,10 @@ it("keeps each format version's own suite, with the newest one matching the spec
   const version = /^Format version (\d+\.\d+)$/m.exec(spec)?.[1];
   assert.ok(version, "SPEC.md must state its format version");
   assert.equal(formatVersion("conformance/"), "1.0");
-  assert.equal(formatVersion("conformance/1.1/"), version);
+  assert.equal(formatVersion("conformance/1.1/"), "1.1");
+  assert.equal(formatVersion("conformance/1.2/"), version);
   const jsonFiles = (directory: string) => readdirSync(new URL(directory, root)).filter(file => file.endsWith(".json")).sort();
   assert.deepEqual(jsonFiles("conformance/"), [...fixtures, "manifest.json"].sort(), "Every fixture file must have JavaScript and Python runners");
   assert.deepEqual(jsonFiles("conformance/1.1/"), ["cases.json", "manifest.json", "rejections.json"], "Every fixture file must have JavaScript and Python runners");
+  assert.deepEqual(jsonFiles("conformance/1.2/"), ["cases.json", "manifest.json", "rejections.json"], "Every fixture file must have JavaScript and Python runners");
 });

@@ -19,11 +19,11 @@ class DecoderErrorTests(unittest.TestCase):
                 decode(case["text"])
             self.assertEqual(str(caught.exception), case["error"])
 
-    def test_one_entry_map_stays_json(self):
+    def test_one_entry_map_stays_json_in_1_1(self):
         row = {f"long_field_{index}": index for index in range(10)}
         value = {"rows": {"a": row}}
         compact = "rows: " + json.dumps(value["rows"], separators=(",", ":"))
         candidate = "rows{1}:\n@key\t" + "\t".join(row) + "\na\t" + "\t".join(str(value) for value in row.values())
         self.assertLess(len(candidate.encode("utf-8")), len(compact.encode("utf-8")))
-        self.assertEqual(encode(value), compact)
+        self.assertEqual(encode(value, format="1.1"), compact)
         self.assertEqual(decode(compact), value)

@@ -97,7 +97,7 @@ export function workloadHeadline(file: RealAccuracyFile): readonly string[] {
   });
   return [
     `Accuracy was level. Every format got ${rangePhrase(file)} questions right on each model.`,
-    `Terset used fewer whole-prompt input tokens overall: ${listPhrase(savings)}, against compact JSON.`,
+    `Terset used fewer whole-prompt input tokens overall: ${listPhrase(savings)}, against compact JSON. These runs used Terset 1.1.`,
     `A sample of ${formatCount(file.questions)} questions is too small to show a difference in accuracy between formats.`,
   ];
 }

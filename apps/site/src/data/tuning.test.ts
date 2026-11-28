@@ -16,7 +16,7 @@ describe('tuning notes', () => {
 
   it('gives the short tuning note the same facts, with counts from the data, in benchmark.md too', () => {
     expect(TUNING_NOTE).toBe(
-      'The rules line was tuned with the 11 sample case shapes and the TOON question set behind this 244-question test in view. So these results are not independent checks of it. The stress questions were frozen on 2026-11-17 before any model call. Format 1.1 came after that. Its named cells were designed to fix sparse-record misses seen in an earlier stress run, and were checked on new data from the same stress generator. So the stress test is not a held-out check of format 1.1. Terset tied for the top score on two of the three models and was one answer behind TOON on Claude Opus 5.5. Nobody tuned the encoder or its rules line on the real data files.',
+      'The rules line was tuned with the 11 sample case shapes and the TOON question set behind this 244-question test in view. So these results are not independent checks of it. The stress questions were frozen on 2026-11-17 before any model call. Format 1.1 came after that. Its named cells were designed to fix sparse-record misses seen in an earlier stress run, and were checked on new data from the same stress generator. So the stress test is not a held-out check of format 1.1. Terset tied for the top score on two of the three models and was one answer behind TOON on Claude Opus 5.5. The Terset 1.1 runs on the real files used the same encoder and rules.',
     );
     // Each fact is the full note's, or one the frozen data folders record in their own README.
     expect(TUNING_DETAIL).toContain('the TOON question set in view');

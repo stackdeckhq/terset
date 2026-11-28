@@ -173,7 +173,7 @@ function modelsPhrase(file: AccuracyFile): string {
 
 /** The sentence that opens the accuracy section. */
 export function accuracyIntro(file: AccuracyFile): string {
-  return `Each model answered the same ${formatCount(file.questions)} questions about the same data, sent in each of four formats.`;
+  return `Each model answered the same ${formatCount(file.questions)} questions about the same data, sent in each of four formats. These runs used Terset 1.1.`;
 }
 
 /** The result in two lines under the tables. Each claim is checked against the data; the overlap line checks its own. */
@@ -204,7 +204,7 @@ export function accuracyOverlapLine(file: AccuracyFile): string {
 /** One line for the home page, where the token savings are shown: the token result first, then the overlap. */
 export function accuracyHomeLine(file: AccuracyFile): string {
   assertClaim(file.models.every((model) => formatRow(model, 'terset').inputTokens < formatRow(model, 'json-compact').inputTokens), 'Terset used fewer input tokens than compact JSON');
-  return `On ${formatCount(file.questions)} questions and ${countWord(file.models.length)} models, Terset used fewer input tokens than compact JSON. ${accuracyRangesOverlap(file)}`;
+  return `On ${formatCount(file.questions)} questions and ${countWord(file.models.length)} models, Terset 1.1 used fewer input tokens than compact JSON. ${accuracyRangesOverlap(file)}`;
 }
 
 /** How each kind of data is named: in the table, and inside a sentence. */
@@ -352,7 +352,7 @@ export function costLine(file: AccuracyFile): string {
 /** How the run was made, in at most five short lines. Inline Markdown: code spans and links. */
 export function accuracyMethod(file: AccuracyFile): readonly string[] {
   return [
-    `Tables use ${formatCount(file.calls)} answered calls from runs on ${runDates(file)}. ${failedCallsLine(file)} Terset ran with fitted rules, which send only the rules each text needs.`,
+    `Tables use ${formatCount(file.calls)} answered calls from runs on ${runDates(file)}. ${failedCallsLine(file)} These runs used Terset 1.1 with fitted rules for each text.`,
     // The short hash fits a phone column; the link keeps the full one.
     `Questions from the open [TOON benchmark](https://github.com/toon-format/toon) (MIT), commit [${file.upstreamSha.slice(0, 7)}](https://github.com/toon-format/toon/commit/${file.upstreamSha}).`,
     'Temperature 0 where the model accepts it, scored by fixed rules with no model judge.',
@@ -377,7 +377,7 @@ export function accuracyReadmeBlock(file: AccuracyFile): string {
     ACCURACY_FORMAT_NOTE,
     accuracyRunsNote(file),
     accuracySummary(file).join('\n'),
-    `${costLine(file)} ${INPUT_TOKENS_LINE} Temperature 0 where the model accepts it. Terset ran with fitted rules, which send only the rules each text needs.`,
+    `${costLine(file)} ${INPUT_TOKENS_LINE} Temperature 0 where the model accepts it. These runs used Terset 1.1 with fitted rules for each text.`,
     `Method and limits: [terset.dev/benchmark](${SITE_URL}/benchmark#accuracy). Every answer and its score: ${publishedLinks(file)}.`,
   ].join('\n\n');
 }

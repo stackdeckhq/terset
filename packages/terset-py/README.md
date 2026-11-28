@@ -19,13 +19,17 @@
 <p align="center"><a href="https://terset.dev">terset.dev</a> · <a href="https://terset.dev/docs">Docs</a> · <a href="https://terset.dev/#b2">Try it with your JSON</a></p>
 <!-- /docs:header -->
 
+The encoder writes Terset 1.2 by default. The decoder still reads formats 1.0
+and 1.1. To write an older format, pass `format="1.1"` or `format="1.0"`
+to `encode`.
+
 <!-- docs:pitch -->
 JSON repeats every key in every record, and a model reads each repeat as input tokens. Terset writes a list of records as one table instead. The keys go in a header once, and each record becomes a row. `decode` turns the text back into the same JSON.
 
-- **Fewer tokens.** Over the 11 benchmark cases, Terset used 26.5% fewer tokens than compact JSON and 6.2% fewer than TOON's best form, counted with the `o200k_base` tokenizer. Claude's own count for Claude Opus 5.5 gives 31.4% and 3.8%. [See the benchmark](#benchmark).
+- **Fewer tokens.** Over the 11 benchmark cases, Terset 1.2 used 26.5% fewer tokens than compact JSON and 6.2% fewer than TOON's best form, counted with the `o200k_base` tokenizer. The saved Claude Opus 5.5 counts for Terset 1.1 show 31.4% and 3.8% fewer tokens. [See the benchmark](#benchmark).
 - **Lossless.** `decode` gives back the same JSON, key order included. The benchmark decodes every Terset output and checks it against its input before counting it.
 - **Uneven records keep their table.** A record can skip a field or hold a list and still be one row.
-- **Same text from JavaScript and Python.** The two packages are separate code, and both pass one conformance suite.
+- **Same text from JavaScript and Python.** Both packages pass the same format tests.
 - **Zero dependencies.** Neither package installs anything else.
 <!-- /docs:pitch -->
 
@@ -184,14 +188,15 @@ Never write Terset by hand. Always use `encode`.
 ## How it works
 
 - **Lists become counted tables.** A list of two or more objects becomes a tab-separated header and one row per record. A named list starts with `name[N]:`. A root table starts with `[N]` on its own line.
-- **Only when smaller.** Compare the list table's header and rows with compact JSON in UTF-8 bytes, then add its count. A tie keeps JSON.
-- **Maps can become keyed tables.** A direct root field with object entries can use `name{N}:`. The first column, `@key`, holds each entry's key. It is not a field. The complete named block must be strictly shorter than `name: JSON`.
-- **Empty cells mean absent.** Empty text is `""`. Null is `null`.
+- **Table size.** Compare a list table's header and rows with compact JSON in UTF-8 bytes, then add the count. A tie keeps JSON.
+- **Maps can become keyed tables.** An object entry can use `name{N}:`. The first column, `@key`, holds each row's key. The complete named block must be shorter than the entry with compact JSON.
+- **Missing fields are absent.** A field that only some rows have can appear as `name=value` after the columns. In format 1.0, an empty cell means absent. Empty text is `""`. Null is `null`.
 - **Quotes keep types.** Text that looks like a number, boolean or null is JSON-quoted, so `"42"` stays text and `42` stays a number.
 - **The `id` column.** A bare `id` header first in a list table marks string ids, so `007` stays `007`. An unflattened first `id` column in a list table that does not meet the string-id rules is written `"id"` and keeps typed cells. Uniform objects can expand into dotted columns. Keyed tables use ordinary typed cells for `id`.
-- **Uniform nested objects become columns.** When every row has the same ordered nested keys, simple keys without dots expand recursively, up to 8 levels, into headers such as `address.city`. A literal dotted field name is quoted. Other nested values stay compact JSON.
-- **Counts are checked.** The decoder rejects missing or extra rows. It accepts only the current canonical format.
-- **Tables only at the top.** Tables are chosen for a root array or the direct fields of a root object. No sorting and no column reordering.
+- **Dotted columns.** When rows share the same ordered nested keys, those keys can become columns such as `address.city`. A literal dotted field name is quoted. Nested values left inside a row cell use compact JSON.
+- **Path entries.** A slash separates nested keys, as in `a/b: 1`. Format 1.2 uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1.
+- **Counts are checked.** The decoder rejects missing or extra rows. It reads the canonical text for formats 1.0, 1.1 and 1.2.
+- **Where tables go.** Tables can appear at the root, under a field or under a path such as `a/b[3]:`. The encoder keeps key and column order.
 
 Full rules: [terset.dev/format](https://terset.dev/format).
 
@@ -211,7 +216,7 @@ Total tokens over all 11 cases. Lower is better. Terset counts include its fitte
 - o200k_base: TOON's best is smaller than Terset on 2 cases: Translation batch; Reviews, long text. The 2 file-list cases hold 57% of Terset's total. Per case, the median saving is 21.5% against compact JSON and 7.3% against TOON's best.
 - Claude: TOON's best is smaller than Terset on 1 case: Deep nested config. The 2 file-list cases hold 56% of Terset's total. Per case, the median saving is 27.9% against compact JSON and 3.5% against TOON's best.
 
-The two counters are the `o200k_base` tokenizer and Claude's own token count for Claude Opus 5.5. They give different numbers for the same text. Open the section below for every case, the input cost and the method.
+The `o200k_base` tokenizer counts Terset 1.2. The saved Claude Opus 5.5 token counts use Terset 1.1. Open the section below for every case, the input cost and the method.
 <!-- /docs:bench-summary -->
 
 <details>
@@ -307,8 +312,8 @@ GPT 6.1 Sol at $2 per million input tokens, context up to 272K, on the
 
 How it was measured:
 
-- The `o200k_base` counts use the `o200k_base` tokenizer, run locally.
-- The Claude counts come from Anthropic's token count endpoint for `claude-opus-5-5`, run on 2026-11-19 UTC.
+- The `o200k_base` counts use the `o200k_base` tokenizer and Terset 1.2, run locally.
+- The Claude counts come from Anthropic's token count endpoint for `claude-opus-5-5`, run on 2026-11-19 UTC with Terset 1.1.
 - Each text is sent as one user message. The same run also counts the one-letter text "a", which comes back as 9 tokens. Its 8 tokens of fixed message framing are taken off every count, assuming "a" itself is 1 token.
 - Every Claude case was made from the same input as the o200k_base case of the same name. The build checks this by comparing the compact JSON counted locally with o200k_base.
 - All 11 case inputs are made-up data in this repository: `apps/site/src/data/count-cases.json`, built by `pnpm cases` from seed 20261117. `pnpm numbers` recounts them with o200k_base.
@@ -317,7 +322,7 @@ How it was measured:
 - Pretty JSON is `JSON.stringify(value, null, 2)`, with a 2-space indent.
 - YAML is the `yaml` package, version 2.9.1, `stringify` with default options.
 - TOON is the `@toon-format/toon` package, version 4.4.0, the smaller of its comma and tab forms for each case.
-- Terset o200k_base counts include `rulesFor(text)`, fitted to each encoded text, once per prompt. The full `RULES` reference is 73 tokens. The Claude counts include `rulesFor(text)`, a newline and the data in one message.
+- Terset o200k_base counts include `rulesFor(text)`, fitted to each encoded text, once per prompt. The full `RULES` reference is 108 tokens. The Claude counts include `rulesFor(text)`, a newline and the data in one message.
 - Each Terset output is decoded and compared with its input before it is counted.
 
 How the cost was worked out:
@@ -347,7 +352,7 @@ Other tokenizers and models will give other counts. Full benchmark with pretty J
 
 ### Answer accuracy
 
-On 244 questions and two models, Terset used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.
+On 244 questions and two models, Terset 1.1 used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.
 
 #### Claude Opus 5.5
 
@@ -374,13 +379,13 @@ Each model ran once, with every format, on 2026-11-19. Each table shows that one
 The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate.
 Against compact JSON, Terset cost 29.6% less on Claude Opus 5.5 and 26.4% less on GPT 6.1 Sol.
 
-Cost is at API list price: input and output tokens times list prices read on 2026-11-17. Input tokens are as each model reported them. Temperature 0 where the model accepts it. Terset ran with fitted rules, which send only the rules each text needs.
+Cost is at API list price: input and output tokens times list prices read on 2026-11-17. Input tokens are as each model reported them. Temperature 0 where the model accepts it. These runs used Terset 1.1 with fitted rules for each text.
 
 Method and limits: [terset.dev/benchmark](https://terset.dev/benchmark#accuracy). Every answer and its score: [2026-11-19](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-19).
 
 ### Stress accuracy
 
-Each model answered 120 harder questions in four groups, sent in each of four formats. Each model ran once, on 2026-11-19. Each cell is that one run.
+Each model answered 120 harder questions in four groups, sent in each of four formats. Each model ran once, on 2026-11-19. Each cell is that one run. These runs used Terset 1.1.
 
 | Format | Claude Opus 5.5 | GPT 6.1 Sol | Claude Haiku 5.5 |
 | --- | --- | --- | --- |
@@ -394,10 +399,10 @@ Of Terset's 10 misses across the three models, 9 were on long lists. On Claude H
 ## When not to use it
 
 <!-- docs:when-not -->
-- **No lists of records.** Config files and deeply nested data stay JSON. Terset sends no rules for them and saves a few tokens at most.
+- **No lists of records.** Small config files can stay close to compact JSON. The config example uses no rules and ties compact JSON on o200k_base.
 - **One-row lists.** A list needs two or more objects to become a table.
 - **Mixed arrays.** A list with any item that is not an object stays JSON.
-- **Nested lists.** Lists of objects inside a record stay JSON inside their cell. Only the top level becomes tables.
+- **Lists inside rows.** A list inside a table row stays JSON in its cell. A list under an object path can have its own table.
 - **Hard limits.** The root must be an object or an array. Numeric `-0` and nesting deeper than 500 levels are explicit errors.
 - **Writing back.** Terset is for the model to read. Ask for answers in JSON.
 <!-- /docs:when-not -->
@@ -405,9 +410,9 @@ Of Terset's 10 misses across the three models, 9 were on long lists. On Claude H
 ## FAQ
 
 <!-- docs:faq -->
-**Is it stable?** Format 1.0 is frozen, and its text still decodes. The encoder writes format 1.1. The packages are at 0.x, so their API can still change.
+**Is it stable?** Format 1.0 is frozen. Formats 1.0 and 1.1 still decode. The encoder writes format 1.2. The packages are at 0.x, so their API can still change.
 
-**Does it change answer accuracy?** Each model answered the same 244 questions in each format. The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate. See [Answer accuracy](#answer-accuracy).
+**Does it change answer accuracy?** Each model answered the same 244 questions in each format. The runs used Terset 1.1. The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate. See [Answer accuracy](#answer-accuracy).
 
 **Do I have to explain the format to the model?** Yes, once per prompt. Send `rulesFor(text)` (`rules_for` in Python) right before the data. It holds only the rules that text needs, and it is empty when the text needs none. For one cached system prompt that serves many texts, send the full `RULES` there instead.
 
@@ -419,16 +424,16 @@ Of Terset's 10 misses across the three models, 9 were on long lists. On Claude H
 <!-- docs:reference -->
 Every function, parameter, error and limit, for JavaScript and Python: [terset.dev/docs](https://terset.dev/docs).
 
-The encoder writes format version 1.1 by default. Text written in format 1.0 still decodes, and `encode` can still write it. That number is separate from the package version, which is still 0.x.
+The encoder writes format version 1.2 by default. Text written in format 1.0 still decodes. Format 1.1 text also decodes. Write 1.1 with `encode(value, { format: "1.1" })` in JavaScript or `encode(value, format="1.1")` in Python. Use `"1.0"` for 1.0 text.
 <!-- /docs:reference -->
 
 <!-- docs:implementations -->
 | Language | Package | Install | Conformance |
 | --- | --- | --- | --- |
-| JavaScript | [@stackdeck/terset](https://www.npmjs.com/package/@stackdeck/terset) | `pnpm add @stackdeck/terset` | Passes the 1.0 and 1.1 suites |
-| Python | [terset](https://pypi.org/project/terset/) | `pip install terset` | Passes the 1.0 and 1.1 suites |
+| JavaScript | [@stackdeck/terset](https://www.npmjs.com/package/@stackdeck/terset) | `pnpm add @stackdeck/terset` | Passes the 1.0, 1.1, and 1.2 suites |
+| Python | [terset](https://pypi.org/project/terset/) | `pip install terset` | Passes the 1.0, 1.1, and 1.2 suites |
 
-The two packages are separate code. Both run the shared suites in the repository: [conformance/](https://github.com/stackdeckhq/terset/tree/main/conformance) for 1.0 and [conformance/1.1/](https://github.com/stackdeckhq/terset/tree/main/conformance/1.1) for 1.1.
+Both packages run the shared test suites at [conformance/](https://github.com/stackdeckhq/terset/tree/main/conformance) for 1.0, [conformance/1.1/](https://github.com/stackdeckhq/terset/tree/main/conformance/1.1) for 1.1, and [conformance/1.2/](https://github.com/stackdeckhq/terset/tree/main/conformance/1.2) for 1.2.
 <!-- /docs:implementations -->
 
 ## For agents

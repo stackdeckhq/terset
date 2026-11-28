@@ -19,7 +19,7 @@ describe("terset", () => {
     const text = roundTrip(value);
     assert.equal(text, 'items[2]:\nid\tn\ts\tyes\ttext\tnil\tempty\tname=value\n1\t2024\t"2024"\ttrue\t"true"\tnull\t""\tmissing=present\n2\t0\t"007"\tfalse\t"false"\t"null"\t""');
     assert.equal(encode(value, { format: "1.0" }), 'items[2]:\nid\tn\ts\tyes\ttext\tnil\tempty\tmissing\n1\t2024\t"2024"\ttrue\t"true"\tnull\t""\tpresent\n2\t0\t"007"\tfalse\t"false"\t"null"\t""\t');
-    assert.equal(RULES, "Tables use tab-separated headers and rows. Empty cells mean absent. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.");
+    assert.equal(RULES, "Tables use tab-separated headers and rows. Empty cells mean absent. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a. Key a/b is field b in object a.");
   });
 
   it("keeps empty, absent and null fields separate", () => {

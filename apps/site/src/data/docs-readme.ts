@@ -211,7 +211,7 @@ function pitch(): string {
   const { o200k, claude } = readmeCounters();
   const open = benchTotals(o200k);
   const own = benchTotals(claude);
-  const tokens = `- **Fewer tokens.** Over the ${String(o200k.cases.length)} benchmark cases, Terset used ${fewer(open.terset, open.json)} fewer tokens than compact JSON and ${fewer(open.terset, open.toon)} fewer than TOON's best form, counted with the \`${o200k.name}\` tokenizer. Claude's own count for ${claude.label} gives ${fewer(own.terset, own.json)} and ${fewer(own.terset, own.toon)}. [See the benchmark](#benchmark).`;
+  const tokens = `- **Fewer tokens.** Over the ${String(o200k.cases.length)} benchmark cases, Terset 1.2 used ${fewer(open.terset, open.json)} fewer tokens than compact JSON and ${fewer(open.terset, open.toon)} fewer than TOON's best form, counted with the \`${o200k.name}\` tokenizer. The saved ${claude.label} counts for Terset 1.1 show ${fewer(own.terset, own.json)} and ${fewer(own.terset, own.toon)} fewer tokens. [See the benchmark](#benchmark).`;
   return [PITCH_INTRO, [tokens, ...PITCH_HIGHLIGHTS.map((item) => `- **${item.title}** ${item.text}`)].join('\n')].join('\n\n');
 }
 
@@ -246,13 +246,13 @@ function benchSummary(): string {
     `Total tokens over all ${String(o200k.cases.length)} cases. Lower is better. Terset counts include its fitted rules line. ${TOON_BEST_NOTE}`,
     [`| Format | ${o200k.name} | ${claude.label} |`, '| --- | --- | --- |', ...rows.map(([name, key]) => `| ${name} | ${formatCount(open[key])} | ${formatCount(own[key])} |`)].join('\n'),
     [o200k, claude].map((counter) => `- ${counterLosses(counter)}`).join('\n'),
-    `The two counters are the \`${o200k.name}\` tokenizer and Claude's own token count for ${claude.label}. They give different numbers for the same text. Open the section below for every case, the input cost and the method.`,
+    `The \`${o200k.name}\` tokenizer counts Terset 1.2. The saved ${claude.label} token counts use Terset 1.1. Open the section below for every case, the input cost and the method.`,
   ].join('\n\n');
 }
 
 /** Short answers to the questions a new reader asks first. */
 function faq(): string {
-  const accuracy = `**Does it change answer accuracy?** Each model answered the same ${formatCount(ACCURACY.questions)} questions in each format. ${accuracyOverlapLine(ACCURACY)} See [Answer accuracy](#answer-accuracy).`;
+  const accuracy = `**Does it change answer accuracy?** Each model answered the same ${formatCount(ACCURACY.questions)} questions in each format. The runs used Terset 1.1. ${accuracyOverlapLine(ACCURACY)} See [Answer accuracy](#answer-accuracy).`;
   return [FAQ_STABLE, accuracy, FAQ_RULES, FAQ_NAME].join('\n\n');
 }
 

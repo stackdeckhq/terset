@@ -31,7 +31,7 @@ it("writes every format 1.0 shared case as 1.1 text that round trips", () => {
   const cases = JSON.parse(readFileSync(new URL("../../../conformance/cases.json", import.meta.url), "utf8")) as SharedCase[];
   for (const entry of cases) {
     const { input } = expandCase(entry);
-    const current = encode(input);
+    const current = encode(input, { format: "1.1" });
     assert.equal(JSON.stringify(decode(current)), JSON.stringify(input), entry.name);
     assert.equal(rulesFor(current), encoderRules(input), entry.name);
   }

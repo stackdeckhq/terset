@@ -20,6 +20,7 @@ import { StressAccuracyFileSchema } from '../src/data/accuracy-stress-schema.ts'
 import { REAL_ACCURACY_OUTPUT, realAccuracyText } from './accuracy-real.ts';
 import { REAL_400_ACCURACY_OUTPUT, real400AccuracyText } from './accuracy-real-400.ts';
 import { RunFile, equalField, questionSet, runScores, validateRun, wilson95 } from './accuracy-runs.ts';
+import { WEATHER_12_ACCURACY_OUTPUT, weather12AccuracyText } from './accuracy-weather-12.ts';
 import { STRESS_OUTPUT, STRESS_PUBLISHED_RUNS, stressAccuracyText, updateStressReadme } from './accuracy-stress.ts';
 
 export { wilson95 };
@@ -177,11 +178,13 @@ export function accuracyText(): string {
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const realText = realAccuracyText();
   const real400Text = real400AccuracyText();
+  const weather12Text = weather12AccuracyText();
   writeFileSync(OUTPUT, accuracyText());
   const stressText = stressAccuracyText();
   writeFileSync(STRESS_OUTPUT, stressText);
   writeFileSync(REAL_ACCURACY_OUTPUT, realText);
   writeFileSync(REAL_400_ACCURACY_OUTPUT, real400Text);
+  writeFileSync(WEATHER_12_ACCURACY_OUTPUT, weather12Text);
   const stress = StressAccuracyFileSchema.parse(JSON.parse(stressText));
   const { ACCURACY, accuracyReadmeBlock } = await import('../src/data/accuracy.ts');
   for (const path of ['README.md', 'packages/terset/README.md', 'packages/terset-py/README.md']) {
@@ -192,4 +195,5 @@ if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.a
   }
   console.log(`Updated accuracy data and README tables from ${String(PUBLISHED_RUNS.length)} TOON runs and ${String(STRESS_PUBLISHED_RUNS.length)} stress runs.`);
   console.log('Updated real accuracy data for the 40-question and 400-question suites.');
+  console.log('Updated the weather accuracy comparison for Terset 1.2.');
 }

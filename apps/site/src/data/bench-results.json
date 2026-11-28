@@ -1,7 +1,7 @@
 {
   "status": "ready",
   "tokenizer": "o200k_base",
-  "rulesTokens": 98,
+  "rulesTokens": 108,
   "yamlVersion": "2.9.1",
   "cases": [
     {

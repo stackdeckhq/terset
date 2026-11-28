@@ -9,6 +9,7 @@ import { REAL } from '../data/real.ts';
 import { REAL_ACCURACY } from '../data/real-accuracy.ts';
 import { REAL_400_ACCURACY } from '../data/real-400-accuracy.ts';
 import type { Real400AccuracyFile } from '../data/real-400-accuracy-schema.ts';
+import { WEATHER_12_ACCURACY } from '../data/weather-12-accuracy.ts';
 import { pairedGroups } from '../data/workload-400.ts';
 import { WorkloadPage } from './Workload.tsx';
 import { Real400Sections } from './Workload400.tsx';
@@ -17,7 +18,7 @@ const ROUTE = readFileSync(new URL('../routes/workload.tsx', import.meta.url), '
 const VIEW = readFileSync(new URL('./Workload400.tsx', import.meta.url), 'utf8');
 
 function render(file: Real400AccuracyFile): string {
-  return renderToStaticMarkup(createElement(Real400Sections, { file }));
+  return renderToStaticMarkup(createElement(Real400Sections, { file, weather12: WEATHER_12_ACCURACY }));
 }
 
 /** The text without tags or entities, so a number or a quote split by markup still reads as one. */
@@ -96,7 +97,7 @@ describe('/workload 400-question sections', () => {
   });
 
   it('comes after the 40-question content, with a link to it from the top of the page', () => {
-    const page = renderToStaticMarkup(createElement(WorkloadPage, { file: REAL_ACCURACY, real: REAL, real400: REAL_400_ACCURACY }));
+    const page = renderToStaticMarkup(createElement(WorkloadPage, { file: REAL_ACCURACY, real: REAL, real400: REAL_400_ACCURACY, weather12: WEATHER_12_ACCURACY }));
     expect(page).toContain('href="#q400"');
     expect(page.indexOf('id="q400"')).toBeGreaterThan(page.indexOf('id="raw"'));
     expect(page.match(/<h1\b/gu)).toHaveLength(1);

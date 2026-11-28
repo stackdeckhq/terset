@@ -28,6 +28,16 @@ afterEach(async () => {
 const client = (): ReturnType<typeof fakeClient> => fakeClient(prompt => tasks.find(t => t.prompt.user === prompt.user)?.question.groundTruth ?? 'FAKE');
 
 describe('budget guards and saved results', () => {
+  it('uses the saved format when the CLI resumes an older run', async () => {
+    const path = await directory();
+    const args = ['--run-id', 'old-format', '--limit', '1', '--formats', 'terset'];
+    await main([...args, '--terset-format', '1.1', '--max-calls', '0'], () => {}, path);
+    await main(args, () => {}, path);
+    const saved: unknown = JSON.parse(await readFile(join(path, 'old-format.json'), 'utf8'));
+    expect(saved).toMatchObject({ tersetFormat: '1.1', status: 'complete' });
+    expect(await readFile(join(path, 'old-format.md'), 'utf8')).toContain('Terset format: 1.1.');
+    await expect(main([...args, '--terset-format', '1.2'], () => {}, path)).rejects.toThrow('Terset format differs');
+  });
   it('compares equal complete question sets after a failed call and a budget stop', async () => {
     const fake = client();
     const original = fake.ask.bind(fake);

@@ -1,7 +1,7 @@
 import { rulesFor, decode as decodeTerset, encode as encodeTerset } from '@stackdeck/terset';
 import { decode as decodeToon, encode as encodeToon } from '@toon-format/toon';
 import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
-import { jsonRootSchema } from './schema.ts';
+import { DEFAULT_TERSET_FORMAT, jsonRootSchema } from './schema.ts';
 import type { Corruption, Dataset, Format, JsonRoot, Question, TersetFormat } from './schema.ts';
 
 // JSON and TOON primers are copied verbatim from the upstream benchmark.
@@ -17,7 +17,7 @@ export function primerFor(format: Format, validText: string): string {
   return PRIMERS[format];
 }
 
-export function encode(format: Format, data: JsonRoot, tersetFormat: TersetFormat = '1.1'): string {
+export function encode(format: Format, data: JsonRoot, tersetFormat: TersetFormat = DEFAULT_TERSET_FORMAT): string {
   switch (format) {
     case 'json-compact': return JSON.stringify(data);
     case 'json-pretty': return JSON.stringify(data, null, 2);
@@ -79,7 +79,7 @@ function corruptJson(data: Dataset['data'], corruption: Corruption): Dataset['da
 
 // Keep table headers intact while editing the encoded record rows. This mirrors
 // the upstream corruption seam. JSON keeps valid framing after the edit.
-export function encodeDataset(format: Format, dataset: Dataset, tersetFormat: TersetFormat = '1.1'): string {
+export function encodeDataset(format: Format, dataset: Dataset, tersetFormat: TersetFormat = DEFAULT_TERSET_FORMAT): string {
   const text = encode(format, dataset.data, tersetFormat);
   const corruption = dataset.corruption;
   if (!corruption || corruption.kind === 'control') return text;

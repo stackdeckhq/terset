@@ -5,8 +5,8 @@ import fakeModel from '../fixtures/fake-model.json' with { type: 'json' };
 import { fakeClient, httpClient } from './clients.ts';
 import { loadSuite, selectQuestions, suiteNameSchema, SuiteUnavailableError } from './data.ts';
 import { describePlan, plan } from './plan.ts';
-import { run } from './runner.ts';
-import { configSchema, FORMATS, isReal400Suite, modelSchema, selectedFormatsSchema, tersetFormatSchema } from './schema.ts';
+import { readSavedRun, run } from './runner.ts';
+import { configSchema, DEFAULT_TERSET_FORMAT, FORMATS, isReal400Suite, modelSchema, selectedFormatsSchema, tersetFormatSchema } from './schema.ts';
 import type { Budgets } from './schema.ts';
 
 function integer(value: string | undefined, fallback: number, name: string, allowZero = true): number {
@@ -17,7 +17,8 @@ function integer(value: string | undefined, fallback: number, name: string, allo
   return number;
 }
 
-export async function main(args: string[], log: (text: string) => void = console.log): Promise<void> {
+export async function main(args: string[], log: (text: string) => void = console.log,
+  directory = fileURLToPath(new URL('../results/', import.meta.url))): Promise<void> {
   const { values } = parseArgs({ args, options: {
     'dry-run': { type: 'boolean' }, fake: { type: 'boolean' }, http: { type: 'boolean' },
     config: { type: 'string' }, 'run-id': { type: 'string' }, limit: { type: 'string' },
@@ -28,7 +29,7 @@ export async function main(args: string[], log: (text: string) => void = console
   } });
   if (values.help) {
     log('pnpm bench [--dry-run] [--fake | --http --config FILE] [--run-id ID] [--limit N]\n'
-      + `  --suite ${suiteNameSchema.options.join('|')} --formats a,b,c --datasets a,b --terset-format 1.0|1.1\n`
+      + `  --suite ${suiteNameSchema.options.join('|')} --formats a,b,c --datasets a,b --terset-format ${tersetFormatSchema.options.join('|')}\n`
       + '  --max-calls N --max-input-tokens N --max-output-tokens N --per-call-max-output-tokens N\n'
       + 'Fake mode is the default. HTTP mode requires explicit config and all four budget flags.');
     return;
@@ -45,7 +46,12 @@ export async function main(args: string[], log: (text: string) => void = console
   const formats = values.formats === undefined ? FORMATS : selectedFormatsSchema.parse(values.formats.split(','));
   const suite = loadSuite(suiteNameSchema.parse(values.suite ?? 'toon'));
   const datasets = values.datasets?.split(',');
-  const tersetFormat = tersetFormatSchema.parse(values['terset-format'] ?? '1.1');
+  const saved = values['run-id'] === undefined ? undefined : await readSavedRun(directory, values['run-id']);
+  const requested = tersetFormatSchema.optional().parse(values['terset-format']);
+  if (saved?.tersetFormat !== undefined && requested !== undefined && saved.tersetFormat !== requested) {
+    throw new Error('Terset format differs from the saved run');
+  }
+  const tersetFormat = saved?.tersetFormat ?? requested ?? (saved ? '1.1' : DEFAULT_TERSET_FORMAT);
   const tasks = plan(config.models, selectQuestions(limit, datasets, suite), formats, suite.datasets, tersetFormat);
   const defaultOutputCap = isReal400Suite(suite.name) ? 8192 : 128;
   const perCallMaxOutputTokens = integer(values['per-call-max-output-tokens'], defaultOutputCap, 'per-call max output tokens', false);
@@ -62,7 +68,6 @@ export async function main(args: string[], log: (text: string) => void = console
   const client = mode === 'http' ? httpClient({ maxOutputTokens: budgets.perCallMaxOutputTokens })
     : fakeClient(prompt => answers.get(prompt.user) ?? 'FAKE', budgets.perCallMaxOutputTokens);
   const runId = values['run-id'] ?? `${mode}-${new Date().toISOString().replaceAll(/[^a-zA-Z0-9]/g, '')}`;
-  const directory = fileURLToPath(new URL('../results/', import.meta.url));
   const result = await run({ runId, directory, tasks, client, mode, budgets, inputReservation: config.inputReservation, suite, tersetFormat });
   log(`${result.status}: ${result.rows.length}/${result.plannedCalls} recorded; reason: ${result.reason ?? 'none'}`);
   log(`Results: ${directory}${runId}.json\nSummary: ${directory}${runId}.md`);

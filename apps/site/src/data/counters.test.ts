@@ -87,7 +87,7 @@ describe('Claude counts paired with the bench file', () => {
     const text = (full.slice(0, start) + full.slice(end)).replace(stressLine, '');
     expect(text).not.toContain('Claude');
     expect(text.match(/^\| Case \| Terset \| Compact JSON \| Pretty JSON/gmu)).toHaveLength(1);
-    expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than TOON in 9 of 11 cases.`);
+    expect(countersHeadline(bench(), counters)).toBe('Fewer tokens than TOON in 9 of 11 cases.');
   });
 
   it('fails clearly on a missing case row', () => {

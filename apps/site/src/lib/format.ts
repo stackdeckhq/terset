@@ -2,14 +2,13 @@
 // decode, RULES and every piece of Terset syntax from here, never from the
 // package. When the format changes, this file and the generated samples are
 // what change. Everything below "Syntax" mirrors packages/terset/SPEC.md.
-import { RULES, decode, encode, rulesFor } from '@stackdeck/terset';
-import type { FormatVersion, JsonObject, JsonRoot, JsonValue } from '@stackdeck/terset';
+import type { JsonValue } from '@stackdeck/terset';
 import { PACKAGE_NAME } from '../data/site.ts';
 import { hlJson, NUM, span } from './highlight.ts';
 import { esc } from './text.ts';
 
-export { RULES, decode, encode, rulesFor };
-export type { FormatVersion, JsonObject, JsonRoot, JsonValue };
+export { RULES, decode, encode, rulesFor } from '@stackdeck/terset';
+export type { FormatVersion, JsonObject, JsonRoot, JsonValue } from '@stackdeck/terset';
 
 /** The package's import line, as the docs and the prompt step show it. */
 export const IMPORT_LINE = `import { encode, decode, rulesFor } from "${PACKAGE_NAME}";`;
@@ -22,7 +21,9 @@ export const RULES_PLACEMENT = 'Send rulesFor(text) right before the data. A sha
 
 // Syntax
 
-const ENTRY = /^("(?:[^"\\]|\\.)*"|[A-Za-z_$][A-Za-z0-9_$.-]*)(?:\[(\d+)\]|\{(\d+)\})?:([\s\S]*)$/u;
+const ENTRY_KEY = /"(?:[^"\\]|\\.)*"|[A-Za-z_$][A-Za-z0-9_$.-]*/gu;
+const ENTRY_SEGMENT = String.raw`(?:${ENTRY_KEY.source})`;
+const ENTRY = new RegExp(String.raw`^(${ENTRY_SEGMENT}(?:/${ENTRY_SEGMENT})*)(?:\[(\d+)\]|\{(\d+)\})?:([\s\S]*)$`, 'u');
 export const CELL_SEPARATOR = '\t';
 /** A short name for the cell separator, for prose. */
 export const CELL_SEPARATOR_NAME = 'tab';
@@ -368,7 +369,9 @@ export function tersetKeyTally(text: string): Map<string, number> {
   };
   let keyed = false;
   for (const line of tokenize(text)) {
-    if (line.key !== undefined) add(fieldName(line.key));
+    if (line.key !== undefined) {
+      for (const [segment] of line.key.matchAll(ENTRY_KEY)) add(fieldName(segment));
+    }
     if (line.kind === 'header') {
       keyed = line.cells[0] === '@key';
       for (const cell of line.cells.slice(keyed ? 1 : 0, line.positional)) {

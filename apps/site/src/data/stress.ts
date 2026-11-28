@@ -142,7 +142,7 @@ export function stressIntro(file: StressAccuracyFile): string {
 
 /** How many runs each cell comes from, shared with the README. */
 export function stressRunsNote(file: StressAccuracyFile): string {
-  const note = `Each model ran once, on ${stressRunDates(file)}. Each cell is that one run.`;
+  const note = `Each model ran once, on ${stressRunDates(file)}. Each cell is that one run. These runs used Terset 1.1.`;
   assertClaim(file.publishedRuns.length === file.models.length && file.models.every((model) => file.publishedRuns.filter((run) => run.model === model.id).length === 1), note);
   return note;
 }

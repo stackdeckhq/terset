@@ -20,8 +20,10 @@ import {
   wrongAnswerRows,
 } from '../data/workload.ts';
 import type { Real400AccuracyFile } from '../data/real-400-accuracy-schema.ts';
+import type { Weather12AccuracyFile } from '../data/weather-12-accuracy.ts';
 import { DocPage } from './DocPage.tsx';
 import { REAL_400_ANCHOR, Real400Sections } from './Workload400.tsx';
+import { Weather12Sections } from './WorkloadWeather12.tsx';
 import { Lines, ModelTable, Text } from './WorkloadParts.tsx';
 
 export const WORKLOAD_TITLE = 'Accuracy on real files';
@@ -31,9 +33,11 @@ export interface WorkloadPageProps {
   readonly real: RealData;
   /** The 400-question run on the same files, shown after the 40-question content. */
   readonly real400: Real400AccuracyFile;
+  /** The weather file again with Terset 1.2, shown right after the 400-question run. */
+  readonly weather12: Weather12AccuracyFile;
 }
 
-export function WorkloadPage({ file, real, real400 }: WorkloadPageProps) {
+export function WorkloadPage({ file, real, real400, weather12 }: WorkloadPageProps) {
   const frozenOn = [...new Set(real.files.map((item) => item.fetched))].join(' and ');
   const wrong = wrongAnswerRows(file);
   const answers = file.questions * file.formats.length * file.models.length;
@@ -167,7 +171,8 @@ export function WorkloadPage({ file, real, real400 }: WorkloadPageProps) {
           </Text>
         </section>
 
-        <Real400Sections file={real400} />
+        <Real400Sections file={real400} weather12={weather12} />
+        <Weather12Sections file={weather12} />
       </div>
     </DocPage>
   );

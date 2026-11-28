@@ -96,8 +96,10 @@ export const encodersSchema = z.object({
 }).strict();
 export type Encoders = z.infer<typeof encodersSchema>;
 /** The Terset format version a run encoded with. Runs without the field predate 1.1 and used 1.0. */
-export const tersetFormatSchema = z.enum(['1.0', '1.1']);
+export const tersetFormatSchema = z.enum(['1.0', '1.1', '1.2']);
 export type TersetFormat = z.infer<typeof tersetFormatSchema>;
+// Published runs used format 1.1.
+export const DEFAULT_TERSET_FORMAT = '1.2' satisfies TersetFormat;
 export const resultSchema = z.object({
   version: z.literal(1), runId: runIdSchema, fingerprint: z.string(),
   suite: suiteNameSchema.optional(),

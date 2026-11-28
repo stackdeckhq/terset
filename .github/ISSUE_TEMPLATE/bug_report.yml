@@ -7,7 +7,7 @@ body:
     attributes:
       label: Package and version
       description: Give the package name and version for @stackdeck/terset on npm or terset on PyPI, or say if the bug is on the site.
-      placeholder: '@stackdeck/terset 0.3.1 (npm) or terset 0.3.1 (PyPI)'
+      placeholder: '@stackdeck/terset 0.4.0 (npm) or terset 0.4.0 (PyPI)'
     validations:
       required: true
   - type: input

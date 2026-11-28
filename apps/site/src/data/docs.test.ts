@@ -148,19 +148,26 @@ describe('README blocks', () => {
 });
 
 describe('when not to use it', () => {
-  it('says what the counts show for data with no table: no rules and a few tokens saved at most', () => {
+  it('shows why the two config examples stay close to compact JSON', () => {
     const [noLists] = WHEN_NOT;
-    expect(noLists?.text).toBe('Config files and deeply nested data stay JSON. Terset sends no rules for them and saves a few tokens at most.');
-    expect(rulesFor(encode(SAMPLES.config))).toBe('');
+    expect(noLists?.text).toBe('Small config files can stay close to compact JSON. The config example uses no rules and ties compact JSON on o200k_base.');
+    const config = encode(SAMPLES.config);
+    expect(config).toBe(encode(SAMPLES.config, { format: '1.1' }));
+    expect(rulesFor(config)).toBe('');
     if (COUNTERS === null || COUNTERS.claude === null) throw new Error('the bench or the Claude counts are pending');
-    for (const counter of [COUNTERS.o200k, COUNTERS.claude]) {
-      const nested = counter.cases.find((row) => row.name === 'Deep nested config');
-      if (nested === undefined) throw new Error(`${counter.name} has no deep nested config case`);
-      for (const trio of [counter.samples.config, nested]) {
-        expect(trio.json - trio.terset, counter.name).toBeGreaterThanOrEqual(0);
-        expect(trio.json - trio.terset, counter.name).toBeLessThanOrEqual(5);
-      }
-    }
+    expect(COUNTERS.o200k.samples.config).toMatchObject({ json: 99, terset: 99 });
+    expect(COUNTERS.o200k.cases.find((row) => row.name === 'Deep nested config')).toMatchObject({ json: 251, terset: 250 });
+  });
+});
+
+describe('cheat sheet', () => {
+  it('shows a real path entry in the path example', () => {
+    const example = CHEAT_SHEET.find((input) => input.id === 'path');
+    if (example === undefined) throw new Error('the path example is missing');
+    const text = encode(example.value);
+    expect(text.split('\n')[0]).toBe('forecast/hours[6]:');
+    expect(text).not.toBe(encode(example.value, { format: '1.1' }));
+    expect(example.about).toContain('`forecast/hours`');
   });
 });
 
@@ -177,12 +184,17 @@ describe('package facts', () => {
   });
 
   it('explains why keyed maps compare the complete field', () => {
-    const value = { m: { a: { a: 1, b: 2 }, b: { b: 2, c: 1 } } };
-    const fallback = `m: ${JSON.stringify(value.m)}`;
+    const value = { longRootName: { a: { a: 1, b: 2 }, b: { b: 2, c: 1 } } };
+    const fallback = `longRootName: ${JSON.stringify(value.longRootName)}`;
     expect(encode(value)).toBe(fallback);
     expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(value)}))`)).toBe(fallback);
     const summary = API.find((entry) => entry.id === 'encode')?.summary;
     expect(summary).toContain('A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON.');
+    const rows = Array.from({ length: 44 }, () => ({ v: 1 }));
+    const shorterName = { m: value.longRootName, t: { rows } };
+    const paths = 'm/a/a: 1\nm/a/b: 2\nm/b/b: 2\nm/b/c: 1\nt/rows[44]:\nv' + '\n1'.repeat(rows.length);
+    expect(encode(shorterName)).toBe(paths);
+    expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(shorterName)}))`)).toBe(paths);
   });
 
   it('matches each package version, runtime and export list', () => {
@@ -215,9 +227,10 @@ describe('package facts', () => {
   });
 
   it('lists only error messages that both packages raise word for word', () => {
-    const js = read('packages/terset/src/terset.ts');
+    const js = [read('packages/terset/src/terset.ts'), read('packages/terset/src/entry-syntax.ts')];
     const py = read('packages/terset-py/src/terset/_terset.py');
-    const missing = ERROR_MESSAGES.map((item) => item.message).filter((message) => !js.includes(message) || !py.includes(message));
+    const missing = ERROR_MESSAGES.map((item) => item.message)
+      .filter((message) => !js.some((source) => source.includes(message)) || !py.includes(message));
     expect(missing).toEqual([]);
   });
 });

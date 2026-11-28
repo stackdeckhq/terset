@@ -25,10 +25,10 @@ it.each([
     fingerprintHash: '14790263b736f7cf035bbea11797745bfad077fdbec8d340dbba7db96f5a8090',
     planHash: 'ac3b76fcebbfd218bc9db3c7f63e2d85ecf1abaa0f989748cec93618fc5179eb',
   },
-] as const)('keeps the frozen $name inputs, full plan and fingerprint from main', ({ name, datasetsHash, questionsHash, fingerprintHash, planHash }) => {
+] as const)('keeps the frozen $name inputs, format 1.1 plan and fingerprint', ({ name, datasetsHash, questionsHash, fingerprintHash, planHash }) => {
   const suite = loadSuite(name);
   expect(suite.hashes).toEqual({ 'datasets.json': datasetsHash, 'questions.json': questionsHash });
-  const tasks = plan([modelSchema.parse(fakeModel)], selectQuestions(undefined, undefined, suite), undefined, suite.datasets);
+  const tasks = plan([modelSchema.parse(fakeModel)], selectQuestions(undefined, undefined, suite), undefined, suite.datasets, '1.1');
   expect(fingerprint(tasks, 'fake', 128, suite)).toBe(fingerprintHash);
   expect(hash(describePlan(tasks))).toBe(planHash);
 });

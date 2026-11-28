@@ -172,14 +172,11 @@ describe('bench numbers', () => {
   });
 
   // The page and benchmark.md add the real files where another format wins, and the stable stress misses.
-  it('adds the real NWS file and the Claude Haiku 5.5 long-list misses to the full keep-else list', () => {
+  it('omits the real files that use fewer tokens and adds the Claude Haiku 5.5 long-list misses', () => {
     const all = benchmarkKeepElseAll(BENCH_FILE, COUNTERS);
     expect(all.slice(0, benchmarkKeepElse(BENCH_FILE, COUNTERS).length)).toEqual(benchmarkKeepElse(BENCH_FILE, COUNTERS));
-    expect(realKeepElse(REAL)).toEqual([
-      // The same 9.7% the real data table shows, not the 8.8% the other base would give.
-      "Real data, NWS forecast grid, nested: Terset has 9.7% more tokens than TOON's best (34,068 vs 31,062). Terset has 1 more token than compact JSON (34,068 vs 34,067).",
-    ]);
-    expect(all).toContain(realKeepElse(REAL)[0]);
+    expect(realKeepElse(REAL)).toEqual([]);
+    expect(all).toHaveLength(benchmarkKeepElse(BENCH_FILE, COUNTERS).length + 1);
     expect(all.at(-1)).toBe('Long lists on Haiku: Terset got 24 of 30 questions, where pretty JSON got 27.');
     expect(benchmarkMarkdown(BENCH_FILE, CLAUDE_FILE)).toContain(`## When to keep something else\n\n${all.map((line) => `- ${line}`).join('\n')}\n`);
   });

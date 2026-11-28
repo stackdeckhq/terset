@@ -271,7 +271,7 @@ export function smallerThanToon(file: AccuracyFile, counters: Counters | null): 
     total,
     text: `Smaller than TOON on ${String(smaller)} of ${String(total)} data sets`,
     tokenizer: OPENAI_TOKENIZER,
-    note: `The ${String(cases.length)} sample cases on o200k_base and the ${String(rows.length)} benchmark data sets as ${model.name} reported them.`,
+    note: `The ${String(cases.length)} offline sample cases use Terset 1.2 on o200k_base. The ${String(rows.length)} benchmark data sets use Terset 1.1 as ${model.name} reported them.`,
   };
 }
 
@@ -308,7 +308,7 @@ export function homeHeadline(bench: BenchFile, counters: Counters | null, id: Co
   if (json * 2 <= total) throw new Error(`The home headline needs Terset under compact JSON in most cases, but ${where} compact JSON in ${String(json)} of ${String(total)}`);
   return {
     title: `Fewer tokens than TOON in ${String(toon)} of ${String(total)} cases.`,
-    tag: id === 'o200k' ? OPENAI_TOKENIZER : counter.label,
+    tag: id === 'o200k' ? OPENAI_TOKENIZER : `${counter.label}, Terset 1.1`,
     line: `Fewer than compact JSON in ${String(json)} of ${String(total)}.`,
   };
 }

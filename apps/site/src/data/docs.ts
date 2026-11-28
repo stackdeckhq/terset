@@ -44,7 +44,7 @@ const PACKAGE_SERIES = ((): string => {
   return `${major}.x`;
 })();
 
-export const FORMAT_LINE = `The encoder writes format version ${DEFAULT_FORMAT} by default. Text written in format ${FROZEN_FORMAT} still decodes, and \`encode\` can still write it. That number is separate from the package version, which is still ${PACKAGE_SERIES}.`;
+export const FORMAT_LINE = `The encoder writes format version ${DEFAULT_FORMAT} by default. Text written in format ${FROZEN_FORMAT} still decodes. Format 1.1 text also decodes. Write 1.1 with \`encode(value, { format: "1.1" })\` in JavaScript or \`encode(value, format="1.1")\` in Python. Use \`"1.0"\` for 1.0 text.`;
 export const VERSION_LINE = `Version ${PACKAGE_VERSION} for JavaScript and Python. ${FORMAT_LINE}`;
 
 /** The sections of /docs, in order. The page, its contents list and /docs.md share them. */
@@ -156,7 +156,7 @@ export const IMPLEMENTATIONS_HEAD: readonly string[] = ['Language', 'Package', '
 export const IMPLEMENTATIONS_ROWS: readonly (readonly string[])[] = IMPLEMENTATIONS.map((row) => [row.language, `[${row.packageName}](${row.href})`, `\`${row.install}\``, `Passes the ${VERSIONS_TEXT} suites`]);
 
 /** Where the suites live, with a link to each. */
-export const IMPLEMENTATIONS_NOTE = `The two packages are separate code. Both run the shared suites in the repository: ${CONFORMANCE_SUITES.map((suite) => `[${suite.path}](${suite.url}) for ${suite.version}`).join(' and ')}.`;
+export const IMPLEMENTATIONS_NOTE = `Both packages run the shared test suites at ${new Intl.ListFormat('en').format(CONFORMANCE_SUITES.map((suite) => `[${suite.path}](${suite.url}) for ${suite.version}`))}.`;
 
 /** The list as Markdown, for /docs.md and the READMEs. */
 export function implementationsMarkdown(): string {
@@ -312,6 +312,23 @@ export const CHEAT_SHEET: readonly CheatInput[] = [
     },
   },
   {
+    id: 'path',
+    title: 'Path entries',
+    about: 'A slash separates nested keys, so `forecast/hours` is the list `hours` inside `forecast`. Format 1.2 uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1. A smaller document keeps the nested object as JSON.',
+    value: {
+      forecast: {
+        hours: [
+          { time: '06:00', temperature: 11, humidity: 82, windSpeed: 9, windDirection: 'NW', precipitation: 0 },
+          { time: '09:00', temperature: 14, humidity: 74, windSpeed: 12, windDirection: 'NW', precipitation: 0 },
+          { time: '12:00', temperature: 18, humidity: 61, windSpeed: 15, windDirection: 'W', precipitation: 0 },
+          { time: '15:00', temperature: 19, humidity: 58, windSpeed: 17, windDirection: 'W', precipitation: 0.2 },
+          { time: '18:00', temperature: 16, humidity: 67, windSpeed: 11, windDirection: 'SW', precipitation: 1.4 },
+          { time: '21:00', temperature: 13, humidity: 79, windSpeed: 8, windDirection: 'SW', precipitation: 0.6 },
+        ],
+      },
+    },
+  },
+  {
     id: 'scalars',
     title: 'Scalars and escaping',
     about: 'Text that looks like a number, boolean or null gets JSON quotes. So do empty text and escapes.',
@@ -331,11 +348,12 @@ export const RULES_PARTS: readonly { readonly when: string; readonly adds: strin
   { when: 'Any table is present', adds: 'The tables sentence.' },
   { when: 'A table cell is empty (format 1.0 text)', adds: 'The empty cells sentence.' },
   { when: 'A table header ends with `name=value`', adds: 'The `name=value` sentence.' },
-  { when: 'A table cell or root value is a quoted string', adds: 'The quotes sentence.' },
+  { when: 'A table cell or entry value is a quoted string', adds: 'The quotes sentence.' },
   { when: 'A table cell holds a JSON array or object', adds: 'The nested cells sentence.' },
   { when: 'A list table starts with a bare `id` header', adds: 'The `id` header sentence.' },
   { when: 'A keyed table `name{N}` is present', adds: 'The `@key` sentence.' },
   { when: 'A dotted header `a.b` is present', adds: 'The dotted header sentence.' },
+  { when: 'An entry has a slash between keys, as in `a/b`', adds: 'The path entry sentence.' },
   { when: 'None of these', adds: 'Nothing. The rules are an empty string.' },
 ];
 
@@ -345,6 +363,7 @@ export const LIMITS: readonly { readonly limit: string; readonly value: string }
   { limit: 'Root', value: 'An object or an array. A bare scalar is an error.' },
   { limit: 'JSON depth', value: '500 levels at most.' },
   { limit: 'Dotted header path', value: '8 segments at most. Anything deeper stays JSON inside the cell.' },
+  { limit: 'Slash-separated entry path', value: '8 segments at most. Deeper fields stay in the last entry value.' },
   { limit: 'Table size', value: 'Two or more records. One record stays JSON.' },
   { limit: 'Numbers', value: 'Finite, and not negative zero.' },
   { limit: 'Python integers', value: 'Exactly representable as a binary64 float.' },
@@ -359,7 +378,8 @@ export const ERROR_KINDS: readonly { readonly call: string; readonly js: string;
 export const ERROR_MESSAGES: readonly { readonly message: string; readonly cause: string }[] = [
   { message: 'Row count mismatch.', cause: 'A table has more or fewer rows than its count.' },
   { message: 'Wrong cell count.', cause: 'A row has more or fewer cells than its header.' },
-  { message: 'Noncanonical Terset text.', cause: 'The text decodes, but `encode` would write it another way.' },
+  { message: 'Noncanonical Terset text.', cause: 'No supported format version writes the value this way.' },
+  { message: 'Maximum entry path is 8 segments.', cause: 'An entry path has more than eight keys.' },
   { message: 'Maximum JSON depth is 500.', cause: 'The data nests deeper than 500 levels.' },
   { message: 'Numbers must be finite and must not be negative zero.', cause: 'A number is `NaN`, infinite or `-0`.' },
   { message: 'Cyclic JSON data.', cause: 'An object or list contains itself.' },
@@ -371,10 +391,10 @@ export const DEPTH_NOTE = 'In Python, very deep data and an already deep call st
 // 7. When not to use it. Shared word for word with both package READMEs.
 
 export const WHEN_NOT: readonly { readonly title: string; readonly text: string }[] = [
-  { title: 'No lists of records.', text: 'Config files and deeply nested data stay JSON. Terset sends no rules for them and saves a few tokens at most.' },
+  { title: 'No lists of records.', text: 'Small config files can stay close to compact JSON. The config example uses no rules and ties compact JSON on o200k_base.' },
   { title: 'One-row lists.', text: 'A list needs two or more objects to become a table.' },
   { title: 'Mixed arrays.', text: 'A list with any item that is not an object stays JSON.' },
-  { title: 'Nested lists.', text: 'Lists of objects inside a record stay JSON inside their cell. Only the top level becomes tables.' },
+  { title: 'Lists inside rows.', text: 'A list inside a table row stays JSON in its cell. A list under an object path can have its own table.' },
   { title: 'Hard limits.', text: 'The root must be an object or an array. Numeric `-0` and nesting deeper than 500 levels are explicit errors.' },
   { title: 'Writing back.', text: 'Terset is for the model to read. Ask for answers in JSON.' },
 ];
@@ -389,7 +409,7 @@ export const PITCH_INTRO =
 export const PITCH_HIGHLIGHTS: readonly { readonly title: string; readonly text: string }[] = [
   { title: 'Lossless.', text: '`decode` gives back the same JSON, key order included. The benchmark decodes every Terset output and checks it against its input before counting it.' },
   { title: 'Uneven records keep their table.', text: 'A record can skip a field or hold a list and still be one row.' },
-  { title: 'Same text from JavaScript and Python.', text: 'The two packages are separate code, and both pass one conformance suite.' },
+  { title: 'Same text from JavaScript and Python.', text: 'Both packages pass the same format tests.' },
   { title: 'Zero dependencies.', text: 'Neither package installs anything else.' },
 ];
 
@@ -399,7 +419,7 @@ export const COMPARE_TOON_SHAPE = 'When records skip a field or hold a list, TOO
 export const COMPARE_CSV = 'It has no types and cannot tell null, a missing field and empty text apart, so its text does not always read back to the same JSON. Nested values fit only as JSON inside a cell.';
 
 /** The FAQ answers that need no numbers. The accuracy answer is built from the data. */
-export const FAQ_STABLE = `**Is it stable?** Format ${FROZEN_FORMAT} is frozen, and its text still decodes. The encoder writes format ${DEFAULT_FORMAT}. The packages are at ${PACKAGE_SERIES}, so their API can still change.`;
+export const FAQ_STABLE = `**Is it stable?** Format ${FROZEN_FORMAT} is frozen. Formats 1.0 and 1.1 still decode. The encoder writes format ${DEFAULT_FORMAT}. The packages are at ${PACKAGE_SERIES}, so their API can still change.`;
 
 export const FAQ_RULES = '**Do I have to explain the format to the model?** Yes, once per prompt. Send `rulesFor(text)` (`rules_for` in Python) right before the data. It holds only the rules that text needs, and it is empty when the text needs none. For one cached system prompt that serves many texts, send the full `RULES` there instead.';
 

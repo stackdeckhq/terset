@@ -52,16 +52,16 @@ export const API: readonly ApiEntry[] = [
   {
     id: 'encode',
     name: { js: 'encode', py: 'encode' },
-    summary: 'Turns a JSON object or array into Terset text. For lists, the encoder uses a table only if the header and rows are shorter in UTF-8 bytes than compact JSON. The list check excludes the count line, so a tiny list table can be larger than compact JSON. A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON.',
-    signature: { js: 'encode(value: JsonRoot, options?: EncodeOptions): string', py: 'encode(value: JsonInputRoot, *, format: FormatVersion = "1.1") -> str' },
+    summary: 'Turns a JSON object or array into Terset text. For lists, the encoder uses a table only if the header and rows are shorter in UTF-8 bytes than compact JSON. The list check excludes the count line, so a tiny list table can be larger than compact JSON. A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON. Format 1.2 uses slash-separated path entries only when the whole document saves at least 256 UTF-8 bytes over format 1.1.',
+    signature: { js: 'encode(value: JsonRoot, options?: EncodeOptions): string', py: 'encode(value: JsonInputRoot, *, format: FormatVersion = "1.2") -> str' },
     params: {
       js: [
         { name: 'value', type: 'JsonRoot', about: 'A plain JSON object or array.' },
-        { name: 'options.format', type: '"1.0" | "1.1"', about: 'The format version to write. The default is `"1.1"`. `"1.0"` writes empty cells instead of `name=value` cells.' },
+        { name: 'options.format', type: 'FormatVersion', about: 'Defaults to `"1.2"`. Pass `"1.1"` for named cells without path entries or `"1.0"` for empty cells.' },
       ],
       py: [
         { name: 'value', type: 'JsonInputRoot', about: 'A `dict` or `list` of JSON values.' },
-        { name: 'format', type: 'FormatVersion', about: 'Keyword only. The format version to write. The default is `"1.1"`. `"1.0"` writes empty cells instead of `name=value` cells.' },
+        { name: 'format', type: 'FormatVersion', about: 'Keyword only. Defaults to `"1.2"`. Pass `"1.1"` for named cells without path entries or `"1.0"` for empty cells.' },
       ],
     },
     returns: { js: '`string`: Terset text. A root array that cannot be a table is written as JSON.', py: '`str`: Terset text. A root list that cannot be a table is written as JSON.' },
@@ -69,12 +69,12 @@ export const API: readonly ApiEntry[] = [
       js: [
         { type: 'TypeError', when: 'The root is not an object or array, or a value is not JSON: a class instance, a symbol key, a sparse array or a cycle.' },
         { type: 'TypeError', when: 'A number is `NaN`, infinite or `-0`, or the data nests deeper than 500 levels.' },
-        { type: 'TypeError', when: '`options` is not an object, or `options.format` is not `"1.0"` or `"1.1"`.' },
+        { type: 'TypeError', when: '`options` is not an object or `options.format` is outside the supported versions.' },
       ],
       py: [
         { type: 'TypeError', when: 'The root is not a `dict` or `list`, or a value is not JSON: another type, a key that is not a string, or a cycle.' },
         { type: 'TypeError', when: 'A number is `nan`, infinite or `-0`, an `int` is not exact as a float, or the data nests deeper than 500 levels.' },
-        { type: 'TypeError', when: '`format` is not `"1.0"` or `"1.1"`, or is passed by position.' },
+        { type: 'TypeError', when: '`format` is outside the supported versions or is passed by position.' },
       ],
     },
     jsFence: 'js',
@@ -106,7 +106,7 @@ print(encode([
   {
     id: 'decode',
     name: { js: 'decode', py: 'decode' },
-    summary: 'Turns Terset text back into the same value, key order included. It accepts only text that `encode` would write.',
+    summary: 'Turns Terset text back into the same value, key order included. It reads the canonical text from formats 1.0, 1.1 and 1.2.',
     signature: { js: 'decode(text: string): JsonRoot', py: 'decode(text: str) -> JsonRoot' },
     params: { js: TEXT_PARAM('string'), py: TEXT_PARAM('str') },
     returns: { js: '`JsonRoot`: the object or array.', py: '`JsonRoot`: the `dict` or `list`.' },
@@ -215,14 +215,14 @@ print(rules_for("name: Ada") == "")  # True, no table means no rules`,
       js: `type JsonValue = null | boolean | number | string | JsonValue[] | JsonObject;
 type JsonObject = { [key: string]: JsonValue };
 type JsonRoot = JsonObject | JsonValue[];
-type FormatVersion = "1.0" | "1.1";
+type FormatVersion = "1.0" | "1.1" | "1.2";
 type EncodeOptions = { format?: FormatVersion };`,
       py: `JsonValue = None | bool | int | float | str | list[JsonValue] | dict[str, JsonValue]
 JsonObject = dict[str, JsonValue]
 JsonRoot = JsonObject | list[JsonValue]
 JsonInputValue = None | bool | int | float | str | Sequence[JsonInputValue] | Mapping[str, JsonInputValue]
 JsonInputRoot = Mapping[str, JsonInputValue] | Sequence[JsonInputValue]
-FormatVersion = Literal["1.0", "1.1"]`,
+FormatVersion = Literal["1.0", "1.1", "1.2"]`,
     },
     params: { js: [], py: [] },
     returns: { js: 'Types only. Nothing exists at run time.', py: 'Type aliases, importable at run time.' },

@@ -23,7 +23,7 @@ export const QUALITY_ARMS: readonly QualityArm[] = [
 /** Text with hard characters kept every original name byte for byte, in every arm. */
 export const NAMES_KEPT = { kept: 132, of: 132 } as const;
 
-export const QUALITY_LIMITS = 'One task, one model, reasoning off, development setup, 24 runs per arm. Production behavior was not measured.';
+export const QUALITY_LIMITS = 'One task, one model, reasoning off, 24 runs per arm. The repository does not record the Terset format. Production behavior was not measured.';
 
 function accepted(label: string): number {
   const arm = QUALITY_ARMS.find((item) => item.label === label);

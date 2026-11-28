@@ -24,6 +24,15 @@ describe('tokenize', () => {
     expect(classes(text, 'row')[0]).toEqual(['id', 'nu']);
   });
 
+  it('reads path entries with quoted segments and nested tables', () => {
+    const rows = Array.from({ length: 32 }, () => ({ x: 1, y: 2 }));
+    const text = encode({ 'a/b': { n: 1, rows } });
+    expect(text).toBe('"a/b"/n: 1\n"a/b"/rows[32]:\nx\ty' + '\n1\t2'.repeat(rows.length));
+    expect(tokenize(text).map(line => line.kind)).toEqual(['entry', 'list', 'header', ...rows.map(() => 'row')]);
+    expect(tables(text)[0]?.key).toBe('"a/b"/rows');
+    expect(Object.fromEntries(tersetKeyTally(text))).toEqual({ 'a/b': 2, n: 1, rows: 1, x: 1, y: 1 });
+  });
+
   it('reads keyed entry keys as text and excludes the marker from key tallies', () => {
     const value = { people: { '007': { '@key': 'one', address: { city: 'Paris' } }, '[key]': { '@key': 'two', address: { city: 'Rome' } } } };
     const text = encode(value);

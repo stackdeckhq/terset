@@ -29,6 +29,8 @@ import { StressAccuracyFileSchema } from './accuracy-stress-schema.ts';
 import { STRESS } from './stress.ts';
 import { SizesSchema } from './sizes-schema.ts';
 import { SWEEP } from './sweep.ts';
+import { WEATHER_12_ACCURACY } from './weather-12-accuracy.ts';
+import { Weather12AccuracyFileSchema } from './weather-12-accuracy-schema.ts';
 
 export interface DataCheck {
   /** Where the value comes from, relative to apps/site. */
@@ -54,6 +56,7 @@ export const DATA_CHECKS: readonly DataCheck[] = [
   check('src/data/real-accuracy-results.json', RealAccuracyFileSchema, REAL_ACCURACY),
   check('src/data/real-data.json', RealDataSchema, REAL),
   check('src/data/seed-sweep.json', SeedSweepSchema, SWEEP),
+  check('src/data/weather-12-accuracy-results.json', Weather12AccuracyFileSchema, WEATHER_12_ACCURACY),
   check('src/generated/samples.json', GeneratedSamplesSchema, GENERATED),
   check('src/generated/sizes.json', SizesSchema, SIZES),
 ];

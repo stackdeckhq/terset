@@ -194,10 +194,10 @@ describe('home headline', () => {
     expect(underToon(claude)).toBe(10);
     expect(homeHeadline(BENCH, counters, 'claude')).toEqual({
       title: `Fewer tokens than TOON in ${String(underToon(claude))} of ${String(claude.cases.length)} cases.`,
-      tag: claude.label,
+      tag: `${claude.label}, Terset 1.1`,
       line: `Fewer than compact JSON in ${String(underJson(claude))} of ${String(claude.cases.length)}.`,
     });
-    expect(homeHeadline(BENCH, counters, 'claude')).toEqual({ title: 'Fewer tokens than TOON in 10 of 11 cases.', tag: 'Claude Opus 5.5', line: 'Fewer than compact JSON in 10 of 11.' });
+    expect(homeHeadline(BENCH, counters, 'claude')).toEqual({ title: 'Fewer tokens than TOON in 10 of 11 cases.', tag: 'Claude Opus 5.5, Terset 1.1', line: 'Fewer than compact JSON in 10 of 11.' });
   });
 
   it('keeps a tie with TOON out of the Claude count', () => {
@@ -240,7 +240,7 @@ describe('benchmark.md lines', () => {
     expect(proofLines(FIXTURE, COUNTERS)).toEqual([
       'Fewer input tokens than compact JSON: 33.3% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
       'Lower cost than compact JSON: 29.4% on Opus and 25.0% on Sol.',
-      'Smaller than TOON on 12 of 14 data sets (OpenAI tokenizer). The 11 sample cases on o200k_base and the 3 benchmark data sets as GPT 6.1 Sol reported them.',
+      'Smaller than TOON on 12 of 14 data sets (OpenAI tokenizer). The 11 offline sample cases use Terset 1.2 on o200k_base. The 3 benchmark data sets use Terset 1.1 as GPT 6.1 Sol reported them.',
       'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 3 of 3. Fewer than compact JSON on 3 of 3.',
       'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 3 of 3. Fewer than compact JSON on 3 of 3.',
     ]);
