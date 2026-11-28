@@ -79,7 +79,7 @@ Both flags reject unknown names and duplicates. A saved run refuses a changed
 selection. Comparisons use questions complete in every selected format.
 Savings cells stay blank when compact JSON is absent.
 
-`--suite toon|stress|real` selects frozen inputs. The default is `toon`, with the
+`--suite toon|stress|real|real-400|real-400-pilot` selects frozen inputs. The default is `toon`, with the
 same data, questions, prompts and fingerprints as existing runs. Dataset names
 are validated within the selected suite. Results record the suite, input
 hashes and source. TOON records the upstream commit. Stress records the
@@ -96,7 +96,8 @@ pnpm bench --suite stress --dry-run
 
 Plans also list reserved dollars per model and in total. Input cost uses
 `ceil(estimate × margin) + allowance` per call. Output cost reserves the full
-`--per-call-max-output-tokens` cap for every call, default 128. Supply the cap
+`--per-call-max-output-tokens` cap for every call, default 128 or 8192 for the
+two real-400 suites. Supply the cap
 intended for the measured run, for example 2048. Prices come from the selected
 config. A reservation is a spending estimate, with the same limits described
 under Budgets and resume.
@@ -131,6 +132,15 @@ lists the sources, hashes and question rules.
 
 ```sh
 pnpm bench --suite real --formats json-compact,toon,terset --dry-run --per-call-max-output-tokens 2048
+```
+
+`real-400` uses the same documents with 200 questions per file.
+`real-400-pilot` has 12 separate questions per file. Both sets use an
+8,192-token output limit. Pass `--per-call-max-output-tokens 8192` for HTTP runs.
+
+```sh
+pnpm bench --suite real-400-pilot --dry-run
+pnpm bench --suite real-400 --dry-run
 ```
 
 ## HTTP client

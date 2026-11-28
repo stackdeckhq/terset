@@ -1,4 +1,5 @@
-import { DATASETS, hash } from './data.ts';
+import { createHash } from 'node:crypto';
+import { DATASETS } from './data.ts';
 import type { SuiteRecord } from './data.ts';
 import { encode, encodeDataset, estimateInputTokens, makePrompt, primerFor } from './formats.ts';
 import type { Prompt } from './formats.ts';
@@ -31,8 +32,18 @@ export function plan(models: Model[], questions: Question[], formats: readonly F
 }
 
 export function fingerprint(tasks: Task[], mode: string, maxOutputTokens: number, suite?: SuiteRecord): string {
-  const identity = suite && suite.name !== 'toon' ? { suite: suite.name, dataHashes: suite.hashes, source: suite.source } : {};
-  return hash(JSON.stringify({ version: 1, mode, maxOutputTokens, tasks, ...identity }));
+  // Keep the same JSON bytes without building one string for every prompt.
+  const digest = createHash('sha256');
+  digest.update(JSON.stringify({ version: 1, mode, maxOutputTokens }).slice(0, -1)).update(',"tasks":[');
+  for (const [index, task] of tasks.entries()) {
+    if (index > 0) digest.update(',');
+    digest.update(JSON.stringify(task));
+  }
+  digest.update(']');
+  if (suite && suite.name !== 'toon') {
+    digest.update(',').update(JSON.stringify({ suite: suite.name, dataHashes: suite.hashes, source: suite.source }).slice(1, -1));
+  }
+  return digest.update('}').digest('hex');
 }
 
 export function reserveInput(estimate: number, config: InputReservation): number {

@@ -6,7 +6,7 @@ import { fakeClient, httpClient } from './clients.ts';
 import { loadSuite, selectQuestions, suiteNameSchema, SuiteUnavailableError } from './data.ts';
 import { describePlan, plan } from './plan.ts';
 import { run } from './runner.ts';
-import { configSchema, FORMATS, modelSchema, selectedFormatsSchema, tersetFormatSchema } from './schema.ts';
+import { configSchema, FORMATS, isReal400Suite, modelSchema, selectedFormatsSchema, tersetFormatSchema } from './schema.ts';
 import type { Budgets } from './schema.ts';
 
 function integer(value: string | undefined, fallback: number, name: string, allowZero = true): number {
@@ -47,7 +47,8 @@ export async function main(args: string[], log: (text: string) => void = console
   const datasets = values.datasets?.split(',');
   const tersetFormat = tersetFormatSchema.parse(values['terset-format'] ?? '1.1');
   const tasks = plan(config.models, selectQuestions(limit, datasets, suite), formats, suite.datasets, tersetFormat);
-  const perCallMaxOutputTokens = integer(values['per-call-max-output-tokens'], 128, 'per-call max output tokens', false);
+  const defaultOutputCap = isReal400Suite(suite.name) ? 8192 : 128;
+  const perCallMaxOutputTokens = integer(values['per-call-max-output-tokens'], defaultOutputCap, 'per-call max output tokens', false);
   log(describePlan(tasks, config.inputReservation, perCallMaxOutputTokens));
   if (values['dry-run']) { log('Dry run: no calls made and no results written.'); return; }
   const budgets: Budgets = {

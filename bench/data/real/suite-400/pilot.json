@@ -1,0 +1,248 @@
+[
+  {
+    "id": "p001",
+    "type": "field-retrieval",
+    "dataset": "usgs-earthquakes",
+    "prompt": "What is properties.net for the feature with id \"aka2026wunuyb\"?",
+    "groundTruth": "ak",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p002",
+    "type": "field-retrieval",
+    "dataset": "usgs-earthquakes",
+    "prompt": "What is properties.net for the feature with id \"tx2026wqahmd\"?",
+    "groundTruth": "tx",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p003",
+    "type": "count",
+    "dataset": "usgs-earthquakes",
+    "prompt": "How many features have properties.mag greater than 0.43?",
+    "groundTruth": "215",
+    "answerType": "integer"
+  },
+  {
+    "id": "p004",
+    "type": "extreme",
+    "dataset": "usgs-earthquakes",
+    "prompt": "Among features with properties.net \"hv\", what is the lowest numeric properties.mag?",
+    "groundTruth": "1.71",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "p005",
+    "type": "extreme",
+    "dataset": "usgs-earthquakes",
+    "prompt": "Among features with properties.net \"tx\", what is the highest numeric properties.dmin?",
+    "groundTruth": "0.2",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "p006",
+    "type": "nested-lookup",
+    "dataset": "usgs-earthquakes",
+    "prompt": "What is the latitude (second entry in geometry.coordinates) for the feature with id \"uu80165081\"?",
+    "groundTruth": "38.515",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "p007",
+    "type": "count-two-conditions",
+    "dataset": "usgs-earthquakes",
+    "prompt": "How many features have properties.mag greater than 0.3 and properties.net \"mb\"?",
+    "groundTruth": "1",
+    "answerType": "integer"
+  },
+  {
+    "id": "p008",
+    "type": "count-two-conditions",
+    "dataset": "usgs-earthquakes",
+    "prompt": "How many features have properties.dmin greater than 0.023 and properties.net \"ak\"?",
+    "groundTruth": "44",
+    "answerType": "integer"
+  },
+  {
+    "id": "p009",
+    "type": "compare",
+    "dataset": "usgs-earthquakes",
+    "prompt": "Which feature id, \"nc75467642\" or \"aka2026wujafj\", has the smaller properties.dmin?",
+    "groundTruth": "aka2026wujafj",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p010",
+    "type": "position",
+    "dataset": "usgs-earthquakes",
+    "prompt": "In the given features order, what is the id of the feature immediately after \"nc75467622\"?",
+    "groundTruth": "uu80165071",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p011",
+    "type": "position",
+    "dataset": "usgs-earthquakes",
+    "prompt": "In the given features order, what is the id of the feature immediately before \"ci41362951\"?",
+    "groundTruth": "hv75071352",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p012",
+    "type": "rank",
+    "dataset": "usgs-earthquakes",
+    "prompt": "Among features with properties.net \"nc\", which id has the second highest properties.mag?",
+    "groundTruth": "nc75467427",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p013",
+    "type": "field-retrieval",
+    "dataset": "nws-gridpoint",
+    "prompt": "What is properties.transportWindSpeed.uom?",
+    "groundTruth": "wmoUnit:km_h-1",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p014",
+    "type": "field-retrieval",
+    "dataset": "nws-gridpoint",
+    "prompt": "What is properties.mixingHeight.uom?",
+    "groundTruth": "wmoUnit:m",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p015",
+    "type": "count",
+    "dataset": "nws-gridpoint",
+    "prompt": "How many entries in properties.temperature.values have a numeric value greater than 5.3?",
+    "groundTruth": "141",
+    "answerType": "integer"
+  },
+  {
+    "id": "p016",
+    "type": "extreme",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.transportWindDirection.values, what is the highest numeric value?",
+    "groundTruth": "330",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "p017",
+    "type": "extreme",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.mixingHeight.values, what is the highest numeric value?",
+    "groundTruth": "829.3608",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "p018",
+    "type": "nested-lookup",
+    "dataset": "nws-gridpoint",
+    "prompt": "What is the value in properties.temperature.values for the entry with validTime \"2026-11-17T20:00:00+00:00/PT1H\"?",
+    "groundTruth": "15.555555555555555",
+    "answerType": "number",
+    "normalizationOptions": {
+      "tolerance": 0.000001
+    }
+  },
+  {
+    "id": "p019",
+    "type": "count-two-conditions",
+    "dataset": "nws-gridpoint",
+    "prompt": "How many entries in properties.temperature.values have a numeric value greater than 4 and a validTime start at or after \"2026-11-17T20:00:00+00:00\"?",
+    "groundTruth": "142",
+    "answerType": "integer"
+  },
+  {
+    "id": "p020",
+    "type": "count-two-conditions",
+    "dataset": "nws-gridpoint",
+    "prompt": "How many entries in properties.apparentTemperature.values have a numeric value greater than 3.6 and a validTime start at or after \"2026-11-18T08:00:00+00:00\"?",
+    "groundTruth": "130",
+    "answerType": "integer"
+  },
+  {
+    "id": "p021",
+    "type": "compare",
+    "dataset": "nws-gridpoint",
+    "prompt": "At the exact validTime \"2026-11-18T16:00:00+00:00/PT1H\", which series has the smaller value, temperature or dewpoint?",
+    "groundTruth": "dewpoint",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p022",
+    "type": "position",
+    "dataset": "nws-gridpoint",
+    "prompt": "What is the exact validTime of entry 32 in properties.temperature.values, counting from 1 in the given order?",
+    "groundTruth": "2026-11-19T00:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p023",
+    "type": "position",
+    "dataset": "nws-gridpoint",
+    "prompt": "What is the exact validTime of entry 23 in properties.windChill.values, counting from 1 in the given order?",
+    "groundTruth": "2026-11-19T06:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  },
+  {
+    "id": "p024",
+    "type": "rank",
+    "dataset": "nws-gridpoint",
+    "prompt": "In properties.mixingHeight.values, what is the exact validTime of the entry with the second highest numeric value?",
+    "groundTruth": "2026-11-17T18:00:00+00:00/PT1H",
+    "answerType": "string",
+    "normalizationOptions": {
+      "caseSensitive": true
+    }
+  }
+]

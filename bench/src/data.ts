@@ -36,6 +36,23 @@ export interface SuiteRecord {
     | { generatorSource: string; generatorSha256: string; sourceHashes: typeof REAL_SOURCE_HASHES };
 }
 export interface Suite extends SuiteRecord { datasets: Dataset[]; questions: Question[] }
+const realDatasetPath = '../data/real/suite/datasets.json';
+const realDatasetHash = '452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6';
+const realDatasetNames = ['usgs-earthquakes', 'nws-gridpoint'] as const;
+
+function real400Record(name: 'real-400' | 'real-400-pilot', filename: string, questionHash: string): SuiteRecord {
+  return {
+    name, paths: { 'datasets.json': realDatasetPath, 'questions.json': `../data/real/suite-400/${filename}` },
+    hashes: { 'datasets.json': realDatasetHash, 'questions.json': questionHash },
+    datasetNames: realDatasetNames,
+    source: {
+      generatorSource: 'bench/src/real/generate-400.ts',
+      generatorSha256: 'ef9f973521096d42344c79c01ace7730b24095e7660b9bd90c4917cd3e2d7630',
+      sourceHashes: REAL_SOURCE_HASHES,
+    },
+  };
+}
+
 export const SUITES: Record<SuiteName, SuiteRecord | null> = {
   toon: { name: 'toon', paths: { 'datasets.json': '../data/datasets.json', 'questions.json': '../data/questions.json' },
     hashes: DATA_HASHES, datasetNames: datasetNameSchema.options, source: { upstreamSha: UPSTREAM_SHA } },
@@ -63,18 +80,20 @@ export const SUITES: Record<SuiteName, SuiteRecord | null> = {
       seed: 20261117, referenceDate: '2026-11-17T00:00:00.000Z' },
   },
   real: {
-    name: 'real', paths: { 'datasets.json': '../data/real/suite/datasets.json', 'questions.json': '../data/real/suite/questions.json' },
+    name: 'real', paths: { 'datasets.json': realDatasetPath, 'questions.json': '../data/real/suite/questions.json' },
     hashes: {
-      'datasets.json': '452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6',
+      'datasets.json': realDatasetHash,
       'questions.json': 'a43dc5e2423f5a14c3caed102c7e1fe680e50eb24ee335b90aecc189466e2889',
     },
-    datasetNames: ['usgs-earthquakes', 'nws-gridpoint'],
+    datasetNames: realDatasetNames,
     source: {
       generatorSource: 'bench/src/real/generate.ts',
       generatorSha256: 'c09f85fe3e3d685292a38500881c469c9c1b9bd627354f5f4dba7b8eaaf099db',
       sourceHashes: REAL_SOURCE_HASHES,
     },
   },
+  'real-400': real400Record('real-400', 'questions.json', 'f5bc3212982e9dc239bd3595d59471952e8a24b97fc2e3132b71e1be66e29ac8'),
+  'real-400-pilot': real400Record('real-400-pilot', 'pilot.json', 'd43c2b8b6706257748026eec0f1492e8727a9e7d0e6a5ad6a3b0168f1482d181'),
 };
 export class SuiteUnavailableError extends Error {
   constructor() { super('Stress suite is not frozen. Run the stress freeze step before selecting it.'); }
