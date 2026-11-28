@@ -63,7 +63,8 @@ question, dataset and generator files. They re-score every answer against the
 frozen question and take its group from the question's type. Stress input
 tokens come from each model's report, including Claude.
 
-`pnpm accuracy` also builds the 40-question and 400-question real data files.
+`pnpm accuracy` also builds the 40-question and 400-question real data files
+and the weather comparison between formats 1.1 and 1.2.
 The 400-question file lists the pilot runs for reference. Its scores, token
 counts and paired comparisons use the full runs.
 

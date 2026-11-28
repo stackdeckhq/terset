@@ -3,7 +3,7 @@ import type { Result, Row } from './schema.ts';
 import type { Task } from './plan.ts';
 import { wilson } from './scoring.ts';
 
-export function summarize(rows: Row[]): {
+export function summarize(rows: readonly Pick<Row, 'correct' | 'inputTokens' | 'outputTokens'>[]): {
   correct: number; total: number; accuracy: number | null; wilson95: ReturnType<typeof wilson>; inputTokens: number; outputTokens: number;
 } {
   const correct = rows.filter(r => r.correct).length;
@@ -14,15 +14,19 @@ export function summarize(rows: Row[]): {
 interface CostMetrics {
   inputCost: number; outputCost: number; totalCost: number; savingVsCompactJson: number | null;
 }
-function questionKey(row: Row): string {
+type ComparisonRow<Format extends string> = Pick<Row, 'model' | 'dataset' | 'questionId' | 'correct'> & { format: Format };
+
+function questionKey(row: Pick<Row, 'model' | 'dataset' | 'questionId'>): string {
   return JSON.stringify([row.model, row.dataset, row.questionId]);
 }
 
-function completeQuestions(rows: Row[], formats: readonly Row['format'][]): Map<string, Map<Row['format'], Row>> {
-  const coverage = new Map<string, Map<Row['format'], Row>>();
+function completeQuestions<Format extends string, Answer extends ComparisonRow<Format>>(
+  rows: readonly Answer[], formats: readonly Format[],
+): Map<string, Map<Format, Answer>> {
+  const coverage = new Map<string, Map<Format, Answer>>();
   for (const row of rows) {
     const id = questionKey(row);
-    const answers = coverage.get(id) ?? new Map<Row['format'], Row>();
+    const answers = coverage.get(id) ?? new Map<Format, Answer>();
     answers.set(row.format, row);
     coverage.set(id, answers);
   }
@@ -120,8 +124,10 @@ const dollars = (value: number): string => `${value < 0 ? '-' : ''}$${Math.abs(v
 const cell = (value: string): string => value.replaceAll('|', '\\|').replaceAll('\n', ' ');
 const points = (value: number): string => (value * 100).toFixed(2);
 
-export function pairedComparisons(rows: Row[], models: readonly string[], formats: readonly Row['format'][]) {
-  const others = formats.filter(format => format !== 'terset');
+export function pairedComparisons<Format extends string>(
+  rows: readonly ComparisonRow<Format | 'terset'>[], models: readonly string[], formats: readonly (Format | 'terset')[],
+) {
+  const others = formats.filter((format): format is Exclude<Format, 'terset'> => format !== 'terset');
   if (!formats.includes('terset') || others.length === 0) return [];
   const complete = [...completeQuestions(rows, formats).values()];
   return models.flatMap(model => {

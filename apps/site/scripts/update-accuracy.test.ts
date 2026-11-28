@@ -8,12 +8,14 @@ import type { PublishedSource } from './update-accuracy.ts';
 import { REAL_PUBLISHED_RUNS } from './accuracy-real.ts';
 import { REAL_400_PILOT_RUNS, REAL_400_PUBLISHED_RUNS } from './accuracy-real-400.ts';
 import { STRESS_OUTPUT, STRESS_PUBLISHED_RUNS } from './accuracy-stress.ts';
+import { WEATHER_12_PUBLISHED_RUNS } from './accuracy-weather-12.ts';
 import type { RunFile } from './accuracy-runs.ts';
 import { StressAccuracyFileSchema } from '../src/data/accuracy-stress-schema.ts';
 import { ACCURACY_FORMATS } from '../src/data/accuracy-schema.ts';
 import type { AccuracyFile } from '../src/data/accuracy-schema.ts';
 import { REAL_ACCURACY } from '../src/data/real-accuracy.ts';
 import { REAL_400_ACCURACY } from '../src/data/real-400-accuracy.ts';
+import { WEATHER_12_ACCURACY } from '../src/data/weather-12-accuracy.ts';
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 const OPUS = 'claude-opus-5-5';
@@ -90,7 +92,7 @@ describe('every published run', () => {
   it('lists every run file in bench/published in the script, so none is left out', () => {
     const sources = [
       ...PUBLISHED_RUNS, ...STRESS_PUBLISHED_RUNS, ...REAL_PUBLISHED_RUNS,
-      ...REAL_400_PUBLISHED_RUNS, ...REAL_400_PILOT_RUNS,
+      ...REAL_400_PUBLISHED_RUNS, ...REAL_400_PILOT_RUNS, ...WEATHER_12_PUBLISHED_RUNS,
     ];
     expect(sources.map((source) => source.path).sort()).toEqual(runFiles);
   });
@@ -101,6 +103,7 @@ describe('every published run', () => {
     const runs = [
       ...site.publishedRuns, ...stress.publishedRuns, ...REAL_ACCURACY.publishedRuns,
       ...REAL_400_ACCURACY.publishedRuns, ...REAL_400_ACCURACY.pilotRuns,
+      ...WEATHER_12_ACCURACY.models.map(({ runs }) => runs['1.2']),
     ];
     expect(runs.map((run) => `${run.publishedPath}/${run.runId}.json`).sort()).toEqual(runFiles);
   });

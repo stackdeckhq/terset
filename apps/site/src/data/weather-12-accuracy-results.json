@@ -1,0 +1,170 @@
+{
+  "dataset": "nws-gridpoint",
+  "questions": 200,
+  "perCallMaxOutputTokens": 8192,
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "runs": {
+        "1.1": {
+          "runId": "real400-opus-2026-11-28",
+          "runOn": "2026-11-28",
+          "publishedPath": "bench/published/2026-11-28"
+        },
+        "1.2": {
+          "runId": "real400-weather12-opus-2026-11-28",
+          "runOn": "2026-11-28",
+          "publishedPath": "bench/published/2026-11-28"
+        }
+      },
+      "scores": {
+        "json-compact": {
+          "correct": 198,
+          "inputTokens": 8364304
+        },
+        "toon": {
+          "correct": 199,
+          "inputTokens": 6893104
+        },
+        "terset-1.1": {
+          "correct": 200,
+          "inputTokens": 8358904
+        },
+        "terset-1.2": {
+          "correct": 200,
+          "inputTokens": 6439504
+        }
+      },
+      "paired": [
+        {
+          "comparisonFormat": "json-compact",
+          "total": 200,
+          "tersetOnly": 2,
+          "otherOnly": 0,
+          "gapPoints": 1,
+          "interval95Points": {
+            "lower": -2.0834574835948083,
+            "upper": 3.9994646344594376
+          },
+          "pValue": 0.5,
+          "inputTokensFewerPct": 23.012076079492093
+        },
+        {
+          "comparisonFormat": "toon",
+          "total": 200,
+          "tersetOnly": 1,
+          "otherOnly": 0,
+          "gapPoints": 0.5,
+          "interval95Points": {
+            "lower": -2.1608957719654653,
+            "upper": 3.147879731894898
+          },
+          "pValue": 1,
+          "inputTokensFewerPct": 6.580489718420035
+        },
+        {
+          "comparisonFormat": "terset-1.1",
+          "total": 200,
+          "tersetOnly": 0,
+          "otherOnly": 0,
+          "gapPoints": 0,
+          "interval95Points": {
+            "lower": -2.167184965290836,
+            "upper": 2.167184965290836
+          },
+          "pValue": 1,
+          "inputTokensFewerPct": 22.962340517369263
+        }
+      ],
+      "wrongAnswers": []
+    },
+    {
+      "id": "gpt-6.2-sol",
+      "runs": {
+        "1.1": {
+          "runId": "real400-sol-2026-11-28",
+          "runOn": "2026-11-28",
+          "publishedPath": "bench/published/2026-11-28"
+        },
+        "1.2": {
+          "runId": "real400-weather12-sol-2026-11-28",
+          "runOn": "2026-11-28",
+          "publishedPath": "bench/published/2026-11-28"
+        }
+      },
+      "scores": {
+        "json-compact": {
+          "correct": 198,
+          "inputTokens": 6838792
+        },
+        "toon": {
+          "correct": 196,
+          "inputTokens": 6251392
+        },
+        "terset-1.1": {
+          "correct": 197,
+          "inputTokens": 6836792
+        },
+        "terset-1.2": {
+          "correct": 199,
+          "inputTokens": 5782592
+        }
+      },
+      "paired": [
+        {
+          "comparisonFormat": "json-compact",
+          "total": 200,
+          "tersetOnly": 2,
+          "otherOnly": 1,
+          "gapPoints": 0.5,
+          "interval95Points": {
+            "lower": -3.0641522501988705,
+            "upper": 3.993175441134067
+          },
+          "pValue": 1,
+          "inputTokensFewerPct": 15.444248048485754
+        },
+        {
+          "comparisonFormat": "toon",
+          "total": 200,
+          "tersetOnly": 4,
+          "otherOnly": 1,
+          "gapPoints": 1.5,
+          "interval95Points": {
+            "lower": -2.705460654876979,
+            "upper": 5.531418685470091
+          },
+          "pValue": 0.37500000000000006,
+          "inputTokensFewerPct": 7.499129793812321
+        },
+        {
+          "comparisonFormat": "terset-1.1",
+          "total": 200,
+          "tersetOnly": 3,
+          "otherOnly": 1,
+          "gapPoints": 1,
+          "interval95Points": {
+            "lower": -2.909920460845994,
+            "upper": 4.781922155014828
+          },
+          "pValue": 0.6250000000000001,
+          "inputTokensFewerPct": 15.419512543309787
+        }
+      ],
+      "wrongAnswers": [
+        {
+          "model": "gpt-6.2-sol",
+          "format": "terset",
+          "dataset": "nws-gridpoint",
+          "questionId": "q358",
+          "prompt": "What is the exact validTime of entry 56 in properties.relativeHumidity.values, counting from 1 in the given order?",
+          "kind": "position",
+          "expected": "2026-11-20T02:00:00+00:00/PT1H",
+          "text": "2026-11-20T01:00:00+00:00/PT1H",
+          "outputTokens": 223,
+          "hitOutputCap": false
+        }
+      ]
+    }
+  ]
+}

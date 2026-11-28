@@ -38,10 +38,11 @@ const Real400RunFile = resultSchema.extend({
   summary: RunFile.shape.summary,
 });
 type Real400RunFile = z.infer<typeof Real400RunFile>;
-type PublishedSource = (typeof REAL_400_PUBLISHED_RUNS | typeof REAL_400_PILOT_RUNS)[number];
+type PublishedSource = { readonly path: string; readonly model: typeof REAL_ACCURACY_MODELS[number] };
 const DATASETS = ['ALL', ...REAL_ACCURACY_DATASETS] as const;
 
-function readRun({ path, model }: PublishedSource, suite: Suite) {
+export function readReal400Run({ path, model }: PublishedSource, suite: Suite,
+  formats: readonly typeof REAL_ACCURACY_FORMATS[number][] = REAL_ACCURACY_FORMATS) {
   const parsed: unknown = JSON.parse(readFileSync(new URL(path, REPO), 'utf8'));
   const run = Real400RunFile.parse(parsed);
   const [settings] = run.models;
@@ -61,7 +62,7 @@ function readRun({ path, model }: PublishedSource, suite: Suite) {
   const seen = new Set<string>();
   const wrongAnswers = run.rows.flatMap((row) => {
     const question = byId.get(row.questionId);
-    if (question?.dataset !== row.dataset || question.groundTruth !== row.expected) {
+    if (question?.dataset !== row.dataset || question.groundTruth !== row.expected || !formats.includes(row.format)) {
       throw new Error(`${run.runId} ${row.format} ${row.questionId}: row differs from the frozen question`);
     }
     const key = `${row.format}:${row.questionId}`;
@@ -76,7 +77,7 @@ function readRun({ path, model }: PublishedSource, suite: Suite) {
       hitOutputCap: outputTokens === run.budgets.perCallMaxOutputTokens,
     }];
   });
-  if (seen.size !== suite.questions.length * REAL_ACCURACY_FORMATS.length) {
+  if (seen.size !== suite.questions.length * formats.length) {
     throw new Error(`${run.runId}: expected one row per format and frozen question`);
   }
   return {
@@ -87,7 +88,7 @@ function readRun({ path, model }: PublishedSource, suite: Suite) {
   };
 }
 
-function scoreRows(run: Real400RunFile, { model, price }: ReturnType<typeof readRun>['publication']) {
+function scoreRows(run: Real400RunFile, { model, price }: ReturnType<typeof readReal400Run>['publication']) {
   const rows = DATASETS.flatMap((dataset) => {
     const answers = run.rows.filter((row) => dataset === 'ALL' || row.dataset === dataset);
     const compact = summarize(answers.filter((row) => row.format === 'json-compact')).inputTokens;
@@ -109,7 +110,7 @@ function scoreRows(run: Real400RunFile, { model, price }: ReturnType<typeof read
 export function real400AccuracyText(): string {
   const suite = loadSuite('real-400');
   const pilot = loadSuite('real-400-pilot');
-  const runs = REAL_400_PUBLISHED_RUNS.map((source) => readRun(source, suite));
+  const runs = REAL_400_PUBLISHED_RUNS.map((source) => readReal400Run(source, suite));
   const data = Real400AccuracyFileSchema.parse({
     suite: suite.name,
     questions: suite.questions.length,
@@ -117,7 +118,7 @@ export function real400AccuracyText(): string {
     formats: REAL_ACCURACY_FORMATS,
     datasets: REAL_ACCURACY_DATASETS,
     publishedRuns: runs.map(({ publication }) => publication),
-    pilotRuns: REAL_400_PILOT_RUNS.map((source) => readRun(source, pilot).publication),
+    pilotRuns: REAL_400_PILOT_RUNS.map((source) => readReal400Run(source, pilot).publication),
     models: runs.map(({ run, publication, wrongAnswers }) => ({
       id: publication.model,
       rows: scoreRows(run, publication),
