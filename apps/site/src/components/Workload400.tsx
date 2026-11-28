@@ -15,6 +15,7 @@ import {
   real400Intro,
   real400Links,
   real400RunNotes,
+  real400StrictNote,
   real400WrongSummary,
   wrong400Groups,
 } from '../data/workload-400.ts';
@@ -143,6 +144,7 @@ function WrongFolds({ file }: { readonly file: Real400AccuracyFile }) {
 
 export function Real400Sections({ file }: { readonly file: Real400AccuracyFile }) {
   const run = `${formatCount(file.questions)} questions`;
+  const strictNote = real400StrictNote(file);
   return (
     <>
       <section className="doc-section bench-sec" id={REAL_400_ANCHOR} aria-labelledby="q400-h">
@@ -214,6 +216,7 @@ export function Real400Sections({ file }: { readonly file: Real400AccuracyFile }
         <h2 id="q400-wrong-h">{`${run}: wrong answers`}</h2>
         <Text>
           <p>{real400WrongSummary(file)}</p>
+          {strictNote === null ? null : <p>{strictNote}</p>}
         </Text>
         <div className="acc">
           {file.models.map((model) => (

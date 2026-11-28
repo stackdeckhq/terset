@@ -21,6 +21,7 @@ import {
   real400PerFile,
   real400PerKind,
   real400RunNotes,
+  real400StrictNote,
   real400WrongSummary,
   wrong400Groups,
 } from './workload-400.ts';
@@ -190,6 +191,13 @@ describe('400-question wrong answers', () => {
 
   it('sums them up from the data', () => {
     expect(real400WrongSummary(REAL_400_ACCURACY)).toBe('36 wrong of 2,400 answers: 4 on Claude Opus 5.5 and 32 on GPT 6.2 Sol.');
+  });
+
+  it('names each wrong answer that ended with the expected value after other text', () => {
+    expect(real400StrictNote(REAL_400_ACCURACY)).toBe(
+      'Scoring is strict: the answer must be the value alone. One wrong answer ended with the expected value after other text: Claude Opus 5.5, TOON, q140. It stays counted as wrong.',
+    );
+    expect(real400StrictNote({ ...REAL_400_ACCURACY, wrongAnswers: REAL_400_ACCURACY.wrongAnswers.filter((answer) => answer.questionId !== 'q140') })).toBeNull();
   });
 });
 

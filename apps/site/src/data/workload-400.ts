@@ -260,6 +260,20 @@ export function real400WrongSummary(file: Real400AccuracyFile): string {
 }
 
 /**
+ * The scorer compares the whole answer, so an answer that shows working before the right value is wrong.
+ * This names each such answer, so a reader can judge the strict score. Null when there is none.
+ */
+export function real400StrictNote(file: Real400AccuracyFile): string | null {
+  const near = file.wrongAnswers
+    .filter((answer) => answer.text.trim().split('\n').at(-1)?.trim().toLowerCase() === answer.expected.toLowerCase())
+    .map((answer) => `${WORKLOAD_MODEL_NAMES[answer.model]}, ${WORKLOAD_FORMAT_LABELS[answer.format]}, ${answer.questionId}`);
+  if (near.length === 0) return null;
+  const count = near.length === 1 ? 'One wrong answer' : `${capitalize(word(near.length))} wrong answers`;
+  const stays = near.length === 1 ? 'It stays' : 'They stay';
+  return `Scoring is strict: the answer must be the value alone. ${count} ended with the expected value after other text: ${near.join('; ')}. ${stays} counted as wrong.`;
+}
+
+/**
  * What happened during the runs. A run with a kept charge was stopped by a time limit and resumed,
  * as bench/README.md records. Throws when that run did not answer every question in each format.
  */
