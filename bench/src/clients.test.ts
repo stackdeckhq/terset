@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import fakeModel from '../fixtures/fake-model.json' with { type: 'json' };
 import { fakeClient, httpClient } from './clients.ts';
-import { estimateInputTokens } from './formats.ts';
-import { modelSchema } from './schema.ts';
+import { estimateInputTokens, makePrompt } from './formats.ts';
+import { modelSchema, rowSchema } from './schema.ts';
 
 const prompt = { system: 'Read data.', user: 'Question: count records' };
 const model = modelSchema.parse({ ...fakeModel, id: 'test-model' });
@@ -61,12 +61,50 @@ describe('model client contract', () => {
       usage: { input_tokens: 19, output_tokens: 2, cache_creation_input_tokens: 3, cache_read_input_tokens: 5 },
     }));
     const client = httpClient({ ...options, fetch: fetcher });
-    expect(await client.ask({ ...model, api: 'anthropic' }, prompt)).toEqual({ text: '42', inputTokens: 27, outputTokens: 2 });
+    const answer = await client.ask({ ...model, api: 'anthropic' }, prompt);
+    expect(answer).toEqual({ text: '42', inputTokens: 27, outputTokens: 2, cacheCreationInputTokens: 3, cacheReadInputTokens: 5 });
+    expect(rowSchema.parse({ ...answer, model: model.id, format: 'terset', dataset: 'test', questionId: 'q001',
+      expected: '42', correct: true })).toMatchObject({ cacheCreationInputTokens: 3, cacheReadInputTokens: 5, inputTokens: 27 });
     expect(fetcher.mock.calls[0]?.[0]).toBe('https://bench.invalid/v1/messages');
     const request = fetcher.mock.calls[0]?.[1];
     expect(request?.headers).toHaveProperty('anthropic-version', '2023-06-01');
     expect(body(request)).toEqual({ model: 'test-model', system: prompt.system,
       messages: [{ role: 'user', content: prompt.user }], max_tokens: 16, temperature: 0 });
+  });
+  it('caches only the stable Anthropic data block and preserves the full prompt text on both routes', async () => {
+    const questions = ['What is the value?', 'How many fields?'].map((text, index) => ({
+      id: String(index), prompt: text, groundTruth: '42', type: 'test', dataset: 'test', answerType: 'integer' as const,
+    }));
+    const data = 'value: 42';
+    const stable = 'Given the following data in terset format:\n\n```\nvalue: 42\n```';
+    const requirements = '\n\nAnswer format requirements:\n- Provide only the value itself, no explanation\n'
+      + '- For numbers: output digits only (no commas, currency symbols, or units)\n'
+      + '- For dates/field names: use the exact string from the data\n'
+      + '- For lists: output comma-separated values with no spaces\n\nAnswer:';
+    const fetcher = vi.fn<typeof fetch>();
+    const client = httpClient({ ...options, fetch: fetcher });
+    for (const question of questions) {
+      const prompt = makePrompt(question, 'terset', data, 'Format primer.');
+      const system = 'Read the supplied data.\n\nFormat primer.';
+      const trailing = `\n\nQuestion: ${question.prompt}${requirements}`;
+      expect(prompt).toEqual({ system, user: stable + trailing });
+      fetcher.mockResolvedValueOnce(Response.json({ content: [{ type: 'text', text: '42' }],
+        usage: { input_tokens: 19, output_tokens: 1 } }));
+      expect(await client.ask({ ...model, api: 'anthropic' }, prompt)).toEqual({ text: '42', inputTokens: 19, outputTokens: 1 });
+      const content = [
+        { type: 'text', text: stable, cache_control: { type: 'ephemeral' } },
+        { type: 'text', text: trailing },
+      ];
+      expect(body(fetcher.mock.lastCall?.[1])).toEqual({ model: model.id, system,
+        messages: [{ role: 'user', content }], max_tokens: 16, temperature: 0 });
+      expect(content.map(block => block.text).join('')).toBe(prompt.user);
+      fetcher.mockResolvedValueOnce(Response.json({ choices: [{ message: { content: '42' } }],
+        usage: { prompt_tokens: 19, completion_tokens: 1 } }));
+      await client.ask(model, prompt);
+      expect(body(fetcher.mock.lastCall?.[1])).toEqual({ model: model.id,
+        messages: [{ role: 'system', content: system }, { role: 'user', content: stable + trailing }],
+        max_completion_tokens: 16, temperature: 0 });
+    }
   });
   it('rejects absent credentials and unsafe base URLs without a request', () => {
     const fetcher = vi.fn<typeof fetch>();

@@ -211,8 +211,9 @@ the plain estimate and the reservation per format. Output reservations equal
 the per-call output cap sent to the provider.
 
 After each successful call, reported input and output replace both reservations
-in the ledger, even when reported usage is lower. Anthropic cache input counts
-are included. Counts above the local estimate are normal because API framing
+in the ledger, even when reported usage is lower. Anthropic requests mark the
+data block for caching. Rows include cache creation and read counts when the
+API reports them. The total input count includes both. Counts above the local estimate are normal because API framing
 and provider tokenizers differ. Input above the reservation adds a warning to
 the run's `.log` file and increments the warning count in its report.
 

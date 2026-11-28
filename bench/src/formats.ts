@@ -119,12 +119,25 @@ export function encodeDataset(format: Format, dataset: Dataset, tersetFormat: Te
   return [...headers, ...rows].join('\n');
 }
 
+const DATA_START = 'Given the following data in ';
+const DATA_END = '\n```';
+const QUESTION_START = '\n\nQuestion: ';
+
 export function makePrompt(question: Question, format: Format, data: string, primer = primerFor(format, data)): Prompt {
   const label = format;
   return {
     system: `Read the supplied data.\n\n${primer}`,
-    user: `Given the following data in ${label} format:\n\n\`\`\`\n${data}\n\`\`\`\n\nQuestion: ${question.prompt}\n\nAnswer format requirements:\n- Provide only the value itself, no explanation\n- For numbers: output digits only (no commas, currency symbols, or units)\n- For dates/field names: use the exact string from the data\n- For lists: output comma-separated values with no spaces\n\nAnswer:`,
+    user: `${DATA_START}${label} format:\n\n\`\`\`\n${data}${DATA_END}${QUESTION_START}${question.prompt}\n\nAnswer format requirements:\n- Provide only the value itself, no explanation\n- For numbers: output digits only (no commas, currency symbols, or units)\n- For dates/field names: use the exact string from the data\n- For lists: output comma-separated values with no spaces\n\nAnswer:`,
   };
+}
+
+export function splitDataPrefix(user: string): [dataPrefix: string, suffix: string] | undefined {
+  if (!user.startsWith(DATA_START)) return undefined;
+  const marker = DATA_END + QUESTION_START;
+  const boundary = user.indexOf(marker);
+  if (boundary < 0 || boundary !== user.lastIndexOf(marker)) return undefined;
+  const end = boundary + DATA_END.length;
+  return [user.slice(0, end), user.slice(end)];
 }
 
 export function estimateInputTokens(prompt: Prompt): number {

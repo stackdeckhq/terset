@@ -66,7 +66,10 @@ export const configSchema = z.object({
   models: z.array(modelSchema).min(1),
   inputReservation: inputReservationSchema.prefault({}),
 }).strict();
-export const responseSchema = z.object({ text: z.string(), inputTokens: count, outputTokens: count });
+export const responseSchema = z.object({
+  text: z.string(), inputTokens: count, outputTokens: count,
+  cacheCreationInputTokens: count.optional(), cacheReadInputTokens: count.optional(),
+});
 export type Response = z.infer<typeof responseSchema>;
 export const rowSchema = responseSchema.extend({
   model: z.string(), format: formatSchema, dataset: z.string(), questionId: z.string(),
