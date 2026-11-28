@@ -63,6 +63,7 @@ class FormatOneTwoTests(unittest.TestCase):
             ("a: {}\na/b: 1", "Duplicate or conflicting entry path."),
             ("a/b: 1\na: {}", "Duplicate or conflicting entry path."),
             ("a/b/c/d/e/f/g/h/i: 1", "Maximum entry path is 8 segments."),
+            ("a/b: 1", "Noncanonical Terset text."),
             ("a/b: 1\nz: 0\na/c: 2", "Noncanonical Terset text."),
             ('a/x: {"v":1,"v":2}', "Noncanonical Terset text."),
         ]
@@ -73,20 +74,22 @@ class FormatOneTwoTests(unittest.TestCase):
                 self.assertEqual(str(error.exception), message)
 
     def test_depth_limit_under_path_table(self):
-        prefix = "a/b/c/d/e/f/g/h[2]:\nv\n"
+        prefix = "a/b/c/d/e/f/g/h[44]:\nv\n"
+        rows = "\n2" * 43
 
         def cell(levels):
             return '{"next":' * levels + "1" + "}" * levels
 
-        decode(prefix + cell(490) + "\n2")
+        decode(prefix + cell(490) + rows)
         with self.assertRaises(ValueError) as error:
-            decode(prefix + cell(491) + "\n2")
+            decode(prefix + cell(491) + rows)
         self.assertEqual(str(error.exception), "Maximum JSON depth is 500.")
 
     def test_wide_values_at_the_end_of_deep_object_paths(self):
         wide = {str(index): index for index in range(20_000)}
         compact = '{"next":' * 491 + json.dumps(wide, separators=(",", ":")) + "}" * 491
         value = {"a": {"b": {"c": {"d": {"e": {"f": {"g": {"h": json.loads(compact)}}}}}}}}
+        legacy = encode(value, format="1.1")
         started = time.perf_counter()
-        self.assertEqual(encode(value), "a/b/c/d/e/f/g/h: " + compact)
+        self.assertEqual(encode(value), legacy)
         self.assertLess(time.perf_counter() - started, 4)

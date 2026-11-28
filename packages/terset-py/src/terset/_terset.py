@@ -19,6 +19,7 @@ JsonInputRoot: TypeAlias = "Mapping[str, JsonInputValue] | Sequence[JsonInputVal
 _MAX_JSON_DEPTH = 500
 _MAX_HEADER_SEGMENTS = 8
 _MAX_ENTRY_SEGMENTS = 8
+_MIN_PATH_SAVINGS_BYTES = 256
 _DEPTH_ERROR = "Maximum JSON depth is 500."
 _HeaderTrie: TypeAlias = "dict[str, _HeaderTrie | None]"
 
@@ -409,7 +410,7 @@ def _entry_form(name: _Text, value: JsonValue, compact: _Text, named: bool,
 
 
 def _plan_entry(name: _Text, value: JsonValue, remaining: int, compact: dict[int, _Text],
-                write_cell: Callable[[JsonValue], str]) -> tuple[_Text, _Text]:
+                write_cell: Callable[[JsonValue], str]) -> tuple[_Text, _Text, _Text]:
     path = None
     if remaining > 0 and isinstance(value, dict) and value:
         fields: list[_Text] = []
@@ -417,7 +418,7 @@ def _plan_entry(name: _Text, value: JsonValue, remaining: int, compact: dict[int
         for key in _keys(value):
             quoted = _quote(key)
             child_name = _join([name, _SLASH, _measured(key if _KEY.fullmatch(key) else quoted)])
-            child_json, child_entry = _plan_entry(child_name, value[key], remaining - 1, compact, write_cell)
+            child_json, _, child_entry = _plan_entry(child_name, value[key], remaining - 1, compact, write_cell)
             fields.append(_join([_measured(quoted + ":"), child_json]))
             entries.append(child_entry)
         json_text = _join([_OPEN_OBJECT, _join(fields, _COMMA), _CLOSE_OBJECT])
@@ -428,7 +429,7 @@ def _plan_entry(name: _Text, value: JsonValue, remaining: int, compact: dict[int
     if isinstance(value, (dict, list)):
         compact[id(value)] = json_text
     base = _entry_form(name, value, json_text, True, write_cell)
-    return json_text, path if path is not None and path.size < base.size else base
+    return json_text, base, path if path is not None and path.size < base.size else base
 
 
 def encode(value: JsonInputRoot, *, format: FormatVersion = "1.2") -> str:
@@ -470,8 +471,12 @@ def encode(value: JsonInputRoot, *, format: FormatVersion = "1.2") -> str:
         json_text.parts = text
         return text
 
-    return "\n".join(_render(_plan_entry(_measured(_key(key)), root[key], _MAX_ENTRY_SEGMENTS - 1, compact, write_cell)[1])
-                     for key in _keys(root))
+    plans = [_plan_entry(_measured(_key(key)), root[key], _MAX_ENTRY_SEGMENTS - 1, compact, write_cell)
+             for key in _keys(root)]
+    # Both candidates use the same line breaks between root entries.
+    savings = sum(base.size - entry.size for _, base, entry in plans)
+    use_paths = savings >= _MIN_PATH_SAVINGS_BYTES
+    return "\n".join(_render(entry if use_paths else base) for _, base, entry in plans)
 
 
 def _pairs(pairs: list[tuple[str, JsonValue]]) -> JsonObject:
