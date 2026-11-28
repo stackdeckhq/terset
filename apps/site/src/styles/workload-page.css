@@ -15,9 +15,10 @@
 .bt-wrong th, .bt-wrong td { text-align: left; vertical-align: top; }
 .bt-wrong td.q { white-space: normal; min-width: 18em; }
 .bt-wrong td.is-none { color: var(--muted-fg); font-style: italic; }
+.bt-wrong td.said { white-space: normal; min-width: 14em; overflow-wrap: anywhere; }
 
 .work-file h3 { font-size: var(--t-h3); font-weight: var(--w-head); letter-spacing: -.01em; color: var(--fg); margin: 0 0 var(--s-2); }
-.work-file + .work-file { margin-top: var(--s-5); }
+.work-file + .work-file, .bench-text > p + .work-file { margin-top: var(--s-5); }
 .work-file > p { margin: 0 0 var(--s-2); }
 
 .work-links a { overflow-wrap: anywhere; }

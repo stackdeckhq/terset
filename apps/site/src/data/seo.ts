@@ -34,7 +34,7 @@ export const PAGE_SEO: Readonly<Record<PagePath, PageSeo>> = {
   },
   '/workload': {
     title: 'Terset on real JSON files: LLM accuracy and input tokens',
-    description: 'Answer accuracy and whole-prompt input tokens for Terset, compact JSON and TOON on two real public files and two models, with every wrong answer.',
+    description: 'Accuracy and whole-prompt input tokens for Terset, compact JSON and TOON on two real public files, two models and two question sets, with every wrong answer.',
   },
   '/agents': {
     title: 'Terset for coding agents: LLM prompt, skill and llms.txt',

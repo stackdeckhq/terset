@@ -19,12 +19,21 @@ import {
   workloadPrices,
   wrongAnswerRows,
 } from '../data/workload.ts';
+import type { Real400AccuracyFile } from '../data/real-400-accuracy-schema.ts';
 import { DocPage } from './DocPage.tsx';
+import { REAL_400_ANCHOR, Real400Sections } from './Workload400.tsx';
 import { Lines, ModelTable, Text } from './WorkloadParts.tsx';
 
 export const WORKLOAD_TITLE = 'Accuracy on real files';
 
-export function WorkloadPage({ file, real }: { readonly file: RealAccuracyFile; readonly real: RealData }) {
+export interface WorkloadPageProps {
+  readonly file: RealAccuracyFile;
+  readonly real: RealData;
+  /** The 400-question run on the same files, shown after the 40-question content. */
+  readonly real400: Real400AccuracyFile;
+}
+
+export function WorkloadPage({ file, real, real400 }: WorkloadPageProps) {
   const frozenOn = [...new Set(real.files.map((item) => item.fetched))].join(' and ');
   const wrong = wrongAnswerRows(file);
   const answers = file.questions * file.formats.length * file.models.length;
@@ -35,9 +44,14 @@ export function WorkloadPage({ file, real }: { readonly file: RealAccuracyFile; 
       title={WORKLOAD_TITLE}
       lead={workloadHeadline(file).join(' ')}
       actions={
-        <a className="btn btn-line" href="/benchmark">
-          Full benchmark
-        </a>
+        <>
+          <a className="btn btn-line" href="/benchmark">
+            Full benchmark
+          </a>
+          <a className="btn btn-line" href={`#${REAL_400_ANCHOR}`}>
+            {`The ${formatCount(real400.questions)}-question run`}
+          </a>
+        </>
       }
     >
       <div className="bench-page work-page">
@@ -152,6 +166,8 @@ export function WorkloadPage({ file, real }: { readonly file: RealAccuracyFile; 
             </div>
           </Text>
         </section>
+
+        <Real400Sections file={real400} />
       </div>
     </DocPage>
   );

@@ -8,6 +8,7 @@ import { formatCount } from '../data/bench.ts';
 import { REAL } from '../data/real.ts';
 import { REAL_ACCURACY } from '../data/real-accuracy.ts';
 import type { RealAccuracyFile } from '../data/real-accuracy-schema.ts';
+import { REAL_400_ACCURACY } from '../data/real-400-accuracy.ts';
 import { WorkloadPage } from './Workload.tsx';
 
 const ROUTE = readFileSync(new URL('../routes/workload.tsx', import.meta.url), 'utf8');
@@ -15,7 +16,7 @@ const VIEW = ['./Workload.tsx', './WorkloadParts.tsx'].map((path) => readFileSyn
 const BENCHMARK_ROUTE = readFileSync(new URL('../routes/benchmark.tsx', import.meta.url), 'utf8');
 
 function render(file: RealAccuracyFile): string {
-  return renderToStaticMarkup(createElement(WorkloadPage, { file, real: REAL }));
+  return renderToStaticMarkup(createElement(WorkloadPage, { file, real: REAL, real400: REAL_400_ACCURACY }));
 }
 
 /** The page's text, without tags, so a number split by markup still reads as one. */
