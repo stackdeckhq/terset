@@ -28,12 +28,12 @@
     "gate": "pnpm generate && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm deploy:check"
   },
   "devDependencies": {
-    "@eslint/js": "9.39.1",
-    "@types/node": "24.10.1",
-    "eslint": "9.39.1",
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.6",
+    "eslint": "10.15.0",
     "eslint-plugin-react-hooks": "7.1.1",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.70.0",
-    "vitest": "4.1.12"
+    "typescript": "7.0.2",
+    "typescript-eslint": "8.73.0",
+    "vitest": "5.1.1"
   }
 }
