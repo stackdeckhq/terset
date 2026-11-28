@@ -17,6 +17,8 @@ import { BENCH_FILE, CLAUDE_FILE } from './numbers.ts';
 import { PRICES } from './prices.ts';
 import { PricesSchema } from './prices-schema.ts';
 import { REAL } from './real.ts';
+import { REAL_400_ACCURACY } from './real-400-accuracy.ts';
+import { Real400AccuracyFileSchema } from './real-400-accuracy-schema.ts';
 import { REAL_ACCURACY } from './real-accuracy.ts';
 import { RealAccuracyFileSchema } from './real-accuracy-schema.ts';
 import { RealDataSchema } from './real-data-schema.ts';
@@ -48,6 +50,7 @@ export const DATA_CHECKS: readonly DataCheck[] = [
   check('src/data/bytes-results.json', BytesFileSchema, BYTES),
   check('src/data/claude-counts.json', ClaudeCountsSchema, CLAUDE_FILE),
   check('src/data/prices.ts', PricesSchema, PRICES),
+  check('src/data/real-400-accuracy-results.json', Real400AccuracyFileSchema, REAL_400_ACCURACY),
   check('src/data/real-accuracy-results.json', RealAccuracyFileSchema, REAL_ACCURACY),
   check('src/data/real-data.json', RealDataSchema, REAL),
   check('src/data/seed-sweep.json', SeedSweepSchema, SWEEP),

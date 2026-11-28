@@ -1,4 +1,4 @@
-// Validation and raw-row scoring shared by the TOON and stress publication paths.
+// Validation and raw-row scoring shared by the publication scripts.
 import { z } from 'zod';
 import { ACCURACY_FORMATS } from '../src/data/accuracy-schema.ts';
 import type { AccuracyFormat } from '../src/data/accuracy-schema.ts';
@@ -96,8 +96,13 @@ export function equalField(a: unknown, b: unknown, field: string): void {
   if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`Published runs differ in ${field}`);
 }
 
-/** Every planned call answered, with failed attempts retained only when later answered. */
-export function validateRun(run: Pick<RunFile, 'runId' | 'rows' | 'plannedCalls' | 'models' | 'failures'>, allowedModels: readonly string[]): void {
+/** Every planned call answered, including retries for retained attempts. */
+export function validateRun(
+  run: Pick<RunFile, 'runId' | 'rows' | 'plannedCalls' | 'models'> & {
+    failures: Omit<RunFile['failures'][number], 'status'>[];
+  },
+  allowedModels: readonly string[],
+): void {
   if (run.rows.length !== run.plannedCalls) throw new Error(`The run recorded ${String(run.rows.length)} of ${String(run.plannedCalls)} planned calls`);
   if (new Set(run.models.map((model) => model.id)).size !== run.models.length) throw new Error('Duplicate model id');
   if (run.rows.some((row) => !run.models.some((model) => model.id === row.model))) throw new Error('Unknown row model');

@@ -18,7 +18,7 @@ function questionKey(row: Row): string {
   return JSON.stringify([row.model, row.dataset, row.questionId]);
 }
 
-function completeQuestions(rows: Row[], formats: Row['format'][]): Map<string, Map<Row['format'], Row>> {
+function completeQuestions(rows: Row[], formats: readonly Row['format'][]): Map<string, Map<Row['format'], Row>> {
   const coverage = new Map<string, Map<Row['format'], Row>>();
   for (const row of rows) {
     const id = questionKey(row);
@@ -120,32 +120,40 @@ const dollars = (value: number): string => `${value < 0 ? '-' : ''}$${Math.abs(v
 const cell = (value: string): string => value.replaceAll('|', '\\|').replaceAll('\n', ' ');
 const points = (value: number): string => (value * 100).toFixed(2);
 
-function pairedMarkdown(rows: Row[], tasks: Task[]): string[] {
-  const formats = [...new Set(tasks.map(task => task.format))];
+export function pairedComparisons(rows: Row[], models: readonly string[], formats: readonly Row['format'][]) {
   const others = formats.filter(format => format !== 'terset');
   if (!formats.includes('terset') || others.length === 0) return [];
   const complete = [...completeQuestions(rows, formats).values()];
+  return models.flatMap(model => {
+    const matched = complete.filter(question => question.get('terset')?.model === model);
+    return others.map(comparisonFormat => {
+      let tersetOnly = 0;
+      let otherOnly = 0;
+      for (const question of matched) {
+        const terset = question.get('terset')?.correct;
+        const other = question.get(comparisonFormat)?.correct;
+        if (terset === true && other === false) tersetOnly++;
+        if (terset === false && other === true) otherOnly++;
+      }
+      const total = matched.length;
+      return { model, comparisonFormat, total, tersetOnly, otherOnly, ...pairedAccuracy(tersetOnly, otherOnly, total) };
+    });
+  });
+}
+
+function pairedMarkdown(rows: Row[], tasks: Task[]): string[] {
+  const formats = [...new Set(tasks.map(task => task.format))];
+  const models = [...new Set(tasks.map(task => task.model.id))];
+  if (!formats.includes('terset') || formats.length < 2) return [];
   const lines = ['', '## Paired accuracy', '',
     'The gap is Terset accuracy minus the comparison format accuracy. The 95% paired interval uses conservative exact bounds.',
     'McNemar p-values are exact and two-sided. Questions share datasets, so use these results descriptively.', '',
     '| Model | Comparison format | Paired questions | Only Terset correct | Only comparison correct | Gap (pp) | Paired 95% CI (pp) | McNemar p |',
     '| --- | --- | ---: | ---: | ---: | ---: | --- | ---: |'];
-  for (const model of new Set(tasks.map(task => task.model.id))) {
-    const matched = complete.filter(question => question.get('terset')?.model === model);
-    for (const format of others) {
-      let tersetOnly = 0;
-      let otherOnly = 0;
-      for (const question of matched) {
-        const terset = question.get('terset')?.correct;
-        const other = question.get(format)?.correct;
-        if (terset === true && other === false) tersetOnly++;
-        if (terset === false && other === true) otherOnly++;
-      }
-      const { gap, interval95, pValue } = pairedAccuracy(tersetOnly, otherOnly, matched.length);
-      const interval = interval95 ? `${points(interval95.lower)} to ${points(interval95.upper)}` : 'N/A';
-      const p = gap === null ? 'N/A' : pValue === 1 ? '1' : pValue.toPrecision(3);
-      lines.push(`| ${cell(model)} | ${format} | ${matched.length} | ${tersetOnly} | ${otherOnly} | ${gap === null ? 'N/A' : points(gap)} | ${interval} | ${p} |`);
-    }
+  for (const { model, comparisonFormat, total, tersetOnly, otherOnly, gap, interval95, pValue } of pairedComparisons(rows, models, formats)) {
+    const interval = interval95 ? `${points(interval95.lower)} to ${points(interval95.upper)}` : 'N/A';
+    const p = gap === null ? 'N/A' : pValue === 1 ? '1' : pValue.toPrecision(3);
+    lines.push(`| ${cell(model)} | ${comparisonFormat} | ${total} | ${tersetOnly} | ${otherOnly} | ${gap === null ? 'N/A' : points(gap)} | ${interval} | ${p} |`);
   }
   return lines;
 }

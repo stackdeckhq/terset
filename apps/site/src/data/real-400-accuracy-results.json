@@ -1,0 +1,898 @@
+{
+  "suite": "real-400",
+  "questions": 400,
+  "perCallMaxOutputTokens": 8192,
+  "formats": [
+    "json-compact",
+    "toon",
+    "terset"
+  ],
+  "datasets": [
+    "usgs-earthquakes",
+    "nws-gridpoint"
+  ],
+  "publishedRuns": [
+    {
+      "runId": "real400-opus-2026-11-28",
+      "runOn": "2026-11-28",
+      "publishedPath": "bench/published/2026-11-28",
+      "model": "claude-opus-5-5",
+      "price": {
+        "inputPerMillion": 4,
+        "outputPerMillion": 20,
+        "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "dateRead": "2026-11-26"
+      },
+      "retainedCharges": 1
+    },
+    {
+      "runId": "real400-sol-2026-11-28",
+      "runOn": "2026-11-28",
+      "publishedPath": "bench/published/2026-11-28",
+      "model": "gpt-6.2-sol",
+      "price": {
+        "inputPerMillion": 2,
+        "outputPerMillion": 10,
+        "sourceUrl": "https://developers.openai.com/api/docs/pricing",
+        "dateRead": "2026-11-26"
+      },
+      "retainedCharges": 0
+    }
+  ],
+  "pilotRuns": [
+    {
+      "runId": "real400-pilot-opus-2026-11-28",
+      "runOn": "2026-11-28",
+      "publishedPath": "bench/published/2026-11-28",
+      "model": "claude-opus-5-5",
+      "price": {
+        "inputPerMillion": 4,
+        "outputPerMillion": 20,
+        "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "dateRead": "2026-11-26"
+      },
+      "retainedCharges": 0
+    },
+    {
+      "runId": "real400-pilot-sol-2026-11-28",
+      "runOn": "2026-11-28",
+      "publishedPath": "bench/published/2026-11-28",
+      "model": "gpt-6.2-sol",
+      "price": {
+        "inputPerMillion": 2,
+        "outputPerMillion": 10,
+        "sourceUrl": "https://developers.openai.com/api/docs/pricing",
+        "dateRead": "2026-11-26"
+      },
+      "retainedCharges": 0
+    }
+  ],
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "rows": [
+        {
+          "format": "json-compact",
+          "dataset": "ALL",
+          "correct": 398,
+          "total": 400,
+          "inputTokens": 24769266,
+          "outputTokens": 139069,
+          "totalCost": 101.85844399999999,
+          "inputTokenDelta": 0,
+          "inputTokenChangePct": 0
+        },
+        {
+          "format": "toon",
+          "dataset": "ALL",
+          "correct": 398,
+          "total": 400,
+          "inputTokens": 24401266,
+          "outputTokens": 117571,
+          "totalCost": 99.956484,
+          "inputTokenDelta": -368000,
+          "inputTokenChangePct": -1.485712172496351
+        },
+        {
+          "format": "terset",
+          "dataset": "ALL",
+          "correct": 400,
+          "total": 400,
+          "inputTokens": 19199666,
+          "outputTokens": 128589,
+          "totalCost": 79.370444,
+          "inputTokenDelta": -5569600,
+          "inputTokenChangePct": -22.485930749825204
+        },
+        {
+          "format": "json-compact",
+          "dataset": "usgs-earthquakes",
+          "correct": 200,
+          "total": 200,
+          "inputTokens": 16404962,
+          "outputTokens": 88945,
+          "totalCost": 67.398748,
+          "inputTokenDelta": 0,
+          "inputTokenChangePct": 0
+        },
+        {
+          "format": "toon",
+          "dataset": "usgs-earthquakes",
+          "correct": 199,
+          "total": 200,
+          "inputTokens": 17508162,
+          "outputTokens": 79879,
+          "totalCost": 71.63022799999999,
+          "inputTokenDelta": 1103200,
+          "inputTokenChangePct": 6.724794607875349
+        },
+        {
+          "format": "terset",
+          "dataset": "usgs-earthquakes",
+          "correct": 200,
+          "total": 200,
+          "inputTokens": 10840762,
+          "outputTokens": 80780,
+          "totalCost": 44.978648,
+          "inputTokenDelta": -5564200,
+          "inputTokenChangePct": -33.91778658188906
+        },
+        {
+          "format": "json-compact",
+          "dataset": "nws-gridpoint",
+          "correct": 198,
+          "total": 200,
+          "inputTokens": 8364304,
+          "outputTokens": 50124,
+          "totalCost": 34.459696,
+          "inputTokenDelta": 0,
+          "inputTokenChangePct": 0
+        },
+        {
+          "format": "toon",
+          "dataset": "nws-gridpoint",
+          "correct": 199,
+          "total": 200,
+          "inputTokens": 6893104,
+          "outputTokens": 37692,
+          "totalCost": 28.326256,
+          "inputTokenDelta": -1471200,
+          "inputTokenChangePct": -17.58903071911303
+        },
+        {
+          "format": "terset",
+          "dataset": "nws-gridpoint",
+          "correct": 200,
+          "total": 200,
+          "inputTokens": 8358904,
+          "outputTokens": 47809,
+          "totalCost": 34.39179600000001,
+          "inputTokenDelta": -5400,
+          "inputTokenChangePct": -0.06456006381403641
+        }
+      ],
+      "paired": [
+        {
+          "comparisonFormat": "json-compact",
+          "total": 400,
+          "tersetOnly": 2,
+          "otherOnly": 0,
+          "gapPoints": 0.5,
+          "interval95Points": {
+            "lower": -1.0477078290453967,
+            "upper": 2.01508721959629
+          },
+          "pValue": 0.5
+        },
+        {
+          "comparisonFormat": "toon",
+          "total": 400,
+          "tersetOnly": 2,
+          "otherOnly": 0,
+          "gapPoints": 0.5,
+          "interval95Points": {
+            "lower": -1.0477078290453967,
+            "upper": 2.01508721959629
+          },
+          "pValue": 0.5
+        }
+      ],
+      "wrongByKind": [
+        {
+          "kind": "field-retrieval",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "count",
+          "counts": {
+            "json-compact": 1,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "extreme",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "nested-lookup",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "count-two-conditions",
+          "counts": {
+            "json-compact": 1,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "compare",
+          "counts": {
+            "json-compact": 0,
+            "toon": 1,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "position",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "rank",
+          "counts": {
+            "json-compact": 0,
+            "toon": 1,
+            "terset": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "gpt-6.2-sol",
+      "rows": [
+        {
+          "format": "json-compact",
+          "dataset": "ALL",
+          "correct": 389,
+          "total": 400,
+          "inputTokens": 17908786,
+          "outputTokens": 35178,
+          "totalCost": 36.169351999999996,
+          "inputTokenDelta": 0,
+          "inputTokenChangePct": 0
+        },
+        {
+          "format": "toon",
+          "dataset": "ALL",
+          "correct": 389,
+          "total": 400,
+          "inputTokens": 19211386,
+          "outputTokens": 32496,
+          "totalCost": 38.747732,
+          "inputTokenDelta": 1302600,
+          "inputTokenChangePct": 7.273524849758102
+        },
+        {
+          "format": "terset",
+          "dataset": "ALL",
+          "correct": 390,
+          "total": 400,
+          "inputTokens": 14537986,
+          "outputTokens": 33945,
+          "totalCost": 29.415422,
+          "inputTokenDelta": -3370800,
+          "inputTokenChangePct": -18.82204634082958
+        },
+        {
+          "format": "json-compact",
+          "dataset": "usgs-earthquakes",
+          "correct": 191,
+          "total": 200,
+          "inputTokens": 11069994,
+          "outputTokens": 21120,
+          "totalCost": 22.351188,
+          "inputTokenDelta": 0,
+          "inputTokenChangePct": 0
+        },
+        {
+          "format": "toon",
+          "dataset": "usgs-earthquakes",
+          "correct": 193,
+          "total": 200,
+          "inputTokens": 12959994,
+          "outputTokens": 22134,
+          "totalCost": 26.141328,
+          "inputTokenDelta": 1890000,
+          "inputTokenChangePct": 17.07317998546341
+        },
+        {
+          "format": "terset",
+          "dataset": "usgs-earthquakes",
+          "correct": 193,
+          "total": 200,
+          "inputTokens": 7701194,
+          "outputTokens": 21418,
+          "totalCost": 15.616568000000001,
+          "inputTokenDelta": -3368800,
+          "inputTokenChangePct": -30.431814145518054
+        },
+        {
+          "format": "json-compact",
+          "dataset": "nws-gridpoint",
+          "correct": 198,
+          "total": 200,
+          "inputTokens": 6838792,
+          "outputTokens": 14058,
+          "totalCost": 13.818164,
+          "inputTokenDelta": 0,
+          "inputTokenChangePct": 0
+        },
+        {
+          "format": "toon",
+          "dataset": "nws-gridpoint",
+          "correct": 196,
+          "total": 200,
+          "inputTokens": 6251392,
+          "outputTokens": 10362,
+          "totalCost": 12.606404,
+          "inputTokenDelta": -587400,
+          "inputTokenChangePct": -8.589236227684657
+        },
+        {
+          "format": "terset",
+          "dataset": "nws-gridpoint",
+          "correct": 197,
+          "total": 200,
+          "inputTokens": 6836792,
+          "outputTokens": 12527,
+          "totalCost": 13.798854,
+          "inputTokenDelta": -2000,
+          "inputTokenChangePct": -0.02924493097611391
+        }
+      ],
+      "paired": [
+        {
+          "comparisonFormat": "json-compact",
+          "total": 400,
+          "tersetOnly": 7,
+          "otherOnly": 6,
+          "gapPoints": 0.25,
+          "interval95Points": {
+            "lower": -2.9045155846566306,
+            "upper": 3.3933764708289127
+          },
+          "pValue": 1
+        },
+        {
+          "comparisonFormat": "toon",
+          "total": 400,
+          "tersetOnly": 5,
+          "otherOnly": 4,
+          "gapPoints": 0.25,
+          "interval95Points": {
+            "lower": -2.454694004243718,
+            "upper": 2.939818377197523
+          },
+          "pValue": 1
+        }
+      ],
+      "wrongByKind": [
+        {
+          "kind": "field-retrieval",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "count",
+          "counts": {
+            "json-compact": 10,
+            "toon": 11,
+            "terset": 8
+          }
+        },
+        {
+          "kind": "extreme",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "nested-lookup",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "count-two-conditions",
+          "counts": {
+            "json-compact": 1,
+            "toon": 0,
+            "terset": 1
+          }
+        },
+        {
+          "kind": "compare",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        },
+        {
+          "kind": "position",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 1
+          }
+        },
+        {
+          "kind": "rank",
+          "counts": {
+            "json-compact": 0,
+            "toon": 0,
+            "terset": 0
+          }
+        }
+      ]
+    }
+  ],
+  "wrongAnswers": [
+    {
+      "model": "claude-opus-5-5",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q140",
+      "prompt": "Which feature id, \"us7000tyrd\" or \"uu80164966\", has the smaller properties.rms?",
+      "kind": "compare",
+      "expected": "uu80164966",
+      "text": "us7000tyrd rms 0.73; uu80164966 rms 0.14.\n\nuu80164966",
+      "outputTokens": 35,
+      "hitOutputCap": false
+    },
+    {
+      "model": "claude-opus-5-5",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "q227",
+      "prompt": "How many entries in properties.temperature.values have a numeric value greater than 11?",
+      "kind": "count",
+      "expected": "79",
+      "text": "80",
+      "outputTokens": 900,
+      "hitOutputCap": false
+    },
+    {
+      "model": "claude-opus-5-5",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "q301",
+      "prompt": "How many entries in properties.temperature.values have a numeric value greater than 3.6 and a validTime start at or after \"2026-11-17T20:00:00+00:00\"?",
+      "kind": "count-two-conditions",
+      "expected": "143",
+      "text": "142",
+      "outputTokens": 724,
+      "hitOutputCap": false
+    },
+    {
+      "model": "claude-opus-5-5",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "q391",
+      "prompt": "In properties.probabilityOfPrecipitation.values, what is the exact validTime of the entry with the fourth highest numeric value?",
+      "kind": "rank",
+      "expected": "2026-11-22T06:00:00+00:00/PT6H",
+      "text": "2026-11-23T00:00:00+00:00/PT6H",
+      "outputTokens": 23,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q029",
+      "prompt": "How many features have properties.mag greater than 1.975?",
+      "kind": "count",
+      "expected": "84",
+      "text": "82",
+      "outputTokens": 431,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q033",
+      "prompt": "How many features have properties.sig greater than 66?",
+      "kind": "count",
+      "expected": "75",
+      "text": "74",
+      "outputTokens": 360,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q036",
+      "prompt": "How many features have properties.nst greater than 36.5?",
+      "kind": "count",
+      "expected": "43",
+      "text": "42",
+      "outputTokens": 349,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q036",
+      "prompt": "How many features have properties.nst greater than 36.5?",
+      "kind": "count",
+      "expected": "43",
+      "text": "41",
+      "outputTokens": 668,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q038",
+      "prompt": "How many features have properties.dmin greater than 0.008?",
+      "kind": "count",
+      "expected": "189",
+      "text": "192",
+      "outputTokens": 1218,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q038",
+      "prompt": "How many features have properties.dmin greater than 0.008?",
+      "kind": "count",
+      "expected": "189",
+      "text": "190",
+      "outputTokens": 877,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q039",
+      "prompt": "How many features have properties.dmin greater than 0.022?",
+      "kind": "count",
+      "expected": "164",
+      "text": "166",
+      "outputTokens": 1112,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q041",
+      "prompt": "How many features have properties.dmin greater than 0.056?",
+      "kind": "count",
+      "expected": "112",
+      "text": "113",
+      "outputTokens": 737,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q042",
+      "prompt": "How many features have properties.dmin greater than 0.148?",
+      "kind": "count",
+      "expected": "78",
+      "text": "79",
+      "outputTokens": 718,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q042",
+      "prompt": "How many features have properties.dmin greater than 0.148?",
+      "kind": "count",
+      "expected": "78",
+      "text": "77",
+      "outputTokens": 639,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q044",
+      "prompt": "How many features have properties.rms greater than 0.065?",
+      "kind": "count",
+      "expected": "179",
+      "text": "181",
+      "outputTokens": 894,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q045",
+      "prompt": "How many features have properties.rms greater than 0.36?",
+      "kind": "count",
+      "expected": "60",
+      "text": "59",
+      "outputTokens": 299,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q045",
+      "prompt": "How many features have properties.rms greater than 0.36?",
+      "kind": "count",
+      "expected": "60",
+      "text": "59",
+      "outputTokens": 470,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q047",
+      "prompt": "How many features have properties.gap greater than 53.5?",
+      "kind": "count",
+      "expected": "181",
+      "text": "180",
+      "outputTokens": 719,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q047",
+      "prompt": "How many features have properties.gap greater than 53.5?",
+      "kind": "count",
+      "expected": "181",
+      "text": "182",
+      "outputTokens": 2186,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q048",
+      "prompt": "How many features have properties.gap greater than 78.5?",
+      "kind": "count",
+      "expected": "131",
+      "text": "132",
+      "outputTokens": 908,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q049",
+      "prompt": "How many features have properties.gap greater than 109.5?",
+      "kind": "count",
+      "expected": "86",
+      "text": "84",
+      "outputTokens": 783,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q049",
+      "prompt": "How many features have properties.gap greater than 109.5?",
+      "kind": "count",
+      "expected": "86",
+      "text": "85",
+      "outputTokens": 870,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q049",
+      "prompt": "How many features have properties.gap greater than 109.5?",
+      "kind": "count",
+      "expected": "86",
+      "text": "84",
+      "outputTokens": 785,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q050",
+      "prompt": "How many features have properties.gap greater than 149?",
+      "kind": "count",
+      "expected": "40",
+      "text": "37",
+      "outputTokens": 406,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q050",
+      "prompt": "How many features have properties.gap greater than 149?",
+      "kind": "count",
+      "expected": "40",
+      "text": "39",
+      "outputTokens": 309,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q050",
+      "prompt": "How many features have properties.gap greater than 149?",
+      "kind": "count",
+      "expected": "40",
+      "text": "37",
+      "outputTokens": 200,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "q122",
+      "prompt": "How many features have properties.gap greater than 85.5 and properties.net \"ak\"?",
+      "kind": "count-two-conditions",
+      "expected": "38",
+      "text": "37",
+      "outputTokens": 448,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "q227",
+      "prompt": "How many entries in properties.temperature.values have a numeric value greater than 11?",
+      "kind": "count",
+      "expected": "79",
+      "text": "78",
+      "outputTokens": 278,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "q233",
+      "prompt": "How many entries in properties.relativeHumidity.values have a numeric value greater than 65?",
+      "kind": "count",
+      "expected": "83",
+      "text": "82",
+      "outputTokens": 255,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "q236",
+      "prompt": "How many entries in properties.apparentTemperature.values have a numeric value greater than 7.5?",
+      "kind": "count",
+      "expected": "116",
+      "text": "115",
+      "outputTokens": 320,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "q236",
+      "prompt": "How many entries in properties.apparentTemperature.values have a numeric value greater than 7.5?",
+      "kind": "count",
+      "expected": "116",
+      "text": "115",
+      "outputTokens": 465,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "q236",
+      "prompt": "How many entries in properties.apparentTemperature.values have a numeric value greater than 7.5?",
+      "kind": "count",
+      "expected": "116",
+      "text": "115",
+      "outputTokens": 330,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "q243",
+      "prompt": "How many entries in properties.windDirection.values have a numeric value greater than 235?",
+      "kind": "count",
+      "expected": "39",
+      "text": "40",
+      "outputTokens": 119,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "q246",
+      "prompt": "How many entries in properties.probabilityOfPrecipitation.values have a numeric value greater than 2.5?",
+      "kind": "count",
+      "expected": "9",
+      "text": "8",
+      "outputTokens": 5,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "q302",
+      "prompt": "How many entries in properties.temperature.values have a numeric value greater than 8 and a validTime start at or after \"2026-11-19T10:00:00+00:00\"?",
+      "kind": "count-two-conditions",
+      "expected": "90",
+      "text": "89",
+      "outputTokens": 246,
+      "hitOutputCap": false
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "q373",
+      "prompt": "What is the exact validTime of entry 8 in properties.probabilityOfPrecipitation.values, counting from 1 in the given order?",
+      "kind": "position",
+      "expected": "2026-11-23T00:00:00+00:00/PT6H",
+      "text": "2026-11-22T18:00:00+00:00/PT6H",
+      "outputTokens": 23,
+      "hitOutputCap": false
+    }
+  ]
+}
