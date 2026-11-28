@@ -56,7 +56,10 @@ it("round-trips 30,000 seeded JSON object and array roots weighted toward genera
   const texts: string[] = [];
   const fitted: string[] = [];
   for (let index = 0; index < 30_000; index++) {
-    const input: JsonRoot = index % 7 === 0 ? { a: { "b/c": { d: rows(random) } } }
+    const input: JsonRoot = index % 7 === 0 ? {
+      a: { "b/c": { d: rows(random) } },
+      t: { r: Array.from({ length: 40 + index % 10 }, (_, v) => ({ v })) },
+    }
       : random() < 0.45 ? rows(random)
       : Object.fromEntries(Array.from({ length: 1 + Math.floor(random() * 5) }, () => [pick(random, KEYS), random() < 0.75 ? rows(random) : value(random, 4)]));
     try {
@@ -68,7 +71,7 @@ it("round-trips 30,000 seeded JSON object and array roots weighted toward genera
       texts.push(text);
       fitted.push(rules);
       if (rules.includes(SENTENCES.path)) paths++;
-      assert.ok(Buffer.byteLength(text) <= Buffer.byteLength(v11));
+      if (text !== v11) assert.ok(Buffer.byteLength(v11) - Buffer.byteLength(text) >= 256);
       if (Array.isArray(input) ? /^\[\d+\]\n/.test(text) : text.includes(":\n")) tables++;
       assert.deepEqual(decode(text), input);
       assert.equal(JSON.stringify(decode(text)), JSON.stringify(input));

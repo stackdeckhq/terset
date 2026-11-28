@@ -139,13 +139,13 @@
   },
   {
     "name": "path with a quoted segment and quoted value",
-    "text": "a/\"b/c\": \"true\"",
-    "features": ["quoted", "path"],
-    "rules": "JSON quotes distinguish numeric, boolean or null text from scalars. Key a/b is field b in object a."
+    "text": "a/\"b/c\": \"true\"\nt/r[44]:\nv\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1",
+    "features": ["table", "quoted", "path"],
+    "rules": "Tables use tab-separated headers and rows. JSON quotes distinguish numeric, boolean or null text from scalars. Key a/b is field b in object a."
   },
   {
     "name": "dotted table header under a slash path",
-    "text": "a/rows[2]:\nb.c\n1\n2",
+    "text": "a/rows[24]:\nb.c\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2",
     "features": ["table", "nested", "path"],
     "rules": "Tables use tab-separated headers and rows. Header a.b is field b in object a. Key a/b is field b in object a."
   },

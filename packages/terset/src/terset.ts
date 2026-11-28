@@ -7,6 +7,7 @@ export type JsonRoot = JsonObject | JsonValue[];
 
 const MAX_JSON_DEPTH = 500;
 const MAX_HEADER_SEGMENTS = 8;
+const MIN_PATH_SAVINGS_BYTES = 256;
 const DEPTH_ERROR = "Maximum JSON depth is 500.";
 
 /** Format version to write. The decoder accepts all three versions. */
@@ -174,7 +175,7 @@ function listTable(value: JsonValue, named: boolean, bytes?: number, writeCell =
 // Keep measured fragments so a parent can count a child's JSON or path
 // lines without serializing or copying either candidate again.
 interface Text { bytes: number; parts: string | Text[] }
-interface EntryPlan { json: Text; entry: Text }
+interface EntryPlan { json: Text; base: Text; entry: Text }
 
 function measured(parts: string): Text {
   return { bytes: utf8.encode(parts).length, parts };
@@ -244,19 +245,15 @@ function planEntry(name: Text, value: JsonValue, remaining: number, compact: Wea
   }
   if (value !== null && typeof value === "object") compact.set(value, json);
   const base = entryForm(name, value, json, true, writeCell);
-  return { json, entry: path && path.bytes < base.bytes ? path : base };
-}
-
-function formatOption(options: unknown): FormatVersion {
-  if (typeof options !== "object" || options === null || Array.isArray(options)) throw new TypeError("Expected an options object.");
-  const { format = "1.2" } = options as { format?: unknown };
-  if (format !== "1.0" && format !== "1.1" && format !== "1.2") throw new TypeError('format must be "1.0", "1.1" or "1.2".');
-  return format;
+  return { json, base, entry: path && path.bytes < base.bytes ? path : base };
 }
 
 /** Encode a JSON object or array as Terset text. */
 export function encode(value: JsonRoot, options: EncodeOptions = {}): string {
-  const format = formatOption(options);
+  const given: unknown = options;
+  if (typeof given !== "object" || given === null || Array.isArray(given)) throw new TypeError("Expected an options object.");
+  const { format = "1.2" } = given as { format?: unknown };
+  if (format !== "1.0" && format !== "1.1" && format !== "1.2") throw new TypeError('format must be "1.0", "1.1" or "1.2".');
   const named = format !== "1.0";
   validate(value);
   if (Array.isArray(value)) {
@@ -279,8 +276,12 @@ export function encode(value: JsonRoot, options: EncodeOptions = {}): string {
     json.parts = text;
     return text;
   };
-  return Object.entries(value).map(([key, entry]) =>
-    render(planEntry(measured(keyText(key)), entry, MAX_ENTRY_SEGMENTS - 1, compact, writeCell).entry)).join("\n");
+  const plans = Object.entries(value).map(([key, entry]) =>
+    planEntry(measured(keyText(key)), entry, MAX_ENTRY_SEGMENTS - 1, compact, writeCell));
+  // Both candidates use the same line breaks between root entries.
+  const savings = plans.reduce((bytes, plan) => bytes + plan.base.bytes - plan.entry.bytes, 0);
+  const usePaths = savings >= MIN_PATH_SAVINGS_BYTES;
+  return plans.map(plan => render(usePaths ? plan.entry : plan.base)).join("\n");
 }
 
 function readCell(text: string): JsonValue {

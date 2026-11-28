@@ -34,6 +34,7 @@ it("reports path conflicts and length errors", () => {
     ["a: {}\na/b: 1", "Duplicate or conflicting entry path."],
     ["a/b: 1\na: {}", "Duplicate or conflicting entry path."],
     ["a/b/c/d/e/f/g/h/i: 1", "Maximum entry path is 8 segments."],
+    ["a/b: 1", "Noncanonical Terset text."],
     ["a/b: 1\nz: 0\na/c: 2", "Noncanonical Terset text."],
   ] as const) {
     assert.throws(() => decode(text), { name: "SyntaxError", message });
@@ -42,11 +43,12 @@ it("reports path conflicts and length errors", () => {
 });
 
 it("keeps the depth limit when a table hangs from a path", () => {
-  const prefix = "a/b/c/d/e/f/g/h[2]:\nv\n";
+  const prefix = "a/b/c/d/e/f/g/h[44]:\nv\n";
+  const rows = "\n2".repeat(43);
   // The first row is at depth 9 and its v cell at depth 10.
   const cell = (levels: number) => '{"next":'.repeat(levels) + "1" + "}".repeat(levels);
-  assert.doesNotThrow(() => decode(prefix + cell(490) + "\n2"));
-  assert.throws(() => decode(prefix + cell(491) + "\n2"), {
+  assert.doesNotThrow(() => decode(prefix + cell(490) + rows));
+  assert.throws(() => decode(prefix + cell(491) + rows), {
     name: "SyntaxError", message: "Maximum JSON depth is 500.",
   });
 });
@@ -56,9 +58,9 @@ it("encodes wide values at the end of deep object paths", () => {
   const wide = Object.fromEntries(Array.from({ length: 20_000 }, (_, index) => [String(index), index]));
   let leaf: JsonValue = wide;
   for (let depth = 0; depth < 491; depth++) leaf = { next: leaf };
-  const json = '{"next":'.repeat(491) + JSON.stringify(wide) + "}".repeat(491);
   const input = { a: { b: { c: { d: { e: { f: { g: { h: leaf } } } } } } } };
+  const legacy = encode(input, { format: "1.1" });
   const start = performance.now();
-  assert.equal(encode(input), "a/b/c/d/e/f/g/h: " + json);
+  assert.equal(encode(input), legacy);
   assert.ok(performance.now() - start < 2_000);
 });
