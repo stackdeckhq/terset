@@ -28,7 +28,7 @@ canonical 1.0 text of the same value. It rejects a document that mixes the
 two. The 1.1 suite lives in `conformance/1.1/`.
 
 Format 1.2 is the default in both packages. It adds path entries for fields
-inside objects when the expansion takes fewer bytes (see "Path entries").
+inside objects when the document meets the byte margin in "Path entries".
 A bare slash between keys is new syntax that 1.0 and 1.1 decoders reject.
 A 1.2 decoder accepts the canonical text of any of the three versions.
 The 1.2 suite lives in `conformance/1.2/`. The rules below apply to all
@@ -245,11 +245,17 @@ headers still follow the header rules.
 Compare the complete 1.1 entry with the expansion, using the entry's
 full name for both. The 1.1 entry uses the ordinary 1.1 selection rules,
 with the full name in place of the root key. The expansion joins the
-canonical 1.2 entries of the members with LF, with no added final LF.
+selected entries of the members with LF, with no added final LF.
 Measure both candidates in UTF-8 bytes, including names, counts,
 headers, rows and line breaks. Choose the expansion only when it is
 strictly smaller. A tie keeps the 1.1 entry. This comparison works
 from the leaves up.
+
+For a root object, join the selected entries with LF to form the path
+candidate. Compare the whole candidate with the format 1.1 text in UTF-8
+bytes. Write the path candidate only if it saves at least 256 bytes.
+Otherwise write the format 1.1 text. The rules line costs tokens, so a
+small saving in data can increase the total prompt tokens.
 
 An entry name has at most 8 path segments, including the root key.
 At the eighth segment use the 1.1 entry. Table rules inside that
@@ -335,10 +341,10 @@ longer than eight segments and paths with missing or invalid keys.
 
 All the entries under an expanded parent form one contiguous group,
 including the rows of its tables. A decoder rejects interleaved groups.
-It also rejects expansions that tie or lose the byte comparison. The
-whole document must equal the canonical encoding of its value in 1.2,
-1.1 or 1.0. For instance, a document with a path and a 1.0 empty cell
-cannot mix the two versions.
+For a document with a path entry, the whole text must match the canonical
+1.2 encoding of its value. This rejects a document that falls short of the
+byte margin or mixes paths with 1.0 empty cells. A document without a path
+entry must match the canonical 1.1 or 1.0 encoding of its value.
 
 ## Limits
 

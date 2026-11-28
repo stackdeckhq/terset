@@ -1,4 +1,6 @@
 [
+  "a/b: 1",
+  "a/r[42]:\nv\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\nb/c: 1\nb/d: 2",
   "a/b: 1\na/b: 2",
   "a/b: 1\na/\"b\": 2",
   "a: 0\na/b: 1",

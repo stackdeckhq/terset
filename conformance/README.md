@@ -157,9 +157,10 @@ for text in loadJSON("1.1/rejections.json"):
 
 ## Format 1.2
 
-Format 1.2 adds slash-separated entry paths. An object can expand into its
-members when the complete expansion is smaller in UTF-8 bytes. A path has
-at most eight segments. A slash inside a quoted key is literal.
+Format 1.2 adds slash-separated entry paths. It uses the path candidate only
+if the entire document saves at least 256 UTF-8 bytes over format 1.1.
+The cases cover both sides of the margin. A path has at most eight
+segments. A slash inside a quoted key is literal.
 
 The files in `1.2/` have the same shapes as those in `1.1/`. Run the
 same checks with format `"1.2"`. A 1.2 decoder must also keep accepting
