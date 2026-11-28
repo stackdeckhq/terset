@@ -73,7 +73,7 @@ describe('format versions', () => {
   it('names as the default the version encode writes with no option, in both packages', () => {
     expect(DEFAULT_FORMAT).toBe('1.2');
     expect(encode(FORMAT_EXAMPLE.input)).toBe(encode(FORMAT_EXAMPLE.input, { format: DEFAULT_FORMAT }));
-    expect(JS_SOURCE).toContain(`const { format = "${DEFAULT_FORMAT}" } = options`);
+    expect(JS_SOURCE).toContain(`const { format = "${DEFAULT_FORMAT}" }`);
     expect(PY_SOURCE).toContain(`format: FormatVersion = "${DEFAULT_FORMAT}"`);
     expect(runPython().defaultText).toBe(FORMAT_EXAMPLE.terset);
   });

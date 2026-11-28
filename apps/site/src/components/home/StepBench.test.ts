@@ -36,7 +36,7 @@ describe('step 6 views', () => {
       expect(view.orders).toEqual(counter.samples.orders);
     }
     const [open, claude] = views;
-    expect(open?.headline).toEqual({ title: 'Fewer tokens than TOON in 8 of 11 cases.', tag: 'OpenAI tokenizer', line: 'Fewer than compact JSON in 9 of 11.' });
+    expect(open?.headline).toEqual({ title: 'Fewer tokens than TOON in 9 of 11 cases.', tag: 'OpenAI tokenizer', line: 'Fewer than compact JSON in 10 of 11.' });
     expect(claude?.headline).toEqual({ title: 'Fewer tokens than TOON in 10 of 11 cases.', tag: 'Claude Opus 5.5, Terset 1.1', line: 'Fewer than compact JSON in 10 of 11.' });
     expect(open?.orders).toEqual(BENCH.status === 'ready' ? BENCH.samples.orders : null);
     expect(claude?.orders).toEqual(counters.claude.samples.orders);

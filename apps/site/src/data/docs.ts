@@ -314,7 +314,7 @@ export const CHEAT_SHEET: readonly CheatInput[] = [
   {
     id: 'path',
     title: 'Path entries',
-    about: 'A slash separates nested keys, as in `a/b: 1`. The encoder uses paths only when they take fewer bytes.',
+    about: 'A slash separates nested keys, as in `a/b: 1`. Format 1.2 uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1.',
     value: { a: { b: 1 } },
   },
   {
@@ -380,7 +380,7 @@ export const DEPTH_NOTE = 'In Python, very deep data and an already deep call st
 // 7. When not to use it. Shared word for word with both package READMEs.
 
 export const WHEN_NOT: readonly { readonly title: string; readonly text: string }[] = [
-  { title: 'No lists of records.', text: 'Path entries can save bytes and still cost more tokens. Compact JSON uses fewer tokens on the config example once Terset includes its rules line.' },
+  { title: 'No lists of records.', text: 'Small config files can stay close to compact JSON. The config example uses no rules and ties compact JSON on o200k_base.' },
   { title: 'One-row lists.', text: 'A list needs two or more objects to become a table.' },
   { title: 'Mixed arrays.', text: 'A list with any item that is not an object stays JSON.' },
   { title: 'Lists inside rows.', text: 'A list inside a table row stays JSON in its cell. A list under an object path can have its own table.' },

@@ -73,8 +73,8 @@ describe('bench chart bar marks', () => {
     const html = render(counters);
     expectMinMarks(counters.o200k, html);
     const nested = rowsOf(html).get('Deep nested config') ?? '';
-    expect(nested).toContain('class="brow json min"');
-    expect(nested).toContain('class="brow terset"');
+    expect(nested).toContain('class="brow json"');
+    expect(nested).toContain('class="brow terset min"');
   });
 
   it('marks the smallest count in every Claude case', () => {

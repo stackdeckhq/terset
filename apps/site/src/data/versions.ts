@@ -97,13 +97,13 @@ function buildFormatExample(input: JsonObject): FormatExample {
 /** The same input as the worked example on /benchmark and in the READMEs. */
 export const FORMAT_EXAMPLE: FormatExample = buildFormatExample(WORKED_EXAMPLE.input);
 
-const PATH_EXAMPLE = { a: { b: 1 } };
-export const DEFAULT_FORMAT: FormatVersion = defaultFormat({ ...FORMAT_EXAMPLE.input, ...PATH_EXAMPLE });
+const PATH_PROBE = { a: { rows: Array.from({ length: 44 }, () => ({ v: 1 })) } };
+export const DEFAULT_FORMAT: FormatVersion = defaultFormat({ ...FORMAT_EXAMPLE.input, ...PATH_PROBE });
 
 const VERSION_STATUS: Readonly<Record<FormatVersion, string>> = {
   '1.0': 'Frozen. The current packages still read and write it.',
   '1.1': 'Adds named cells for fields only some rows have. The current packages still read and write it.',
-  '1.2': 'The default. Adds slash-separated keys for fields inside objects when they take fewer bytes.',
+  '1.2': 'The default. Uses slash-separated keys when the document saves at least 256 UTF-8 bytes over 1.1.',
 };
 
 function suiteFor(version: FormatVersion): ConformanceSuite {
@@ -137,7 +137,7 @@ function exampleMarkdown(example: FormatExample): string {
     `Quotes spell the same value a second way: \`${rejection.spelled}\` in place of \`${rejection.line}\`. That is not the text \`encode\` writes, so \`decode\` rejects it:`,
     fence('text', `SyntaxError: ${rejection.message}`),
     'Python raises `ValueError` with the same message. Each format version has one canonical text per value.',
-    `A 1.2 path entry writes \`${JSON.stringify(PATH_EXAMPLE)}\` as \`${encode(PATH_EXAMPLE)}\`. The slash separates the two keys.`,
+    'In a 1.2 document that clears the byte margin, `a/b: 1` means `{"a":{"b":1}}`. The slash separates the two keys.',
   ].join('\n\n');
 }
 

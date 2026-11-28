@@ -82,7 +82,7 @@
       "toon": 296,
       "csv": null,
       "csvExact": null,
-      "terset": 319
+      "terset": 250
     },
     {
       "name": "Mixed-type array",
@@ -129,7 +129,7 @@
     "config": {
       "json": 99,
       "toon": 118,
-      "terset": 108
+      "terset": 99
     }
   }
 }

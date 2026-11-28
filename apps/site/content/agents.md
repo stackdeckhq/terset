@@ -24,7 +24,7 @@ Send `rulesFor(text)` right before the data. For a shared system prompt, use the
 
 ## How to read it
 
-Tables start with `key[N]:` or `key{N}:`. `N` counts rows. Read `a/b: 1` as `{"a":{"b":1}}`. The encoder uses paths only when they take fewer bytes.
+Tables start with `key[N]:` or `key{N}:`. `N` counts rows. Read `a/b: 1` as `{"a":{"b":1}}`. Format 1.2 uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1.
 
 {{EXAMPLE:users}}
 

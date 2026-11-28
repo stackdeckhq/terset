@@ -148,16 +148,15 @@ describe('README blocks', () => {
 });
 
 describe('when not to use it', () => {
-  it('explains why a shorter config in bytes can still use more tokens with the path rule', () => {
+  it('shows why the two config examples stay close to compact JSON', () => {
     const [noLists] = WHEN_NOT;
-    expect(noLists?.text).toBe('Path entries can save bytes and still cost more tokens. Compact JSON uses fewer tokens on the config example once Terset includes its rules line.');
+    expect(noLists?.text).toBe('Small config files can stay close to compact JSON. The config example uses no rules and ties compact JSON on o200k_base.');
     const config = encode(SAMPLES.config);
-    expect(rulesFor(config)).toBe('Key a/b is field b in object a.');
-    expect(Buffer.byteLength(config)).toBeLessThan(Buffer.byteLength(JSON.stringify(SAMPLES.config)));
+    expect(config).toBe(encode(SAMPLES.config, { format: '1.1' }));
+    expect(rulesFor(config)).toBe('');
     if (COUNTERS === null || COUNTERS.claude === null) throw new Error('the bench or the Claude counts are pending');
-    expect(COUNTERS.o200k.samples.config).toMatchObject({ json: 99, terset: 108 });
-    expect(COUNTERS.o200k.cases.find((row) => row.name === 'Deep nested config')).toMatchObject({ json: 251, terset: 319 });
-    expect(rulesFor(encode(SAMPLES.config, { format: '1.1' }))).toBe('');
+    expect(COUNTERS.o200k.samples.config).toMatchObject({ json: 99, terset: 99 });
+    expect(COUNTERS.o200k.cases.find((row) => row.name === 'Deep nested config')).toMatchObject({ json: 251, terset: 250 });
   });
 });
 
@@ -180,8 +179,9 @@ describe('package facts', () => {
     expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(value)}))`)).toBe(fallback);
     const summary = API.find((entry) => entry.id === 'encode')?.summary;
     expect(summary).toContain('A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON.');
-    const shorterName = { m: value.longRootName };
-    const paths = 'm/a/a: 1\nm/a/b: 2\nm/b/b: 2\nm/b/c: 1';
+    const rows = Array.from({ length: 44 }, () => ({ v: 1 }));
+    const shorterName = { m: value.longRootName, t: { rows } };
+    const paths = 'm/a/a: 1\nm/a/b: 2\nm/b/b: 2\nm/b/c: 1\nt/rows[44]:\nv' + '\n1'.repeat(rows.length);
     expect(encode(shorterName)).toBe(paths);
     expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(shorterName)}))`)).toBe(paths);
   });

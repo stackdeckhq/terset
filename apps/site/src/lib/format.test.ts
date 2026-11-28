@@ -25,9 +25,10 @@ describe('tokenize', () => {
   });
 
   it('reads path entries with quoted segments and nested tables', () => {
-    const text = encode({ 'a/b': { n: 1, rows: [{ x: 1, y: 2 }, { x: 3, y: 4 }, { x: 5, y: 6 }] } });
-    expect(text).toBe('"a/b"/n: 1\n"a/b"/rows[3]:\nx\ty\n1\t2\n3\t4\n5\t6');
-    expect(tokenize(text).map(line => line.kind)).toEqual(['entry', 'list', 'header', 'row', 'row', 'row']);
+    const rows = Array.from({ length: 32 }, () => ({ x: 1, y: 2 }));
+    const text = encode({ 'a/b': { n: 1, rows } });
+    expect(text).toBe('"a/b"/n: 1\n"a/b"/rows[32]:\nx\ty' + '\n1\t2'.repeat(rows.length));
+    expect(tokenize(text).map(line => line.kind)).toEqual(['entry', 'list', 'header', ...rows.map(() => 'row')]);
     expect(tables(text)[0]?.key).toBe('"a/b"/rows');
     expect(Object.fromEntries(tersetKeyTally(text))).toEqual({ 'a/b': 2, n: 1, rows: 1, x: 1, y: 1 });
   });

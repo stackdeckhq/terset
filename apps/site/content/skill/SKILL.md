@@ -34,7 +34,7 @@ Never write Terset by hand. Always use `encode`. For one text, send `rulesFor(te
 
 ## How to read it
 
-A list starts with `key[N]:` and a keyed table with `key{N}:`. `N` counts rows. Keyed tables start with `@key`, and each row starts with its key. Fields that only some rows have can follow the columns as `name=value`. In older text, empty cells mean absent. Bare `id` means string IDs. Quoted `"id"` keeps typed cells. Uniform nested fields in rows can use dotted columns. Read `a/b: 1` as `{"a":{"b":1}}`. The encoder uses path entries only when they take fewer bytes.
+A list starts with `key[N]:` and a keyed table with `key{N}:`. `N` counts rows. Keyed tables start with `@key`, and each row starts with its key. Fields that only some rows have can follow the columns as `name=value`. In older text, empty cells mean absent. Bare `id` means string IDs. Quoted `"id"` keeps typed cells. Uniform nested fields in rows can use dotted columns. Read `a/b: 1` as `{"a":{"b":1}}`. Format 1.2 uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1.
 
 {{EXAMPLE:users}}
 

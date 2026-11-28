@@ -4,7 +4,7 @@
 
 {{FORMAT}}
 
-Format 1.2 can write `{"a":{"b":1}}` as `a/b: 1`. The encoder uses paths only when they take fewer bytes. Both packages pass the shared format tests in `conformance/`.
+In format 1.2, `a/b: 1` means `{"a":{"b":1}}`. The encoder uses paths only when the whole document saves at least 256 UTF-8 bytes over format 1.1. Both packages pass the shared format tests in `conformance/`.
 
 {{RELEASE}}.
 

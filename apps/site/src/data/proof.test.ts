@@ -144,8 +144,8 @@ describe('data sets', () => {
 
 describe('smaller than TOON', () => {
   it('counts the 11 sample cases and every Sol data set, on the OpenAI tokenizer', () => {
-    // 8 of the 11 committed sample cases, and 3 of the 3 fixture data sets.
-    expect(smallerThanToon(FIXTURE, COUNTERS)).toMatchObject({ smaller: 11, total: 14, text: 'Smaller than TOON on 11 of 14 data sets', tokenizer: 'OpenAI tokenizer' });
+    // 9 of the 11 committed sample cases, and 3 of the 3 fixture data sets.
+    expect(smallerThanToon(FIXTURE, COUNTERS)).toMatchObject({ smaller: 12, total: 14, text: 'Smaller than TOON on 12 of 14 data sets', tokenizer: 'OpenAI tokenizer' });
   });
 
   it('gives nothing while the bench is pending', () => {
@@ -168,13 +168,13 @@ describe('home headline', () => {
   it('leads with TOON on the OpenAI tokenizer, then compact JSON on a plain line', () => {
     const counters = ready();
     const total = counters.o200k.cases.length;
-    expect(underToon(counters.o200k)).toBe(8);
+    expect(underToon(counters.o200k)).toBe(9);
     expect(homeHeadline(BENCH, counters)).toEqual({
-      title: 'Fewer tokens than TOON in 8 of 11 cases.',
+      title: 'Fewer tokens than TOON in 9 of 11 cases.',
       tag: 'OpenAI tokenizer',
       line: `Fewer than compact JSON in ${String(underJson(counters.o200k))} of ${String(total)}.`,
     });
-    expect(homeHeadline(BENCH, counters).line).toBe('Fewer than compact JSON in 9 of 11.');
+    expect(homeHeadline(BENCH, counters).line).toBe('Fewer than compact JSON in 10 of 11.');
   });
 
   it('never says "on both counters" and claims nothing about answers', () => {
@@ -220,7 +220,7 @@ describe('home headline', () => {
   });
 
   it('states one more TOON loss as measured instead of hiding it', () => {
-    expect(homeHeadline(BENCH, withCase('200 users', (row) => ({ ...row, toon: row.terset }))).title).toBe('Fewer tokens than TOON in 7 of 11 cases.');
+    expect(homeHeadline(BENCH, withCase('200 users', (row) => ({ ...row, toon: row.terset }))).title).toBe('Fewer tokens than TOON in 8 of 11 cases.');
   });
 
   it('throws when compact JSON wins half the cases or more', () => {
@@ -240,7 +240,7 @@ describe('benchmark.md lines', () => {
     expect(proofLines(FIXTURE, COUNTERS)).toEqual([
       'Fewer input tokens than compact JSON: 33.3% on Opus and 27.3% on Sol. Each model counts with its own tokenizer.',
       'Lower cost than compact JSON: 29.4% on Opus and 25.0% on Sol.',
-      'Smaller than TOON on 11 of 14 data sets (OpenAI tokenizer). The 11 offline sample cases use Terset 1.2 on o200k_base. The 3 benchmark data sets use Terset 1.1 as GPT 6.1 Sol reported them.',
+      'Smaller than TOON on 12 of 14 data sets (OpenAI tokenizer). The 11 offline sample cases use Terset 1.2 on o200k_base. The 3 benchmark data sets use Terset 1.1 as GPT 6.1 Sol reported them.',
       'Claude Opus 5.5 (Claude tokenizer): Fewer tokens than TOON on 3 of 3. Fewer than compact JSON on 3 of 3.',
       'GPT 6.1 Sol (OpenAI tokenizer): Fewer tokens than TOON on 3 of 3. Fewer than compact JSON on 3 of 3.',
     ]);

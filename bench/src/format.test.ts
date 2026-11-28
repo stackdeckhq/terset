@@ -15,9 +15,9 @@ describe('Terset package integration', () => {
   });
 
   it('defaults to format 1.2 and accepts the older format on request', () => {
-    const data = { a: { b: [{ x: 1, y: 2 }, { x: 3, y: 4 }, { x: 5, y: 6 }] } };
+    const data = { a: { b: Array.from({ length: 32 }, () => ({ x: 1, y: 2 })) } };
     const text = encode('terset', data);
-    expect(text).toBe('a/b[3]:\nx\ty\n1\t2\n3\t4\n5\t6');
+    expect(text).toBe('a/b[32]:\nx\ty' + '\n1\t2'.repeat(32));
     expect(primerFor('terset', text)).toContain('Key a/b is field b in object a.');
     expect(encode('terset', data, tersetFormatSchema.parse('1.1'))).toBe(`a: ${JSON.stringify(data.a)}`);
   });

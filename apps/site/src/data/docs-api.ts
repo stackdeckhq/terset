@@ -52,7 +52,7 @@ export const API: readonly ApiEntry[] = [
   {
     id: 'encode',
     name: { js: 'encode', py: 'encode' },
-    summary: 'Turns a JSON object or array into Terset text. For lists, the encoder uses a table only if the header and rows are shorter in UTF-8 bytes than compact JSON. The list check excludes the count line, so a tiny list table can be larger than compact JSON. A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON. Format 1.2 uses slash-separated path entries for fields inside objects when the complete expansion takes fewer UTF-8 bytes than the unexpanded entry.',
+    summary: 'Turns a JSON object or array into Terset text. For lists, the encoder uses a table only if the header and rows are shorter in UTF-8 bytes than compact JSON. The list check excludes the count line, so a tiny list table can be larger than compact JSON. A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON. Format 1.2 uses slash-separated path entries only when the whole document saves at least 256 UTF-8 bytes over format 1.1.',
     signature: { js: 'encode(value: JsonRoot, options?: EncodeOptions): string', py: 'encode(value: JsonInputRoot, *, format: FormatVersion = "1.2") -> str' },
     params: {
       js: [
