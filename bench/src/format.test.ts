@@ -5,20 +5,19 @@ import { DATASETS, QUESTIONS } from './data.ts';
 import { decode, encode, encodeDataset, primerFor } from './formats.ts';
 import { plan } from './plan.ts';
 import fakeModel from '../fixtures/fake-model.json' with { type: 'json' };
-import { modelSchema } from './schema.ts';
-import { FORMATS, formatSchema } from './schema.ts';
+import { FORMATS, PUBLISHED_TERSET_FORMAT, formatSchema, modelSchema } from './schema.ts';
 
 describe('Terset package integration', () => {
   it.each(DATASETS)('uses the package and round trips $name before damage', dataset => {
     const text = encode('terset', dataset.data);
-    expect(text).toBe(encodeTerset(dataset.data));
+    expect(text).toBe(encodeTerset(dataset.data, { format: PUBLISHED_TERSET_FORMAT }));
     expect(JSON.stringify(decode('terset', text))).toBe(JSON.stringify(dataset.data));
   });
 
   it('uses the fitted package primer and supports only the four formats', () => {
-    expect(primerFor('terset', encodeTerset({ value: 'SAME-DATA' }))).toBe('');
+    expect(primerFor('terset', encodeTerset({ value: 'SAME-DATA' }, { format: PUBLISHED_TERSET_FORMAT }))).toBe('');
     for (const dataset of DATASETS) {
-      const text = encodeTerset(dataset.data);
+      const text = encodeTerset(dataset.data, { format: PUBLISHED_TERSET_FORMAT });
       expect(primerFor('terset', text)).toBe(rulesFor(text));
     }
     expect(FORMATS).toEqual(['json-compact', 'json-pretty', 'toon', 'terset']);
@@ -30,7 +29,8 @@ describe('Terset package integration', () => {
     for (const task of tasks) {
       const dataset = DATASETS.find(dataset => dataset.name === task.question.dataset);
       if (dataset === undefined) throw new Error('Missing dataset');
-      expect(task.prompt.system).toBe(`Read the supplied data.\n\n${rulesFor(encodeTerset(dataset.data))}`);
+      const valid = encodeTerset(dataset.data, { format: PUBLISHED_TERSET_FORMAT });
+      expect(task.prompt.system).toBe(`Read the supplied data.\n\n${rulesFor(valid)}`);
       expect(task.prompt.user).toContain(encodeDataset('terset', dataset));
     }
   });

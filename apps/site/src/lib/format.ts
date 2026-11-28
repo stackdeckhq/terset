@@ -2,14 +2,22 @@
 // decode, RULES and every piece of Terset syntax from here, never from the
 // package. When the format changes, this file and the generated samples are
 // what change. Everything below "Syntax" mirrors packages/terset/SPEC.md.
-import { RULES, decode, encode, rulesFor } from '@stackdeck/terset';
-import type { FormatVersion, JsonObject, JsonRoot, JsonValue } from '@stackdeck/terset';
+import { decode, encode as encodeTerset, rulesFor } from '@stackdeck/terset';
+import type { EncodeOptions, FormatVersion, JsonObject, JsonRoot, JsonValue } from '@stackdeck/terset';
+import { RULES } from 'terset-published';
 import { PACKAGE_NAME } from '../data/site.ts';
 import { hlJson, NUM, span } from './highlight.ts';
 import { esc } from './text.ts';
 
-export { RULES, decode, encode, rulesFor };
+export { RULES, decode, rulesFor };
 export type { FormatVersion, JsonObject, JsonRoot, JsonValue };
+
+// Published runs used format 1.1. Keep the site's examples and counts on it.
+const PUBLISHED_TERSET_FORMAT = '1.1' satisfies FormatVersion;
+
+export function encode(value: JsonRoot, options: EncodeOptions = { format: PUBLISHED_TERSET_FORMAT }): string {
+  return encodeTerset(value, options);
+}
 
 /** The package's import line, as the docs and the prompt step show it. */
 export const IMPORT_LINE = `import { encode, decode, rulesFor } from "${PACKAGE_NAME}";`;

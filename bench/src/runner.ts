@@ -6,7 +6,7 @@ import type { SuiteRecord } from './data.ts';
 import { fingerprint, key, reserveInput } from './plan.ts';
 import type { Task } from './plan.ts';
 import { markdown, summaries } from './report.ts';
-import { budgetsSchema, encodersSchema, inputReservationSchema, modelSchema, responseSchema, resultSchema, runIdSchema } from './schema.ts';
+import { budgetsSchema, encodersSchema, inputReservationSchema, modelSchema, PUBLISHED_TERSET_FORMAT, responseSchema, resultSchema, runIdSchema } from './schema.ts';
 import type { Budgets, Encoders, InputReservation, Result, Row, TersetFormat, Usage } from './schema.ts';
 import { score } from './scoring.ts';
 
@@ -111,7 +111,7 @@ export async function run(options: {
     result.status = 'partial';
     result.suite = suite.name;
     result.encoders = encoders;
-    result.tersetFormat = options.tersetFormat ?? '1.1';
+    result.tersetFormat = options.tersetFormat ?? PUBLISHED_TERSET_FORMAT;
     result.reason = null;
     result.inputReservation = inputReservation;
     const questions = new Map<string, Task[]>();

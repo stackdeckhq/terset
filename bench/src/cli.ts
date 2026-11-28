@@ -6,7 +6,7 @@ import { fakeClient, httpClient } from './clients.ts';
 import { loadSuite, selectQuestions, suiteNameSchema, SuiteUnavailableError } from './data.ts';
 import { describePlan, plan } from './plan.ts';
 import { run } from './runner.ts';
-import { configSchema, FORMATS, isReal400Suite, modelSchema, selectedFormatsSchema, tersetFormatSchema } from './schema.ts';
+import { configSchema, FORMATS, isReal400Suite, modelSchema, PUBLISHED_TERSET_FORMAT, selectedFormatsSchema, tersetFormatSchema } from './schema.ts';
 import type { Budgets } from './schema.ts';
 
 function integer(value: string | undefined, fallback: number, name: string, allowZero = true): number {
@@ -45,7 +45,7 @@ export async function main(args: string[], log: (text: string) => void = console
   const formats = values.formats === undefined ? FORMATS : selectedFormatsSchema.parse(values.formats.split(','));
   const suite = loadSuite(suiteNameSchema.parse(values.suite ?? 'toon'));
   const datasets = values.datasets?.split(',');
-  const tersetFormat = tersetFormatSchema.parse(values['terset-format'] ?? '1.1');
+  const tersetFormat = tersetFormatSchema.parse(values['terset-format'] ?? PUBLISHED_TERSET_FORMAT);
   const tasks = plan(config.models, selectQuestions(limit, datasets, suite), formats, suite.datasets, tersetFormat);
   const defaultOutputCap = isReal400Suite(suite.name) ? 8192 : 128;
   const perCallMaxOutputTokens = integer(values['per-call-max-output-tokens'], defaultOutputCap, 'per-call max output tokens', false);

@@ -1,8 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { buildSync } from 'esbuild';
@@ -31,20 +29,14 @@ function gzipBundle(entry: string, names: string): number {
 }
 
 export function measureBundleSizes() {
-  const dist = mkdtempSync(join(tmpdir(), 'terset-bundle-'));
-  try {
-    buildTerset(dist);
-    const terset = join(dist, 'index.js');
-    const toon = '@toon-format/toon';
-    return {
-      tersetEncode: gzipBundle(terset, 'encode'),
-      tersetAll: gzipBundle(terset, 'encode, decode'),
-      toonEncode: gzipBundle(toon, 'encode'),
-      toonAll: gzipBundle(toon, 'encode, decode'),
-    };
-  } finally {
-    rmSync(dist, { recursive: true, force: true });
-  }
+  const terset = fileURLToPath(import.meta.resolve('terset-published'));
+  const toon = '@toon-format/toon';
+  return {
+    tersetEncode: gzipBundle(terset, 'encode'),
+    tersetAll: gzipBundle(terset, 'encode, decode'),
+    toonEncode: gzipBundle(toon, 'encode'),
+    toonAll: gzipBundle(toon, 'encode, decode'),
+  };
 }
 
 if (import.meta.main) {

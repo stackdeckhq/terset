@@ -1,6 +1,6 @@
 // Writes the raw agent files the site serves into src/generated/.
 // Sources: the templates in content/, filled from src/generated/samples.json
-// (run generate-samples.ts first), the package SPEC.md, and the benchmark
+// (run generate-samples.ts first), the published package SPEC.md, and the benchmark
 // text built from the committed bench-results.json.
 // llms-full.txt is the agent guide, the docs, the spec and the benchmark in one file.
 // Usage: node scripts/build-llms.ts (the dev and build scripts run it).
@@ -32,7 +32,7 @@ const render = (name: string): string => renderContent(read(`${SITE}content/${na
 
 const agents = render('agents.md');
 const docs = docsMarkdown(generated.rules, generated.cheatSheet);
-const spec = read(`${SITE}../../packages/terset/SPEC.md`);
+const spec = readFileSync(new URL('../SPEC.md', import.meta.resolve('terset-published')), 'utf8').trim();
 const benchmark = benchmarkMarkdown(bench, claude);
 const llms = render('llms.txt');
 const skill = render('skill/SKILL.md');
