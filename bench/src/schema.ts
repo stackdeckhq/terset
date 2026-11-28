@@ -3,7 +3,10 @@ import { z } from 'zod';
 const count = z.number().int().nonnegative();
 export const formatSchema = z.enum(['json-compact', 'json-pretty', 'toon', 'terset']);
 export type Format = z.infer<typeof formatSchema>;
-export const suiteNameSchema = z.enum(['toon', 'stress', 'real']);
+export const suiteNameSchema = z.enum(['toon', 'stress', 'real', 'real-400', 'real-400-pilot']);
+export function isReal400Suite(name: z.infer<typeof suiteNameSchema> | undefined): boolean {
+  return name === 'real-400' || name === 'real-400-pilot';
+}
 // Default formats retain the published order.
 export const FORMATS = ['json-compact', 'json-pretty', 'toon', 'terset'] as const;
 export const selectedFormatsSchema = z.array(formatSchema).min(1)
@@ -63,7 +66,10 @@ export const configSchema = z.object({
   models: z.array(modelSchema).min(1),
   inputReservation: inputReservationSchema.prefault({}),
 }).strict();
-export const responseSchema = z.object({ text: z.string(), inputTokens: count, outputTokens: count });
+export const responseSchema = z.object({
+  text: z.string(), inputTokens: count, outputTokens: count,
+  cacheCreationInputTokens: count.optional(), cacheReadInputTokens: count.optional(),
+});
 export type Response = z.infer<typeof responseSchema>;
 export const rowSchema = responseSchema.extend({
   model: z.string(), format: formatSchema, dataset: z.string(), questionId: z.string(),

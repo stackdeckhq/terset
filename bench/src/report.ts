@@ -1,3 +1,4 @@
+import { isReal400Suite } from './schema.ts';
 import type { Result, Row } from './schema.ts';
 import type { Task } from './plan.ts';
 import { wilson } from './scoring.ts';
@@ -17,16 +18,19 @@ function questionKey(row: Row): string {
   return JSON.stringify([row.model, row.dataset, row.questionId]);
 }
 
-export function summaries(rows: Row[], tasks: Task[]): { model: string; format: string; dataset: string; metrics: ReturnType<typeof summarize> & CostMetrics & { droppedIncompleteQuestions: number } }[] {
-  const coverage = new Map<string, Set<Row['format']>>();
+function completeQuestions(rows: Row[], formats: readonly Row['format'][]): Map<string, Map<Row['format'], Row>> {
+  const coverage = new Map<string, Map<Row['format'], Row>>();
   for (const row of rows) {
     const id = questionKey(row);
-    const formats = coverage.get(id) ?? new Set<Row['format']>();
-    formats.add(row.format);
-    coverage.set(id, formats);
+    const answers = coverage.get(id) ?? new Map<Row['format'], Row>();
+    answers.set(row.format, row);
+    coverage.set(id, answers);
   }
-  const selectedFormats = [...new Set(tasks.map(task => task.format))];
-  const complete = new Set([...coverage].filter(([, formats]) => selectedFormats.every(format => formats.has(format))).map(([id]) => id));
+  return new Map([...coverage].filter(([, answers]) => formats.every(format => answers.has(format))));
+}
+
+export function summaries(rows: Row[], tasks: Task[]): { model: string; format: string; dataset: string; metrics: ReturnType<typeof summarize> & CostMetrics & { droppedIncompleteQuestions: number } }[] {
+  const complete = completeQuestions(rows, [...new Set(tasks.map(task => task.format))]);
   const groups = new Map<string, { model: string; format: string; dataset: string; rows: Row[] }>();
   for (const task of tasks) {
     for (const dataset of ['ALL', task.question.dataset]) {
@@ -61,9 +65,99 @@ export function summaries(rows: Row[], tasks: Task[]): { model: string; format: 
   });
 }
 
+function binomialLowerTail(cutoff: number, total: number, probability: number): number {
+  if (cutoff >= total || probability === 0) return 1;
+  if (probability === 1) return 0;
+  if (cutoff > total / 2) return 1 - binomialLowerTail(total - cutoff - 1, total, 1 - probability);
+  const logSuccess = Math.log(probability);
+  const logFailure = Math.log1p(-probability);
+  let logChoose = 0;
+  let tail = 0;
+  for (let count = 0; count <= cutoff; count++) {
+    tail += Math.exp(logChoose + count * logSuccess + (total - count) * logFailure);
+    if (count < cutoff) logChoose += Math.log((total - count) / (count + 1));
+  }
+  return Math.min(1, tail);
+}
+
+function discordanceBounds(count: number, total: number): { lower: number; upper: number } {
+  // Invert the binomial tail for a two-sided 97.5% exact interval.
+  const tail = 0.0125;
+  const upperBound = (successes: number): number => {
+    if (successes === total) return 1;
+    if (successes === 0) return 1 - tail ** (1 / total);
+    let lower = 0;
+    let upper = 1;
+    for (let i = 0; i < 52; i++) {
+      const middle = (lower + upper) / 2;
+      if (binomialLowerTail(successes, total, middle) > tail) lower = middle;
+      else upper = middle;
+    }
+    return upper;
+  };
+  return { lower: 1 - upperBound(total - count), upper: upperBound(count) };
+}
+
+export function pairedAccuracy(tersetOnly: number, otherOnly: number, total: number): {
+  gap: number | null; interval95: { lower: number; upper: number } | null; pValue: number;
+} {
+  const discordant = tersetOnly + otherOnly;
+  if (![tersetOnly, otherOnly, total].every(value => Number.isSafeInteger(value) && value >= 0) || discordant > total) {
+    throw new Error('Invalid paired score counts');
+  }
+  if (total === 0) return { gap: null, interval95: null, pValue: 1 };
+  const pValue = Math.min(1, 2 * binomialLowerTail(Math.min(tersetOnly, otherOnly), discordant, 0.5));
+  const first = discordanceBounds(tersetOnly, total);
+  const second = discordanceBounds(otherOnly, total);
+  // The gap is the difference of the two discordance rates. The two bounds
+  // cover jointly with at least 95% confidence by the union bound.
+  return { gap: (tersetOnly - otherOnly) / total, pValue,
+    interval95: { lower: first.lower - second.upper, upper: first.upper - second.lower } };
+}
+
 const percent = (value: number): string => `${(value * 100).toFixed(2)}%`;
 const dollars = (value: number): string => `${value < 0 ? '-' : ''}$${Math.abs(value).toFixed(6)}`;
 const cell = (value: string): string => value.replaceAll('|', '\\|').replaceAll('\n', ' ');
+const points = (value: number): string => (value * 100).toFixed(2);
+
+export function pairedComparisons(rows: Row[], models: readonly string[], formats: readonly Row['format'][]) {
+  const others = formats.filter(format => format !== 'terset');
+  if (!formats.includes('terset') || others.length === 0) return [];
+  const complete = [...completeQuestions(rows, formats).values()];
+  return models.flatMap(model => {
+    const matched = complete.filter(question => question.get('terset')?.model === model);
+    return others.map(comparisonFormat => {
+      let tersetOnly = 0;
+      let otherOnly = 0;
+      for (const question of matched) {
+        const terset = question.get('terset')?.correct;
+        const other = question.get(comparisonFormat)?.correct;
+        if (terset === true && other === false) tersetOnly++;
+        if (terset === false && other === true) otherOnly++;
+      }
+      const total = matched.length;
+      return { model, comparisonFormat, total, tersetOnly, otherOnly, ...pairedAccuracy(tersetOnly, otherOnly, total) };
+    });
+  });
+}
+
+function pairedMarkdown(rows: Row[], tasks: Task[]): string[] {
+  const formats = [...new Set(tasks.map(task => task.format))];
+  const models = [...new Set(tasks.map(task => task.model.id))];
+  if (!formats.includes('terset') || formats.length < 2) return [];
+  const lines = ['', '## Paired accuracy', '',
+    'The gap is Terset accuracy minus the comparison format accuracy. The 95% paired interval uses conservative exact bounds.',
+    'McNemar p-values are exact and two-sided. Questions share datasets, so use these results descriptively.', '',
+    '| Model | Comparison format | Paired questions | Only Terset correct | Only comparison correct | Gap (pp) | Paired 95% CI (pp) | McNemar p |',
+    '| --- | --- | ---: | ---: | ---: | ---: | --- | ---: |'];
+  for (const { model, comparisonFormat, total, tersetOnly, otherOnly, gap, interval95, pValue } of pairedComparisons(rows, models, formats)) {
+    const interval = interval95 ? `${points(interval95.lower)} to ${points(interval95.upper)}` : 'N/A';
+    const p = gap === null ? 'N/A' : pValue === 1 ? '1' : pValue.toPrecision(3);
+    lines.push(`| ${cell(model)} | ${comparisonFormat} | ${total} | ${tersetOnly} | ${otherOnly} | ${gap === null ? 'N/A' : points(gap)} | ${interval} | ${p} |`);
+  }
+  return lines;
+}
+
 export function markdown(result: Result, tasks: Task[]): string {
   const summary = summaries(result.rows, tasks);
   const lines = [`# Accuracy benchmark: ${result.runId}`, '',
@@ -82,5 +176,6 @@ export function markdown(result: Result, tasks: Task[]): string {
     const interval = m.wilson95 ? `${percent(m.wilson95.lower)} to ${percent(m.wilson95.upper)}` : 'N/A';
     lines.push(`| ${cell(model)} | ${format} | ${dataset} | ${m.correct} | ${m.total} | ${m.accuracy === null ? 'N/A' : percent(m.accuracy)} | ${interval} | ${m.inputTokens} | ${m.outputTokens} | ${dollars(m.inputCost)} | ${dollars(m.outputCost)} | ${dollars(m.totalCost)} | ${m.savingVsCompactJson === null ? '' : dollars(m.savingVsCompactJson)} |`);
   }
+  if (isReal400Suite(result.suite)) lines.push(...pairedMarkdown(result.rows, tasks));
   return `${lines.join('\n')}\n`;
 }

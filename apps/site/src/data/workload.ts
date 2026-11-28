@@ -15,6 +15,9 @@ type Dataset = RealAccuracyFile['datasets'][number];
 type RowDataset = Row['dataset'];
 type WrongAnswer = RealAccuracyFile['wrongAnswers'][number];
 
+/** What the table and file helpers read. Both the 40-question and the 400-question files have it. */
+export type WorkloadShape = Pick<RealAccuracyFile, 'formats' | 'datasets' | 'models'>;
+
 export const WORKLOAD_MODEL_NAMES: Readonly<Record<ModelId, string>> = {
   'claude-opus-5-5': 'Claude Opus 5.5',
   'gpt-6.2-sol': 'GPT 6.2 Sol',
@@ -36,16 +39,16 @@ export const WORKLOAD_DATASET_LABELS: Readonly<Record<RowDataset, string>> = {
 const BASE: Format = 'json-compact';
 
 /** Below this share, a saving is too small to call one. */
-const NEAR_TIE = 0.01;
+export const NEAR_TIE = 0.01;
 
 /** The most correct answers two formats may differ by while the page calls accuracy level. */
 const LEVEL_SPREAD = 1;
 
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'] as const;
-const word = (value: number): string => WORDS[value] ?? formatCount(value);
+export const word = (value: number): string => WORDS[value] ?? formatCount(value);
 
 /** "a", "a and b", "a, b and c". */
-function listPhrase(items: readonly string[]): string {
+export function listPhrase(items: readonly string[]): string {
   if (items.length <= 1) return items.join('');
   return `${items.slice(0, -1).join(', ')} and ${items.at(-1) ?? ''}`;
 }
@@ -110,7 +113,7 @@ function changeWords(value: number, base: number): string {
 }
 
 /** Each model's change for one format on one file, joined: "33.9% fewer on Claude Opus 5.5 and 30.4% fewer on GPT 6.2 Sol". */
-function perModel(file: RealAccuracyFile, dataset: Dataset, format: Format): string {
+function perModel(file: WorkloadShape, dataset: Dataset, format: Format): string {
   return listPhrase(file.models.map((model) => `${changeWords(workloadRow(model, dataset, format).inputTokens, workloadRow(model, dataset, BASE).inputTokens)} on ${WORKLOAD_MODEL_NAMES[model.id]}`));
 }
 
@@ -121,7 +124,7 @@ export function lowestFormats(model: Model, dataset: RowDataset): readonly Forma
   return rows.filter((row) => row.inputTokens === fewest).map((row) => row.format);
 }
 
-function lowestPhrase(file: RealAccuracyFile, dataset: Dataset): string {
+function lowestPhrase(file: WorkloadShape, dataset: Dataset): string {
   const names = file.models.map((model) => listPhrase(lowestFormats(model, dataset).map((format) => WORKLOAD_FORMAT_LABELS[format])));
   if (names.every((name) => name === names[0])) return `${names[0] ?? ''} used the fewest input tokens on both models.`;
   return `The fewest input tokens: ${listPhrase(file.models.map((model, index) => `${names[index] ?? ''} on ${WORKLOAD_MODEL_NAMES[model.id]}`))}.`;
@@ -137,7 +140,7 @@ export interface FileResult {
  * Per file, wins and losses alike: which format used the fewest input tokens, then Terset
  * and every other format against compact JSON on each model. A near tie says so in words.
  */
-export function fileResults(file: RealAccuracyFile): readonly FileResult[] {
+export function fileResults(file: WorkloadShape): readonly FileResult[] {
   return file.datasets.map((dataset) => {
     const others = file.formats.filter((format) => format !== BASE && format !== 'terset');
     const nearTie = file.models.every((model) => Math.abs(tersetSaving(model, dataset)) < NEAR_TIE);
@@ -174,7 +177,7 @@ export interface WorkloadGroup {
 export const BASE_REFERENCE = '-';
 
 /** One model's table: one group per file, then both files together, each in format order. */
-export function workloadGroups(file: RealAccuracyFile, model: Model): readonly WorkloadGroup[] {
+export function workloadGroups(file: Pick<WorkloadShape, 'formats' | 'datasets'>, model: Model): readonly WorkloadGroup[] {
   const datasets: readonly RowDataset[] = [...file.datasets, 'ALL'];
   return datasets.map((dataset) => {
     const base = workloadRow(model, dataset, BASE);
@@ -247,7 +250,8 @@ export interface WorkloadLink {
   readonly href: string;
 }
 
-const blob = (path: string): string => `${REPO_URL}/blob/main/${path}`;
+/** A repository file on the main branch, as a GitHub link. */
+export const blob = (path: string): string => `${REPO_URL}/blob/main/${path}`;
 
 /** The raw run files of each model, then the frozen questions and their freeze record, on the main branch. */
 export function workloadLinks(file: RealAccuracyFile): readonly WorkloadLink[] {

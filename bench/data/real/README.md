@@ -68,3 +68,29 @@ Regenerate the frozen dataset and question files from the repository root.
 ```sh
 pnpm --dir bench real:freeze
 ```
+
+## Question freeze, 400-question suite
+
+The questions were frozen on 2026-11-28 before any model call. No question
+is removed after results. The separate 24-question pilot tunes nothing.
+The output limit was set before the run at 8,192 tokens per call for both sets.
+
+Each file has 25 questions of each of eight kinds. The four added kinds ask
+for a count with two conditions, a comparison, a position or a rank. The
+generator checks both source hashes and computes the answers from the parsed
+files. It samples in source order at fixed strides and offsets. The pilot
+uses different offsets and shares no prompts with the full suite.
+
+Both sets use the frozen `suite/datasets.json` listed above.
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `bench/src/real/generate-400.ts` | 14104 | 34e1f3690b3710a9ee0b857c6070558bd2131d4f1b3e0296b56749d3785b3968 |
+| `suite-400/questions.json` | 122323 | 1d479996a56e0c2defbedceab2ae69bee4aebd442ed73edda9ef1381c6224d08 |
+| `suite-400/pilot.json` | 7299 | e8d5216a21593f7d2fbd68c91f45ad59baa75f6f73b4c0a0f60b38bbe6aaf47c |
+
+Regenerate the question files from the repository root.
+
+```sh
+pnpm --dir bench real-400:freeze
+```

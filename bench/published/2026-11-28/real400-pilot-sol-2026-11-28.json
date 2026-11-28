@@ -1,0 +1,1113 @@
+{
+  "version": 1,
+  "runId": "real400-pilot-sol-2026-11-28",
+  "fingerprint": "97c283fbbafb49b580a269d167cb2df8b0be658c9d43f0198e87ea8eb691e4d4",
+  "mode": "http",
+  "status": "complete",
+  "reason": null,
+  "plannedCalls": 72,
+  "budgets": {
+    "maxCalls": 72,
+    "maxInputTokens": 3878035,
+    "maxOutputTokens": 589824,
+    "perCallMaxOutputTokens": 8192
+  },
+  "budgetUsed": {
+    "calls": 72,
+    "inputTokens": 3099441,
+    "outputTokens": 7688
+  },
+  "rows": [
+    {
+      "text": "\"ak\"",
+      "inputTokens": 55349,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p001",
+      "expected": "ak",
+      "correct": true,
+      "reservedInputTokens": 69238
+    },
+    {
+      "text": "ak",
+      "inputTokens": 64799,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p001",
+      "expected": "ak",
+      "correct": true,
+      "reservedInputTokens": 81051
+    },
+    {
+      "text": "ak",
+      "inputTokens": 38505,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p001",
+      "expected": "ak",
+      "correct": true,
+      "reservedInputTokens": 48183
+    },
+    {
+      "text": "tx",
+      "inputTokens": 55349,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p002",
+      "expected": "tx",
+      "correct": true,
+      "reservedInputTokens": 69238
+    },
+    {
+      "text": "tx",
+      "inputTokens": 64799,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p002",
+      "expected": "tx",
+      "correct": true,
+      "reservedInputTokens": 81051
+    },
+    {
+      "text": "tx",
+      "inputTokens": 38505,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p002",
+      "expected": "tx",
+      "correct": true,
+      "reservedInputTokens": 48183
+    },
+    {
+      "text": "215",
+      "inputTokens": 55344,
+      "outputTokens": 819,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p003",
+      "expected": "215",
+      "correct": true,
+      "reservedInputTokens": 69232
+    },
+    {
+      "text": "214",
+      "inputTokens": 64794,
+      "outputTokens": 1384,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p003",
+      "expected": "215",
+      "correct": false,
+      "reservedInputTokens": 81044
+    },
+    {
+      "text": "215",
+      "inputTokens": 38500,
+      "outputTokens": 856,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p003",
+      "expected": "215",
+      "correct": true,
+      "reservedInputTokens": 48177
+    },
+    {
+      "text": "1.71",
+      "inputTokens": 55347,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p004",
+      "expected": "1.71",
+      "correct": true,
+      "reservedInputTokens": 69236
+    },
+    {
+      "text": "1.71",
+      "inputTokens": 64797,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p004",
+      "expected": "1.71",
+      "correct": true,
+      "reservedInputTokens": 81048
+    },
+    {
+      "text": "1.71",
+      "inputTokens": 38503,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p004",
+      "expected": "1.71",
+      "correct": true,
+      "reservedInputTokens": 48181
+    },
+    {
+      "text": "0.2",
+      "inputTokens": 55348,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p005",
+      "expected": "0.2",
+      "correct": true,
+      "reservedInputTokens": 69237
+    },
+    {
+      "text": "0.2",
+      "inputTokens": 64798,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p005",
+      "expected": "0.2",
+      "correct": true,
+      "reservedInputTokens": 81049
+    },
+    {
+      "text": "0.2",
+      "inputTokens": 38504,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p005",
+      "expected": "0.2",
+      "correct": true,
+      "reservedInputTokens": 48182
+    },
+    {
+      "text": "38.515",
+      "inputTokens": 55353,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p006",
+      "expected": "38.515",
+      "correct": true,
+      "reservedInputTokens": 69243
+    },
+    {
+      "text": "38.515",
+      "inputTokens": 64803,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p006",
+      "expected": "38.515",
+      "correct": true,
+      "reservedInputTokens": 81056
+    },
+    {
+      "text": "38.515",
+      "inputTokens": 38509,
+      "outputTokens": 7,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p006",
+      "expected": "38.515",
+      "correct": true,
+      "reservedInputTokens": 48188
+    },
+    {
+      "text": "1",
+      "inputTokens": 55349,
+      "outputTokens": 29,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p007",
+      "expected": "1",
+      "correct": true,
+      "reservedInputTokens": 69238
+    },
+    {
+      "text": "1",
+      "inputTokens": 64799,
+      "outputTokens": 28,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p007",
+      "expected": "1",
+      "correct": true,
+      "reservedInputTokens": 81051
+    },
+    {
+      "text": "1",
+      "inputTokens": 38505,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p007",
+      "expected": "1",
+      "correct": true,
+      "reservedInputTokens": 48183
+    },
+    {
+      "text": "44",
+      "inputTokens": 55350,
+      "outputTokens": 364,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p008",
+      "expected": "44",
+      "correct": true,
+      "reservedInputTokens": 69239
+    },
+    {
+      "text": "44",
+      "inputTokens": 64800,
+      "outputTokens": 223,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p008",
+      "expected": "44",
+      "correct": true,
+      "reservedInputTokens": 81052
+    },
+    {
+      "text": "44",
+      "inputTokens": 38506,
+      "outputTokens": 196,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p008",
+      "expected": "44",
+      "correct": true,
+      "reservedInputTokens": 48184
+    },
+    {
+      "text": "aka2026wujafj",
+      "inputTokens": 55358,
+      "outputTokens": 11,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p009",
+      "expected": "aka2026wujafj",
+      "correct": true,
+      "reservedInputTokens": 69249
+    },
+    {
+      "text": "aka2026wujafj",
+      "inputTokens": 64808,
+      "outputTokens": 11,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p009",
+      "expected": "aka2026wujafj",
+      "correct": true,
+      "reservedInputTokens": 81062
+    },
+    {
+      "text": "aka2026wujafj",
+      "inputTokens": 38514,
+      "outputTokens": 11,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p009",
+      "expected": "aka2026wujafj",
+      "correct": true,
+      "reservedInputTokens": 48194
+    },
+    {
+      "text": "\"uu80165071\"",
+      "inputTokens": 55352,
+      "outputTokens": 10,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p010",
+      "expected": "uu80165071",
+      "correct": true,
+      "reservedInputTokens": 69242
+    },
+    {
+      "text": "uu80165071",
+      "inputTokens": 64802,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p010",
+      "expected": "uu80165071",
+      "correct": true,
+      "reservedInputTokens": 81054
+    },
+    {
+      "text": "uu80165071",
+      "inputTokens": 38508,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p010",
+      "expected": "uu80165071",
+      "correct": true,
+      "reservedInputTokens": 48187
+    },
+    {
+      "text": "hv75071352",
+      "inputTokens": 55352,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p011",
+      "expected": "hv75071352",
+      "correct": true,
+      "reservedInputTokens": 69242
+    },
+    {
+      "text": "hv75071352",
+      "inputTokens": 64802,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p011",
+      "expected": "hv75071352",
+      "correct": true,
+      "reservedInputTokens": 81054
+    },
+    {
+      "text": "hv75071352",
+      "inputTokens": 38508,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p011",
+      "expected": "hv75071352",
+      "correct": true,
+      "reservedInputTokens": 48187
+    },
+    {
+      "text": "nc75467492",
+      "inputTokens": 55348,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p012",
+      "expected": "nc75467492",
+      "correct": true,
+      "reservedInputTokens": 69237
+    },
+    {
+      "text": "nc75467492",
+      "inputTokens": 64798,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p012",
+      "expected": "nc75467492",
+      "correct": true,
+      "reservedInputTokens": 81049
+    },
+    {
+      "text": "nc75467492",
+      "inputTokens": 38504,
+      "outputTokens": 45,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "questionId": "p012",
+      "expected": "nc75467492",
+      "correct": true,
+      "reservedInputTokens": 48182
+    },
+    {
+      "text": "\"wmoUnit:km_h-1\"",
+      "inputTokens": 34177,
+      "outputTokens": 14,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p013",
+      "expected": "wmoUnit:km_h-1",
+      "correct": true,
+      "reservedInputTokens": 42773
+    },
+    {
+      "text": "wmoUnit:km_h-1",
+      "inputTokens": 31240,
+      "outputTokens": 12,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p013",
+      "expected": "wmoUnit:km_h-1",
+      "correct": true,
+      "reservedInputTokens": 39102
+    },
+    {
+      "text": "wmoUnit:km_h-1",
+      "inputTokens": 34167,
+      "outputTokens": 12,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p013",
+      "expected": "wmoUnit:km_h-1",
+      "correct": true,
+      "reservedInputTokens": 42761
+    },
+    {
+      "text": "\"wmoUnit:m\"",
+      "inputTokens": 34177,
+      "outputTokens": 10,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p014",
+      "expected": "wmoUnit:m",
+      "correct": true,
+      "reservedInputTokens": 42773
+    },
+    {
+      "text": "wmoUnit:m",
+      "inputTokens": 31240,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p014",
+      "expected": "wmoUnit:m",
+      "correct": true,
+      "reservedInputTokens": 39102
+    },
+    {
+      "text": "wmoUnit:m",
+      "inputTokens": 34167,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p014",
+      "expected": "wmoUnit:m",
+      "correct": true,
+      "reservedInputTokens": 42761
+    },
+    {
+      "text": "141",
+      "inputTokens": 34186,
+      "outputTokens": 380,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p015",
+      "expected": "141",
+      "correct": true,
+      "reservedInputTokens": 42784
+    },
+    {
+      "text": "141",
+      "inputTokens": 31249,
+      "outputTokens": 265,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p015",
+      "expected": "141",
+      "correct": true,
+      "reservedInputTokens": 39113
+    },
+    {
+      "text": "141",
+      "inputTokens": 34176,
+      "outputTokens": 239,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p015",
+      "expected": "141",
+      "correct": true,
+      "reservedInputTokens": 42772
+    },
+    {
+      "text": "330",
+      "inputTokens": 34182,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p016",
+      "expected": "330",
+      "correct": true,
+      "reservedInputTokens": 42779
+    },
+    {
+      "text": "330",
+      "inputTokens": 31245,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p016",
+      "expected": "330",
+      "correct": true,
+      "reservedInputTokens": 39108
+    },
+    {
+      "text": "330",
+      "inputTokens": 34172,
+      "outputTokens": 5,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p016",
+      "expected": "330",
+      "correct": true,
+      "reservedInputTokens": 42767
+    },
+    {
+      "text": "829.3608",
+      "inputTokens": 34182,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p017",
+      "expected": "829.3608",
+      "correct": true,
+      "reservedInputTokens": 42779
+    },
+    {
+      "text": "829.3608",
+      "inputTokens": 31245,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p017",
+      "expected": "829.3608",
+      "correct": true,
+      "reservedInputTokens": 39108
+    },
+    {
+      "text": "829.3608",
+      "inputTokens": 34172,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p017",
+      "expected": "829.3608",
+      "correct": true,
+      "reservedInputTokens": 42767
+    },
+    {
+      "text": "15.555555555555555",
+      "inputTokens": 34203,
+      "outputTokens": 11,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p018",
+      "expected": "15.555555555555555",
+      "correct": true,
+      "reservedInputTokens": 42806
+    },
+    {
+      "text": "15.555555555555555",
+      "inputTokens": 31266,
+      "outputTokens": 11,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p018",
+      "expected": "15.555555555555555",
+      "correct": true,
+      "reservedInputTokens": 39134
+    },
+    {
+      "text": "15.555555555555555",
+      "inputTokens": 34193,
+      "outputTokens": 11,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p018",
+      "expected": "15.555555555555555",
+      "correct": true,
+      "reservedInputTokens": 42793
+    },
+    {
+      "text": "142",
+      "inputTokens": 34209,
+      "outputTokens": 309,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p019",
+      "expected": "142",
+      "correct": true,
+      "reservedInputTokens": 42813
+    },
+    {
+      "text": "142",
+      "inputTokens": 31272,
+      "outputTokens": 221,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p019",
+      "expected": "142",
+      "correct": true,
+      "reservedInputTokens": 39142
+    },
+    {
+      "text": "142",
+      "inputTokens": 34199,
+      "outputTokens": 245,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p019",
+      "expected": "142",
+      "correct": true,
+      "reservedInputTokens": 42801
+    },
+    {
+      "text": "130",
+      "inputTokens": 34213,
+      "outputTokens": 287,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p020",
+      "expected": "130",
+      "correct": true,
+      "reservedInputTokens": 42818
+    },
+    {
+      "text": "130",
+      "inputTokens": 31276,
+      "outputTokens": 242,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p020",
+      "expected": "130",
+      "correct": true,
+      "reservedInputTokens": 39147
+    },
+    {
+      "text": "130",
+      "inputTokens": 34203,
+      "outputTokens": 245,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p020",
+      "expected": "130",
+      "correct": true,
+      "reservedInputTokens": 42806
+    },
+    {
+      "text": "\"dewpoint\"",
+      "inputTokens": 34206,
+      "outputTokens": 8,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p021",
+      "expected": "dewpoint",
+      "correct": true,
+      "reservedInputTokens": 42809
+    },
+    {
+      "text": "dewpoint",
+      "inputTokens": 31269,
+      "outputTokens": 6,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p021",
+      "expected": "dewpoint",
+      "correct": true,
+      "reservedInputTokens": 39138
+    },
+    {
+      "text": "dewpoint",
+      "inputTokens": 34196,
+      "outputTokens": 6,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p021",
+      "expected": "dewpoint",
+      "correct": true,
+      "reservedInputTokens": 42797
+    },
+    {
+      "text": "2026-11-19T00:00:00+00:00/PT1H",
+      "inputTokens": 34192,
+      "outputTokens": 151,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p022",
+      "expected": "2026-11-19T00:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 42792
+    },
+    {
+      "text": "2026-11-19T00:00:00+00:00/PT1H",
+      "inputTokens": 31255,
+      "outputTokens": 23,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p022",
+      "expected": "2026-11-19T00:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 39121
+    },
+    {
+      "text": "2026-11-19T00:00:00+00:00/PT1H",
+      "inputTokens": 34182,
+      "outputTokens": 92,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p022",
+      "expected": "2026-11-19T00:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 42779
+    },
+    {
+      "text": "2026-11-19T06:00:00+00:00/PT1H",
+      "inputTokens": 34194,
+      "outputTokens": 216,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p023",
+      "expected": "2026-11-19T06:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 42794
+    },
+    {
+      "text": "2026-11-19T06:00:00+00:00/PT1H",
+      "inputTokens": 31257,
+      "outputTokens": 118,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p023",
+      "expected": "2026-11-19T06:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 39123
+    },
+    {
+      "text": "2026-11-19T06:00:00+00:00/PT1H",
+      "inputTokens": 34184,
+      "outputTokens": 117,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p023",
+      "expected": "2026-11-19T06:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 42782
+    },
+    {
+      "text": "\"2026-11-19T10:00:00+00:00/PT1H\"",
+      "inputTokens": 34191,
+      "outputTokens": 105,
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "questionId": "p024",
+      "expected": "2026-11-19T10:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 42791
+    },
+    {
+      "text": "2026-11-19T10:00:00+00:00/PT1H",
+      "inputTokens": 31254,
+      "outputTokens": 67,
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "questionId": "p024",
+      "expected": "2026-11-19T10:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 39119
+    },
+    {
+      "text": "2026-11-19T10:00:00+00:00/PT1H",
+      "inputTokens": 34181,
+      "outputTokens": 67,
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "questionId": "p024",
+      "expected": "2026-11-19T10:00:00+00:00/PT1H",
+      "correct": true,
+      "reservedInputTokens": 42778
+    }
+  ],
+  "failures": [],
+  "suite": "real-400-pilot",
+  "encoders": {
+    "@toon-format/toon": "4.4.0",
+    "@stackdeck/terset": "0.3.1"
+  },
+  "tersetFormat": "1.1",
+  "inputReservation": {
+    "margin": 1.25,
+    "allowance": 64
+  },
+  "models": [
+    {
+      "id": "gpt-6.2-sol",
+      "api": "openai",
+      "price": {
+        "inputPerMillion": 2,
+        "outputPerMillion": 10,
+        "sourceUrl": "https://developers.openai.com/api/docs/pricing",
+        "dateRead": "2026-11-26"
+      },
+      "temperature": "zero",
+      "outputTokenParameter": "max_completion_tokens"
+    }
+  ],
+  "generatorSource": "bench/src/real/generate-400.ts",
+  "generatorSha256": "34e1f3690b3710a9ee0b857c6070558bd2131d4f1b3e0296b56749d3785b3968",
+  "sourceHashes": {
+    "usgs-earthquakes-all-day.geojson": "7306b59e3a896439a3c57efd6597ac062b8234dd459ebcd1eb4c5fcfc07b5485",
+    "nws-gridpoint-lwx-97-71.json": "9ca6b9be09aed19680ae60eb24c6e92e8caac82cd6dfee3af034478482f39158"
+  },
+  "dataHashes": {
+    "datasets.json": "452a7579e65fe464f61f996a98d363cf26cb9b5510509d31eddc5f110e1527b6",
+    "questions.json": "e8d5216a21593f7d2fbd68c91f45ad59baa75f6f73b4c0a0f60b38bbe6aaf47c"
+  },
+  "tokenizer": "o200k_base",
+  "summary": [
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "ALL",
+      "metrics": {
+        "correct": 24,
+        "total": 24,
+        "accuracy": 1,
+        "wilson95": {
+          "lower": 0.8620237953250198,
+          "upper": 1
+        },
+        "inputTokens": 1074511,
+        "outputTokens": 2786,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 2.149022,
+        "outputCost": 0.02786,
+        "totalCost": 2.176882,
+        "savingVsCompactJson": 0
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "usgs-earthquakes",
+      "metrics": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1,
+        "wilson95": {
+          "lower": 0.7575059933447592,
+          "upper": 1
+        },
+        "inputTokens": 664199,
+        "outputTokens": 1282,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 1.328398,
+        "outputCost": 0.01282,
+        "totalCost": 1.341218,
+        "savingVsCompactJson": 0
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "ALL",
+      "metrics": {
+        "correct": 23,
+        "total": 24,
+        "accuracy": 0.9583333333333334,
+        "wilson95": {
+          "lower": 0.7975819352134406,
+          "upper": 0.9926065438344942
+        },
+        "inputTokens": 1152667,
+        "outputTokens": 2687,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 2.305334,
+        "outputCost": 0.02687,
+        "totalCost": 2.3322040000000004,
+        "savingVsCompactJson": -0.1553220000000004
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "usgs-earthquakes",
+      "metrics": {
+        "correct": 11,
+        "total": 12,
+        "accuracy": 0.9166666666666666,
+        "wilson95": {
+          "lower": 0.646120088858883,
+          "upper": 0.9851349055950829
+        },
+        "inputTokens": 777599,
+        "outputTokens": 1701,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 1.555198,
+        "outputCost": 0.01701,
+        "totalCost": 1.572208,
+        "savingVsCompactJson": -0.23099000000000003
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "ALL",
+      "metrics": {
+        "correct": 24,
+        "total": 24,
+        "accuracy": 1,
+        "wilson95": {
+          "lower": 0.8620237953250198,
+          "upper": 1
+        },
+        "inputTokens": 872263,
+        "outputTokens": 2215,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 1.744526,
+        "outputCost": 0.02215,
+        "totalCost": 1.766676,
+        "savingVsCompactJson": 0.41020600000000007
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "usgs-earthquakes",
+      "metrics": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1,
+        "wilson95": {
+          "lower": 0.7575059933447592,
+          "upper": 1
+        },
+        "inputTokens": 462071,
+        "outputTokens": 1160,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 0.924142,
+        "outputCost": 0.0116,
+        "totalCost": 0.9357420000000001,
+        "savingVsCompactJson": 0.40547599999999995
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "json-compact",
+      "dataset": "nws-gridpoint",
+      "metrics": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1,
+        "wilson95": {
+          "lower": 0.7575059933447592,
+          "upper": 1
+        },
+        "inputTokens": 410312,
+        "outputTokens": 1504,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 0.820624,
+        "outputCost": 0.01504,
+        "totalCost": 0.8356640000000001,
+        "savingVsCompactJson": 0
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "toon",
+      "dataset": "nws-gridpoint",
+      "metrics": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1,
+        "wilson95": {
+          "lower": 0.7575059933447592,
+          "upper": 1
+        },
+        "inputTokens": 375068,
+        "outputTokens": 986,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 0.750136,
+        "outputCost": 0.00986,
+        "totalCost": 0.759996,
+        "savingVsCompactJson": 0.07566800000000007
+      }
+    },
+    {
+      "model": "gpt-6.2-sol",
+      "format": "terset",
+      "dataset": "nws-gridpoint",
+      "metrics": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1,
+        "wilson95": {
+          "lower": 0.7575059933447592,
+          "upper": 1
+        },
+        "inputTokens": 410192,
+        "outputTokens": 1055,
+        "droppedIncompleteQuestions": 0,
+        "inputCost": 0.820384,
+        "outputCost": 0.01055,
+        "totalCost": 0.830934,
+        "savingVsCompactJson": 0.004730000000000123
+      }
+    }
+  ]
+}

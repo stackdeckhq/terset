@@ -2,7 +2,6 @@
 // It takes the data as props, so a test can render it from another file and prove that
 // every number on the page comes from the data. The route passes the committed files.
 // It reuses the /benchmark layout: heading left, text right on wide screens, tables in cards.
-import type { ReactNode } from 'react';
 import { formatCount } from '../data/bench.ts';
 import type { RealData } from '../data/real-data-schema.ts';
 import type { RealAccuracyFile } from '../data/real-accuracy-schema.ts';
@@ -10,7 +9,6 @@ import { realLines } from '../data/real.ts';
 import {
   NO_ANSWER,
   WORKLOAD_MODEL_NAMES,
-  WORKLOAD_TABLE_HEAD,
   WRONG_ANSWERS_HEAD,
   fileResults,
   outputCapNotes,
@@ -21,79 +19,21 @@ import {
   workloadPrices,
   wrongAnswerRows,
 } from '../data/workload.ts';
+import type { Real400AccuracyFile } from '../data/real-400-accuracy-schema.ts';
 import { DocPage } from './DocPage.tsx';
+import { REAL_400_ANCHOR, Real400Sections } from './Workload400.tsx';
+import { Lines, ModelTable, Text } from './WorkloadParts.tsx';
 
 export const WORKLOAD_TITLE = 'Accuracy on real files';
 
-function Text({ children }: { readonly children: ReactNode }) {
-  return <div className="bench-text">{children}</div>;
+export interface WorkloadPageProps {
+  readonly file: RealAccuracyFile;
+  readonly real: RealData;
+  /** The 400-question run on the same files, shown after the 40-question content. */
+  readonly real400: Real400AccuracyFile;
 }
 
-function Lines({ lines }: { readonly lines: readonly string[] }) {
-  return (
-    <ul className="steps-list">
-      {lines.map((line) => (
-        <li key={line}>{line}</li>
-      ))}
-    </ul>
-  );
-}
-
-/** The mark for a change cell: fewer tokens than compact JSON in the accent tone, more plain and muted. The sign says it too. */
-function changeMark(cell: string): string | undefined {
-  if (cell.startsWith('−')) return 'is-less';
-  if (cell.startsWith('+')) return 'is-more';
-  return undefined;
-}
-
-type Model = RealAccuracyFile['models'][number];
-
-function ModelTable({ file, model }: { readonly file: RealAccuracyFile; readonly model: Model }) {
-  const name = WORKLOAD_MODEL_NAMES[model.id];
-  return (
-    <div className="acc-model">
-      <h3>{name}</h3>
-      <div className="tablewrap scroll-x on-light" tabIndex={0} role="region" aria-label={`${name} results table, scrolls sideways on small screens`}>
-        <table className="bt bt-work">
-          <caption className="sr">{`${name}: correct answers and whole-prompt input tokens per file and format, with the change against compact JSON`}</caption>
-          <thead>
-            <tr>
-              {WORKLOAD_TABLE_HEAD.map((cell) => (
-                <th key={cell} scope="col">
-                  {cell}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          {workloadGroups(file, model).map((group) => (
-            <tbody key={group.dataset} className={group.dataset === 'ALL' ? 'is-total' : undefined}>
-              {group.rows.map((row, index) => (
-                <tr key={row.format} className={row.format === 'terset' ? 'is-terset' : undefined}>
-                  {index === 0 ? (
-                    <th scope="rowgroup" rowSpan={group.rows.length} className="grp-l">
-                      {group.label}
-                    </th>
-                  ) : null}
-                  <th scope="row" className="fmt">
-                    {row.label}
-                  </th>
-                  <td>{row.correct}</td>
-                  <td className={row.lowest ? 'is-less' : undefined}>
-                    {row.inputTokens}
-                    {row.lowest ? <span className="sr"> (fewest)</span> : null}
-                  </td>
-                  <td className={changeMark(row.change)}>{row.change}</td>
-                </tr>
-              ))}
-            </tbody>
-          ))}
-        </table>
-      </div>
-    </div>
-  );
-}
-
-export function WorkloadPage({ file, real }: { readonly file: RealAccuracyFile; readonly real: RealData }) {
+export function WorkloadPage({ file, real, real400 }: WorkloadPageProps) {
   const frozenOn = [...new Set(real.files.map((item) => item.fetched))].join(' and ');
   const wrong = wrongAnswerRows(file);
   const answers = file.questions * file.formats.length * file.models.length;
@@ -104,9 +44,14 @@ export function WorkloadPage({ file, real }: { readonly file: RealAccuracyFile; 
       title={WORKLOAD_TITLE}
       lead={workloadHeadline(file).join(' ')}
       actions={
-        <a className="btn btn-line" href="/benchmark">
-          Full benchmark
-        </a>
+        <>
+          <a className="btn btn-line" href="/benchmark">
+            Full benchmark
+          </a>
+          <a className="btn btn-line" href={`#${REAL_400_ANCHOR}`}>
+            {`The ${formatCount(real400.questions)}-question run`}
+          </a>
+        </>
       }
     >
       <div className="bench-page work-page">
@@ -118,9 +63,18 @@ export function WorkloadPage({ file, real }: { readonly file: RealAccuracyFile; 
             </p>
           </Text>
           <div className="acc">
-            {file.models.map((model) => (
-              <ModelTable key={model.id} file={file} model={model} />
-            ))}
+            {file.models.map((model) => {
+              const name = WORKLOAD_MODEL_NAMES[model.id];
+              return (
+                <ModelTable
+                  key={model.id}
+                  name={name}
+                  label={`${name} results table`}
+                  caption={`${name}: correct answers and whole-prompt input tokens per file and format, with the change against compact JSON`}
+                  groups={workloadGroups(file, model)}
+                />
+              );
+            })}
           </div>
           <p className="tbl-note">Input tokens are summed over every question on that file. Bold marks the fewest input tokens in each group. Minus means fewer tokens than compact JSON.</p>
         </section>
@@ -212,6 +166,8 @@ export function WorkloadPage({ file, real }: { readonly file: RealAccuracyFile; 
             </div>
           </Text>
         </section>
+
+        <Real400Sections file={real400} />
       </div>
     </DocPage>
   );

@@ -12,8 +12,8 @@ accuracy. Fake responses verify the harness and are not model measurements.
 
 `bench/results/` is ignored by git. Runs that the site and the READMEs quote are
 copied unchanged into `bench/published/<date>/`, with the run's JSON file and
-its Markdown report. Only the current runs are published. Older runs are
-removed, not kept as history.
+its Markdown report. The published real runs include both question sets and
+the separate pilot for the 400-question run.
 
 - 2026-11-19, format 1.1. The TOON suite runs are
   `accuracy-opus-2026-11-19` and `accuracy-sol-2026-11-19`, 244 questions in
@@ -24,6 +24,18 @@ removed, not kept as history.
   them Terset's: pretty JSON q235 on Opus, TOON q219 on Sol and compact JSON
   s096 on Sol. Each was asked again, and the second answer is the one scored.
   The failed attempts stay listed in their run files.
+- [2026-11-26](published/2026-11-26), format 1.1. The real suite runs are
+  `real-opus-2026-11-26` and `real-sol-2026-11-26`. Each covers 40 questions
+  in three formats.
+- [2026-11-28](published/2026-11-28), format 1.1. The 400-question runs are
+  `real400-opus-2026-11-28` and `real400-sol-2026-11-28`. All 400 questions
+  were frozen before any model call. The separate 24-question pilot ran first
+  and changed no question. Its runs are `real400-pilot-opus-2026-11-28` and
+  `real400-pilot-sol-2026-11-28`. Both sets used an output limit of 8,192 tokens
+  per call. A time limit stopped the full Opus run once. It resumed with the
+  same run ID and answered all 400 questions in each format. The interrupted
+  compact JSON call for q367 stays in the budget ledger as a charge. The retry
+  supplied the scored answer.
 
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
 published runs, and updates the accuracy blocks in the READMEs. It takes one
@@ -46,6 +58,10 @@ frozen question set exactly once in every format. The checks hash the repository
 question, dataset and generator files. They re-score every answer against the
 frozen question and take its group from the question's type. Stress input
 tokens come from each model's report, including Claude.
+
+`pnpm accuracy` also builds the 40-question and 400-question real data files.
+The 400-question file lists the pilot runs for reference. Its scores, token
+counts and paired comparisons use the full runs.
 
 ## Local use
 
@@ -79,7 +95,7 @@ Both flags reject unknown names and duplicates. A saved run refuses a changed
 selection. Comparisons use questions complete in every selected format.
 Savings cells stay blank when compact JSON is absent.
 
-`--suite toon|stress|real` selects frozen inputs. The default is `toon`, with the
+`--suite toon|stress|real|real-400|real-400-pilot` selects frozen inputs. The default is `toon`, with the
 same data, questions, prompts and fingerprints as existing runs. Dataset names
 are validated within the selected suite. Results record the suite, input
 hashes and source. TOON records the upstream commit. Stress records the
@@ -96,7 +112,8 @@ pnpm bench --suite stress --dry-run
 
 Plans also list reserved dollars per model and in total. Input cost uses
 `ceil(estimate × margin) + allowance` per call. Output cost reserves the full
-`--per-call-max-output-tokens` cap for every call, default 128. Supply the cap
+`--per-call-max-output-tokens` cap for every call, default 128 or 8192 for the
+two real-400 suites. Supply the cap
 intended for the measured run, for example 2048. Prices come from the selected
 config. A reservation is a spending estimate, with the same limits described
 under Budgets and resume.
@@ -131,6 +148,15 @@ lists the sources, hashes and question rules.
 
 ```sh
 pnpm bench --suite real --formats json-compact,toon,terset --dry-run --per-call-max-output-tokens 2048
+```
+
+`real-400` uses the same documents with 200 questions per file.
+`real-400-pilot` has 12 separate questions per file. Both sets use an
+8,192-token output limit. Pass `--per-call-max-output-tokens 8192` for HTTP runs.
+
+```sh
+pnpm bench --suite real-400-pilot --dry-run
+pnpm bench --suite real-400 --dry-run
 ```
 
 ## HTTP client
@@ -201,8 +227,9 @@ the plain estimate and the reservation per format. Output reservations equal
 the per-call output cap sent to the provider.
 
 After each successful call, reported input and output replace both reservations
-in the ledger, even when reported usage is lower. Anthropic cache input counts
-are included. Counts above the local estimate are normal because API framing
+in the ledger, even when reported usage is lower. Anthropic requests mark the
+data block for caching. Rows include cache creation and read counts when the
+API reports them. The total input count includes both. Counts above the local estimate are normal because API framing
 and provider tokenizers differ. Input above the reservation adds a warning to
 the run's `.log` file and increments the warning count in its report.
 

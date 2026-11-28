@@ -6,12 +6,14 @@ import { describe, expect, it } from 'vitest';
 import { KIND_DATASETS, OUTPUT, PUBLISHED_RUNS, accuracyText, buildAccuracy, wilson95 } from './update-accuracy.ts';
 import type { PublishedSource } from './update-accuracy.ts';
 import { REAL_PUBLISHED_RUNS } from './accuracy-real.ts';
+import { REAL_400_PILOT_RUNS, REAL_400_PUBLISHED_RUNS } from './accuracy-real-400.ts';
 import { STRESS_OUTPUT, STRESS_PUBLISHED_RUNS } from './accuracy-stress.ts';
 import type { RunFile } from './accuracy-runs.ts';
 import { StressAccuracyFileSchema } from '../src/data/accuracy-stress-schema.ts';
 import { ACCURACY_FORMATS } from '../src/data/accuracy-schema.ts';
 import type { AccuracyFile } from '../src/data/accuracy-schema.ts';
 import { REAL_ACCURACY } from '../src/data/real-accuracy.ts';
+import { REAL_400_ACCURACY } from '../src/data/real-400-accuracy.ts';
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 const OPUS = 'claude-opus-5-5';
@@ -86,14 +88,20 @@ describe('every published run', () => {
   });
 
   it('lists every run file in bench/published in the script, so none is left out', () => {
-    const sources = [...PUBLISHED_RUNS, ...STRESS_PUBLISHED_RUNS, ...REAL_PUBLISHED_RUNS];
+    const sources = [
+      ...PUBLISHED_RUNS, ...STRESS_PUBLISHED_RUNS, ...REAL_PUBLISHED_RUNS,
+      ...REAL_400_PUBLISHED_RUNS, ...REAL_400_PILOT_RUNS,
+    ];
     expect(sources.map((source) => source.path).sort()).toEqual(runFiles);
   });
 
   it('lists every run file in bench/published in the site data', () => {
     const site = JSON.parse(readFileSync(OUTPUT, 'utf8')) as AccuracyFile;
     const stress = StressAccuracyFileSchema.parse(JSON.parse(readFileSync(STRESS_OUTPUT, 'utf8')));
-    const runs = [...site.publishedRuns, ...stress.publishedRuns, ...REAL_ACCURACY.publishedRuns];
+    const runs = [
+      ...site.publishedRuns, ...stress.publishedRuns, ...REAL_ACCURACY.publishedRuns,
+      ...REAL_400_ACCURACY.publishedRuns, ...REAL_400_ACCURACY.pilotRuns,
+    ];
     expect(runs.map((run) => `${run.publishedPath}/${run.runId}.json`).sort()).toEqual(runFiles);
   });
 });

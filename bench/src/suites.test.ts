@@ -85,6 +85,17 @@ it('selects real questions and prints a three-format dry-run plan', async () => 
   expect(resultSchema.shape.suite.parse('real')).toBe('real');
 });
 
+it.each([['real-400', 400], ['real-400-pilot', 24]] as const)('loads %s with an 8192-token cap', async (name, count) => {
+  const suite = loadSuite(name);
+  expect(suite.questions).toHaveLength(count);
+  expect(suite.paths['datasets.json']).toBe(loadSuite('real').paths['datasets.json']);
+  const output: string[] = [];
+  await main(['--suite', name, '--formats', 'terset', '--limit', '1', '--dry-run'], text => output.push(text));
+  expect(output[0]).toContain('Datasets: 2; questions: 2; planned calls: 2');
+  expect(output[0]).toContain('8192 output tokens per call');
+  expect(output[1]).toBe('Dry run: no calls made and no results written.');
+});
+
 it('persists stress source and hashes and prevents resuming it under TOON', async () => {
   const suite = loadSuite('stress');
   const model = modelSchema.parse(fakeModel);

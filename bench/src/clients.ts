@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { encode as tokenize } from 'gpt-tokenizer/encoding/o200k_base';
-import { estimateInputTokens } from './formats.ts';
+import { estimateInputTokens, splitDataPrefix } from './formats.ts';
 import type { Prompt } from './formats.ts';
 import type { Model, Response } from './schema.ts';
 
@@ -53,8 +53,13 @@ const openaiSchema = z.object({
  * The input part of an Anthropic Messages request: model, system text and the one user
  * message. The benchmark sends it, and the token counter counts exactly the same object.
  */
-export function anthropicInput(model: Pick<Model, 'id'>, prompt: Prompt): { model: string; system: string; messages: { role: 'user'; content: string }[] } {
-  return { model: model.id, system: prompt.system, messages: [{ role: 'user', content: prompt.user }] };
+export function anthropicInput(model: Pick<Model, 'id'>, prompt: Prompt) {
+  const split = splitDataPrefix(prompt.user);
+  const content = split === undefined ? prompt.user : [
+    { type: 'text' as const, text: split[0], cache_control: { type: 'ephemeral' as const } },
+    { type: 'text' as const, text: split[1] },
+  ];
+  return { model: model.id, system: prompt.system, messages: [{ role: 'user' as const, content }] };
 }
 
 export function requestBody(model: Model, prompt: Prompt, maxOutputTokens: number): object {
@@ -109,9 +114,11 @@ export function httpClient(options: {
         if (!parsed.success) throw new Error('Invalid Anthropic Messages response or missing usage');
         const { content, usage } = parsed.data;
         const text = content.filter(c => c.type === 'text').map(c => c.text).join('');
+        const { cache_creation_input_tokens: created, cache_read_input_tokens: read } = usage;
         return {
-          text, inputTokens: usage.input_tokens + (usage.cache_creation_input_tokens ?? 0) + (usage.cache_read_input_tokens ?? 0),
-          outputTokens: usage.output_tokens,
+          text, inputTokens: usage.input_tokens + (created ?? 0) + (read ?? 0), outputTokens: usage.output_tokens,
+          ...(created === undefined ? {} : { cacheCreationInputTokens: created }),
+          ...(read === undefined ? {} : { cacheReadInputTokens: read }),
         };
       }
       const parsed = openaiSchema.safeParse(value);
