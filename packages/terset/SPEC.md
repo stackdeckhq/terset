@@ -1,6 +1,6 @@
 # Terset format
 
-Format version 1.1
+Format version 1.2
 
 TERse SETs. Terset writes a JSON object or array as short lines. Any list of
 two or more objects becomes one tab-separated table when that is smaller
@@ -25,15 +25,22 @@ A 1.0 decoder rejects 1.1 named tables, because `name=value` is not a valid
 header column. A 1.1 encoder writes 1.1 text by default and writes 1.0 text
 on request. A 1.1 decoder accepts the canonical 1.1 text of a value and the
 canonical 1.0 text of the same value. It rejects a document that mixes the
-two. The 1.1 suite lives in `conformance/1.1/`. Every rule below applies to
-both versions unless it names one.
+two. The 1.1 suite lives in `conformance/1.1/`.
+
+Format 1.2 adds path entries for fields inside objects (see "Path entries").
+A bare slash between keys is new syntax that 1.0 and 1.1 decoders reject.
+A 1.2 decoder accepts the canonical text of any of the three versions.
+The encoder defaults to 1.2 and offers 1.1 and 1.0 on request. The 1.2
+suite lives in `conformance/1.2/`. The rules below apply to all versions
+unless they name a version.
 
 The rules line, `RULES`, `rulesFor` and `rules_for` output, and prompt text
 for models are outside this freeze. They remain tunable and are versioned
-by date. The current guidance below is dated 2026-11-19. Performance and
-package APIs are also outside the freeze. In the current packages,
-`encode(value, { format: "1.0" })` in JavaScript and
-`encode(value, format="1.0")` in Python write 1.0 text.
+by date. The current guidance below is dated 2026-11-28. Performance and
+package APIs are also outside the freeze. In the current packages, use
+`encode(value, { format: "1.1" })` in JavaScript or
+`encode(value, format="1.1")` in Python to write 1.1 text. Use
+`"1.0"` for 1.0 text.
 
 Error message wording is outside the freeze. The current package tests pin
 JavaScript `SyntaxError` and Python `ValueError` for rejected text. The
@@ -149,11 +156,12 @@ one header can follow (such as `{a, b}` then `{b, a}`), or a table that is
 not smaller. Inside a root object this is a `key: JSON` line. At the root
 it is the JSON array itself.
 
-Tables are chosen only at the root or for direct fields of a root object.
-Nested lists stay compact JSON cells. Terset does no sorting, no column
-reordering beyond the header rule above, and no constant hoisting.
+Tables are chosen only at the root or as entries. In 1.0 and 1.1, entries
+are direct fields of a root object. In 1.2 they can also be path entries.
+Lists inside table cells stay compact JSON. Terset does no sorting, no
+column reordering beyond the header rule above, and no constant hoisting.
 
-A direct root field whose value is a map of at least two objects may use
+An entry whose value is a map of at least two objects may use
 a keyed table. Its name is `key{N}:`. Its first header cell is the bare
 marker `@key`. That column holds each entry's key as bare text. It is not
 a field in the entry object. All other cells use ordinary typed rules,
@@ -219,6 +227,35 @@ strictly shorter than compact JSON. Named cells can be longer than empty
 cells, so a few lists that are tables in 1.0 stay compact JSON in 1.1, and
 the reverse.
 
+### Path entries (format 1.2)
+
+An entry with a nonempty object value may expand into one entry per
+member, in member order. Each member's name is the full parent name,
+then `/`, then the member key. An entry can hold a scalar, compact JSON,
+a list table or a keyed table. A member with a nonempty object value
+can expand again. An empty object stays `{}`.
+
+Write each path segment with the root key rule. Use a bare key when it
+matches the simple key pattern and a JSON string otherwise. A slash
+inside a JSON string belongs to that key. For example, `"a/b": 1`
+writes the single key `a/b`, and `"a/b"/c: 1` writes field `c`
+inside that key. A dot in a bare entry key is literal. Dots in table
+headers still follow the header rules.
+
+Compare the complete 1.1 entry with the expansion, using the entry's
+full name for both. The 1.1 entry uses the ordinary 1.1 selection rules,
+with the full name in place of the root key. The expansion joins the
+canonical 1.2 entries of the members with LF, with no added final LF.
+Measure both candidates in UTF-8 bytes, including names, counts,
+headers, rows and line breaks. Choose the expansion only when it is
+strictly smaller. A tie keeps the 1.1 entry. This comparison works
+from the leaves up.
+
+An entry name has at most 8 path segments, including the root key.
+At the eighth segment use the 1.1 entry. Table rules inside that
+entry still apply, including the separate limit on header paths.
+Path entries never occur inside a table, JSON cell or root array.
+
 ## Grammar
 
 The following describes the line framing. Cell and selection rules above
@@ -252,6 +289,13 @@ items are one nonempty cell per positional column, then the named cells.
 The empty `named-row` is allowed only when there are no positional columns.
 There is no format switch or reader for uncounted tables.
 
+In 1.2, replace the leading `key` in each `field` alternative with
+`entry-name`.
+
+```text
+entry-name = key ("/" key){0,7}
+```
+
 ## Decoder
 
 Rejected text raises `SyntaxError` in JavaScript and `ValueError` in Python.
@@ -280,8 +324,21 @@ A header whose last cell is `name=value` marks a named table. A decoder
 must reject an empty positional cell, a named cell without `=`, a bare name
 that is not a simple key without a dot, an empty value, a field named twice
 in one row, named cells out of header order and a marker the encoder would
-not write. Text is accepted when it equals the canonical 1.1 text or the
-canonical 1.0 text of the decoded value.
+not write.
+
+The 1.2 decoder builds objects for the parent segments of a path. The
+first occurrence of a parent places it in member order, subject to the
+array-index order in "Data". Reject a duplicate path and any path that
+tries to enter a complete scalar, JSON or table entry. Reject assigning
+a complete entry where a path already built an object. Reject paths
+longer than eight segments and paths with missing or invalid keys.
+
+All the entries under an expanded parent form one contiguous group,
+including the rows of its tables. A decoder rejects interleaved groups.
+It also rejects expansions that tie or lose the byte comparison. The
+whole document must equal the canonical encoding of its value in 1.2,
+1.1 or 1.0. For instance, a document with a path and a 1.0 empty cell
+cannot mix the two versions.
 
 ## Limits
 
@@ -296,13 +353,13 @@ finite numbers keep their IEEE-754 value. Precision lost before encoding
 cannot come back. NFC and NFD text stay different code units, in values and
 in keys. Available memory and runtime stack limits also constrain input size.
 
-## Rules guidance, 2026-11-19
+## Rules guidance, 2026-11-28
 
 This section is outside the format freeze. No legend is written into the
 data. The package exports one rules line, `RULES`, to put once in a shared
 system prompt, outside the data:
 
-> Tables use tab-separated headers and rows. Empty cells mean absent. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a.
+> Tables use tab-separated headers and rows. Empty cells mean absent. After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. JSON quotes distinguish numeric, boolean or null text from scalars. Nested cells use JSON. A leading bare id header marks string IDs. name{N} has N entries; the @key column holds each entry's key and is not a field. Header a.b is field b in object a. Key a/b is field b in object a.
 
 `rulesFor(text)` in JavaScript and `rules_for(text)` in Python return only
 the sentences whose constructs appear in canonical encoded text. Sentences
@@ -313,17 +370,19 @@ keep this order and join with single spaces:
 | 1 | Any table | Tables use tab-separated headers and rows. |
 | 2 | Any empty table cell, excluding the string id column | Empty cells mean absent. |
 | 3 | Any table header that ends with `name=value` | After the header columns, a row lists its other fields as name=value. A field a row does not list is absent. |
-| 4 | Any table cell, named value or root field value that starts with a double quote | JSON quotes distinguish numeric, boolean or null text from scalars. |
+| 4 | Any table cell, named value or entry value that starts with a double quote | JSON quotes distinguish numeric, boolean or null text from scalars. |
 | 5 | Any table cell or named value that starts with `{` or `[` | Nested cells use JSON. |
 | 6 | A list table whose first header is bare `id` | A leading bare id header marks string IDs. |
 | 7 | Keyed table with its `@key` header | name{N} has N entries; the @key column holds each entry's key and is not a field. |
 | 8 | Unquoted dotted header path in either table kind | Header a.b is field b in object a. |
+| 9 | Slash between keys in an entry name | Key a/b is field b in object a. |
 
 Cells in a leading bare `id` column are raw strings and do not trigger
 sentences 4 or 5. Entry keys in the `@key` column are bare text and do not
 trigger them either. Quoted header names and quoted names in named cells do
-not trigger sentence 4. Root JSON
-arrays and objects do not trigger sentence 5. Text with no trigger returns
+not trigger sentence 4. Entry names with a slash inside a quoted key do
+not trigger sentence 9. JSON entries and root JSON arrays do not trigger
+sentence 5. Text with no trigger returns
 the empty string `""`. Invalid text raises the same error as `decode`.
 A sender may send the full `RULES` line or the fitted line returned for the
 encoded text. Rules fixtures stay in `packages/terset/tests/rules-cases.json`

@@ -1,8 +1,8 @@
 # Terset conformance
 
 This is the language-neutral suite for the [Terset format](../packages/terset/SPEC.md).
-This folder holds the Format 1.0 suite. The `1.1/` folder holds the Format
-1.1 suite, described in [Format 1.1](#format-11) below.
+This folder holds the Format 1.0 suite. The `1.1/` and `1.2/` folders hold
+the suites for [Format 1.1](#format-11) and [Format 1.2](#format-12).
 JavaScript and Python are two separate implementations, each with its own
 encoder and decoder. Both run every encode, decode and rejection case here
 in CI. The tests use only their language's standard library.
@@ -28,7 +28,7 @@ An independent implementation can use its own exceptions and messages.
 `packages/terset/tests/rules-cases.json` is separate. Its shape is an array of
 `{ "name": string, "text": string, "rules": string, "features": string[] }`.
 It checks prompt guidance, not the frozen data format. `RULES`, `rulesFor`
-and `rules_for` remain tunable and versioned by date, currently 2026-11-19.
+and `rules_for` remain tunable and versioned by date, currently 2026-11-28.
 
 ## Values, numbers and order
 
@@ -155,6 +155,19 @@ for text in loadJSON("1.1/rejections.json"):
     assert decodeRefuses(text)
 ```
 
+## Format 1.2
+
+Format 1.2 adds slash-separated entry paths. An object can expand into its
+members when the complete expansion is smaller in UTF-8 bytes. A path has
+at most eight segments. A slash inside a quoted key is literal.
+
+The files in `1.2/` have the same shapes as those in `1.1/`. Run the
+same checks with format `"1.2"`. A 1.2 decoder must also keep accepting
+the canonical 1.0 and 1.1 texts with their original key order. It rejects
+documents that match none of the three versions.
+
+## Run the package tests
+
 From the repository root, run the existing implementations with:
 
 ```sh
@@ -167,7 +180,7 @@ pnpm test:py
 
 These are source-checkout tests. npm tarballs and Python wheels do not ship
 or require this folder. Keep each format version's fixtures separate and
-retain the 1.0 suite.
+retain the older suites.
 
 ## License
 

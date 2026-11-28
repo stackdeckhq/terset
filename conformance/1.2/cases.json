@@ -1,0 +1,92 @@
+[
+  {
+    "name": "one level",
+    "input": { "a": { "b": 1 } },
+    "encoded": "a/b: 1"
+  },
+  {
+    "name": "several levels",
+    "input": { "a": { "b": { "c": { "d": "text" } } } },
+    "encoded": "a/b/c/d: text"
+  },
+  {
+    "name": "list table under a path",
+    "input": { "a": { "x": [{ "v": 1 }, { "v": 2 }] } },
+    "encoded": "a/x[2]:\nv\n1\n2"
+  },
+  {
+    "name": "keyed table under a path",
+    "input": { "a": { "m": { "alpha": { "name": "Ada", "score": 1 }, "beta": { "name": "Lin", "score": 2 } } } },
+    "encoded": "a/m{2}:\n@key\tname\tscore\nalpha\tAda\t1\nbeta\tLin\t2"
+  },
+  {
+    "name": "paths can beat the keyed table",
+    "input": { "a": { "m": { "alpha": { "v": 1 }, "beta": { "v": 2 } } } },
+    "encoded": "a/m/alpha/v: 1\na/m/beta/v: 2"
+  },
+  {
+    "name": "quoted segment with an escaped quote and a literal slash",
+    "input": { "a": { "b\"/c": 1 } },
+    "encoded": "a/\"b\\\"/c\": 1"
+  },
+  {
+    "name": "literal slash in a root key alongside a path",
+    "input": { "a/b": 1, "a": { "b": 2 }, "c/d": { "e": 3 } },
+    "encoded": "\"a/b\": 1\na/b: 2\n\"c/d\"/e: 3"
+  },
+  {
+    "name": "dots stay literal in bare segments",
+    "input": { "a.b": 1, "a": { "b.c": 2 } },
+    "encoded": "a.b: 1\na/b.c: 2"
+  },
+  {
+    "name": "equal byte lengths keep JSON",
+    "input": { "abcd": { "b": 1, "c": 2 } },
+    "encoded": "abcd: {\"b\":1,\"c\":2}"
+  },
+  {
+    "name": "compare UTF-8 bytes instead of characters",
+    "input": { "ñ": { "b": 1, "c": 2 } },
+    "encoded": "\"ñ\": {\"b\":1,\"c\":2}"
+  },
+  {
+    "name": "a larger expansion keeps JSON",
+    "input": { "abcde": { "b": 1, "c": 2 } },
+    "encoded": "abcde: {\"b\":1,\"c\":2}"
+  },
+  {
+    "name": "a child uses its full name for the tie",
+    "input": { "a": { "bc": { "d": 1, "e": 2 } } },
+    "encoded": "a/bc: {\"d\":1,\"e\":2}"
+  },
+  {
+    "name": "empty object member",
+    "input": { "a": { "x": {}, "y": 1 } },
+    "encoded": "a/x: {}\na/y: 1"
+  },
+  {
+    "name": "eight segments with deeper JSON",
+    "input": { "a": { "b": { "c": { "d": { "e": { "f": { "g": { "h": { "i": 1 } } } } } } } } },
+    "encoded": "a/b/c/d/e/f/g/h: {\"i\":1}"
+  },
+  {
+    "name": "eight segments can still hold a table",
+    "input": { "a": { "b": { "c": { "d": { "e": { "f": { "g": { "h": [{ "v": 1 }, { "v": 2 }] } } } } } } } },
+    "encoded": "a/b/c/d/e/f/g/h[2]:\nv\n1\n2"
+  },
+  {
+    "name": "mixed entries keep their order",
+    "input": { "z": "before", "a": { "x": 1, "y": [{ "v": 2 }, { "v": 3 }] }, "b": "after" },
+    "encoded": "z: before\na/x: 1\na/y[2]:\nv\n2\n3\nb: after"
+  },
+  {
+    "name": "array-index members precede other members",
+    "input": { "a": { "name": "yes", "10": "ten", "2": "two" } },
+    "encoded": "a/\"2\": two\na/\"10\": ten\na/name: yes"
+  },
+  {
+    "name": "prototype names are own fields",
+    "input": { "__proto__": { "constructor": 1 } },
+    "encoded": "__proto__/constructor: 1"
+  }
+]
