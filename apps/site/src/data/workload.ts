@@ -39,16 +39,16 @@ export const WORKLOAD_DATASET_LABELS: Readonly<Record<RowDataset, string>> = {
 const BASE: Format = 'json-compact';
 
 /** Below this share, a saving is too small to call one. */
-const NEAR_TIE = 0.01;
+export const NEAR_TIE = 0.01;
 
 /** The most correct answers two formats may differ by while the page calls accuracy level. */
 const LEVEL_SPREAD = 1;
 
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'] as const;
-const word = (value: number): string => WORDS[value] ?? formatCount(value);
+export const word = (value: number): string => WORDS[value] ?? formatCount(value);
 
 /** "a", "a and b", "a, b and c". */
-function listPhrase(items: readonly string[]): string {
+export function listPhrase(items: readonly string[]): string {
   if (items.length <= 1) return items.join('');
   return `${items.slice(0, -1).join(', ')} and ${items.at(-1) ?? ''}`;
 }
@@ -250,7 +250,8 @@ export interface WorkloadLink {
   readonly href: string;
 }
 
-const blob = (path: string): string => `${REPO_URL}/blob/main/${path}`;
+/** A repository file on the main branch, as a GitHub link. */
+export const blob = (path: string): string => `${REPO_URL}/blob/main/${path}`;
 
 /** The raw run files of each model, then the frozen questions and their freeze record, on the main branch. */
 export function workloadLinks(file: RealAccuracyFile): readonly WorkloadLink[] {
