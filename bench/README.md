@@ -12,8 +12,8 @@ accuracy. Fake responses verify the harness and are not model measurements.
 
 `bench/results/` is ignored by git. Runs that the site and the READMEs quote are
 copied unchanged into `bench/published/<date>/`, with the run's JSON file and
-its Markdown report. Only the current runs are published. Older runs are
-removed, not kept as history.
+its Markdown report. The published real runs include both question sets and
+the separate pilot for the 400-question run.
 
 - 2026-11-19, format 1.1. The TOON suite runs are
   `accuracy-opus-2026-11-19` and `accuracy-sol-2026-11-19`, 244 questions in
@@ -24,6 +24,18 @@ removed, not kept as history.
   them Terset's: pretty JSON q235 on Opus, TOON q219 on Sol and compact JSON
   s096 on Sol. Each was asked again, and the second answer is the one scored.
   The failed attempts stay listed in their run files.
+- [2026-11-26](published/2026-11-26), format 1.1. The real suite runs are
+  `real-opus-2026-11-26` and `real-sol-2026-11-26`. Each covers 40 questions
+  in three formats.
+- [2026-11-28](published/2026-11-28), format 1.1. The 400-question runs are
+  `real400-opus-2026-11-28` and `real400-sol-2026-11-28`. All 400 questions
+  were frozen before any model call. The separate 24-question pilot ran first
+  and changed no question. Its runs are `real400-pilot-opus-2026-11-28` and
+  `real400-pilot-sol-2026-11-28`. Both sets used an output limit of 8,192 tokens
+  per call. A time limit stopped the full Opus run once. It resumed with the
+  same run ID and answered all 400 questions in each format. The interrupted
+  compact JSON call for q367 stays in the budget ledger as a charge. The retry
+  supplied the scored answer.
 
 `pnpm accuracy` rebuilds `apps/site/src/data/accuracy-results.json` from the
 published runs, and updates the accuracy blocks in the READMEs. It takes one
@@ -46,6 +58,10 @@ frozen question set exactly once in every format. The checks hash the repository
 question, dataset and generator files. They re-score every answer against the
 frozen question and take its group from the question's type. Stress input
 tokens come from each model's report, including Claude.
+
+`pnpm accuracy` also builds the 40-question and 400-question real data files.
+The 400-question file lists the pilot runs for reference. Its scores, token
+counts and paired comparisons use the full runs.
 
 ## Local use
 
