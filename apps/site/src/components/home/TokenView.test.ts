@@ -51,12 +51,16 @@ describe('show tokens toggle', () => {
     expect(withRules).toMatch(/<span class="fn">Terset with its rules line, [\d,]+ tokens<\/span>/u);
     const config = convert(GENERATED.samples.config.pretty);
     if (!config.ok) throw new Error('the config sample should convert');
-    const bare = renderToStaticMarkup(createElement(Panes, { live: liveTokens(config.value, config.text) }));
+    const withPath = renderToStaticMarkup(createElement(Panes, { live: liveTokens(config.value, config.text) }));
+    expect(withPath).toContain('class="lgd"');
+    const flat = convert('{"name":"Ada"}');
+    if (!flat.ok) throw new Error('the flat example should convert');
+    const bare = renderToStaticMarkup(createElement(Panes, { live: liveTokens(flat.value, flat.text) }));
     expect(bare).not.toContain('class="lgd"');
     expect(bare).toMatch(/<span class="fn">Terset, [\d,]+ tokens<\/span>/u);
     expect(bare).toContain('aria-label="Terset split into tokens"');
     expect(renderToStaticMarkup(createElement(LiveCountNote, { live: liveTokens(orders().value, orders().text) }))).toMatch(/Terset <b>[\d,]+<\/b> with its rules line, compact JSON/u);
-    expect(renderToStaticMarkup(createElement(LiveCountNote, { live: liveTokens(config.value, config.text) }))).toMatch(/: Terset <b>[\d,]+<\/b>, compact JSON/u);
+    expect(renderToStaticMarkup(createElement(LiveCountNote, { live: liveTokens(flat.value, flat.text) }))).toMatch(/: Terset <b>[\d,]+<\/b>, compact JSON/u);
   });
 
   it('loads the table through a dynamic import only, never a static one', () => {

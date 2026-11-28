@@ -26,7 +26,7 @@ versions. The published examples and counts below use format 1.1.
 <!-- docs:pitch -->
 JSON repeats every key in every record, and a model reads each repeat as input tokens. Terset writes a list of records as one table instead. The keys go in a header once, and each record becomes a row. `decode` turns the text back into the same JSON.
 
-- **Fewer tokens.** Over the 11 benchmark cases, Terset used 26.5% fewer tokens than compact JSON and 6.2% fewer than TOON's best form, counted with the `o200k_base` tokenizer. Claude's own count for Claude Opus 5.5 gives 31.4% and 3.8%. [See the benchmark](#benchmark).
+- **Fewer tokens.** Over the 11 benchmark cases, Terset used 26.4% fewer tokens than compact JSON and 6.0% fewer than TOON's best form, counted with the `o200k_base` tokenizer. Claude's own count for Claude Opus 5.5 gives 31.4% and 3.8%. [See the benchmark](#benchmark).
 - **Lossless.** `decode` gives back the same JSON, key order included. The benchmark decodes every Terset output and checks it against its input before counting it.
 - **Uneven records keep their table.** A record can skip a field or hold a list and still be one row.
 - **Same text from JavaScript and Python.** The two packages are separate code, and both pass one conformance suite.
@@ -190,10 +190,10 @@ Never write Terset by hand. Always use `encode`.
 ## How it compares
 
 <!-- docs:compare -->
-- **Compact JSON** is the baseline here. Terset is smaller in 10 of 11 cases on both counters.
-- **TOON** is another table format for prompts. Terset is smaller in 9 of 11 cases on o200k_base and 10 on Claude. TOON's best form is smaller in 2 on o200k_base and 1 on Claude, all listed in the benchmark below. When records skip a field or hold a list, TOON drops its table and writes one line per field. Terset keeps the table.
+- **Compact JSON** is the baseline here. Terset is smaller in 9 of 11 cases on o200k_base and 10 on Claude.
+- **TOON** is another table format for prompts. Terset is smaller in 8 of 11 cases on o200k_base and 10 on Claude. TOON's best form is smaller in 3 on o200k_base and 1 on Claude, all listed in the benchmark below. When records skip a field or hold a list, TOON drops its table and writes one line per field. Terset keeps the table.
 - **CSV** needs no rules line, so it is smaller than Terset in 3 of 11 cases on o200k_base and 5 on Claude. It has no types and cannot tell null, a missing field and empty text apart, so its text does not always read back to the same JSON. Nested values fit only as JSON inside a cell.
-- **YAML and pretty JSON** are easy for people to read and cost the most in total here. Over all 11 cases on o200k_base, Terset is 39.0% smaller than YAML and 50.3% smaller than pretty JSON.
+- **YAML and pretty JSON** are easy for people to read and cost the most in total here. Over all 11 cases on o200k_base, Terset is 38.9% smaller than YAML and 50.2% smaller than pretty JSON.
 <!-- /docs:compare -->
 
 ## How it works
@@ -217,16 +217,16 @@ Total tokens over all 11 cases. Lower is better. Terset counts include its fitte
 
 | Format | o200k_base | Claude Opus 5.5 |
 | --- | --- | --- |
-| Terset | 43,228 | 59,047 |
+| Terset | 43,297 | 59,047 |
 | TOON best | 46,068 | 61,360 |
 | Compact JSON | 58,808 | 86,102 |
 | YAML | 70,846 | 88,145 |
 | Pretty JSON | 87,020 | 113,574 |
 
-- o200k_base: TOON's best is smaller than Terset on 2 cases: Translation batch; Reviews, long text. The 2 file-list cases hold 57% of Terset's total. Per case, the median saving is 21.5% against compact JSON and 7.3% against TOON's best.
+- o200k_base: TOON's best is smaller than Terset on 3 cases: Translation batch; Deep nested config; and Reviews, long text. The 2 file-list cases hold 57% of Terset's total. Per case, the median saving is 21.5% against compact JSON and 6.9% against TOON's best.
 - Claude: TOON's best is smaller than Terset on 1 case: Deep nested config. The 2 file-list cases hold 56% of Terset's total. Per case, the median saving is 27.9% against compact JSON and 3.5% against TOON's best.
 
-The two counters are the `o200k_base` tokenizer and Claude's own token count for Claude Opus 5.5. They give different numbers for the same text. Open the section below for every case, the input cost and the method.
+The `o200k_base` tokenizer counts Terset 1.2. The saved Claude Opus 5.5 token counts use Terset 1.1. Open the section below for every case, the input cost and the method.
 <!-- /docs:bench-summary -->
 
 <details>
@@ -243,18 +243,18 @@ The two counters are the `o200k_base` tokenizer and Claude's own token count for
 | File list, long | 15,042 | 19,969 | 23,966 | 15,502 | -24.7% |
 | 200 users | 5,404 | 9,051 | 10,924 | 5,589 | -40.3% |
 | Metrics, numbers and booleans | 2,940 | 4,798 | 5,999 | 3,181 | -38.7% |
-| Deep nested config | 250 | 251 | 316 | 296 | -0.4% |
+| Deep nested config | 319 | 251 | 316 | 296 | +27.1% |
 | Mixed-type array | 63 | 63 | 89 | 99 | 0.0% |
 | Reviews, long text | 3,700 | 4,308 | 5,006 | 3,662 | -14.1% |
 | Orders with line items | 4,055 | 4,678 | 5,846 | 4,982 | -13.3% |
-| Total | 43,228 | 58,808 | 70,846 | 46,068 | -26.5% |
+| Total | 43,297 | 58,808 | 70,846 | 46,068 | -26.4% |
 
-Terset, fitted rules line included, is under TOON's best in 9 of 11
-cases and under compact JSON in 10 of 11.
+Terset, fitted rules line included, is under TOON's best in 8 of 11
+cases and under compact JSON in 9 of 11.
 
-Over all 11 cases, Terset totals 43,228 tokens: 26.5% fewer than compact
-JSON (58,808), 50.3% fewer than pretty JSON (87,020), 39.0% fewer than
-YAML (70,846), and 6.2% fewer than TOON's best (46,068).
+Over all 11 cases, Terset totals 43,297 tokens: 26.4% fewer than compact
+JSON (58,808), 50.2% fewer than pretty JSON (87,020), 38.9% fewer than
+YAML (70,846), and 6.0% fewer than TOON's best (46,068).
 
 ### Claude Opus 5.5
 
@@ -314,16 +314,16 @@ GPT 6.1 Sol at $2 per million input tokens, context up to 272K, on the
 | File list, long | $30.08 | $39.94 | $9.86 less |
 | 200 users | $10.81 | $18.10 | $7.29 less |
 | Metrics, numbers and booleans | $5.88 | $9.60 | $3.72 less |
-| Deep nested config | $0.50 | $0.50 | the same |
+| Deep nested config | $0.64 | $0.50 | $0.14 more |
 | Mixed-type array | $0.13 | $0.13 | the same |
 | Reviews, long text | $7.40 | $8.62 | $1.22 less |
 | Orders with line items | $8.11 | $9.36 | $1.25 less |
-| Total | $86.46 | $117.62 | $31.16 less |
+| Total | $86.59 | $117.62 | $31.03 less |
 
 How it was measured:
 
-- The `o200k_base` counts use the `o200k_base` tokenizer, run locally.
-- The Claude counts come from Anthropic's token count endpoint for `claude-opus-5-5`, run on 2026-11-19 UTC.
+- The `o200k_base` counts use the `o200k_base` tokenizer and Terset 1.2, run locally.
+- The Claude counts come from Anthropic's token count endpoint for `claude-opus-5-5`, run on 2026-11-19 UTC with Terset 1.1.
 - Each text is sent as one user message. The same run also counts the one-letter text "a", which comes back as 9 tokens. Its 8 tokens of fixed message framing are taken off every count, assuming "a" itself is 1 token.
 - Every Claude case was made from the same input as the o200k_base case of the same name. The build checks this by comparing the compact JSON counted locally with o200k_base.
 - All 11 case inputs are made-up data in this repository: `apps/site/src/data/count-cases.json`, built by `pnpm cases` from seed 20261117. `pnpm numbers` recounts them with o200k_base.
@@ -332,7 +332,7 @@ How it was measured:
 - Pretty JSON is `JSON.stringify(value, null, 2)`, with a 2-space indent.
 - YAML is the `yaml` package, version 2.9.1, `stringify` with default options.
 - TOON is the `@toon-format/toon` package, version 4.4.0, the smaller of its comma and tab forms for each case.
-- Terset o200k_base counts include `rulesFor(text)`, fitted to each encoded text, once per prompt. The full `RULES` reference is 73 tokens. The Claude counts include `rulesFor(text)`, a newline and the data in one message.
+- Terset o200k_base counts include `rulesFor(text)`, fitted to each encoded text, once per prompt. The full `RULES` reference is 108 tokens. The Claude counts include `rulesFor(text)`, a newline and the data in one message.
 - Each Terset output is decoded and compared with its input before it is counted.
 
 How the cost was worked out:
@@ -344,9 +344,9 @@ How the cost was worked out:
 
 Where Terset does not win:
 
-- o200k_base: Compact JSON ties Terset on mixed-type array (63 vs 63).
+- o200k_base: Compact JSON ties Terset on mixed-type array (63 vs 63). Compact JSON is smaller than Terset on deep nested config (251 vs 319).
 - Claude: Compact JSON ties Terset on mixed-type array (89 vs 89).
-- o200k_base: TOON's best is smaller than Terset in 2 of 11 cases: Translation batch (1,110 vs 1,139); Reviews, long text (3,662 vs 3,700).
+- o200k_base: TOON's best is smaller than Terset in 3 of 11 cases: Translation batch (1,110 vs 1,139); Deep nested config (296 vs 319); Reviews, long text (3,662 vs 3,700).
 - Claude: TOON's best is smaller than Terset in 1 of 11 cases: Deep nested config (394 vs 402).
 - o200k_base: Plain CSV is 9 to 88 tokens smaller on 2 flat, uniform lists, because it needs no rules line. On orders with line items it is larger: 4,769 vs 4,055.
 - Claude: Plain CSV is 23 to 38 tokens smaller on 4 flat, uniform lists, because it needs no rules line. On orders with line items it is larger: 6,490 vs 6,062.
@@ -362,7 +362,7 @@ Other tokenizers and models will give other counts. Full benchmark with pretty J
 
 ### Answer accuracy
 
-On 244 questions and two models, Terset used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.
+On 244 questions and two models, Terset 1.1 used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.
 
 #### Claude Opus 5.5
 
@@ -389,13 +389,13 @@ Each model ran once, with every format, on 2026-11-19. Each table shows that one
 The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate.
 Against compact JSON, Terset cost 29.6% less on Claude Opus 5.5 and 26.4% less on GPT 6.1 Sol.
 
-Cost is at API list price: input and output tokens times list prices read on 2026-11-17. Input tokens are as each model reported them. Temperature 0 where the model accepts it. Terset ran with fitted rules, which send only the rules each text needs.
+Cost is at API list price: input and output tokens times list prices read on 2026-11-17. Input tokens are as each model reported them. Temperature 0 where the model accepts it. These runs used Terset 1.1 with fitted rules for each text.
 
 Method and limits: [terset.dev/benchmark](https://terset.dev/benchmark#accuracy). Every answer and its score: [2026-11-19](https://github.com/stackdeckhq/terset/tree/main/bench/published/2026-11-19).
 
 ### Stress accuracy
 
-Each model answered 120 harder questions in four groups, sent in each of four formats. Each model ran once, on 2026-11-19. Each cell is that one run.
+Each model answered 120 harder questions in four groups, sent in each of four formats. Each model ran once, on 2026-11-19. Each cell is that one run. These runs used Terset 1.1.
 
 | Format | Claude Opus 5.5 | GPT 6.1 Sol | Claude Haiku 5.5 |
 | --- | --- | --- | --- |
@@ -420,7 +420,7 @@ Of Terset's 10 misses across the three models, 9 were on long lists. On Claude H
 ## FAQ
 
 <!-- docs:faq -->
-**Is it stable?** Format 1.0 is frozen, and its text still decodes. The encoder writes format 1.1. The packages are at 0.x, so their API can still change.
+**Is it stable?** Format 1.0 is frozen, and its text still decodes. The encoder writes format 1.2. The packages are at 0.x, so their API can still change.
 
 **Does it change answer accuracy?** Each model answered the same 244 questions in each format. The 95% accuracy ranges of all four formats overlap on both models. That does not prove the formats are equally accurate. See [Answer accuracy](#answer-accuracy).
 
@@ -434,16 +434,16 @@ Of Terset's 10 misses across the three models, 9 were on long lists. On Claude H
 <!-- docs:reference -->
 Every function, parameter, error and limit, for JavaScript and Python: [terset.dev/docs](https://terset.dev/docs).
 
-The encoder writes format version 1.1 by default. Text written in format 1.0 still decodes, and `encode` can still write it. That number is separate from the package version, which is still 0.x.
+The encoder writes format version 1.2 by default. Text written in format 1.0 still decodes. Format 1.1 text also decodes. Pass `{ format: "1.1" }` in JavaScript or `format="1.1"` in Python to write 1.1 text. Use `"1.0"` for 1.0 text.
 <!-- /docs:reference -->
 
 <!-- docs:implementations -->
 | Language | Package | Install | Conformance |
 | --- | --- | --- | --- |
-| JavaScript | [@stackdeck/terset](https://www.npmjs.com/package/@stackdeck/terset) | `pnpm add @stackdeck/terset` | Passes the 1.0 and 1.1 suites |
-| Python | [terset](https://pypi.org/project/terset/) | `pip install terset` | Passes the 1.0 and 1.1 suites |
+| JavaScript | [@stackdeck/terset](https://www.npmjs.com/package/@stackdeck/terset) | `pnpm add @stackdeck/terset` | Passes the 1.0, 1.1, and 1.2 suites |
+| Python | [terset](https://pypi.org/project/terset/) | `pip install terset` | Passes the 1.0, 1.1, and 1.2 suites |
 
-The two packages are separate code. Both run the shared suites in the repository: [conformance/](https://github.com/stackdeckhq/terset/tree/main/conformance) for 1.0 and [conformance/1.1/](https://github.com/stackdeckhq/terset/tree/main/conformance/1.1) for 1.1.
+Both packages run the shared test suites at [conformance/](https://github.com/stackdeckhq/terset/tree/main/conformance) for 1.0, [conformance/1.1/](https://github.com/stackdeckhq/terset/tree/main/conformance/1.1) for 1.1, and [conformance/1.2/](https://github.com/stackdeckhq/terset/tree/main/conformance/1.2) for 1.2.
 <!-- /docs:implementations -->
 
 ## For agents

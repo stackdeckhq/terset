@@ -177,12 +177,16 @@ describe('package facts', () => {
   });
 
   it('explains why keyed maps compare the complete field', () => {
-    const value = { m: { a: { a: 1, b: 2 }, b: { b: 2, c: 1 } } };
-    const fallback = `m: ${JSON.stringify(value.m)}`;
+    const value = { longRootName: { a: { a: 1, b: 2 }, b: { b: 2, c: 1 } } };
+    const fallback = `longRootName: ${JSON.stringify(value.longRootName)}`;
     expect(encode(value)).toBe(fallback);
     expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(value)}))`)).toBe(fallback);
     const summary = API.find((entry) => entry.id === 'encode')?.summary;
     expect(summary).toContain('A keyed map uses a table only if the complete named block, including the count line, is shorter in UTF-8 bytes than the field with compact JSON.');
+    const shorterName = { m: value.longRootName };
+    const paths = 'm/a/a: 1\nm/a/b: 2\nm/b/b: 2\nm/b/c: 1';
+    expect(encode(shorterName)).toBe(paths);
+    expect(runPy(`from terset import encode\nprint(encode(${JSON.stringify(shorterName)}))`)).toBe(paths);
   });
 
   it('matches each package version, runtime and export list', () => {

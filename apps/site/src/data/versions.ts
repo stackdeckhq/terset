@@ -11,13 +11,13 @@ import { PACKAGE_VERSION, REPO_URL } from './site.ts';
 import { WORKED_EXAMPLE } from './worked-example.ts';
 
 /** Every format version the packages read, oldest first. */
-export const FORMAT_VERSIONS = ['1.0', '1.1'] as const satisfies readonly FormatVersion[];
+export const FORMAT_VERSIONS = ['1.0', '1.1', '1.2'] as const satisfies readonly FormatVersion[];
 
 /** The version whose texts can no longer change. SPEC.md "Stability" freezes it. */
 export const FROZEN_FORMAT: FormatVersion = '1.0';
 
-/** "1.0 and 1.1". */
-export const VERSIONS_TEXT = FORMAT_VERSIONS.join(' and ');
+/** The versions as a list for prose. */
+export const VERSIONS_TEXT = new Intl.ListFormat('en').format(FORMAT_VERSIONS);
 
 /** The version `encode` writes with no option. Throws unless exactly one version gives that text for `input`. */
 function defaultFormat(input: JsonObject): FormatVersion {
@@ -48,7 +48,9 @@ function suite(version: FormatVersion, path: string): ConformanceSuite {
 }
 
 /** One shared suite per format version, in FORMAT_VERSIONS order. */
-export const CONFORMANCE_SUITES: readonly ConformanceSuite[] = [suite('1.0', 'conformance/'), suite('1.1', 'conformance/1.1/')];
+export const CONFORMANCE_SUITES: readonly ConformanceSuite[] = [
+  suite('1.0', 'conformance/'), suite('1.1', 'conformance/1.1/'), suite('1.2', 'conformance/1.2/'),
+];
 
 /** A second spelling of the same value, and the error `decode` throws for it. */
 export interface Rejection {
@@ -95,14 +97,14 @@ function buildFormatExample(input: JsonObject): FormatExample {
 /** The same input as the worked example on /benchmark and in the READMEs. */
 export const FORMAT_EXAMPLE: FormatExample = buildFormatExample(WORKED_EXAMPLE.input);
 
-export const DEFAULT_FORMAT: FormatVersion = defaultFormat(FORMAT_EXAMPLE.input);
+const PATH_EXAMPLE = { a: { b: 1 } };
+export const DEFAULT_FORMAT: FormatVersion = defaultFormat({ ...FORMAT_EXAMPLE.input, ...PATH_EXAMPLE });
 
-/** What each version is. Throws for a version that is neither the default nor frozen, since this table has nothing true to say about it. */
-function versionStatus(version: FormatVersion): string {
-  if (version === DEFAULT_FORMAT) return 'The default. `encode` writes it.';
-  if (version === FROZEN_FORMAT) return 'Frozen. `decode` still reads it, and `encode` writes it on request.';
-  throw new Error(`Format ${version} is neither the default nor frozen`);
-}
+const VERSION_STATUS: Readonly<Record<FormatVersion, string>> = {
+  '1.0': 'Frozen. The current packages still read and write it.',
+  '1.1': 'Adds named cells for fields only some rows have. The current packages still read and write it.',
+  '1.2': 'The default. Adds slash-separated keys for fields inside objects when they take fewer bytes.',
+};
 
 function suiteFor(version: FormatVersion): ConformanceSuite {
   const found = CONFORMANCE_SUITES.find((item) => item.version === version);
@@ -115,7 +117,7 @@ const fence = (lang: string, text: string): string => `\`\`\`${lang}\n${text}\n\
 function versionsMarkdown(): string {
   const rows = [...FORMAT_VERSIONS].reverse().map((version) => {
     const { path, url } = suiteFor(version);
-    return `| ${version} | ${versionStatus(version)} | [${path}](${url}) |`;
+    return `| ${version} | ${VERSION_STATUS[version]} | [${path}](${url}) |`;
   });
   return [
     '## Versions',
@@ -134,7 +136,8 @@ function exampleMarkdown(example: FormatExample): string {
     fence('terset', example.terset),
     `Quotes spell the same value a second way: \`${rejection.spelled}\` in place of \`${rejection.line}\`. That is not the text \`encode\` writes, so \`decode\` rejects it:`,
     fence('text', `SyntaxError: ${rejection.message}`),
-    'Python raises `ValueError` with the same message. Each value has one text, and a decoder accepts only that one.',
+    'Python raises `ValueError` with the same message. Each format version has one canonical text per value.',
+    `A 1.2 path entry writes \`${JSON.stringify(PATH_EXAMPLE)}\` as \`${encode(PATH_EXAMPLE)}\`. The slash separates the two keys.`,
   ].join('\n\n');
 }
 

@@ -46,7 +46,7 @@ describe('totals chart', () => {
         ['Pretty JSON', formatCount(totals.jsonPretty)],
       ]);
     }
-    expect(shown(render(counters, 'o200k')).map(([, count]) => count)).toEqual(['43,228', '46,068', '58,808', '70,846', '87,020']);
+    expect(shown(render(counters, 'o200k')).map(([, count]) => count)).toEqual(['43,297', '46,068', '58,808', '70,846', '87,020']);
   });
 
   it('scales every bar to the largest total and paints only Terset in the accent', () => {

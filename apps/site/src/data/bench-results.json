@@ -1,7 +1,7 @@
 {
   "status": "ready",
   "tokenizer": "o200k_base",
-  "rulesTokens": 98,
+  "rulesTokens": 108,
   "yamlVersion": "2.9.1",
   "cases": [
     {
@@ -82,7 +82,7 @@
       "toon": 296,
       "csv": null,
       "csvExact": null,
-      "terset": 250
+      "terset": 319
     },
     {
       "name": "Mixed-type array",
@@ -129,7 +129,7 @@
     "config": {
       "json": 99,
       "toon": 118,
-      "terset": 99
+      "terset": 108
     }
   }
 }

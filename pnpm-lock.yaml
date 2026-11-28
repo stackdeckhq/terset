@@ -50,9 +50,6 @@ importers:
       react-dom:
         specifier: 19.3.1
         version: 19.3.1(react@19.3.1)
-      terset-published:
-        specifier: npm:@stackdeck/terset@0.3.1
-        version: '@stackdeck/terset@0.3.1'
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -798,10 +795,6 @@ packages:
 
   '@speed-highlight/core@1.2.24':
     resolution: {integrity: sha512-qeW2e1l78afw8VhRPfPQ1Gjj+KU5XFQ/OFV5ti6eTa9bruO7mJyZtA4vw0ofqmA3tKCkROE9xLk3VZoeRc98nw==}
-
-  '@stackdeck/terset@0.3.1':
-    resolution: {integrity: sha512-U/yyowDRgt7JpkYYd7nRcDPAchBcUgqNAOE/PLRfSdNoFCXlqZGZNxj5SD0BzZ4lHrFlIkrASf3P7qwKMtxUdQ==}
-    engines: {node: '>=20'}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -2680,8 +2673,6 @@ snapshots:
   '@sindresorhus/is@7.2.0': {}
 
   '@speed-highlight/core@1.2.24': {}
-
-  '@stackdeck/terset@0.3.1': {}
 
   '@standard-schema/spec@1.1.0': {}
 

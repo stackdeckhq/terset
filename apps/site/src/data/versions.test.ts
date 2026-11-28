@@ -13,7 +13,7 @@ import { README_FILES, README_IDS, readBlocks } from './docs-readme.ts';
 import { DOC_LANGS, FAQ_STABLE, FORMAT_LINE, IMPLEMENTATIONS, INSTALL, LANG_LABELS, REGISTRY_URLS, implementationsMarkdown } from './docs.ts';
 import { GENERATED } from './generated.ts';
 import { PACKAGE_VERSION, REPO_URL } from './site.ts';
-import { CONFORMANCE_SUITES, DEFAULT_FORMAT, FORMAT_EXAMPLE, FORMAT_INTRO, FORMAT_VERSIONS, FROZEN_FORMAT, formatDoc } from './versions.ts';
+import { CONFORMANCE_SUITES, DEFAULT_FORMAT, FORMAT_EXAMPLE, FORMAT_INTRO, FORMAT_VERSIONS, FROZEN_FORMAT, VERSIONS_TEXT, formatDoc } from './versions.ts';
 import { WORKED_EXAMPLE } from './worked-example.ts';
 
 const ROOT = new URL('../../../../', import.meta.url);
@@ -71,7 +71,7 @@ describe('format versions', () => {
   });
 
   it('names as the default the version encode writes with no option, in both packages', () => {
-    expect(DEFAULT_FORMAT).toBe('1.1');
+    expect(DEFAULT_FORMAT).toBe('1.2');
     expect(encode(FORMAT_EXAMPLE.input)).toBe(encode(FORMAT_EXAMPLE.input, { format: DEFAULT_FORMAT }));
     expect(JS_SOURCE).toContain(`const { format = "${DEFAULT_FORMAT}" } = options`);
     expect(PY_SOURCE).toContain(`format: FormatVersion = "${DEFAULT_FORMAT}"`);
@@ -142,6 +142,8 @@ describe('format worked example', () => {
     for (const suite of CONFORMANCE_SUITES) expect(html).toContain(`<a href="${suite.url}">${suite.path}</a>`);
     for (const shown of [FORMAT_EXAMPLE.json, FORMAT_EXAMPLE.terset, `SyntaxError: ${FORMAT_EXAMPLE.rejection.message}`]) expect(html).toContain(shown);
     expect(html).toContain(`Packages ${PACKAGE_VERSION}`);
+    expect(html).toContain('a/b: 1');
+    expect(html).toContain('{&quot;a&quot;:{&quot;b&quot;:1}}');
     expect(read('apps/site/src/routes/format.tsx')).toContain('formatDoc(spec)');
   });
 
@@ -162,7 +164,8 @@ describe('implementations list', () => {
     }
     expect(read('packages/terset/package.json')).toContain(`"name": "${IMPLEMENTATIONS[0]?.packageName ?? ''}"`);
     expect(read('packages/terset-py/pyproject.toml')).toContain(`name = "${IMPLEMENTATIONS[1]?.packageName ?? ''}"`);
-    expect(implementationsMarkdown()).toContain(`Passes the ${FORMAT_VERSIONS.join(' and ')} suites`);
+    expect(VERSIONS_TEXT).toBe('1.0, 1.1, and 1.2');
+    expect(implementationsMarkdown()).toContain(`Passes the ${VERSIONS_TEXT} suites`);
   });
 
   it('shows the list on /docs, in /docs.md and in every README', () => {

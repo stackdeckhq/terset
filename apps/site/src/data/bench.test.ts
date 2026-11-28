@@ -15,10 +15,10 @@ function row(name: string, terset: number, json: number, toon: number): CaseRow 
 const FILE_LISTS = [row('File list, short', 600, 1000, 700), row('File list, long', 400, 1000, 500)];
 
 describe('the losses line', () => {
-  it('names both o200k_base losses and states the file-list share and the medians from the committed data', () => {
+  it('names the o200k_base losses and states the file-list share and the medians from the committed data', () => {
     if (BENCH_FILE.status !== 'ready') throw new Error('the committed bench file should be ready');
     expect(lossesLine(BENCH_FILE)).toBe(
-      "TOON's best is smaller than Terset on 2 cases: Translation batch; Reviews, long text. The 2 file-list cases hold 57% of Terset's total. Per case, the median saving is 21.5% against compact JSON and 7.3% against TOON's best.",
+      "TOON's best is smaller than Terset on 3 cases: Translation batch; Deep nested config; and Reviews, long text. The 2 file-list cases hold 57% of Terset's total. Per case, the median saving is 21.5% against compact JSON and 6.9% against TOON's best.",
     );
   });
 

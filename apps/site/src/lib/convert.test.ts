@@ -144,7 +144,7 @@ describe('promptText', () => {
   });
 
   it('gives the data alone when no rules fit, with no blank line first', () => {
-    const text = encode(SAMPLES.config);
+    const text = encode({ name: 'Ada' });
     expect(rulesFor(text)).toBe('');
     expect(promptText(text)).toBe(text);
   });

@@ -29,7 +29,7 @@ function gzipBundle(entry: string, names: string): number {
 }
 
 export function measureBundleSizes() {
-  const terset = fileURLToPath(import.meta.resolve('terset-published'));
+  const terset = fileURLToPath(import.meta.resolve('@stackdeck/terset'));
   const toon = '@toon-format/toon';
   return {
     tersetEncode: gzipBundle(terset, 'encode'),

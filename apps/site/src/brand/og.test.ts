@@ -35,7 +35,7 @@ function svgTexts(svg: string): readonly string[] {
 }
 
 describe('share image text follows the data', () => {
-  // The README's o200k_base totals line says "26.5% fewer than compact JSON", from the same function.
+  // The README's o200k_base totals line uses the same function.
   it('shows the o200k_base total saving against compact JSON exactly as the README states it', () => {
     if (COUNTERS === null) throw new Error('the committed bench file should be ready');
     const totals = benchTotals(COUNTERS.o200k);
@@ -45,7 +45,6 @@ describe('share image text follows the data', () => {
     expect(stat(0).win).toBe(true);
   });
 
-  // The README says "under TOON's best in 9 of 11 cases" for o200k_base.
   it('shows the o200k_base cases under TOON, and calls it a win only when that is every case', () => {
     if (COUNTERS === null) throw new Error('the committed bench file should be ready');
     const total = COUNTERS.o200k.cases.length;
@@ -61,7 +60,7 @@ describe('share image text follows the data', () => {
     // The image shows the score of the one published run of that model.
     expect(stat(2).value).toBe(`${String(terset.correct)} of ${String(ACCURACY.questions)}`);
     expect(ACCURACY.models.every(intervalsOverlap)).toBe(true);
-    expect(stat(2).label).toContain('Accuracy ranges overlap');
+    expect(stat(2).label).toBe('Right in 1.1. Ranges overlap.');
     expect(stat(2).win).toBe(false);
   });
 
@@ -73,7 +72,7 @@ describe('share image text follows the data', () => {
 
   it('says every word in the alt text, which uses the same constant', () => {
     for (const words of [...OG_TEXT.headline, ...OG_TEXT.stats.flatMap((item) => [item.value, item.label])]) expect(OG_IMAGE_ALT).toContain(words);
-    expect(OG_IMAGE_PATH).toBe('/og-v8.png');
+    expect(OG_IMAGE_PATH).toBe('/og-v9.png');
   });
 });
 

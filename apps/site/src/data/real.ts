@@ -71,5 +71,5 @@ export function realIntro(data: RealData): string {
 /** Where the data comes from, when it was frozen, and how it was counted. */
 export function realMethod(data: RealData): string {
   const days = [...new Set(data.files.map((file) => file.fetched))].join(' and ');
-  return `The files are the USGS earthquake feed for one day and the National Weather Service forecast grid for one square in Washington, DC. Both are US public domain. They were fetched and frozen on ${days}, before any count. The encoder and its rules line were not changed after, and nothing was tuned on them. \`pnpm real\` counts them as the sample table does: Terset includes rulesFor(text), and TOON is the smaller of its comma and tab forms. It writes \`${REAL_FILE}\`. Sources and hashes are in \`${REAL_RECORD}\`.`;
+  return `The files are the USGS earthquake feed for one day and the National Weather Service forecast grid for one square in Washington, DC. Both are US public domain. They were fetched and frozen on ${days}, before any count. \`pnpm real\` counts them as the sample table does. The offline counts use Terset 1.2 with rulesFor(text) and the smaller of TOON's comma and tab forms. It writes \`${REAL_FILE}\`. Sources and hashes are in \`${REAL_RECORD}\`.`;
 }

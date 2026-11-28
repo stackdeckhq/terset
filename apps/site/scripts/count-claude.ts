@@ -10,7 +10,7 @@ import { ClaudeReadySchema } from '../src/data/claude-counts-schema.ts';
 import type { ClaudeReady, ClaudeRow } from '../src/data/claude-counts-schema.ts';
 import { DOC_EXAMPLES, SAMPLE_IDS, SAMPLE_LABELS, SAMPLES } from '../src/data/samples.ts';
 import { rulesFor, decode, encode } from '../src/lib/format.ts';
-import type { JsonObject, JsonRoot, JsonValue } from '../src/lib/format.ts';
+import type { FormatVersion, JsonObject, JsonRoot, JsonValue } from '../src/lib/format.ts';
 import { parseNeutralInputs } from './claude-inputs.ts';
 
 export const ENDPOINT = '/v1/messages/count_tokens';
@@ -71,8 +71,8 @@ function csvExact(value: JsonRoot): boolean | null {
   return JSON.stringify(restored) === JSON.stringify(list);
 }
 
-export function formatTexts(value: JsonRoot) {
-  const terset = encode(value);
+export function formatTexts(value: JsonRoot, format?: FormatVersion) {
+  const terset = encode(value, format === undefined ? undefined : { format });
   if (JSON.stringify(decode(terset)) !== JSON.stringify(value)) throw new Error('Terset round trip failed');
   // Empty rules add nothing, so that text is sent as the data alone.
   const rules = rulesFor(terset);
@@ -89,7 +89,8 @@ export function formatTexts(value: JsonRoot) {
 }
 
 export function requestPlan(inputs: readonly CountInput[]) {
-  const rows = inputs.map((input) => ({ input, texts: formatTexts(input.value) }));
+  // The committed 2026-11-19 Claude token count run used Terset 1.1.
+  const rows = inputs.map((input) => ({ input, texts: formatTexts(input.value, '1.1') }));
   return { rows, requests: 1 + rows.reduce((total, row) => total + (row.texts.csv === null ? 6 : 7), 0) };
 }
 

@@ -99,7 +99,7 @@ export function countersHeadline(bench: BenchFile, counters: Counters | null): s
 }
 
 function countedTwoWays(claude: Counter): string {
-  return `Tokens counted two ways: the o200k_base tokenizer and Claude's token count for ${claude.price.model}. Others will differ.`;
+  return `The o200k_base counts use Terset 1.2. The saved ${claude.price.model} token counts use Terset 1.1.`;
 }
 
 /** Which counters made the numbers, in one or two plain sentences. */
@@ -215,7 +215,7 @@ export function claudeMethod(claude: ClaudeCounts): readonly string[] {
   if (claude.status === 'pending') return [];
   const day = claude.countedAt.slice(0, 10);
   return [
-    `The Claude counts come from Anthropic's token count endpoint for \`${claude.model}\`, run on ${day} UTC.`,
+    `The Claude counts come from Anthropic's token count endpoint for \`${claude.model}\`, run on ${day} UTC with Terset 1.1.`,
     `Each text is sent as one user message. The same run also counts the one-letter text "${claude.baseline.text}", which comes back as ${formatCount(claude.baseline.inputTokens)} tokens. Its ${formatCount(claude.baseline.overheadTokens)} tokens of fixed message framing are taken off every count, assuming "${claude.baseline.text}" itself is ${formatCount(claude.baseline.assumedTextTokens)} token.`,
     claude.rulesMode === 'fitted'
       ? 'Terset is sent as rulesFor(text), a newline and the data, in one message, so its Claude counts include the fitted rules line. When rulesFor(text) is empty, the text is sent as the data alone.'

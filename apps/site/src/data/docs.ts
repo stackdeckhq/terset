@@ -44,7 +44,7 @@ const PACKAGE_SERIES = ((): string => {
   return `${major}.x`;
 })();
 
-export const FORMAT_LINE = `The encoder writes format version ${DEFAULT_FORMAT} by default. Text written in format ${FROZEN_FORMAT} still decodes, and \`encode\` can still write it. That number is separate from the package version, which is still ${PACKAGE_SERIES}.`;
+export const FORMAT_LINE = `The encoder writes format version ${DEFAULT_FORMAT} by default. Text written in format ${FROZEN_FORMAT} still decodes. Format 1.1 text also decodes. Pass \`{ format: "1.1" }\` in JavaScript or \`format="1.1"\` in Python to write 1.1 text. Use \`"1.0"\` for 1.0 text.`;
 export const VERSION_LINE = `Version ${PACKAGE_VERSION} for JavaScript and Python. ${FORMAT_LINE}`;
 
 /** The sections of /docs, in order. The page, its contents list and /docs.md share them. */
@@ -156,7 +156,7 @@ export const IMPLEMENTATIONS_HEAD: readonly string[] = ['Language', 'Package', '
 export const IMPLEMENTATIONS_ROWS: readonly (readonly string[])[] = IMPLEMENTATIONS.map((row) => [row.language, `[${row.packageName}](${row.href})`, `\`${row.install}\``, `Passes the ${VERSIONS_TEXT} suites`]);
 
 /** Where the suites live, with a link to each. */
-export const IMPLEMENTATIONS_NOTE = `The two packages are separate code. Both run the shared suites in the repository: ${CONFORMANCE_SUITES.map((suite) => `[${suite.path}](${suite.url}) for ${suite.version}`).join(' and ')}.`;
+export const IMPLEMENTATIONS_NOTE = `Both packages run the shared test suites at ${new Intl.ListFormat('en').format(CONFORMANCE_SUITES.map((suite) => `[${suite.path}](${suite.url}) for ${suite.version}`))}.`;
 
 /** The list as Markdown, for /docs.md and the READMEs. */
 export function implementationsMarkdown(): string {

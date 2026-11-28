@@ -66,7 +66,7 @@ function setGroup(file: StressAccuracyFile, model: StressAccuracyFile['models'][
 
 describe('stress section', () => {
   it('says each model ran once, and throws once a model has more runs or none', () => {
-    expect(stressRunsNote(FIXTURE)).toBe('Each model ran once, on 2099-01-01. Each cell is that one run.');
+    expect(stressRunsNote(FIXTURE)).toBe('Each model ran once, on 2099-01-01. Each cell is that one run. These runs used Terset 1.1.');
     const [first] = FIXTURE.publishedRuns;
     if (first === undefined) throw new Error('no runs');
     expect(() => stressRunsNote({ ...FIXTURE, publishedRuns: [...FIXTURE.publishedRuns, { ...first, runId: 'again' }] })).toThrow(/no longer supports it/u);
@@ -194,7 +194,7 @@ describe('stress section', () => {
 
   it('opens with the suite, the freeze and the run dates', () => {
     expect(stressIntro(FIXTURE)).toBe(
-      `Each model answered 120 harder questions in four groups, sent in each of four formats. The questions were fixed before any model call. Each run file records the SHA-256 hashes of the question and dataset files. The publish step refuses a run whose hashes differ from the repo. See the [freeze record](${STRESS_FREEZE_URL}). Each model ran once, on 2099-01-01. Each cell is that one run.`,
+      `Each model answered 120 harder questions in four groups, sent in each of four formats. The questions were fixed before any model call. Each run file records the SHA-256 hashes of the question and dataset files. The publish step refuses a run whose hashes differ from the repo. See the [freeze record](${STRESS_FREEZE_URL}). Each model ran once, on 2099-01-01. Each cell is that one run. These runs used Terset 1.1.`,
     );
     expect(STRESS_FREEZE_URL).toBe('https://github.com/stackdeckhq/terset/blob/main/bench/data/stress/README.md');
     const record = readFileSync(new URL('bench/data/stress/README.md', REPO), 'utf8');
@@ -204,7 +204,7 @@ describe('stress section', () => {
   it('splits the page text into open and folded parts with nothing lost', () => {
     const open = stressPageIntro(FIXTURE);
     expect(open).toBe(
-      `Each model answered 120 harder questions in four groups, sent in each of four formats. Each model ran once, on 2099-01-01. Each cell is that one run. ${HEADLINE}`,
+      `Each model answered 120 harder questions in four groups, sent in each of four formats. Each model ran once, on 2099-01-01. Each cell is that one run. These runs used Terset 1.1. ${HEADLINE}`,
     );
     // The fold holds the freeze record and the breakdown of the misses, word for word as in the Markdown.
     expect(stressIntro(FIXTURE)).toContain(STRESS_FREEZE_NOTE);

@@ -182,7 +182,7 @@ describe('accuracy', () => {
   });
 
   it('puts the token result first on the home line, then the overlap sentence', () => {
-    expect(accuracyHomeLine(FIXTURE)).toBe('On 244 questions and two models, Terset used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.');
+    expect(accuracyHomeLine(FIXTURE)).toBe('On 244 questions and two models, Terset 1.1 used fewer input tokens than compact JSON. The 95% accuracy ranges of all four formats overlap on both models.');
   });
 
   it('keeps the result to two lines under the tables', () => {

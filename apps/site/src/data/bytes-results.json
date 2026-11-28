@@ -12,8 +12,8 @@
   "gzipLevel": 9,
   "totals": {
     "terset": {
-      "raw": 62196,
-      "gzip": 25838
+      "raw": 62032,
+      "gzip": 25825
     },
     "toon": {
       "raw": 75238,

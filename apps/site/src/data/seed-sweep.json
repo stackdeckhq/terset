@@ -125,19 +125,19 @@
     },
     {
       "name": "Deep nested config",
-      "underToon": 1000,
+      "underToon": 0,
       "tiedToon": 0,
-      "underJson": 1000,
+      "underJson": 0,
       "tiedJson": 0,
       "vsJson": {
-        "p5": -0.4,
-        "median": -0.4,
-        "p95": -0.4
+        "p5": 27,
+        "median": 27.1,
+        "p95": 27.1
       },
       "vsToon": {
-        "p5": -15.5,
-        "median": -15.5,
-        "p95": -15.5
+        "p5": 7.7,
+        "median": 7.8,
+        "p95": 7.8
       }
     },
     {

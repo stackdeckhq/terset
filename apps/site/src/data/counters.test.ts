@@ -87,7 +87,7 @@ describe('Claude counts paired with the bench file', () => {
     const text = (full.slice(0, start) + full.slice(end)).replace(stressLine, '');
     expect(text).not.toContain('Claude');
     expect(text.match(/^\| Case \| Terset \| Compact JSON \| Pretty JSON/gmu)).toHaveLength(1);
-    expect(countersHeadline(bench(), counters)).toBe(`Fewer tokens than TOON in 9 of 11 cases.`);
+    expect(countersHeadline(bench(), counters)).toBe('Fewer tokens than TOON in 8 of 11 cases.');
   });
 
   it('fails clearly on a missing case row', () => {
@@ -126,12 +126,12 @@ describe('Claude counts paired with the bench file', () => {
   it('claims in the headline only what holds on both counters', () => {
     const counters = buildCounters(bench(), claude(), PRICES);
     if (counters === null || counters.claude === null) throw new Error('should pair');
-    expect(underJson(counters.o200k)).toBe(10);
+    expect(underJson(counters.o200k)).toBe(9);
     expect(underJson(counters.claude)).toBe(10);
-    expect(countersHeadline(bench(), counters)).toBe('Fewer tokens than compact JSON in 10 of 11 cases, on both counters.');
+    expect(countersHeadline(bench(), counters)).toBe('Fewer tokens than compact JSON in 9 of 11 cases on o200k_base and 10 on Claude.');
     const lost = withRows((rows) => rows.map((row) => (row.name === 'UI text, uneven rows' ? { ...row, terset: row.json + 1 } : row)));
     const split = buildCounters(bench(), lost, PRICES);
-    expect(countersHeadline(bench(), split)).toBe('Fewer tokens than compact JSON in 10 of 11 cases on o200k_base and 9 on Claude.');
+    expect(countersHeadline(bench(), split)).toBe('Fewer tokens than compact JSON in 9 of 11 cases, on both counters.');
   });
 
   it('says beside every headline count that Terset carries the rules line fitted to each text', () => {
@@ -181,10 +181,10 @@ describe('/benchmark lines under the sample cases card', () => {
     const counters = buildCounters(bench(), claude(), PRICES);
     if (counters === null || counters.claude === null) throw new Error('should pair');
     const line = sampleTotalsLine(bench(), counters);
-    expect(line).toBe("Over all 11 cases, Terset totals 26.5% fewer tokens than compact JSON and 6.2% fewer than TOON's best on o200k_base, and 31.4% and 3.8% fewer on Claude.");
+    expect(line).toBe("Over all 11 cases, Terset totals 26.4% fewer tokens than compact JSON and 6.0% fewer than TOON's best on o200k_base, and 31.4% and 3.8% fewer on Claude.");
     // The same rounding as the full totals in the fold.
-    expect(counterTotals(counters.o200k)).toContain('26.5% fewer than compact JSON');
-    expect(counterTotals(counters.o200k)).toContain("6.2% fewer than TOON's best");
+    expect(counterTotals(counters.o200k)).toContain('26.4% fewer than compact JSON');
+    expect(counterTotals(counters.o200k)).toContain("6.0% fewer than TOON's best");
     expect(counterTotals(counters.claude)).toContain('31.4% fewer than compact JSON');
     expect(counterTotals(counters.claude)).toContain("3.8% fewer than TOON's best");
     expect(sampleTotalsLine({ status: 'pending', reason: 'Not run yet.' }, null)).toBe('');
@@ -264,6 +264,6 @@ describe('input cost at list price', () => {
       }
     }
     expect(costTotalsRow(counters.claude)).toEqual(['Total', '$236.19', '$344.41', '$108.22 less']);
-    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.46', '$117.62', '$31.16 less']);
+    expect(costTotalsRow(counters.o200k)).toEqual(['Total', '$86.59', '$117.62', '$31.03 less']);
   });
 });
