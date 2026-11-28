@@ -27,10 +27,10 @@ describe('real data section', () => {
     expect(realLines(ONE(90, 100, 90))).toEqual(['One file: Terset has 10.0% fewer tokens than compact JSON and as many tokens as TOON.']);
   });
 
-  it('says where the data comes from, when it was frozen and that nothing was tuned on it', () => {
+  it('says where the data comes from, when it was frozen and how it is counted', () => {
     const method = realMethod(REAL);
     expect(method).toContain('2026-11-17');
-    expect(method).toContain('nothing was tuned on them');
+    expect(method).toContain('offline counts use Terset 1.2');
     expect(method).toContain('`bench/data/real/README.md`');
     expect(method).toContain('rulesFor(text)');
   });

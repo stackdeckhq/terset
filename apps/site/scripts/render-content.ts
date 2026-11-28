@@ -1,9 +1,10 @@
 // Fills the content templates with text the generate script produced.
-// Placeholders: {{RULES}}, {{USAGE}}, {{RELEASE}}, {{INSTALL}},
+// Placeholders: {{RULES}}, {{USAGE}}, {{RELEASE}}, {{INSTALL}}, {{FORMAT}},
 // {{QUALITY}}, {{BENCH}} and {{EXAMPLE:<id>}}.
 // An unknown placeholder, or one left behind, is an error.
 import { PENDING_NOTE, benchSummary, jsonWinsNote } from '../src/data/bench.ts';
 import type { BenchFile } from '../src/data/bench.ts';
+import { FORMAT_LINE } from '../src/data/docs.ts';
 import type { GeneratedSamples } from '../src/data/generated-schema.ts';
 import { QUALITY_FAIRNESS, QUALITY_LIMITS, QUALITY_SUMMARY } from '../src/data/quality.ts';
 import { INSTALL_COMMANDS, PACKAGE_LICENSE, PACKAGE_NAME, PACKAGE_VERSION, PYPI_NAME, REPO_URL } from '../src/data/site.ts';
@@ -33,6 +34,7 @@ export function renderContent(template: string, generated: GeneratedSamples, ben
     if (name === 'USAGE') return [IMPORT_LINE, ...USAGE_LINES].join('\n');
     if (name === 'RELEASE') return RELEASE_TEXT;
     if (name === 'INSTALL') return INSTALL_TEXT;
+    if (name === 'FORMAT') return FORMAT_LINE;
     if (name === 'QUALITY') return `${QUALITY_SUMMARY} ${QUALITY_FAIRNESS} ${QUALITY_LIMITS}`;
     if (name === 'BENCH') return benchText(bench);
     if (name === 'EXAMPLE' && arg !== undefined) return example(generated, arg);

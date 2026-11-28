@@ -15,8 +15,8 @@ order. A decoder must accept only that canonical text. A different spelling
 of the same value must be rejected.
 
 A change that makes any 1.0 text decode differently, or makes a decoder
-reject valid 1.0 text, requires Format 2.0. A purely additive change that
-1.0 decoders reject cleanly requires Format 1.1. Each format version keeps
+reject valid 1.0 text, requires Format 2.0. An additive change that older
+decoders reject cleanly uses a new minor format version. Each version keeps
 its own fixtures. The language-neutral 1.0 suite lives in `conformance/`
 at the repository root. Format versions are separate from package versions.
 
@@ -27,12 +27,12 @@ on request. A 1.1 decoder accepts the canonical 1.1 text of a value and the
 canonical 1.0 text of the same value. It rejects a document that mixes the
 two. The 1.1 suite lives in `conformance/1.1/`.
 
-Format 1.2 adds path entries for fields inside objects (see "Path entries").
+Format 1.2 is the default in both packages. It adds path entries for fields
+inside objects when the expansion takes fewer bytes (see "Path entries").
 A bare slash between keys is new syntax that 1.0 and 1.1 decoders reject.
 A 1.2 decoder accepts the canonical text of any of the three versions.
-The encoder defaults to 1.2 and offers 1.1 and 1.0 on request. The 1.2
-suite lives in `conformance/1.2/`. The rules below apply to all versions
-unless they name a version.
+The 1.2 suite lives in `conformance/1.2/`. The rules below apply to all
+versions unless they name a version.
 
 The rules line, `RULES`, `rulesFor` and `rules_for` output, and prompt text
 for models are outside this freeze. They remain tunable and are versioned

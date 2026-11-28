@@ -211,7 +211,7 @@ function pitch(): string {
   const { o200k, claude } = readmeCounters();
   const open = benchTotals(o200k);
   const own = benchTotals(claude);
-  const tokens = `- **Fewer tokens.** Over the ${String(o200k.cases.length)} benchmark cases, Terset used ${fewer(open.terset, open.json)} fewer tokens than compact JSON and ${fewer(open.terset, open.toon)} fewer than TOON's best form, counted with the \`${o200k.name}\` tokenizer. Claude's own count for ${claude.label} gives ${fewer(own.terset, own.json)} and ${fewer(own.terset, own.toon)}. [See the benchmark](#benchmark).`;
+  const tokens = `- **Fewer tokens.** Over the ${String(o200k.cases.length)} benchmark cases, Terset 1.2 used ${fewer(open.terset, open.json)} fewer tokens than compact JSON and ${fewer(open.terset, open.toon)} fewer than TOON's best form, counted with the \`${o200k.name}\` tokenizer. The saved ${claude.label} counts for Terset 1.1 show ${fewer(own.terset, own.json)} and ${fewer(own.terset, own.toon)} fewer tokens. [See the benchmark](#benchmark).`;
   return [PITCH_INTRO, [tokens, ...PITCH_HIGHLIGHTS.map((item) => `- **${item.title}** ${item.text}`)].join('\n')].join('\n\n');
 }
 
@@ -252,7 +252,7 @@ function benchSummary(): string {
 
 /** Short answers to the questions a new reader asks first. */
 function faq(): string {
-  const accuracy = `**Does it change answer accuracy?** Each model answered the same ${formatCount(ACCURACY.questions)} questions in each format. ${accuracyOverlapLine(ACCURACY)} See [Answer accuracy](#answer-accuracy).`;
+  const accuracy = `**Does it change answer accuracy?** Each model answered the same ${formatCount(ACCURACY.questions)} questions in each format. The runs used Terset 1.1. ${accuracyOverlapLine(ACCURACY)} See [Answer accuracy](#answer-accuracy).`;
   return [FAQ_STABLE, accuracy, FAQ_RULES, FAQ_NAME].join('\n\n');
 }
 

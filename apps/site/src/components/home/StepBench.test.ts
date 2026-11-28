@@ -37,7 +37,7 @@ describe('step 6 views', () => {
     }
     const [open, claude] = views;
     expect(open?.headline).toEqual({ title: 'Fewer tokens than TOON in 8 of 11 cases.', tag: 'OpenAI tokenizer', line: 'Fewer than compact JSON in 9 of 11.' });
-    expect(claude?.headline).toEqual({ title: 'Fewer tokens than TOON in 10 of 11 cases.', tag: 'Claude Opus 5.5', line: 'Fewer than compact JSON in 10 of 11.' });
+    expect(claude?.headline).toEqual({ title: 'Fewer tokens than TOON in 10 of 11 cases.', tag: 'Claude Opus 5.5, Terset 1.1', line: 'Fewer than compact JSON in 10 of 11.' });
     expect(open?.orders).toEqual(BENCH.status === 'ready' ? BENCH.samples.orders : null);
     expect(claude?.orders).toEqual(counters.claude.samples.orders);
     expect(open?.foot).toContain('The six orders above use o200k_base.');
@@ -86,7 +86,7 @@ describe('step 6 markup', () => {
     const [open, claude] = benchViews(BENCH, counters);
     if (open === undefined || claude === undefined) throw new Error('Expected two views');
     expect(on('o200k')).toEqual([`${open.headline.title} <span class="tok">OpenAI tokenizer</span>`, open.headline.line, ...trio(counters.o200k.samples.orders), open.foot]);
-    expect(off('claude')).toEqual([`${claude.headline.title} <span class="tok">Claude Opus 5.5</span>`, claude.headline.line, ...trio(counters.claude.samples.orders), claude.foot]);
+    expect(off('claude')).toEqual([`${claude.headline.title} <span class="tok">Claude Opus 5.5, Terset 1.1</span>`, claude.headline.line, ...trio(counters.claude.samples.orders), claude.foot]);
     expect(on('claude')).toEqual([]);
     expect(off('o200k')).toEqual([]);
     expect(trio(counters.o200k.samples.orders)).toEqual(['342', '−3.9% against JSON', '356', '405']);

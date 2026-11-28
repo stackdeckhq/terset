@@ -148,19 +148,16 @@ describe('README blocks', () => {
 });
 
 describe('when not to use it', () => {
-  it('says what the counts show for data with no table: no rules and a few tokens saved at most', () => {
+  it('explains why a shorter config in bytes can still use more tokens with the path rule', () => {
     const [noLists] = WHEN_NOT;
-    expect(noLists?.text).toBe('Config files and deeply nested data stay JSON. Terset sends no rules for them and saves a few tokens at most.');
-    expect(rulesFor(encode(SAMPLES.config))).toBe('');
+    expect(noLists?.text).toBe('Path entries can save bytes and still cost more tokens. Compact JSON uses fewer tokens on the config example once Terset includes its rules line.');
+    const config = encode(SAMPLES.config);
+    expect(rulesFor(config)).toBe('Key a/b is field b in object a.');
+    expect(Buffer.byteLength(config)).toBeLessThan(Buffer.byteLength(JSON.stringify(SAMPLES.config)));
     if (COUNTERS === null || COUNTERS.claude === null) throw new Error('the bench or the Claude counts are pending');
-    for (const counter of [COUNTERS.o200k, COUNTERS.claude]) {
-      const nested = counter.cases.find((row) => row.name === 'Deep nested config');
-      if (nested === undefined) throw new Error(`${counter.name} has no deep nested config case`);
-      for (const trio of [counter.samples.config, nested]) {
-        expect(trio.json - trio.terset, counter.name).toBeGreaterThanOrEqual(0);
-        expect(trio.json - trio.terset, counter.name).toBeLessThanOrEqual(5);
-      }
-    }
+    expect(COUNTERS.o200k.samples.config).toMatchObject({ json: 99, terset: 108 });
+    expect(COUNTERS.o200k.cases.find((row) => row.name === 'Deep nested config')).toMatchObject({ json: 251, terset: 319 });
+    expect(rulesFor(encode(SAMPLES.config, { format: '1.1' }))).toBe('');
   });
 });
 
@@ -219,9 +216,10 @@ describe('package facts', () => {
   });
 
   it('lists only error messages that both packages raise word for word', () => {
-    const js = read('packages/terset/src/terset.ts');
+    const js = [read('packages/terset/src/terset.ts'), read('packages/terset/src/entry-syntax.ts')];
     const py = read('packages/terset-py/src/terset/_terset.py');
-    const missing = ERROR_MESSAGES.map((item) => item.message).filter((message) => !js.includes(message) || !py.includes(message));
+    const missing = ERROR_MESSAGES.map((item) => item.message)
+      .filter((message) => !js.some((source) => source.includes(message)) || !py.includes(message));
     expect(missing).toEqual([]);
   });
 });
